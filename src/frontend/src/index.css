@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Anton — logo / wordmark / big hero */
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/Anton-Regular.woff2") format("woff2");
+}
+
+/* Oswald — headings (600 / 700) */
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/assets/fonts/Oswald-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/Oswald-Bold.woff2") format("woff2");
+}
+
+/* Barlow — body (regular / medium / semibold) */
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/Barlow-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/Barlow-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/assets/fonts/Barlow-SemiBold.woff2") format("woff2");
+}
+
+@layer base {
+  :root {
+    --font-display: "Anton", sans-serif;
+    --font-heading: "Oswald", sans-serif;
+    --font-body: "Barlow", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --radius: 0.25rem;
+
+    /* Bubba's 33 dark roadhouse palette — dark is the only theme */
+    --background: 0.244 0.005 95;
+    --foreground: 0.948 0.012 90;
+    --card: 0.273 0.005 95;
+    --card-foreground: 0.948 0.012 90;
+    --popover: 0.273 0.005 95;
+    --popover-foreground: 0.948 0.012 90;
+
+    --primary: 0.595 0.232 27;
+    --primary-foreground: 0.948 0.012 90;
+    --primary-hover: 0.437 0.197 27;
+
+    --secondary: 0.285 0.094 254;
+    --secondary-foreground: 0.948 0.012 90;
+    --muted: 0.273 0.005 95;
+    --muted-foreground: 0.644 0.011 95;
+
+    --accent: 0.595 0.232 27;
+    --accent-foreground: 0.948 0.012 90;
+
+    --in-training: 0.801 0.171 75;
+    --in-training-foreground: 0.18 0.01 75;
+
+    --destructive: 0.595 0.232 27;
+    --destructive-foreground: 0.948 0.012 90;
+
+    --border: 0.34 0.006 95;
+    --input: 0.34 0.006 95;
+    --ring: 0.595 0.232 27;
+
+    --nav: 0 0 0;
+    --nav-foreground: 0.948 0.012 90;
+
+    --chart-1: 0.595 0.232 27;
+    --chart-2: 0.285 0.094 254;
+    --chart-3: 0.801 0.171 75;
+    --chart-4: 0.437 0.197 27;
+    --chart-5: 0.644 0.011 95;
+
+    --sidebar: 0 0 0;
+    --sidebar-foreground: 0.948 0.012 90;
+    --sidebar-primary: 0.595 0.232 27;
+    --sidebar-primary-foreground: 0.948 0.012 90;
+    --sidebar-accent: 0.273 0.005 95;
+    --sidebar-accent-foreground: 0.948 0.012 90;
+    --sidebar-border: 0.34 0.006 95;
+    --sidebar-ring: 0.595 0.232 27;
+  }
+
+  .dark {
+    --background: 0.244 0.005 95;
+    --foreground: 0.948 0.012 90;
+    --card: 0.273 0.005 95;
+    --card-foreground: 0.948 0.012 90;
+    --popover: 0.273 0.005 95;
+    --popover-foreground: 0.948 0.012 90;
+
+    --primary: 0.595 0.232 27;
+    --primary-foreground: 0.948 0.012 90;
+    --primary-hover: 0.437 0.197 27;
+
+    --secondary: 0.285 0.094 254;
+    --secondary-foreground: 0.948 0.012 90;
+    --muted: 0.273 0.005 95;
+    --muted-foreground: 0.644 0.011 95;
+
+    --accent: 0.595 0.232 27;
+    --accent-foreground: 0.948 0.012 90;
+
+    --in-training: 0.801 0.171 75;
+    --in-training-foreground: 0.18 0.01 75;
+
+    --destructive: 0.595 0.232 27;
+    --destructive-foreground: 0.948 0.012 90;
+
+    --border: 0.34 0.006 95;
+    --input: 0.34 0.006 95;
+    --ring: 0.595 0.232 27;
+
+    --nav: 0 0 0;
+    --nav-foreground: 0.948 0.012 90;
+
+    --chart-1: 0.595 0.232 27;
+    --chart-2: 0.285 0.094 254;
+    --chart-3: 0.801 0.171 75;
+    --chart-4: 0.437 0.197 27;
+    --chart-5: 0.644 0.011 95;
+
+    --sidebar: 0 0 0;
+    --sidebar-foreground: 0.948 0.012 90;
+    --sidebar-primary: 0.595 0.232 27;
+    --sidebar-primary-foreground: 0.948 0.012 90;
+    --sidebar-accent: 0.273 0.005 95;
+    --sidebar-accent-foreground: 0.948 0.012 90;
+    --sidebar-border: 0.34 0.006 95;
+    --sidebar-ring: 0.595 0.232 27;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading uppercase tracking-wide;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+  .text-in-training {
+    color: oklch(var(--in-training));
+  }
+  .bg-in-training {
+    background-color: oklch(var(--in-training));
+  }
+  .bg-nav {
+    background-color: oklch(var(--nav));
+  }
+  .border-nav {
+    border-color: oklch(var(--nav));
+  }
+  .animate-in-training {
+    animation: in-training-pulse 2s ease-in-out infinite;
+  }
+}

@@ -1,0 +1,103 @@
+// Version: 4.0.0
+type AccessControlState__75059763 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__663019211>
+  };
+type AssignmentStatus__481123893 = {#certified; #inTraining};
+type AssignmentStatus__750850714 = {#certified; #inTraining};
+type Data__552063367<K, V> = {var count : Nat__93962160; kvs : [var ?(K, V)]};
+type Internal__455405067<K, V> =
+  {children : [var ?Node__279997185<K, V>]; data : Data__552063367<K, V>};
+type Leaf__114713147<K, V> = {data : Data__552063367<K, V>};
+type List__716101829<T> =
+  {
+    var blockIndex : Nat__93962160;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__93962160
+  };
+type List__852723865<T> = List__716101829<T>;
+type Map__190625089<K, V> = Map__719753394<K, V>;
+type Map__246123559<K, V> = Map__190625089<K, V>;
+type Map__719753394<K, V> =
+  {var root : Node__279997185<K, V>; var size : Nat__93962160};
+type Nat__920180692 = Nat;
+type Nat__93962160 = Nat__920180692;
+type NewActor__625870533 =
+  {
+    var accessControlState : AccessControlState__75059763;
+    assignments : List__852723865<PositionAssignment__165074627>;
+    nextPositionId : {var value : Nat};
+    positions : List__852723865<Position__727886607>;
+    profiles : Map__246123559<Principal, UserProfile__624142439>
+  };
+type Node__279997185<K, V> =
+  {#internal : Internal__455405067<K, V>; #leaf : Leaf__114713147<K, V>};
+type OldActor__472261015 = {};
+type PositionAssignment__165074627 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__481123893;
+    userId : Principal
+  };
+type PositionAssignment__19141584 = PositionAssignment__746071586;
+type PositionAssignment__746071586 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__750850714;
+    userId : Principal
+  };
+type Position__133786439 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__727886607 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__915296267 = Position__133786439;
+type Role__619690062 = {#admin; #manager; #trainee; #trainer};
+type Role__878966967 = {#admin; #manager; #trainee; #trainer};
+type UserProfile__472152495 = UserProfile__507055787;
+type UserProfile__507055787 =
+  {id : Principal; name : Text; role : Role__878966967; storeLocation : Text};
+type UserProfile__624142439 =
+  {id : Principal; name : Text; role : Role__619690062; storeLocation : Text};
+type UserRole__663019211 = {#admin; #guest; #user};
+type UserRole__686137147 = {#admin; #guest; #user};
+{
+  "20260702_162129" : (old : OldActor__472261015) -> NewActor__625870533
+}
+actor  {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__246123559<Principal, UserRole__686137147>
+    };
+  stable assignments :
+    {
+      var blockIndex : Nat__93962160;
+      var blocks : [var [var ?PositionAssignment__19141584]];
+      var elementIndex : Nat__93962160
+    };
+  stable nextPositionId : {var value : Nat};
+  stable positions :
+    {
+      var blockIndex : Nat__93962160;
+      var blocks : [var [var ?Position__915296267]];
+      var elementIndex : Nat__93962160
+    };
+  stable profiles :
+    {
+      var root : Node__279997185<Principal, UserProfile__472152495>;
+      var size : Nat__93962160
+    }
+};

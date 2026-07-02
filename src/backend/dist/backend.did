@@ -1,0 +1,105 @@
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   id: principal;
+   name: text;
+   role: Role;
+   storeLocation: text;
+ };
+type Role = 
+ variant {
+   admin;
+   manager;
+   trainee;
+   trainer;
+ };
+type Result = 
+ variant {
+   err: Error;
+   ok;
+ };
+type PositionAssignment = 
+ record {
+   positionId: nat;
+   status: AssignmentStatus;
+   userId: principal;
+ };
+type Position = 
+ record {
+   coverPhoto: opt text;
+   description: opt text;
+   id: nat;
+   name: text;
+   sortOrder: nat;
+ };
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type AssignmentStatus = 
+ variant {
+   certified;
+   inTraining;
+ };
+service : {
+  __accessControlState: () -> (reserved) query;
+  __assignments: (io: opt nat, count: opt nat) ->
+   (vec PositionAssignment) query;
+  __nextPositionId: () -> (reserved) query;
+  __positions: (io: opt nat, count: opt nat) -> (vec Position) query;
+  __profiles: (ko: opt principal, count: opt nat) ->
+   (vec record {
+          principal;
+          UserProfile;
+        }) query;
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  assignPosition: (userId: principal, positionId: nat) ->
+   (PositionAssignment);
+  createMyProfile: (name: text, storeLocation: text) -> (UserProfile);
+  createPosition: (name: text, description: opt text, coverPhoto:
+   opt text) -> (Position);
+  deletePosition: (id: nat) -> ();
+  getAllPositions: () -> (vec Position) query;
+  getAllUsers: () -> (vec UserProfile);
+  getCallerUserRole: () -> (UserRole) query;
+  getMyAssignments: () -> (vec PositionAssignment) query;
+  getMyProfile: () -> (opt UserProfile) query;
+  getPosition: (id: nat) -> (opt Position) query;
+  getUserAssignments: (userId: principal) -> (vec PositionAssignment);
+  getUserRole: (userId: principal) -> (opt Role);
+  isCallerAdmin: () -> (bool) query;
+  reorderPositions: (orderedIds: vec nat) -> (vec Position);
+  setAssignmentStatus: (userId: principal, positionId: nat, status:
+   AssignmentStatus) -> (PositionAssignment);
+  setUserRole: (userId: principal, role: Role) -> (UserProfile);
+  unassignPosition: (userId: principal, positionId: nat) -> ();
+  updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
+  updatePosition: (id: nat, name: text, description: opt text, coverPhoto:
+   opt text) -> (Position);
+}

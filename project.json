@@ -1,0 +1,19 @@
+{
+  "overview": "Dark roadhouse-themed employee training and certification app for Bubba's 33 restaurant staff, with Internet Identity login, roles, positions, and a position-first home screen.",
+  "features": [
+    "Sign in with Internet Identity and create a staff profile",
+    "Position-first home grid with In training, Certified, and Not started status badges",
+    "Admins create, edit, reorder, and delete job positions",
+    "Admins manage users, roles, and position assignments with status",
+    "Dark patriotic roadhouse theme with Anton, Oswald, and Barlow fonts"
+  ],
+  "category": "productivity",
+  "tags": [
+    "training",
+    "certification",
+    "restaurant",
+    "dark-theme",
+    "mobile-first"
+  ],
+  "last_updated": "2026-07-02T16:19:26.562Z"
+}
