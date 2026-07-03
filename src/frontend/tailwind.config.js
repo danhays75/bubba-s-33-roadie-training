@@ -46,6 +46,19 @@ export default {
           DEFAULT: "oklch(var(--in-training) / <alpha-value>)",
           foreground: "oklch(var(--in-training-foreground))",
         },
+        "library-card": {
+          DEFAULT: "oklch(var(--library-card) / <alpha-value>)",
+          foreground: "oklch(var(--library-card-foreground))",
+        },
+        "category-tile": {
+          DEFAULT: "oklch(var(--category-tile) / <alpha-value>)",
+          foreground: "oklch(var(--category-tile-foreground))",
+        },
+        seasonal: {
+          DEFAULT: "oklch(var(--seasonal) / <alpha-value>)",
+          foreground: "oklch(var(--seasonal-foreground))",
+          border: "oklch(var(--seasonal-border))",
+        },
         nav: {
           DEFAULT: "oklch(var(--nav))",
           foreground: "oklch(var(--nav-foreground))",
@@ -104,11 +117,21 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.55" },
         },
+        "seasonal-shimmer": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
+        "photo-shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "in-training": "in-training-pulse 2s ease-in-out infinite",
+        "seasonal-shimmer": "seasonal-shimmer 3s ease-in-out infinite",
+        "photo-shimmer": "photo-shimmer 1.1s ease-in-out infinite",
       },
     },
   },

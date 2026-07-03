@@ -1,15 +1,94 @@
 // Version: 4.0.0
+type AccessControlState__690678898 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__488381355>
+  };
 type AccessControlState__75059763 =
   {
     var adminAssigned : Bool;
     userRoles : Map__246123559<Principal, UserRole__663019211>
   };
+type AccessControlState__825338347 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__33289320>
+  };
+type AssignmentStatus__223044902 = {#certified; #inTraining};
 type AssignmentStatus__481123893 = {#certified; #inTraining};
+type AssignmentStatus__609627758 = {#certified; #inTraining};
 type AssignmentStatus__750850714 = {#certified; #inTraining};
+type Category__360939907 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
+type Category__681034651 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
+type Category__756272159 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
+type Category__877266824 = Category__756272159;
 type Data__552063367<K, V> = {var count : Nat__93962160; kvs : [var ?(K, V)]};
+type DetailField__804330347 = {fieldLabel : Text; value : Text};
+type DetailField__900205256 = {fieldLabel : Text; value : Text};
+type DetailField__962204773 = {fieldLabel : Text; value : Text};
 type Internal__455405067<K, V> =
   {children : [var ?Node__279997185<K, V>]; data : Data__552063367<K, V>};
 type Leaf__114713147<K, V> = {data : Data__552063367<K, V>};
+type LibraryItem__125372000 = LibraryItem__399737546;
+type LibraryItem__399737546 =
+  {
+    categoryId : Nat;
+    details : [DetailField__900205256];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type LibraryItem__557945265 =
+  {
+    categoryId : Nat;
+    details : [DetailField__962204773];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type LibraryItem__742094707 =
+  {
+    categoryId : Nat;
+    details : [DetailField__804330347];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    seasonal : Bool;
+    sortOrder : Nat;
+    tags : [Text];
+    title : Text
+  };
 type List__716101829<T> =
   {
     var blockIndex : Nat__93962160;
@@ -23,6 +102,30 @@ type Map__719753394<K, V> =
   {var root : Node__279997185<K, V>; var size : Nat__93962160};
 type Nat__920180692 = Nat;
 type Nat__93962160 = Nat__920180692;
+type NewActor__292081718 =
+  {
+    var accessControlState : AccessControlState__690678898;
+    assignments : List__852723865<PositionAssignment__527873470>;
+    categories : List__852723865<Category__681034651>;
+    items : List__852723865<LibraryItem__742094707>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    positions : List__852723865<Position__507482950>;
+    profiles : Map__246123559<Principal, UserProfile__201697168>
+  };
+type NewActor__544122477 =
+  {
+    var accessControlState : AccessControlState__825338347;
+    assignments : List__852723865<PositionAssignment__876916776>;
+    categories : List__852723865<Category__360939907>;
+    items : List__852723865<LibraryItem__557945265>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    positions : List__852723865<Position__371037758>;
+    profiles : Map__246123559<Principal, UserProfile__946597095>
+  };
 type NewActor__625870533 =
   {
     var accessControlState : AccessControlState__75059763;
@@ -33,7 +136,39 @@ type NewActor__625870533 =
   };
 type Node__279997185<K, V> =
   {#internal : Internal__455405067<K, V>; #leaf : Leaf__114713147<K, V>};
+type OldActor__331980100 =
+  {
+    var accessControlState : AccessControlState__825338347;
+    assignments : List__852723865<PositionAssignment__876916776>;
+    categories : List__852723865<Category__360939907>;
+    items : List__852723865<OldLibraryItem__32705546>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    positions : List__852723865<Position__371037758>;
+    profiles : Map__246123559<Principal, UserProfile__946597095>
+  };
 type OldActor__472261015 = {};
+type OldActor__644677411 =
+  {
+    var accessControlState : AccessControlState__690678898;
+    assignments : List__852723865<PositionAssignment__527873470>;
+    nextPositionId : {var value : Nat};
+    positions : List__852723865<Position__507482950>;
+    profiles : Map__246123559<Principal, UserProfile__201697168>
+  };
+type OldLibraryItem__32705546 =
+  {
+    categoryId : Nat;
+    details : [DetailField__962204773];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    seasonal : Bool;
+    sortOrder : Nat;
+    tags : [Text];
+    title : Text
+  };
 type PositionAssignment__165074627 =
   {
     positionId : Nat;
@@ -41,13 +176,41 @@ type PositionAssignment__165074627 =
     userId : Principal
   };
 type PositionAssignment__19141584 = PositionAssignment__746071586;
+type PositionAssignment__527873470 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__609627758;
+    userId : Principal
+  };
 type PositionAssignment__746071586 =
   {
     positionId : Nat;
     status : AssignmentStatus__750850714;
     userId : Principal
   };
+type PositionAssignment__876916776 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__223044902;
+    userId : Principal
+  };
 type Position__133786439 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__371037758 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__507482950 =
   {
     coverPhoto : ?Text;
     description : ?Text;
@@ -64,17 +227,27 @@ type Position__727886607 =
     sortOrder : Nat
   };
 type Position__915296267 = Position__133786439;
+type Role__21333812 = {#admin; #manager; #trainee; #trainer};
+type Role__269972045 = {#admin; #manager; #trainee; #trainer};
 type Role__619690062 = {#admin; #manager; #trainee; #trainer};
 type Role__878966967 = {#admin; #manager; #trainee; #trainer};
+type UserProfile__201697168 =
+  {id : Principal; name : Text; role : Role__269972045; storeLocation : Text};
 type UserProfile__472152495 = UserProfile__507055787;
 type UserProfile__507055787 =
   {id : Principal; name : Text; role : Role__878966967; storeLocation : Text};
 type UserProfile__624142439 =
   {id : Principal; name : Text; role : Role__619690062; storeLocation : Text};
+type UserProfile__946597095 =
+  {id : Principal; name : Text; role : Role__21333812; storeLocation : Text};
+type UserRole__33289320 = {#admin; #guest; #user};
+type UserRole__488381355 = {#admin; #guest; #user};
 type UserRole__663019211 = {#admin; #guest; #user};
 type UserRole__686137147 = {#admin; #guest; #user};
 {
-  "20260702_162129" : (old : OldActor__472261015) -> NewActor__625870533
+  "20260702_162129" : (old : OldActor__472261015) -> NewActor__625870533;
+  "20260702_173441" : (old : OldActor__644677411) -> NewActor__292081718;
+  "20260703_000000" : (old : OldActor__331980100) -> NewActor__544122477
 }
 actor  {
   stable accessControlState :
@@ -88,6 +261,20 @@ actor  {
       var blocks : [var [var ?PositionAssignment__19141584]];
       var elementIndex : Nat__93962160
     };
+  stable categories :
+    {
+      var blockIndex : Nat__93962160;
+      var blocks : [var [var ?Category__877266824]];
+      var elementIndex : Nat__93962160
+    };
+  stable items :
+    {
+      var blockIndex : Nat__93962160;
+      var blocks : [var [var ?LibraryItem__125372000]];
+      var elementIndex : Nat__93962160
+    };
+  stable nextCategoryId : {var value : Nat};
+  stable nextItemId : {var value : Nat};
   stable nextPositionId : {var value : Nat};
   stable positions :
     {

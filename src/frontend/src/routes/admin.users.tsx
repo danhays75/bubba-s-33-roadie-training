@@ -16,6 +16,7 @@ import { useUserAssignments } from "@/hooks/useMyAssignments";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
 import type { PositionAssignment, Role, UserProfile } from "@/types/foundation";
+import { Link } from "@tanstack/react-router";
 import { ShieldAlert, Users } from "lucide-react";
 import { toast } from "sonner";
 
@@ -274,7 +275,7 @@ function AccessDenied() {
         upgrade your account.
       </p>
       <Button asChild variant="default" data-ocid="admin_users.go_home_button">
-        <a href="/">Back to positions</a>
+        <Link to="/admin/positions">Back to positions</Link>
       </Button>
     </div>
   );

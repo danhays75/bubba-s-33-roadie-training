@@ -68,3 +68,21 @@ One orchestrated motion: the gold In-training badge pulses (2s ease-in-out, opac
 
 ## Signature Detail
 The Anton wordmark "BUBBA'S 33" sits heavy in the black top nav, red dot replacing the apostrophe, with "ROADIE TRAINING" beneath in Oswald 600 tracked wide — a roadhouse marquee condensed into 56px of vertical space.
+
+## Photo Field Control (additive — either/or single slot)
+Either/or single photo slot added to PositionFormDialog, CategoryFormDialog, ItemEditorPage. Upload from device OR paste URL — choosing one clears the other; never both stored. Photos remain OPTIONAL everywhere.
+| Token | OKLCH (L C H) | Use |
+|---|---|---|
+| photo-frame | 0.273 0.005 95 | dark thumbnail frame (card surface) |
+| photo-frame-border | 0.34 0.006 95 | 1px frame divider |
+| photo-empty | 0.31 0.006 95 | empty-slot fill (library-card) |
+| photo-empty-foreground | 0.644 0.011 95 | muted "No photo" helper |
+| photo-processing | 0.437 0.197 27 | resize shimmer sweep (primary-hover) |
+| photo-error | 0.595 0.232 27 | broken-image / non-image error |
+- Frame: `.photo-field-preview` — card bg, 1px border, sharp 4px radius, object-cover img.
+- Empty: `.photo-field-empty` — dashed outline, muted icon, "No photo" helper.
+- Processing: `.photo-field-processing` overlay — red sweep, `photo-shimmer` 1.1s, shown while resizing (≤1600px / ~80% JPEG).
+- Broken URL: `.photo-field-broken` — red-tinted border, broken icon, does not block save.
+- Non-image file: `.photo-field-error` — red left-edge stripe + inline message (mirrors navy edge-stripe pattern).
+- Replace / Remove controls: secondary navy + ghost-border buttons, Oswald uppercase, 4px radius — match existing button patterns.
+- Resize cap: 1600px longest edge at ~80% JPEG quality, client-side only. No server re-encoding.

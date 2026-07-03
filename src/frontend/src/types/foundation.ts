@@ -54,3 +54,64 @@ export interface PositionAssignment {
 
 /** Convenience: status badge label + tone for a position tile. */
 export type StatusTone = "inTraining" | "certified" | "notStarted";
+
+/**
+ * A labeled detail field on a Library item (e.g. SPIRIT: Bourbon).
+ *
+ * NOTE: the backend Candid field is `fieldLabel` (not `label`) because
+ * `label` is a reserved Motoko keyword. The hook layer passes this through
+ * unchanged.
+ *
+ * `id` is a FRONTEND-ONLY field — it is NOT part of the backend DetailField
+ * record. It exists solely to give React a stable key for each row in the
+ * DetailFieldEditor so inputs do not remount (and lose focus) on every
+ * keystroke. The hook layer generates the id when reading from the backend
+ * and strips it before persisting (createItem/updateItem map only
+ * {fieldLabel, value}).
+ */
+export interface DetailField {
+  id: string;
+  fieldLabel: string;
+  value: string;
+}
+
+/**
+ * A Library category scoped to a single position (e.g. "Cocktails" under
+ * Bartender). Categories are ordered per-parent (within their position) using
+ * sortOrder.
+ *
+ * `id` and `positionId` are stringified bigints — set by the hook layer when
+ * translating the Candid Category (which has `id: bigint`, `positionId: bigint`).
+ * `sortOrder` is the number form of the bigint sortOrder.
+ * `coverPhoto` is null when the backend omits the optional ?Text.
+ */
+export interface Category {
+  id: string;
+  positionId: string;
+  name: string;
+  coverPhoto: string | null;
+  sortOrder: number;
+}
+
+/**
+ * A Library item (recipe / training card) scoped to a single category.
+ *
+ * `id` and `categoryId` are stringified bigints — set by the hook layer when
+ * translating the Candid LibraryItem (which has `id: bigint`,
+ * `categoryId: bigint`). `sortOrder` is the number form of the bigint
+ * sortOrder. `subtitle`, `photo`, and `notes` are null when the backend omits
+ * the optional ?Text fields. `seasonal` is a plain boolean. `details` is an
+ * array of DetailField (fieldLabel + value). `tags` is an array of strings.
+ */
+export interface LibraryItem {
+  id: string;
+  categoryId: string;
+  title: string;
+  subtitle: string | null;
+  photo: string | null;
+  details: DetailField[];
+  notes: string | null;
+  tags: string[];
+  seasonal: boolean;
+  sortOrder: number;
+}

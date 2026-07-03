@@ -28,8 +28,38 @@ mixin (
 
   // --- Profile (self-service) ---
 
-  public query ({ caller }) func getMyProfile() : async ?Foundation.UserProfile {
-    Foundation.getProfile(profiles, caller);
+  // Sign-in read path. Also syncs the stored profile role with the
+  // access-control admin status: if the caller is an admin but their stored
+  // profile role is not #admin (e.g. the first user's profile was created
+  // before _initialize_access_control ran), update the stored role to #admin.
+  // Idempotent and safe to run on every sign-in.
+  public shared ({ caller }) func getMyProfile() : async ?Foundation.UserProfile {
+    switch (Foundation.getProfile(profiles, caller)) {
+      case (?profile) {
+        // Promote the stored role to #admin if the caller is an admin but the
+        // stored profile role is stale (e.g. the first user's profile was
+        // created before _initialize_access_control ran). The mutation is
+        // separated from the return so the read path cannot trap: if the
+        // promotion succeeds we re-read the updated profile; on any failure we
+        // fall back to the profile we already have. Idempotent and safe to run
+        // on every sign-in.
+        if (AccessControl.isAdmin(accessControlState, caller) and profile.role != #admin) {
+          switch (Foundation.setRole(profiles, caller, #admin)) {
+            case (?_) {
+              // Re-read so we return the freshly-promoted profile.
+              switch (Foundation.getProfile(profiles, caller)) {
+                case (?updated) { ?updated };
+                case null { ?profile };
+              };
+            };
+            case null { ?profile };
+          };
+        } else {
+          ?profile;
+        };
+      };
+      case null null;
+    };
   };
 
   public shared ({ caller }) func createMyProfile(name : Text, storeLocation : Text) : async Foundation.UserProfile {

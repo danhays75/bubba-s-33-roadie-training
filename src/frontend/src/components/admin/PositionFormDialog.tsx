@@ -15,6 +15,7 @@ import type { Position } from "@/types/foundation";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PhotoField } from "./PhotoField";
 
 /**
  * Shared create/edit dialog for a Position.
@@ -174,29 +175,14 @@ export function PositionFormDialog({
             />
           </div>
 
-          {/* Cover photo — optional URL */}
+          {/* Cover photo — optional (upload or URL) */}
           <div className="grid gap-2">
-            <Label
-              htmlFor="position-cover"
-              className="font-heading uppercase text-xs tracking-wider"
-            >
-              Cover photo URL{" "}
-              <span className="text-muted-foreground normal-case">
-                (optional)
-              </span>
-            </Label>
-            <Input
+            <PhotoField
               id="position-cover"
+              label="Cover photo"
               value={coverPhoto}
-              onChange={(e) => setCoverPhoto(e.target.value)}
-              placeholder="https://…"
-              data-ocid="position.cover_photo_input"
-              autoComplete="off"
-              type="url"
+              onChange={(v) => setCoverPhoto(v ?? "")}
             />
-            <p className="text-xs text-muted-foreground font-body">
-              Paste an image URL. You can save without a photo.
-            </p>
           </div>
 
           <DialogFooter className="pt-2">

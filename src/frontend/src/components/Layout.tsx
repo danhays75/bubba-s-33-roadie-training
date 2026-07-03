@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
-import { Outlet } from "@tanstack/react-router";
+import { Link, Outlet } from "@tanstack/react-router";
 
 /**
  * Shared layout for all authenticated pages.
@@ -16,6 +16,7 @@ export function Layout() {
   const { data: profile } = useMyProfile();
 
   const initials = getInitials(profile?.name, principal);
+  const isAdmin = profile?.role === "admin";
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -26,21 +27,37 @@ export function Layout() {
         )}
       >
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-4">
-          <a
-            href="/"
-            className="font-display text-2xl uppercase leading-none tracking-wide text-foreground"
+          <Link
+            to="/"
+            className="font-display text-2xl uppercase leading-none tracking-wide text-foreground transition-colors duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
             data-ocid="layout.brand_link"
           >
             Bubba&rsquo;s 33
-          </a>
-          <Avatar
-            className="size-8 border border-border"
-            data-ocid="layout.user_avatar"
-          >
-            <AvatarFallback className="bg-card font-heading text-xs uppercase text-foreground">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          </Link>
+          <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={cn(
+                  "rounded-md border border-primary/60 px-3 py-1.5",
+                  "font-heading text-xs uppercase tracking-wide text-foreground",
+                  "transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
+                )}
+                data-ocid="layout.admin_link"
+              >
+                Admin
+              </Link>
+            )}
+            <Avatar
+              className="size-8 border border-border"
+              data-ocid="layout.user_avatar"
+            >
+              <AvatarFallback className="bg-card font-heading text-xs uppercase text-foreground">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </header>
 

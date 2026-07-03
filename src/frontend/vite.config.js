@@ -55,6 +55,6 @@ export default defineConfig({
         replacement: fileURLToPath(new URL("./src", import.meta.url)),
       },
     ],
-    dedupe: ["@icp-sdk/core"]
+    dedupe: ["@icp-sdk/core", "@tanstack/react-query"]
   },
 });

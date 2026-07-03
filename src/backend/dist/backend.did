@@ -1,3 +1,25 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
 type UserRole = 
  variant {
    admin;
@@ -18,10 +40,15 @@ type Role =
    trainee;
    trainer;
  };
-type Result = 
+type Result__1 = 
  variant {
    err: Error;
    ok;
+ };
+type Result = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
  };
 type PositionAssignment = 
  record {
@@ -36,6 +63,19 @@ type Position =
    id: nat;
    name: text;
    sortOrder: nat;
+ };
+type LibraryItem = 
+ record {
+   categoryId: nat;
+   details: vec DetailField;
+   id: nat;
+   notes: opt text;
+   photo: opt text;
+   seasonal: bool;
+   sortOrder: nat;
+   subtitle: opt text;
+   tags: vec text;
+   title: text;
  };
 type Error = 
  variant {
@@ -59,6 +99,24 @@ type Error =
    UnknownNonce;
    UntrustedSsoSource: record {domain: text;};
  };
+type DetailField = 
+ record {
+   fieldLabel: text;
+   value: text;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type Category = 
+ record {
+   coverPhoto: opt text;
+   id: nat;
+   name: text;
+   positionId: nat;
+   sortOrder: nat;
+ };
 type AssignmentStatus = 
  variant {
    certified;
@@ -68,6 +126,10 @@ service : {
   __accessControlState: () -> (reserved) query;
   __assignments: (io: opt nat, count: opt nat) ->
    (vec PositionAssignment) query;
+  __categories: (io: opt nat, count: opt nat) -> (vec Category) query;
+  __items: (io: opt nat, count: opt nat) -> (vec LibraryItem) query;
+  __nextCategoryId: () -> (reserved) query;
+  __nextItemId: () -> (reserved) query;
   __nextPositionId: () -> (reserved) query;
   __positions: (io: opt nat, count: opt nat) -> (vec Position) query;
   __profiles: (ko: opt principal, count: opt nat) ->
@@ -75,30 +137,63 @@ service : {
           principal;
           UserProfile;
         }) query;
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
   _initialize_access_control: () -> ();
-  _internet_identity_sign_in_finish: () -> (Result);
+  _internet_identity_sign_in_finish: () -> (Result__1);
   _internet_identity_sign_in_start: () -> (blob);
   assignCallerUserRole: (user: principal, role: UserRole) -> ();
   assignPosition: (userId: principal, positionId: nat) ->
    (PositionAssignment);
+  createCategory: (positionId: nat, name: text, coverPhoto: opt text) ->
+   (Category);
+  createItem: (categoryId: nat, title: text, subtitle: opt text, photo:
+   opt text, details: vec DetailField, notes: opt text, tags: vec text,
+   seasonal: bool) -> (LibraryItem);
   createMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   createPosition: (name: text, description: opt text, coverPhoto:
    opt text) -> (Position);
+  deleteCategory: (categoryId: nat) -> ();
+  deleteItem: (itemId: nat) -> ();
   deletePosition: (id: nat) -> ();
+  execute: (qJson: text) -> (Result) query;
   getAllPositions: () -> (vec Position) query;
   getAllUsers: () -> (vec UserProfile);
   getCallerUserRole: () -> (UserRole) query;
+  getCategoriesByPosition: (positionId: nat) -> (vec Category) query;
+  getCategory: (categoryId: nat) -> (opt Category) query;
+  getItem: (itemId: nat) -> (opt LibraryItem) query;
+  getItemsByCategory: (categoryId: nat) -> (vec LibraryItem) query;
   getMyAssignments: () -> (vec PositionAssignment) query;
-  getMyProfile: () -> (opt UserProfile) query;
+  getMyProfile: () -> (opt UserProfile);
   getPosition: (id: nat) -> (opt Position) query;
   getUserAssignments: (userId: principal) -> (vec PositionAssignment);
   getUserRole: (userId: principal) -> (opt Role);
   isCallerAdmin: () -> (bool) query;
+  reorderCategories: (positionId: nat, orderedCategoryIds: vec nat) ->
+   (vec Category);
+  reorderItems: (categoryId: nat, orderedItemIds: vec nat) ->
+   (vec LibraryItem);
   reorderPositions: (orderedIds: vec nat) -> (vec Position);
+  schema: () -> (text) query;
+  searchLibrary: (positionId: nat, searchText: text) ->
+   (vec LibraryItem) query;
   setAssignmentStatus: (userId: principal, positionId: nat, status:
    AssignmentStatus) -> (PositionAssignment);
   setUserRole: (userId: principal, role: Role) -> (UserProfile);
   unassignPosition: (userId: principal, positionId: nat) -> ();
+  updateCategory: (categoryId: nat, name: text, coverPhoto: opt text) ->
+   (Category);
+  updateItem: (itemId: nat, title: text, subtitle: opt text, photo: opt text,
+   details: vec DetailField, notes: opt text, tags: vec text, seasonal:
+   bool) -> (LibraryItem);
   updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   updatePosition: (id: nat, name: text, description: opt text, coverPhoto:
    opt text) -> (Position);

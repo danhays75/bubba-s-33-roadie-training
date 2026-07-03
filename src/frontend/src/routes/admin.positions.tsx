@@ -18,9 +18,11 @@ import {
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
 import type { Position } from "@/types/foundation";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowDown,
   ArrowUp,
+  BookOpen,
   Loader2,
   Lock,
   Pencil,
@@ -248,6 +250,7 @@ function PositionRow({
 }) {
   const isFirst = index === 0;
   const isLast = index === total - 1;
+  const libraryTo = `/admin/positions/${position.id}/library`;
 
   return (
     <li
@@ -307,6 +310,20 @@ function PositionRow({
             <ArrowDown />
           </Button>
         </div>
+
+        {/* Manage Library — per-position Library manager */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8"
+          asChild
+          aria-label={`Manage library for ${position.name}`}
+          data-ocid={`position.manage_library_button.${index + 1}`}
+        >
+          <Link to={libraryTo}>
+            <BookOpen />
+          </Link>
+        </Button>
 
         <Button
           variant="ghost"
