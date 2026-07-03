@@ -2,7 +2,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 
 /**
  * Shared layout for all authenticated pages.
@@ -12,8 +14,14 @@ import { Link, Outlet } from "@tanstack/react-router";
  * The main content area uses the dark `bg-background` token.
  */
 export function Layout() {
-  const { principal } = useAuth();
+  const { principal, clear } = useAuth();
   const { data: profile } = useMyProfile();
+  const queryClient = useQueryClient();
+
+  const handleLogout = () => {
+    clear();
+    queryClient.clear();
+  };
 
   const initials = getInitials(profile?.name, principal);
   const isAdmin = profile?.role === "admin";
@@ -57,6 +65,20 @@ export function Layout() {
                 {initials}
               </AvatarFallback>
             </Avatar>
+            <button
+              type="button"
+              onClick={handleLogout}
+              aria-label="Sign out"
+              data-ocid="layout.logout_button"
+              className={cn(
+                "flex size-8 items-center justify-center rounded-md border border-primary/60",
+                "font-heading text-foreground",
+                "transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
+              )}
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+            </button>
           </div>
         </div>
       </header>

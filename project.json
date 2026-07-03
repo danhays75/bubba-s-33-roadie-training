@@ -1,17 +1,19 @@
 {
-  "overview": "Bubba's 33 Roadie Training app with an optional subtitle field on library recipe items, editable in admin and shown under the title on the recipe card.",
+  "overview": "Bubba's 33 Roadie Training — a position-based training library with admin tools for managing categories, items, and detail fields, plus a bulk import tool for creating many entries at once from a JSON blob.",
   "features": [
-    "Optional subtitle field on library items",
-    "Subtitle input in the admin item editor",
-    "Subtitle shown below the title on the recipe card, smaller and muted",
-    "Existing items keep working without a subtitle"
+    "Per-position Library admin page with categories and items",
+    "Manual create/edit/delete for categories and items with per-parent sort ordering",
+    "Detail fields with label and value per item, plus tags, seasonal flag, and notes",
+    "Admin-only bulk import tool to paste JSON and create many categories and items at once",
+    "Dark Bubba's 33 roadhouse theme with red, navy, gold, and sage accents"
   ],
   "category": "productivity",
   "tags": [
+    "training",
     "library",
-    "recipes",
     "admin",
-    "subtitle"
+    "bulk-import",
+    "bubbas-33"
   ],
-  "last_updated": "2026-07-03T01:11:07.376Z"
+  "last_updated": "2026-07-03T13:28:34.499Z"
 }

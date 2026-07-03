@@ -1766,6 +1766,9 @@ video {
 .min-h-4 {
   min-height: 1rem;
 }
+.min-h-48 {
+  min-height: 12rem;
+}
 .min-h-\[44px\] {
   min-height: 44px;
 }
@@ -2625,6 +2628,9 @@ video {
 }
 .align-middle {
   vertical-align: middle;
+}
+.align-text-bottom {
+  vertical-align: text-bottom;
 }
 .font-body {
   font-family: var(--font-body), sans-serif;
@@ -4550,6 +4556,10 @@ video {
 
   .sm\:w-32 {
     width: 8rem;
+  }
+
+  .sm\:max-w-2xl {
+    max-width: 42rem;
   }
 
   .sm\:max-w-lg {

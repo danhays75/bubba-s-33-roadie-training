@@ -1,3 +1,4 @@
+import { BulkImportDialog } from "@/components/admin/library/BulkImportDialog";
 import { CategoryList } from "@/components/admin/library/CategoryList";
 import {
   ItemListItem,
@@ -14,7 +15,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
 import type { LibraryItem } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Lock, Package, Plus } from "lucide-react";
+import { ArrowLeft, BookOpen, Lock, Package, Plus, Upload } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { ReactElement } from "react";
 
@@ -52,6 +53,7 @@ export function AdminLibraryManager({
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
+  const [importOpen, setImportOpen] = useState(false);
 
   const isAdmin = profile?.role === "admin";
 
@@ -103,7 +105,7 @@ export function AdminLibraryManager({
 
       {/* Header */}
       <header
-        className="mt-3 flex items-center gap-2"
+        className="mt-3 flex flex-wrap items-center gap-2"
         data-ocid="library.admin.manager.header"
       >
         <BookOpen className="size-6 text-primary" aria-hidden />
@@ -113,6 +115,16 @@ export function AdminLibraryManager({
         >
           {position ? `${position.name} library` : "Manage library"}
         </h1>
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-auto"
+          onClick={() => setImportOpen(true)}
+          data-ocid="library.admin.manager.import_button"
+        >
+          <Upload />
+          Import
+        </Button>
       </header>
       <p className="mt-1.5 font-body text-sm text-muted-foreground">
         Manage the categories and items in this position&rsquo;s training
@@ -131,6 +143,13 @@ export function AdminLibraryManager({
 
         <ItemsPane positionId={positionId} categoryId={selectedCategoryId} />
       </div>
+
+      <BulkImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        positionId={positionId}
+        existingCategories={orderedCategories}
+      />
     </div>
   );
 }
