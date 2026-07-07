@@ -7,6 +7,17 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface Task {
+    id: bigint;
+    completionDate?: string;
+    assignedTo?: Principal;
+    sortOrder: bigint;
+    done: boolean;
+    text: string;
+    section?: string;
+    notes?: string;
+    phaseId: bigint;
+}
 export type Result__1 = {
     __kind__: "ok";
     ok: null;
@@ -14,6 +25,10 @@ export type Result__1 = {
     __kind__: "err";
     err: Error_;
 };
+export interface NsoImportInput {
+    moduleName: string;
+    phases: Array<NsoImportPhase>;
+}
 export type Error_ = {
     __kind__: "FrontendOriginsNotConfigured";
     FrontendOriginsNotConfigured: null;
@@ -58,6 +73,11 @@ export type Error_ = {
         expected: Array<string>;
     };
 };
+export interface Phase {
+    id: bigint;
+    sortOrder: bigint;
+    name: string;
+}
 export interface DetailField {
     value: string;
     fieldLabel: string;
@@ -77,6 +97,20 @@ export interface PositionAssignment {
     status: AssignmentStatus;
     userId: Principal;
     positionId: bigint;
+}
+export interface NsoImportTask {
+    text: string;
+    section?: string;
+    notes?: string;
+}
+export interface NsoImportSummary {
+    phasesCreated: bigint;
+    phasesReused: bigint;
+    tasksAdded: bigint;
+}
+export interface NsoImportPhase {
+    tasks: Array<NsoImportTask>;
+    name: string;
 }
 export interface Cell {
     value: Value;
@@ -141,15 +175,23 @@ export enum UserRole {
     user = "user",
     guest = "guest"
 }
+export enum Variant_up_down {
+    up = "up",
+    down = "down"
+}
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignPosition(userId: Principal, positionId: bigint): Promise<PositionAssignment>;
     createCategory(positionId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
     createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean): Promise<LibraryItem>;
     createMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
+    createNsoPhase(name: string): Promise<Phase>;
+    createNsoTask(phaseId: bigint, text: string, section: string | null, assignedTo: Principal | null): Promise<Task>;
     createPosition(name: string, description: string | null, coverPhoto: string | null): Promise<Position>;
     deleteCategory(categoryId: bigint): Promise<void>;
     deleteItem(itemId: bigint): Promise<void>;
+    deleteNsoPhase(id: bigint): Promise<void>;
+    deleteNsoTask(id: bigint): Promise<void>;
     deletePosition(id: bigint): Promise<void>;
     execute(qJson: string): Promise<Result>;
     getAllPositions(): Promise<Array<Position>>;
@@ -161,20 +203,37 @@ export interface backendInterface {
     getItemsByCategory(categoryId: bigint): Promise<Array<LibraryItem>>;
     getMyAssignments(): Promise<Array<PositionAssignment>>;
     getMyProfile(): Promise<UserProfile | null>;
+    getNsoAssignableUsers(): Promise<Array<UserProfile>>;
+    getNsoOverallProgress(): Promise<{
+        doneCount: bigint;
+        totalCount: bigint;
+    }>;
+    getNsoPhase(id: bigint): Promise<Phase | null>;
+    getNsoPhases(): Promise<Array<Phase>>;
+    getNsoTask(id: bigint): Promise<Task | null>;
+    getNsoTasksByPhase(phaseId: bigint): Promise<Array<Task>>;
     getPosition(id: bigint): Promise<Position | null>;
     getUserAssignments(userId: Principal): Promise<Array<PositionAssignment>>;
     getUserRole(userId: Principal): Promise<Role | null>;
+    importNsoTasks(input: NsoImportInput): Promise<NsoImportSummary>;
     isCallerAdmin(): Promise<boolean>;
     reorderCategories(positionId: bigint, orderedCategoryIds: Array<bigint>): Promise<Array<Category>>;
     reorderItems(categoryId: bigint, orderedItemIds: Array<bigint>): Promise<Array<LibraryItem>>;
+    reorderNsoPhases(id: bigint, direction: Variant_up_down): Promise<void>;
+    reorderNsoTasks(id: bigint, direction: Variant_up_down): Promise<void>;
     reorderPositions(orderedIds: Array<bigint>): Promise<Array<Position>>;
     schema(): Promise<string>;
     searchLibrary(positionId: bigint, searchText: string): Promise<Array<LibraryItem>>;
     setAssignmentStatus(userId: Principal, positionId: bigint, status: AssignmentStatus): Promise<PositionAssignment>;
+    setNsoTaskAssignment(id: bigint, assignedTo: Principal | null): Promise<void>;
+    setNsoTaskCompletionDate(id: bigint, completionDate: string | null): Promise<void>;
     setUserRole(userId: Principal, role: Role): Promise<UserProfile>;
+    toggleNsoTask(id: bigint, done: boolean, completionDate: string | null): Promise<void>;
     unassignPosition(userId: Principal, positionId: bigint): Promise<void>;
     updateCategory(categoryId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
     updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean): Promise<LibraryItem>;
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
+    updateNsoPhase(id: bigint, name: string): Promise<void>;
+    updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;
     updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null): Promise<Position>;
 }

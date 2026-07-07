@@ -1,19 +1,22 @@
 {
-  "overview": "Bubba's 33 Roadie Training — a position-based training library with admin tools for managing categories, items, and detail fields, plus a bulk import tool for creating many entries at once from a JSON blob.",
+  "overview": "A manager-only New Store Opening checklist and progress tracker for the Bubba's 33 management team, added alongside the existing roadie position training libraries.",
   "features": [
-    "Per-position Library admin page with categories and items",
-    "Manual create/edit/delete for categories and items with per-parent sort ordering",
-    "Detail fields with label and value per item, plus tags, seasonal flag, and notes",
-    "Admin-only bulk import tool to paste JSON and create many categories and items at once",
-    "Dark Bubba's 33 roadhouse theme with red, navy, gold, and sage accents"
+    "Manager/Admin-only New Store Opening tracker in the top nav",
+    "Ordered phases with collapsible sections and red progress bars",
+    "Task rows with checkboxes, assign-to-manager, and editable completion dates",
+    "Overall progress header across all phases",
+    "Immediate save when a task is checked",
+    "Add, edit, reorder, and delete phases and tasks",
+    "Bulk import tasks from pasted JSON with a summary",
+    "Dark Bubba's 33 theme, mobile-friendly"
   ],
   "category": "productivity",
   "tags": [
-    "training",
-    "library",
-    "admin",
-    "bulk-import",
+    "checklist",
+    "tracker",
+    "manager-tools",
+    "new-store-opening",
     "bubbas-33"
   ],
-  "last_updated": "2026-07-03T13:28:34.499Z"
+  "last_updated": "2026-07-07T15:43:05.995Z"
 }

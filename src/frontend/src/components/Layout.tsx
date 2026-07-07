@@ -25,6 +25,8 @@ export function Layout() {
 
   const initials = getInitials(profile?.name, principal);
   const isAdmin = profile?.role === "admin";
+  const isManager = profile?.role === "manager";
+  const canOpenNewStore = isAdmin || isManager;
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -43,6 +45,23 @@ export function Layout() {
             Bubba&rsquo;s 33
           </Link>
           <div className="flex items-center gap-3">
+            {canOpenNewStore && (
+              <Link
+                to="/new-store-opening"
+                className={cn(
+                  "rounded-md border border-primary/60 px-3 py-1.5",
+                  "font-heading text-xs uppercase tracking-wide text-foreground",
+                  "transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
+                )}
+                activeProps={{
+                  className: "bg-primary text-primary-foreground",
+                }}
+                data-ocid="layout.new_store_opening_link"
+              >
+                New Store Opening
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 to="/admin"

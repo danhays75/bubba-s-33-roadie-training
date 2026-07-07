@@ -48,6 +48,25 @@ export interface LibraryItem {
   'photo' : [] | [string],
   'subtitle' : [] | [string],
 }
+export interface NsoImportInput {
+  'moduleName' : string,
+  'phases' : Array<NsoImportPhase>,
+}
+export interface NsoImportPhase {
+  'tasks' : Array<NsoImportTask>,
+  'name' : string,
+}
+export interface NsoImportSummary {
+  'phasesCreated' : bigint,
+  'phasesReused' : bigint,
+  'tasksAdded' : bigint,
+}
+export interface NsoImportTask {
+  'text' : string,
+  'section' : [] | [string],
+  'notes' : [] | [string],
+}
+export interface Phase { 'id' : bigint, 'sortOrder' : bigint, 'name' : string }
 export interface Position {
   'id' : bigint,
   'sortOrder' : bigint,
@@ -67,6 +86,17 @@ export type Role = { 'manager' : null } |
   { 'admin' : null } |
   { 'trainee' : null } |
   { 'trainer' : null };
+export interface Task {
+  'id' : bigint,
+  'completionDate' : [] | [string],
+  'assignedTo' : [] | [Principal],
+  'sortOrder' : bigint,
+  'done' : boolean,
+  'text' : string,
+  'section' : [] | [string],
+  'notes' : [] | [string],
+  'phaseId' : bigint,
+}
 export interface UserProfile {
   'id' : Principal,
   'name' : string,
@@ -103,7 +133,11 @@ export interface _SERVICE {
   '__items' : ActorMethod<[[] | [bigint], [] | [bigint]], Array<LibraryItem>>,
   '__nextCategoryId' : ActorMethod<[], any>,
   '__nextItemId' : ActorMethod<[], any>,
+  '__nextPhaseId' : ActorMethod<[], any>,
   '__nextPositionId' : ActorMethod<[], any>,
+  '__nextTaskId' : ActorMethod<[], any>,
+  '__nsoPhases' : ActorMethod<[[] | [bigint], [] | [bigint]], Array<Phase>>,
+  '__nsoTasks' : ActorMethod<[[] | [bigint], [] | [bigint]], Array<Task>>,
   '__positions' : ActorMethod<[[] | [bigint], [] | [bigint]], Array<Position>>,
   '__profiles' : ActorMethod<
     [[] | [Principal], [] | [bigint]],
@@ -147,12 +181,19 @@ export interface _SERVICE {
     LibraryItem
   >,
   'createMyProfile' : ActorMethod<[string, string], UserProfile>,
+  'createNsoPhase' : ActorMethod<[string], Phase>,
+  'createNsoTask' : ActorMethod<
+    [bigint, string, [] | [string], [] | [Principal]],
+    Task
+  >,
   'createPosition' : ActorMethod<
     [string, [] | [string], [] | [string]],
     Position
   >,
   'deleteCategory' : ActorMethod<[bigint], undefined>,
   'deleteItem' : ActorMethod<[bigint], undefined>,
+  'deleteNsoPhase' : ActorMethod<[bigint], undefined>,
+  'deleteNsoTask' : ActorMethod<[bigint], undefined>,
   'deletePosition' : ActorMethod<[bigint], undefined>,
   'execute' : ActorMethod<[string], Result>,
   'getAllPositions' : ActorMethod<[], Array<Position>>,
@@ -164,12 +205,30 @@ export interface _SERVICE {
   'getItemsByCategory' : ActorMethod<[bigint], Array<LibraryItem>>,
   'getMyAssignments' : ActorMethod<[], Array<PositionAssignment>>,
   'getMyProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getNsoAssignableUsers' : ActorMethod<[], Array<UserProfile>>,
+  'getNsoOverallProgress' : ActorMethod<
+    [],
+    { 'doneCount' : bigint, 'totalCount' : bigint }
+  >,
+  'getNsoPhase' : ActorMethod<[bigint], [] | [Phase]>,
+  'getNsoPhases' : ActorMethod<[], Array<Phase>>,
+  'getNsoTask' : ActorMethod<[bigint], [] | [Task]>,
+  'getNsoTasksByPhase' : ActorMethod<[bigint], Array<Task>>,
   'getPosition' : ActorMethod<[bigint], [] | [Position]>,
   'getUserAssignments' : ActorMethod<[Principal], Array<PositionAssignment>>,
   'getUserRole' : ActorMethod<[Principal], [] | [Role]>,
+  'importNsoTasks' : ActorMethod<[NsoImportInput], NsoImportSummary>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'reorderCategories' : ActorMethod<[bigint, Array<bigint>], Array<Category>>,
   'reorderItems' : ActorMethod<[bigint, Array<bigint>], Array<LibraryItem>>,
+  'reorderNsoPhases' : ActorMethod<
+    [bigint, { 'up' : null } | { 'down' : null }],
+    undefined
+  >,
+  'reorderNsoTasks' : ActorMethod<
+    [bigint, { 'up' : null } | { 'down' : null }],
+    undefined
+  >,
   'reorderPositions' : ActorMethod<[Array<bigint>], Array<Position>>,
   'schema' : ActorMethod<[], string>,
   'searchLibrary' : ActorMethod<[bigint, string], Array<LibraryItem>>,
@@ -177,7 +236,10 @@ export interface _SERVICE {
     [Principal, bigint, AssignmentStatus],
     PositionAssignment
   >,
+  'setNsoTaskAssignment' : ActorMethod<[bigint, [] | [Principal]], undefined>,
+  'setNsoTaskCompletionDate' : ActorMethod<[bigint, [] | [string]], undefined>,
   'setUserRole' : ActorMethod<[Principal, Role], UserProfile>,
+  'toggleNsoTask' : ActorMethod<[bigint, boolean, [] | [string]], undefined>,
   'unassignPosition' : ActorMethod<[Principal, bigint], undefined>,
   'updateCategory' : ActorMethod<[bigint, string, [] | [string]], Category>,
   'updateItem' : ActorMethod<
@@ -194,6 +256,19 @@ export interface _SERVICE {
     LibraryItem
   >,
   'updateMyProfile' : ActorMethod<[string, string], UserProfile>,
+  'updateNsoPhase' : ActorMethod<[bigint, string], undefined>,
+  'updateNsoTask' : ActorMethod<
+    [
+      bigint,
+      string,
+      [] | [string],
+      boolean,
+      [] | [Principal],
+      [] | [string],
+      [] | [string],
+    ],
+    undefined
+  >,
   'updatePosition' : ActorMethod<
     [bigint, string, [] | [string], [] | [string]],
     Position

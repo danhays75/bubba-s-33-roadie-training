@@ -13,7 +13,7 @@ import type {
 } from "@/types/foundation";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Library, Search } from "lucide-react";
+import { ArrowLeft, BookOpen, Heart, Library, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ReactElement } from "react";
 
@@ -149,6 +149,14 @@ function LibrarySection({
     [categoriesQuery.data],
   );
 
+  const heartCategory = useMemo(
+    () =>
+      (categoriesQuery.data ?? []).find(
+        (c) => c.name === "Service with HEART",
+      ) ?? null,
+    [categoriesQuery.data],
+  );
+
   return (
     <section className="mt-8" data-ocid="library.section">
       <div className="flex items-center gap-2">
@@ -160,6 +168,13 @@ function LibrarySection({
           {positionName ? `${positionName} Library` : "Library"}
         </h2>
       </div>
+
+      {heartCategory ? (
+        <HeartEntryButton
+          positionId={positionId}
+          categoryId={heartCategory.id}
+        />
+      ) : null}
 
       <SearchBox value={searchText} onChange={setSearchText} />
 
@@ -177,6 +192,49 @@ function LibrarySection({
         />
       )}
     </section>
+  );
+}
+
+/**
+ * Prominent "Service with HEART" entry button. Shown only when the
+ * position has a category named exactly "Service with HEART". Links to
+ * the branded showcase route /position/$id/heart/$categoryId.
+ */
+function HeartEntryButton({
+  positionId,
+  categoryId,
+}: {
+  positionId: string;
+  categoryId: string;
+}): ReactElement {
+  const to = `/position/${positionId}/heart/${categoryId}`;
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "mt-4 flex items-center gap-3 rounded-md bg-primary px-4 py-3",
+        "transition-smooth hover:bg-primary-hover",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+      )}
+      data-ocid="heart.entry_button"
+      aria-label="Open Service with HEART showcase"
+    >
+      <Heart className="size-5 text-primary-foreground" aria-hidden />
+      <span className="flex flex-1 flex-col">
+        <span className="font-display text-lg uppercase leading-none tracking-wide text-primary-foreground">
+          Service with HEART
+        </span>
+        <span className="mt-0.5 font-body text-xs text-primary-foreground/80">
+          The five pillars of legendary service
+        </span>
+      </span>
+      <span
+        className="font-heading text-xs uppercase tracking-wider text-primary-foreground/80"
+        aria-hidden
+      >
+        Open
+      </span>
+    </Link>
   );
 }
 

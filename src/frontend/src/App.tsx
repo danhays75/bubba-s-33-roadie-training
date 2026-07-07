@@ -17,7 +17,9 @@ import { AdminPositionLibraryRoute } from "./routes/admin.positions.$positionId.
 import { AdminPositionLibraryItemEditorRoute } from "./routes/admin.positions.$positionId.library.$categoryId.item.$itemId";
 import { AdminUsersPage } from "./routes/admin.users";
 import { Home } from "./routes/index";
+import { NsoPage } from "./routes/new-store-opening";
 import { PositionDetailRoute } from "./routes/position.$id";
+import { HeartShowcaseRoute } from "./routes/position.$id.heart.$categoryId";
 import { CategoryDetailRoute } from "./routes/position.$id.library.$categoryId";
 import { ItemDetailRoute } from "./routes/position.$id.library.$categoryId.item.$itemId";
 
@@ -122,6 +124,22 @@ const categoryDetailRoute = createRoute({
   component: CategoryDetailRoute,
 });
 
+// Per-position "Service with HEART" branded showcase. Additive route —
+// reuses the existing Library data model and hooks (no backend changes).
+const heartShowcaseRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/position/$id/heart/$categoryId",
+  component: HeartShowcaseRoute,
+});
+
+// New Store Opening tracker — additive top-level route (own page under the
+// Layout nav, NOT nested under /admin). Manager/Admin gated inside NsoPage.
+const nsoRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/new-store-opening",
+  component: NsoPage,
+});
+
 const itemDetailRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/library/$categoryId/item/$itemId",
@@ -174,7 +192,9 @@ const routeTree = RootRoute.addChildren([
   homeRoute,
   positionDetailRoute,
   categoryDetailRoute,
+  heartShowcaseRoute,
   itemDetailRoute,
+  nsoRoute,
   adminRoute.addChildren([
     adminIndexRoute,
     adminPositionsRoute,

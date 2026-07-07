@@ -40,6 +40,22 @@ export const LibraryItem = IDL.Record({
   'photo' : IDL.Opt(IDL.Text),
   'subtitle' : IDL.Opt(IDL.Text),
 });
+export const Phase = IDL.Record({
+  'id' : IDL.Nat,
+  'sortOrder' : IDL.Nat,
+  'name' : IDL.Text,
+});
+export const Task = IDL.Record({
+  'id' : IDL.Nat,
+  'completionDate' : IDL.Opt(IDL.Text),
+  'assignedTo' : IDL.Opt(IDL.Principal),
+  'sortOrder' : IDL.Nat,
+  'done' : IDL.Bool,
+  'text' : IDL.Text,
+  'section' : IDL.Opt(IDL.Text),
+  'notes' : IDL.Opt(IDL.Text),
+  'phaseId' : IDL.Nat,
+});
 export const Position = IDL.Record({
   'id' : IDL.Nat,
   'sortOrder' : IDL.Nat,
@@ -110,6 +126,24 @@ export const Result = IDL.Record({
   'hasMore' : IDL.Bool,
   'rows' : IDL.Vec(IDL.Vec(Cell)),
 });
+export const NsoImportTask = IDL.Record({
+  'text' : IDL.Text,
+  'section' : IDL.Opt(IDL.Text),
+  'notes' : IDL.Opt(IDL.Text),
+});
+export const NsoImportPhase = IDL.Record({
+  'tasks' : IDL.Vec(NsoImportTask),
+  'name' : IDL.Text,
+});
+export const NsoImportInput = IDL.Record({
+  'moduleName' : IDL.Text,
+  'phases' : IDL.Vec(NsoImportPhase),
+});
+export const NsoImportSummary = IDL.Record({
+  'phasesCreated' : IDL.Nat,
+  'phasesReused' : IDL.Nat,
+  'tasksAdded' : IDL.Nat,
+});
 
 export const idlService = IDL.Service({
   '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -130,7 +164,19 @@ export const idlService = IDL.Service({
     ),
   '__nextCategoryId' : IDL.Func([], [IDL.Reserved], ['query']),
   '__nextItemId' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__nextPhaseId' : IDL.Func([], [IDL.Reserved], ['query']),
   '__nextPositionId' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__nextTaskId' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__nsoPhases' : IDL.Func(
+      [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
+      [IDL.Vec(Phase)],
+      ['query'],
+    ),
+  '__nsoTasks' : IDL.Func(
+      [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
+      [IDL.Vec(Task)],
+      ['query'],
+    ),
   '__positions' : IDL.Func(
       [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
       [IDL.Vec(Position)],
@@ -196,6 +242,12 @@ export const idlService = IDL.Service({
       [],
     ),
   'createMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
+  'createNsoPhase' : IDL.Func([IDL.Text], [Phase], []),
+  'createNsoTask' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Principal)],
+      [Task],
+      [],
+    ),
   'createPosition' : IDL.Func(
       [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [Position],
@@ -203,6 +255,8 @@ export const idlService = IDL.Service({
     ),
   'deleteCategory' : IDL.Func([IDL.Nat], [], []),
   'deleteItem' : IDL.Func([IDL.Nat], [], []),
+  'deleteNsoPhase' : IDL.Func([IDL.Nat], [], []),
+  'deleteNsoTask' : IDL.Func([IDL.Nat], [], []),
   'deletePosition' : IDL.Func([IDL.Nat], [], []),
   'execute' : IDL.Func([IDL.Text], [Result], ['query']),
   'getAllPositions' : IDL.Func([], [IDL.Vec(Position)], ['query']),
@@ -218,6 +272,16 @@ export const idlService = IDL.Service({
   'getItemsByCategory' : IDL.Func([IDL.Nat], [IDL.Vec(LibraryItem)], ['query']),
   'getMyAssignments' : IDL.Func([], [IDL.Vec(PositionAssignment)], ['query']),
   'getMyProfile' : IDL.Func([], [IDL.Opt(UserProfile)], []),
+  'getNsoAssignableUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+  'getNsoOverallProgress' : IDL.Func(
+      [],
+      [IDL.Record({ 'doneCount' : IDL.Nat, 'totalCount' : IDL.Nat })],
+      ['query'],
+    ),
+  'getNsoPhase' : IDL.Func([IDL.Nat], [IDL.Opt(Phase)], ['query']),
+  'getNsoPhases' : IDL.Func([], [IDL.Vec(Phase)], ['query']),
+  'getNsoTask' : IDL.Func([IDL.Nat], [IDL.Opt(Task)], ['query']),
+  'getNsoTasksByPhase' : IDL.Func([IDL.Nat], [IDL.Vec(Task)], ['query']),
   'getPosition' : IDL.Func([IDL.Nat], [IDL.Opt(Position)], ['query']),
   'getUserAssignments' : IDL.Func(
       [IDL.Principal],
@@ -225,6 +289,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'getUserRole' : IDL.Func([IDL.Principal], [IDL.Opt(Role)], []),
+  'importNsoTasks' : IDL.Func([NsoImportInput], [NsoImportSummary], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'reorderCategories' : IDL.Func(
       [IDL.Nat, IDL.Vec(IDL.Nat)],
@@ -234,6 +299,16 @@ export const idlService = IDL.Service({
   'reorderItems' : IDL.Func(
       [IDL.Nat, IDL.Vec(IDL.Nat)],
       [IDL.Vec(LibraryItem)],
+      [],
+    ),
+  'reorderNsoPhases' : IDL.Func(
+      [IDL.Nat, IDL.Variant({ 'up' : IDL.Null, 'down' : IDL.Null })],
+      [],
+      [],
+    ),
+  'reorderNsoTasks' : IDL.Func(
+      [IDL.Nat, IDL.Variant({ 'up' : IDL.Null, 'down' : IDL.Null })],
+      [],
       [],
     ),
   'reorderPositions' : IDL.Func([IDL.Vec(IDL.Nat)], [IDL.Vec(Position)], []),
@@ -248,7 +323,10 @@ export const idlService = IDL.Service({
       [PositionAssignment],
       [],
     ),
+  'setNsoTaskAssignment' : IDL.Func([IDL.Nat, IDL.Opt(IDL.Principal)], [], []),
+  'setNsoTaskCompletionDate' : IDL.Func([IDL.Nat, IDL.Opt(IDL.Text)], [], []),
   'setUserRole' : IDL.Func([IDL.Principal, Role], [UserProfile], []),
+  'toggleNsoTask' : IDL.Func([IDL.Nat, IDL.Bool, IDL.Opt(IDL.Text)], [], []),
   'unassignPosition' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
   'updateCategory' : IDL.Func(
       [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
@@ -270,6 +348,20 @@ export const idlService = IDL.Service({
       [],
     ),
   'updateMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
+  'updateNsoPhase' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+  'updateNsoTask' : IDL.Func(
+      [
+        IDL.Nat,
+        IDL.Text,
+        IDL.Opt(IDL.Text),
+        IDL.Bool,
+        IDL.Opt(IDL.Principal),
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+      ],
+      [],
+      [],
+    ),
   'updatePosition' : IDL.Func(
       [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [Position],
@@ -311,6 +403,22 @@ export const idlFactory = ({ IDL }) => {
     'details' : IDL.Vec(DetailField),
     'photo' : IDL.Opt(IDL.Text),
     'subtitle' : IDL.Opt(IDL.Text),
+  });
+  const Phase = IDL.Record({
+    'id' : IDL.Nat,
+    'sortOrder' : IDL.Nat,
+    'name' : IDL.Text,
+  });
+  const Task = IDL.Record({
+    'id' : IDL.Nat,
+    'completionDate' : IDL.Opt(IDL.Text),
+    'assignedTo' : IDL.Opt(IDL.Principal),
+    'sortOrder' : IDL.Nat,
+    'done' : IDL.Bool,
+    'text' : IDL.Text,
+    'section' : IDL.Opt(IDL.Text),
+    'notes' : IDL.Opt(IDL.Text),
+    'phaseId' : IDL.Nat,
   });
   const Position = IDL.Record({
     'id' : IDL.Nat,
@@ -382,6 +490,24 @@ export const idlFactory = ({ IDL }) => {
     'hasMore' : IDL.Bool,
     'rows' : IDL.Vec(IDL.Vec(Cell)),
   });
+  const NsoImportTask = IDL.Record({
+    'text' : IDL.Text,
+    'section' : IDL.Opt(IDL.Text),
+    'notes' : IDL.Opt(IDL.Text),
+  });
+  const NsoImportPhase = IDL.Record({
+    'tasks' : IDL.Vec(NsoImportTask),
+    'name' : IDL.Text,
+  });
+  const NsoImportInput = IDL.Record({
+    'moduleName' : IDL.Text,
+    'phases' : IDL.Vec(NsoImportPhase),
+  });
+  const NsoImportSummary = IDL.Record({
+    'phasesCreated' : IDL.Nat,
+    'phasesReused' : IDL.Nat,
+    'tasksAdded' : IDL.Nat,
+  });
   
   return IDL.Service({
     '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -402,7 +528,19 @@ export const idlFactory = ({ IDL }) => {
       ),
     '__nextCategoryId' : IDL.Func([], [IDL.Reserved], ['query']),
     '__nextItemId' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__nextPhaseId' : IDL.Func([], [IDL.Reserved], ['query']),
     '__nextPositionId' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__nextTaskId' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__nsoPhases' : IDL.Func(
+        [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
+        [IDL.Vec(Phase)],
+        ['query'],
+      ),
+    '__nsoTasks' : IDL.Func(
+        [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
+        [IDL.Vec(Task)],
+        ['query'],
+      ),
     '__positions' : IDL.Func(
         [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
         [IDL.Vec(Position)],
@@ -468,6 +606,12 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'createMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
+    'createNsoPhase' : IDL.Func([IDL.Text], [Phase], []),
+    'createNsoTask' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Principal)],
+        [Task],
+        [],
+      ),
     'createPosition' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [Position],
@@ -475,6 +619,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     'deleteCategory' : IDL.Func([IDL.Nat], [], []),
     'deleteItem' : IDL.Func([IDL.Nat], [], []),
+    'deleteNsoPhase' : IDL.Func([IDL.Nat], [], []),
+    'deleteNsoTask' : IDL.Func([IDL.Nat], [], []),
     'deletePosition' : IDL.Func([IDL.Nat], [], []),
     'execute' : IDL.Func([IDL.Text], [Result], ['query']),
     'getAllPositions' : IDL.Func([], [IDL.Vec(Position)], ['query']),
@@ -494,6 +640,16 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getMyAssignments' : IDL.Func([], [IDL.Vec(PositionAssignment)], ['query']),
     'getMyProfile' : IDL.Func([], [IDL.Opt(UserProfile)], []),
+    'getNsoAssignableUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'getNsoOverallProgress' : IDL.Func(
+        [],
+        [IDL.Record({ 'doneCount' : IDL.Nat, 'totalCount' : IDL.Nat })],
+        ['query'],
+      ),
+    'getNsoPhase' : IDL.Func([IDL.Nat], [IDL.Opt(Phase)], ['query']),
+    'getNsoPhases' : IDL.Func([], [IDL.Vec(Phase)], ['query']),
+    'getNsoTask' : IDL.Func([IDL.Nat], [IDL.Opt(Task)], ['query']),
+    'getNsoTasksByPhase' : IDL.Func([IDL.Nat], [IDL.Vec(Task)], ['query']),
     'getPosition' : IDL.Func([IDL.Nat], [IDL.Opt(Position)], ['query']),
     'getUserAssignments' : IDL.Func(
         [IDL.Principal],
@@ -501,6 +657,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'getUserRole' : IDL.Func([IDL.Principal], [IDL.Opt(Role)], []),
+    'importNsoTasks' : IDL.Func([NsoImportInput], [NsoImportSummary], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'reorderCategories' : IDL.Func(
         [IDL.Nat, IDL.Vec(IDL.Nat)],
@@ -510,6 +667,16 @@ export const idlFactory = ({ IDL }) => {
     'reorderItems' : IDL.Func(
         [IDL.Nat, IDL.Vec(IDL.Nat)],
         [IDL.Vec(LibraryItem)],
+        [],
+      ),
+    'reorderNsoPhases' : IDL.Func(
+        [IDL.Nat, IDL.Variant({ 'up' : IDL.Null, 'down' : IDL.Null })],
+        [],
+        [],
+      ),
+    'reorderNsoTasks' : IDL.Func(
+        [IDL.Nat, IDL.Variant({ 'up' : IDL.Null, 'down' : IDL.Null })],
+        [],
         [],
       ),
     'reorderPositions' : IDL.Func([IDL.Vec(IDL.Nat)], [IDL.Vec(Position)], []),
@@ -524,7 +691,14 @@ export const idlFactory = ({ IDL }) => {
         [PositionAssignment],
         [],
       ),
+    'setNsoTaskAssignment' : IDL.Func(
+        [IDL.Nat, IDL.Opt(IDL.Principal)],
+        [],
+        [],
+      ),
+    'setNsoTaskCompletionDate' : IDL.Func([IDL.Nat, IDL.Opt(IDL.Text)], [], []),
     'setUserRole' : IDL.Func([IDL.Principal, Role], [UserProfile], []),
+    'toggleNsoTask' : IDL.Func([IDL.Nat, IDL.Bool, IDL.Opt(IDL.Text)], [], []),
     'unassignPosition' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
     'updateCategory' : IDL.Func(
         [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
@@ -546,6 +720,20 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'updateMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
+    'updateNsoPhase' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+    'updateNsoTask' : IDL.Func(
+        [
+          IDL.Nat,
+          IDL.Text,
+          IDL.Opt(IDL.Text),
+          IDL.Bool,
+          IDL.Opt(IDL.Principal),
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+        ],
+        [],
+        [],
+      ),
     'updatePosition' : IDL.Func(
         [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [Position],

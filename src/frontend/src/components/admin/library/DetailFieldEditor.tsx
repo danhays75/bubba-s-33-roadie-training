@@ -44,7 +44,7 @@ const QUILL_TOOLBAR = [
 const QUILL_FORMATS = ["bold", "italic", "underline", "list"];
 
 /** Max raw-HTML length stored in the backend DetailField.value. */
-const MAX_HTML_LENGTH = 500;
+const MAX_HTML_LENGTH = 5000;
 
 /**
  * Wraps a single ReactQuill editor and forces its `.ql-editor` + `.ql-container`
@@ -268,7 +268,7 @@ export function DetailFieldEditor({
                   placeholder="Label e.g. Rocks Ingredients"
                   aria-label={`Detail field ${index + 1} label`}
                   disabled={disabled}
-                  maxLength={80}
+                  maxLength={200}
                   autoComplete="off"
                   data-ocid={`library.admin.item.field.${index + 1}.label`}
                   className="font-heading text-xs uppercase tracking-wider"

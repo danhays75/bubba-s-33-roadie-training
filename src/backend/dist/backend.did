@@ -33,6 +33,18 @@ type UserProfile =
    role: Role;
    storeLocation: text;
  };
+type Task = 
+ record {
+   assignedTo: opt principal;
+   completionDate: opt text;
+   done: bool;
+   id: nat;
+   notes: opt text;
+   phaseId: nat;
+   section: opt text;
+   sortOrder: nat;
+   "text": text;
+ };
 type Role = 
  variant {
    admin;
@@ -63,6 +75,34 @@ type Position =
    id: nat;
    name: text;
    sortOrder: nat;
+ };
+type Phase = 
+ record {
+   id: nat;
+   name: text;
+   sortOrder: nat;
+ };
+type NsoImportTask = 
+ record {
+   notes: opt text;
+   section: opt text;
+   "text": text;
+ };
+type NsoImportSummary = 
+ record {
+   phasesCreated: nat;
+   phasesReused: nat;
+   tasksAdded: nat;
+ };
+type NsoImportPhase = 
+ record {
+   name: text;
+   tasks: vec NsoImportTask;
+ };
+type NsoImportInput = 
+ record {
+   moduleName: text;
+   phases: vec NsoImportPhase;
  };
 type LibraryItem = 
  record {
@@ -130,7 +170,11 @@ service : {
   __items: (io: opt nat, count: opt nat) -> (vec LibraryItem) query;
   __nextCategoryId: () -> (reserved) query;
   __nextItemId: () -> (reserved) query;
+  __nextPhaseId: () -> (reserved) query;
   __nextPositionId: () -> (reserved) query;
+  __nextTaskId: () -> (reserved) query;
+  __nsoPhases: (io: opt nat, count: opt nat) -> (vec Phase) query;
+  __nsoTasks: (io: opt nat, count: opt nat) -> (vec Task) query;
   __positions: (io: opt nat, count: opt nat) -> (vec Position) query;
   __profiles: (ko: opt principal, count: opt nat) ->
    (vec record {
@@ -158,10 +202,15 @@ service : {
    opt text, details: vec DetailField, notes: opt text, tags: vec text,
    seasonal: bool) -> (LibraryItem);
   createMyProfile: (name: text, storeLocation: text) -> (UserProfile);
+  createNsoPhase: (name: text) -> (Phase);
+  createNsoTask: (phaseId: nat, "text": text, section: opt text, assignedTo:
+   opt principal) -> (Task);
   createPosition: (name: text, description: opt text, coverPhoto:
    opt text) -> (Position);
   deleteCategory: (categoryId: nat) -> ();
   deleteItem: (itemId: nat) -> ();
+  deleteNsoPhase: (id: nat) -> ();
+  deleteNsoTask: (id: nat) -> ();
   deletePosition: (id: nat) -> ();
   execute: (qJson: text) -> (Result) query;
   getAllPositions: () -> (vec Position) query;
@@ -173,21 +222,43 @@ service : {
   getItemsByCategory: (categoryId: nat) -> (vec LibraryItem) query;
   getMyAssignments: () -> (vec PositionAssignment) query;
   getMyProfile: () -> (opt UserProfile);
+  getNsoAssignableUsers: () -> (vec UserProfile) query;
+  getNsoOverallProgress: () ->
+   (record {
+      doneCount: nat;
+      totalCount: nat;
+    }) query;
+  getNsoPhase: (id: nat) -> (opt Phase) query;
+  getNsoPhases: () -> (vec Phase) query;
+  getNsoTask: (id: nat) -> (opt Task) query;
+  getNsoTasksByPhase: (phaseId: nat) -> (vec Task) query;
   getPosition: (id: nat) -> (opt Position) query;
   getUserAssignments: (userId: principal) -> (vec PositionAssignment);
   getUserRole: (userId: principal) -> (opt Role);
+  importNsoTasks: (input: NsoImportInput) -> (NsoImportSummary);
   isCallerAdmin: () -> (bool) query;
   reorderCategories: (positionId: nat, orderedCategoryIds: vec nat) ->
    (vec Category);
   reorderItems: (categoryId: nat, orderedItemIds: vec nat) ->
    (vec LibraryItem);
+  reorderNsoPhases: (id: nat, direction: variant {
+                                           down;
+                                           up;
+                                         }) -> ();
+  reorderNsoTasks: (id: nat, direction: variant {
+                                          down;
+                                          up;
+                                        }) -> ();
   reorderPositions: (orderedIds: vec nat) -> (vec Position);
   schema: () -> (text) query;
   searchLibrary: (positionId: nat, searchText: text) ->
    (vec LibraryItem) query;
   setAssignmentStatus: (userId: principal, positionId: nat, status:
    AssignmentStatus) -> (PositionAssignment);
+  setNsoTaskAssignment: (id: nat, assignedTo: opt principal) -> ();
+  setNsoTaskCompletionDate: (id: nat, completionDate: opt text) -> ();
   setUserRole: (userId: principal, role: Role) -> (UserProfile);
+  toggleNsoTask: (id: nat, done: bool, completionDate: opt text) -> ();
   unassignPosition: (userId: principal, positionId: nat) -> ();
   updateCategory: (categoryId: nat, name: text, coverPhoto: opt text) ->
    (Category);
@@ -195,6 +266,10 @@ service : {
    details: vec DetailField, notes: opt text, tags: vec text, seasonal:
    bool) -> (LibraryItem);
   updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
+  updateNsoPhase: (id: nat, name: text) -> ();
+  updateNsoTask: (id: nat, "text": text, section: opt text, done: bool,
+   assignedTo: opt principal, completionDate: opt text, notes: opt text) ->
+   ();
   updatePosition: (id: nat, name: text, description: opt text, coverPhoto:
    opt text) -> (Position);
 }

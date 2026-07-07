@@ -8,13 +8,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import {
   makeDetailFieldId,
   useCreateCategory,
   useCreateItem,
+  useUpdateItem,
 } from "@/hooks/useLibrary";
-import type { Category, DetailField } from "@/types/foundation";
+import type { Category, DetailField, LibraryItem } from "@/types/foundation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,30 +26,44 @@ import { toast } from "sonner";
  * Bulk Import dialog — paste a JSON blob of categories + items and create
  * them in the currently-managed position's Library.
  *
- * Reuses the existing useCreateCategory / useCreateItem hooks (no new backend
- * endpoints). The JSON `position` field is ignored — import always targets
- * the position whose Library is currently being managed.
+ * Reuses the existing useCreateCategory / useCreateItem / useUpdateItem hooks
+ * (no new backend endpoints). The JSON `position` field is ignored — import
+ * always targets the position whose Library is currently being managed.
+ *
+ * Import mode (persists for the duration of the dialog session):
+ *   - "skip"   (default): items whose title already exists in the category
+ *               are left untouched and counted as skipped.
+ *   - "update": items whose title already exists are updated in place via
+ *               useUpdateItem — their detail fields, notes, tags, and seasonal
+ *               flag are replaced. The existing item's photo and subtitle are
+ *               passed through unchanged (backend updateItem overwrites photo,
+ *               so existing.photo must be supplied). sortOrder is preserved
+ *               automatically by the backend (not in the with-spread).
  *
  * Matching rules:
  *   - category: matched by name against the loaded categories for this
  *     position. Existing category ids are reused; new ones are created with
  *     coverPhoto: null (sort order assigned by the backend).
  *   - item: matched by title against the loaded items for that category.
- *     Existing items are SKIPPED and counted as skipped; new ones are created
- *     with photo: null (sort order assigned by the backend).
+ *     New items are created with subtitle: null and photo: null (sort order
+ *     assigned by the backend).
  *
- * Creation runs sequentially per category so returned ids are available
- * before that category's items are created. If any single create call fails,
- * the import stops and reports how many categories/items were created before
- * the failure.
+ * Creation/update runs sequentially per category so returned ids are available
+ * before that category's items are processed. If any single call fails, the
+ * import stops and reports how many categories/items were created/updated
+ * before the failure.
  *
  * On success: invalidates ['library-categories', positionId] and every
  * affected ['library-items', categoryId], shows a sonner toast + inline
- * summary, then closes the dialog and clears the textarea.
+ * summary distinguishing all four outcomes (created categories, updated items,
+ * created items, skipped items), then closes the dialog and clears the
+ * textarea.
  *
  * Styling mirrors CategoryFormDialog (Radix Dialog, dark Bubba's 33 theme,
  * red primary button, sonner toasts).
  */
+type ImportMode = "skip" | "update";
+
 export function BulkImportDialog({
   open,
   onOpenChange,
@@ -61,18 +77,22 @@ export function BulkImportDialog({
   existingCategories: Category[];
 }) {
   const [text, setText] = useState("");
+  const [importMode, setImportMode] = useState<ImportMode>("skip");
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
 
   const createCategory = useCreateCategory();
   const createItem = useCreateItem();
+  const updateItem = useUpdateItem();
   const queryClient = useQueryClient();
 
-  // Reset state whenever the dialog opens. Closing discards pasted text.
+  // Reset state whenever the dialog opens. Closing discards pasted text and
+  // resets the mode selector back to its default ("skip").
   useEffect(() => {
     if (open) {
       setText("");
+      setImportMode("skip");
       setError(null);
       setSummary(null);
       setProgress(null);
@@ -81,7 +101,10 @@ export function BulkImportDialog({
 
   const trimmed = text.trim();
   const importing =
-    createCategory.isPending || createItem.isPending || progress !== null;
+    createCategory.isPending ||
+    createItem.isPending ||
+    updateItem.isPending ||
+    progress !== null;
   const canSubmit = trimmed.length > 0 && !importing;
 
   async function handleImport(e: React.FormEvent) {
@@ -111,6 +134,7 @@ export function BulkImportDialog({
     // --- Execute -----------------------------------------------------------
     let createdCategories = 0;
     let createdItems = 0;
+    let updatedItems = 0;
     let skippedItems = 0;
 
     // Seed the name → id map from the currently-loaded categories so we
@@ -141,14 +165,47 @@ export function BulkImportDialog({
 
         // Load existing items for this category (from cache or fetch).
         const existingItems = await loadItemsForCategory(categoryId);
-        const existingTitles = new Set(existingItems.map((i) => i.title));
+        const existingByTitle = new Map<string, LibraryItem>(
+          existingItems.map((i) => [i.title, i]),
+        );
 
         for (const item of cat.items) {
-          if (existingTitles.has(item.title)) {
-            skippedItems += 1;
+          const existing = existingByTitle.get(item.title);
+
+          if (existing) {
+            if (importMode === "skip") {
+              skippedItems += 1;
+              continue;
+            }
+
+            // Update mode: replace detail fields, notes, tags, and seasonal
+            // flag. Pass existing.photo and existing.subtitle through so the
+            // backend (which overwrites both) preserves them unchanged.
+            // sortOrder is preserved automatically by the backend.
+            setProgress(`Updating item: ${item.title} (${cat.name})`);
+
+            const details: DetailField[] = item.fields.map((f) => ({
+              id: makeDetailFieldId(),
+              fieldLabel: f.label,
+              value: f.value,
+            }));
+
+            await updateItem.mutateAsync({
+              itemId: existing.id,
+              categoryId,
+              title: existing.title,
+              subtitle: existing.subtitle,
+              photo: existing.photo,
+              details,
+              notes: item.notes,
+              tags: item.tags,
+              seasonal: item.seasonal,
+            });
+            updatedItems += 1;
             continue;
           }
 
+          // New item — create as usual with subtitle: null and photo: null.
           setProgress(`Importing item: ${item.title} (${cat.name})`);
 
           const details: DetailField[] = item.fields.map((f) => ({
@@ -167,7 +224,18 @@ export function BulkImportDialog({
             tags: item.tags,
             seasonal: item.seasonal,
           });
-          existingTitles.add(item.title);
+          existingByTitle.set(item.title, {
+            id: "",
+            categoryId,
+            title: item.title,
+            subtitle: null,
+            photo: null,
+            details,
+            notes: item.notes,
+            tags: item.tags,
+            seasonal: item.seasonal,
+            sortOrder: 0,
+          });
           createdItems += 1;
         }
       }
@@ -182,11 +250,12 @@ export function BulkImportDialog({
         });
       }
 
-      const message = `Created ${createdCategories} ${
-        createdCategories === 1 ? "category" : "categories"
-      }, ${createdItems} ${createdItems === 1 ? "item" : "items"}. Skipped ${skippedItems} ${
-        skippedItems === 1 ? "item" : "items"
-      } that already existed.`;
+      const message = formatSummary(
+        createdCategories,
+        updatedItems,
+        createdItems,
+        skippedItems,
+      );
 
       setSummary(message);
       toast.success("Import complete", { description: message });
@@ -198,16 +267,16 @@ export function BulkImportDialog({
     } catch (err) {
       const partial = `Created ${createdCategories} ${
         createdCategories === 1 ? "category" : "categories"
-      }, ${createdItems} ${
+      }, updated ${updatedItems} ${
+        updatedItems === 1 ? "item" : "items"
+      }, created ${createdItems} ${
         createdItems === 1 ? "item" : "items"
       } before the failure.`;
       const description = err instanceof Error ? err.message : undefined;
-      setError(
-        `Import stopped: ${description ?? "a create call failed"}. ${partial}`,
-      );
+      setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
       toast.error("Import stopped", { description: `${partial}` });
 
-      // Still refresh whatever was created before the failure.
+      // Still refresh whatever was created/updated before the failure.
       await queryClient.invalidateQueries({
         queryKey: ["library-categories", positionId],
       });
@@ -232,12 +301,12 @@ export function BulkImportDialog({
    */
   async function loadItemsForCategory(
     categoryId: string,
-  ): Promise<{ title: string }[]> {
+  ): Promise<LibraryItem[]> {
     const queryKey = ["library-items", categoryId];
-    const cached = queryClient.getQueryData<{ title: string }[]>(queryKey);
+    const cached = queryClient.getQueryData<LibraryItem[]>(queryKey);
     if (cached) return cached;
     try {
-      const fetched = await queryClient.fetchQuery<{ title: string }[]>({
+      const fetched = await queryClient.fetchQuery<LibraryItem[]>({
         queryKey,
         staleTime: 0,
       });
@@ -265,12 +334,68 @@ export function BulkImportDialog({
             Paste a JSON blob of categories and items. The JSON{" "}
             <code className="font-mono text-foreground">position</code> field is
             ignored — import always targets this position&rsquo;s library.
-            Existing categories (matched by name) and items (matched by title)
-            are skipped, not duplicated.
+            Existing categories (matched by name) are reused, not duplicated.
+            Items matched by title are skipped or updated depending on the mode
+            below.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleImport} className="grid gap-4">
+          {/* Import mode selector — persists for the dialog session. */}
+          <div className="grid gap-2">
+            <Label className="font-heading uppercase text-xs tracking-wider">
+              Import mode
+            </Label>
+            <RadioGroup
+              value={importMode}
+              onValueChange={(v) => setImportMode(v as ImportMode)}
+              className="grid gap-2"
+              data-ocid="library.admin.import.dialog.mode.toggle"
+            >
+              <label
+                htmlFor="import-mode-skip"
+                className="flex items-start gap-3 rounded-md border border-border bg-library-card px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors"
+              >
+                <RadioGroupItem
+                  id="import-mode-skip"
+                  value="skip"
+                  className="mt-0.5"
+                  data-ocid="library.admin.import.dialog.mode.skip.radio"
+                />
+                <span className="grid gap-0.5">
+                  <span className="font-body text-sm text-foreground">
+                    Skip existing
+                  </span>
+                  <span className="font-body text-xs text-muted-foreground">
+                    Items whose title already exists are left untouched and
+                    counted as skipped.
+                  </span>
+                </span>
+              </label>
+              <label
+                htmlFor="import-mode-update"
+                className="flex items-start gap-3 rounded-md border border-border bg-library-card px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors"
+              >
+                <RadioGroupItem
+                  id="import-mode-update"
+                  value="update"
+                  className="mt-0.5"
+                  data-ocid="library.admin.import.dialog.mode.update.radio"
+                />
+                <span className="grid gap-0.5">
+                  <span className="font-body text-sm text-foreground">
+                    Update existing
+                  </span>
+                  <span className="font-body text-xs text-muted-foreground">
+                    Items whose title already exists are updated in place —
+                    detail fields, notes, tags, and seasonal flag are replaced.
+                    The existing photo and sort order are preserved.
+                  </span>
+                </span>
+              </label>
+            </RadioGroup>
+          </div>
+
           {/* JSON textarea */}
           <div className="grid gap-2">
             <Label
@@ -359,6 +484,29 @@ export function BulkImportDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+/* ------------------------------- Summary -------------------------------- */
+
+/**
+ * Builds the post-import summary line distinguishing all four outcomes:
+ * created categories, updated items, created items, skipped items.
+ *
+ * In Skip mode the updated count is always 0; in Update mode the skipped
+ * count is always 0 for matching titles. The summary is rendered the same
+ * way regardless of mode — the counts themselves reflect the chosen mode.
+ */
+function formatSummary(
+  createdCategories: number,
+  updatedItems: number,
+  createdItems: number,
+  skippedItems: number,
+): string {
+  const catWord = createdCategories === 1 ? "category" : "categories";
+  const updatedWord = updatedItems === 1 ? "item" : "items";
+  const createdWord = createdItems === 1 ? "item" : "items";
+  const skippedWord = skippedItems === 1 ? "item" : "items";
+  return `Created ${createdCategories} ${catWord}, updated ${updatedItems} ${updatedWord}, created ${createdItems} ${createdWord}, skipped ${skippedItems} ${skippedWord}.`;
 }
 
 /* ------------------------------- Validation ------------------------------- */

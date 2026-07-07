@@ -10,8 +10,10 @@ import Expose "mo:caffeineai-oql/Expose";
 import MixinObjectStorage "mo:caffeineai-object-storage/Mixin";
 import Foundation "lib/foundation";
 import Library "lib/library";
+import Nso "lib/nso";
 import FoundationApi "mixins/foundation-api";
 import LibraryApi "mixins/library-api";
+import NsoApi "mixins/nso-api";
 
 actor {
   include MixinViews();
@@ -38,8 +40,18 @@ actor {
   let nextCategoryId : { var value : Nat };
   let nextItemId : { var value : Nat };
 
+  // --- NSO (New Store Opening) domain state ---
+  // Additive to the foundation + library state. Same enhanced-migration
+  // pattern: types only, no initializers; the new migration supplies the
+  // initial values. Manager/admin-only writes; reads are public query.
+  let nsoPhases : List.List<Nso.Phase>;
+  let nsoTasks : List.List<Nso.Task>;
+  let nextPhaseId : { var value : Nat };
+  let nextTaskId : { var value : Nat };
+
   include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId);
   include LibraryApi(accessControlState, categories, items, nextCategoryId, nextItemId);
+  include NsoApi(accessControlState, profiles, nsoPhases, nsoTasks, nextPhaseId, nextTaskId);
 
   // --- OQL (Data Intelligence) ---
   // Expose the Library collections to the Caffeine Data Intelligence agent.
@@ -102,6 +114,55 @@ actor {
           notes = null;
           tags = [];
           seasonal = false;
+          sortOrder = 0;
+        })
+        .build(),
+      // NsoPhase: an ordered stage of a new store opening. Manager/admin-only
+      // domain; authorization is the default #controllerOnly — the agent reads
+      // everything, end users browse via the explicit getNsoPhases query method.
+      OQL.Entity.manual<Nso.Phase>(
+        "nsoPhase",
+        func () = nsoPhases.values(),
+        "Phase",
+        "id",
+      )
+        .payload("id", func (p) = p.id)
+        .payload("name", func (p) = p.name)
+        .payload("sortOrder", func (p) = p.sortOrder)
+        .sample({
+          id = 0;
+          name = "";
+          sortOrder = 0;
+        })
+        .build(),
+      // NsoTask: belongs to a phase. phaseId is an edge to the nsoPhase entity
+      // above; kept as a plain payload here for consistency with the
+      // category/libraryItem pattern. assignedTo is a ?Principal exposed as
+      // empty text when null (mirrors the coverPhoto/photo handling above).
+      OQL.Entity.manual<Nso.Task>(
+        "nsoTask",
+        func () = nsoTasks.values(),
+        "Task",
+        "id",
+      )
+        .payload("id", func (t) = t.id)
+        .payload("phaseId", func (t) = t.phaseId)
+        .payload("text", func (t) = t.text)
+        .payload("section", func (t) = switch (t.section) { case null ""; case (?s) s })
+        .payload("done", func (t) = t.done)
+        .payload("assignedTo", func (t) = switch (t.assignedTo) { case null ""; case (?p) p.toText() })
+        .payload("completionDate", func (t) = switch (t.completionDate) { case null ""; case (?d) d })
+        .payload("notes", func (t) = switch (t.notes) { case null ""; case (?n) n })
+        .payload("sortOrder", func (t) = t.sortOrder)
+        .sample({
+          id = 0;
+          phaseId = 0;
+          text = "";
+          section = null;
+          done = false;
+          assignedTo = null;
+          completionDate = null;
+          notes = null;
           sortOrder = 0;
         })
         .build(),

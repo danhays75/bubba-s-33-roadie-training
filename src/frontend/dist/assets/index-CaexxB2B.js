@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-DgzdcZXP.js"(exports, module) {
+  "assets/index-CaexxB2B.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -28919,6 +28919,22 @@ variant ${k2} -> ${e.message}`, {
       "photo": Opt(Text$2),
       "subtitle": Opt(Text$2)
     });
+    const Phase = Record({
+      "id": Nat,
+      "sortOrder": Nat,
+      "name": Text$2
+    });
+    const Task = Record({
+      "id": Nat,
+      "completionDate": Opt(Text$2),
+      "assignedTo": Opt(Principal),
+      "sortOrder": Nat,
+      "done": Bool,
+      "text": Text$2,
+      "section": Opt(Text$2),
+      "notes": Opt(Text$2),
+      "phaseId": Nat
+    });
     const Position = Record({
       "id": Nat,
       "sortOrder": Nat,
@@ -28989,6 +29005,24 @@ variant ${k2} -> ${e.message}`, {
       "hasMore": Bool,
       "rows": Vec(Vec(Cell))
     });
+    const NsoImportTask = Record({
+      "text": Text$2,
+      "section": Opt(Text$2),
+      "notes": Opt(Text$2)
+    });
+    const NsoImportPhase = Record({
+      "tasks": Vec(NsoImportTask),
+      "name": Text$2
+    });
+    const NsoImportInput = Record({
+      "moduleName": Text$2,
+      "phases": Vec(NsoImportPhase)
+    });
+    const NsoImportSummary = Record({
+      "phasesCreated": Nat,
+      "phasesReused": Nat,
+      "tasksAdded": Nat
+    });
     Service({
       "__accessControlState": Func([], [Reserved], ["query"]),
       "__assignments": Func(
@@ -29008,7 +29042,19 @@ variant ${k2} -> ${e.message}`, {
       ),
       "__nextCategoryId": Func([], [Reserved], ["query"]),
       "__nextItemId": Func([], [Reserved], ["query"]),
+      "__nextPhaseId": Func([], [Reserved], ["query"]),
       "__nextPositionId": Func([], [Reserved], ["query"]),
+      "__nextTaskId": Func([], [Reserved], ["query"]),
+      "__nsoPhases": Func(
+        [Opt(Nat), Opt(Nat)],
+        [Vec(Phase)],
+        ["query"]
+      ),
+      "__nsoTasks": Func(
+        [Opt(Nat), Opt(Nat)],
+        [Vec(Task)],
+        ["query"]
+      ),
       "__positions": Func(
         [Opt(Nat), Opt(Nat)],
         [Vec(Position)],
@@ -29074,6 +29120,12 @@ variant ${k2} -> ${e.message}`, {
         []
       ),
       "createMyProfile": Func([Text$2, Text$2], [UserProfile], []),
+      "createNsoPhase": Func([Text$2], [Phase], []),
+      "createNsoTask": Func(
+        [Nat, Text$2, Opt(Text$2), Opt(Principal)],
+        [Task],
+        []
+      ),
       "createPosition": Func(
         [Text$2, Opt(Text$2), Opt(Text$2)],
         [Position],
@@ -29081,6 +29133,8 @@ variant ${k2} -> ${e.message}`, {
       ),
       "deleteCategory": Func([Nat], [], []),
       "deleteItem": Func([Nat], [], []),
+      "deleteNsoPhase": Func([Nat], [], []),
+      "deleteNsoTask": Func([Nat], [], []),
       "deletePosition": Func([Nat], [], []),
       "execute": Func([Text$2], [Result], ["query"]),
       "getAllPositions": Func([], [Vec(Position)], ["query"]),
@@ -29096,6 +29150,16 @@ variant ${k2} -> ${e.message}`, {
       "getItemsByCategory": Func([Nat], [Vec(LibraryItem)], ["query"]),
       "getMyAssignments": Func([], [Vec(PositionAssignment)], ["query"]),
       "getMyProfile": Func([], [Opt(UserProfile)], []),
+      "getNsoAssignableUsers": Func([], [Vec(UserProfile)], ["query"]),
+      "getNsoOverallProgress": Func(
+        [],
+        [Record({ "doneCount": Nat, "totalCount": Nat })],
+        ["query"]
+      ),
+      "getNsoPhase": Func([Nat], [Opt(Phase)], ["query"]),
+      "getNsoPhases": Func([], [Vec(Phase)], ["query"]),
+      "getNsoTask": Func([Nat], [Opt(Task)], ["query"]),
+      "getNsoTasksByPhase": Func([Nat], [Vec(Task)], ["query"]),
       "getPosition": Func([Nat], [Opt(Position)], ["query"]),
       "getUserAssignments": Func(
         [Principal],
@@ -29103,6 +29167,7 @@ variant ${k2} -> ${e.message}`, {
         []
       ),
       "getUserRole": Func([Principal], [Opt(Role)], []),
+      "importNsoTasks": Func([NsoImportInput], [NsoImportSummary], []),
       "isCallerAdmin": Func([], [Bool], ["query"]),
       "reorderCategories": Func(
         [Nat, Vec(Nat)],
@@ -29112,6 +29177,16 @@ variant ${k2} -> ${e.message}`, {
       "reorderItems": Func(
         [Nat, Vec(Nat)],
         [Vec(LibraryItem)],
+        []
+      ),
+      "reorderNsoPhases": Func(
+        [Nat, Variant({ "up": Null, "down": Null })],
+        [],
+        []
+      ),
+      "reorderNsoTasks": Func(
+        [Nat, Variant({ "up": Null, "down": Null })],
+        [],
         []
       ),
       "reorderPositions": Func([Vec(Nat)], [Vec(Position)], []),
@@ -29126,7 +29201,10 @@ variant ${k2} -> ${e.message}`, {
         [PositionAssignment],
         []
       ),
+      "setNsoTaskAssignment": Func([Nat, Opt(Principal)], [], []),
+      "setNsoTaskCompletionDate": Func([Nat, Opt(Text$2)], [], []),
       "setUserRole": Func([Principal, Role], [UserProfile], []),
+      "toggleNsoTask": Func([Nat, Bool, Opt(Text$2)], [], []),
       "unassignPosition": Func([Principal, Nat], [], []),
       "updateCategory": Func(
         [Nat, Text$2, Opt(Text$2)],
@@ -29148,6 +29226,20 @@ variant ${k2} -> ${e.message}`, {
         []
       ),
       "updateMyProfile": Func([Text$2, Text$2], [UserProfile], []),
+      "updateNsoPhase": Func([Nat, Text$2], [], []),
+      "updateNsoTask": Func(
+        [
+          Nat,
+          Text$2,
+          Opt(Text$2),
+          Bool,
+          Opt(Principal),
+          Opt(Text$2),
+          Opt(Text$2)
+        ],
+        [],
+        []
+      ),
       "updatePosition": Func(
         [Nat, Text$2, Opt(Text$2), Opt(Text$2)],
         [Position],
@@ -29186,6 +29278,22 @@ variant ${k2} -> ${e.message}`, {
         "details": IDL2.Vec(DetailField2),
         "photo": IDL2.Opt(IDL2.Text),
         "subtitle": IDL2.Opt(IDL2.Text)
+      });
+      const Phase2 = IDL2.Record({
+        "id": IDL2.Nat,
+        "sortOrder": IDL2.Nat,
+        "name": IDL2.Text
+      });
+      const Task2 = IDL2.Record({
+        "id": IDL2.Nat,
+        "completionDate": IDL2.Opt(IDL2.Text),
+        "assignedTo": IDL2.Opt(IDL2.Principal),
+        "sortOrder": IDL2.Nat,
+        "done": IDL2.Bool,
+        "text": IDL2.Text,
+        "section": IDL2.Opt(IDL2.Text),
+        "notes": IDL2.Opt(IDL2.Text),
+        "phaseId": IDL2.Nat
       });
       const Position2 = IDL2.Record({
         "id": IDL2.Nat,
@@ -29257,6 +29365,24 @@ variant ${k2} -> ${e.message}`, {
         "hasMore": IDL2.Bool,
         "rows": IDL2.Vec(IDL2.Vec(Cell2))
       });
+      const NsoImportTask2 = IDL2.Record({
+        "text": IDL2.Text,
+        "section": IDL2.Opt(IDL2.Text),
+        "notes": IDL2.Opt(IDL2.Text)
+      });
+      const NsoImportPhase2 = IDL2.Record({
+        "tasks": IDL2.Vec(NsoImportTask2),
+        "name": IDL2.Text
+      });
+      const NsoImportInput2 = IDL2.Record({
+        "moduleName": IDL2.Text,
+        "phases": IDL2.Vec(NsoImportPhase2)
+      });
+      const NsoImportSummary2 = IDL2.Record({
+        "phasesCreated": IDL2.Nat,
+        "phasesReused": IDL2.Nat,
+        "tasksAdded": IDL2.Nat
+      });
       return IDL2.Service({
         "__accessControlState": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__assignments": IDL2.Func(
@@ -29276,7 +29402,19 @@ variant ${k2} -> ${e.message}`, {
         ),
         "__nextCategoryId": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__nextItemId": IDL2.Func([], [IDL2.Reserved], ["query"]),
+        "__nextPhaseId": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__nextPositionId": IDL2.Func([], [IDL2.Reserved], ["query"]),
+        "__nextTaskId": IDL2.Func([], [IDL2.Reserved], ["query"]),
+        "__nsoPhases": IDL2.Func(
+          [IDL2.Opt(IDL2.Nat), IDL2.Opt(IDL2.Nat)],
+          [IDL2.Vec(Phase2)],
+          ["query"]
+        ),
+        "__nsoTasks": IDL2.Func(
+          [IDL2.Opt(IDL2.Nat), IDL2.Opt(IDL2.Nat)],
+          [IDL2.Vec(Task2)],
+          ["query"]
+        ),
         "__positions": IDL2.Func(
           [IDL2.Opt(IDL2.Nat), IDL2.Opt(IDL2.Nat)],
           [IDL2.Vec(Position2)],
@@ -29342,6 +29480,12 @@ variant ${k2} -> ${e.message}`, {
           []
         ),
         "createMyProfile": IDL2.Func([IDL2.Text, IDL2.Text], [UserProfile2], []),
+        "createNsoPhase": IDL2.Func([IDL2.Text], [Phase2], []),
+        "createNsoTask": IDL2.Func(
+          [IDL2.Nat, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Principal)],
+          [Task2],
+          []
+        ),
         "createPosition": IDL2.Func(
           [IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text)],
           [Position2],
@@ -29349,6 +29493,8 @@ variant ${k2} -> ${e.message}`, {
         ),
         "deleteCategory": IDL2.Func([IDL2.Nat], [], []),
         "deleteItem": IDL2.Func([IDL2.Nat], [], []),
+        "deleteNsoPhase": IDL2.Func([IDL2.Nat], [], []),
+        "deleteNsoTask": IDL2.Func([IDL2.Nat], [], []),
         "deletePosition": IDL2.Func([IDL2.Nat], [], []),
         "execute": IDL2.Func([IDL2.Text], [Result2], ["query"]),
         "getAllPositions": IDL2.Func([], [IDL2.Vec(Position2)], ["query"]),
@@ -29368,6 +29514,16 @@ variant ${k2} -> ${e.message}`, {
         ),
         "getMyAssignments": IDL2.Func([], [IDL2.Vec(PositionAssignment2)], ["query"]),
         "getMyProfile": IDL2.Func([], [IDL2.Opt(UserProfile2)], []),
+        "getNsoAssignableUsers": IDL2.Func([], [IDL2.Vec(UserProfile2)], ["query"]),
+        "getNsoOverallProgress": IDL2.Func(
+          [],
+          [IDL2.Record({ "doneCount": IDL2.Nat, "totalCount": IDL2.Nat })],
+          ["query"]
+        ),
+        "getNsoPhase": IDL2.Func([IDL2.Nat], [IDL2.Opt(Phase2)], ["query"]),
+        "getNsoPhases": IDL2.Func([], [IDL2.Vec(Phase2)], ["query"]),
+        "getNsoTask": IDL2.Func([IDL2.Nat], [IDL2.Opt(Task2)], ["query"]),
+        "getNsoTasksByPhase": IDL2.Func([IDL2.Nat], [IDL2.Vec(Task2)], ["query"]),
         "getPosition": IDL2.Func([IDL2.Nat], [IDL2.Opt(Position2)], ["query"]),
         "getUserAssignments": IDL2.Func(
           [IDL2.Principal],
@@ -29375,6 +29531,7 @@ variant ${k2} -> ${e.message}`, {
           []
         ),
         "getUserRole": IDL2.Func([IDL2.Principal], [IDL2.Opt(Role2)], []),
+        "importNsoTasks": IDL2.Func([NsoImportInput2], [NsoImportSummary2], []),
         "isCallerAdmin": IDL2.Func([], [IDL2.Bool], ["query"]),
         "reorderCategories": IDL2.Func(
           [IDL2.Nat, IDL2.Vec(IDL2.Nat)],
@@ -29384,6 +29541,16 @@ variant ${k2} -> ${e.message}`, {
         "reorderItems": IDL2.Func(
           [IDL2.Nat, IDL2.Vec(IDL2.Nat)],
           [IDL2.Vec(LibraryItem2)],
+          []
+        ),
+        "reorderNsoPhases": IDL2.Func(
+          [IDL2.Nat, IDL2.Variant({ "up": IDL2.Null, "down": IDL2.Null })],
+          [],
+          []
+        ),
+        "reorderNsoTasks": IDL2.Func(
+          [IDL2.Nat, IDL2.Variant({ "up": IDL2.Null, "down": IDL2.Null })],
+          [],
           []
         ),
         "reorderPositions": IDL2.Func([IDL2.Vec(IDL2.Nat)], [IDL2.Vec(Position2)], []),
@@ -29398,7 +29565,14 @@ variant ${k2} -> ${e.message}`, {
           [PositionAssignment2],
           []
         ),
+        "setNsoTaskAssignment": IDL2.Func(
+          [IDL2.Nat, IDL2.Opt(IDL2.Principal)],
+          [],
+          []
+        ),
+        "setNsoTaskCompletionDate": IDL2.Func([IDL2.Nat, IDL2.Opt(IDL2.Text)], [], []),
         "setUserRole": IDL2.Func([IDL2.Principal, Role2], [UserProfile2], []),
+        "toggleNsoTask": IDL2.Func([IDL2.Nat, IDL2.Bool, IDL2.Opt(IDL2.Text)], [], []),
         "unassignPosition": IDL2.Func([IDL2.Principal, IDL2.Nat], [], []),
         "updateCategory": IDL2.Func(
           [IDL2.Nat, IDL2.Text, IDL2.Opt(IDL2.Text)],
@@ -29420,6 +29594,20 @@ variant ${k2} -> ${e.message}`, {
           []
         ),
         "updateMyProfile": IDL2.Func([IDL2.Text, IDL2.Text], [UserProfile2], []),
+        "updateNsoPhase": IDL2.Func([IDL2.Nat, IDL2.Text], [], []),
+        "updateNsoTask": IDL2.Func(
+          [
+            IDL2.Nat,
+            IDL2.Text,
+            IDL2.Opt(IDL2.Text),
+            IDL2.Bool,
+            IDL2.Opt(IDL2.Principal),
+            IDL2.Opt(IDL2.Text),
+            IDL2.Opt(IDL2.Text)
+          ],
+          [],
+          []
+        ),
         "updatePosition": IDL2.Func(
           [IDL2.Nat, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text)],
           [Position2],
@@ -34064,6 +34252,11 @@ variant ${k2} -> ${e.message}`, {
     function record_opt_to_undefined(arg) {
       return arg == null ? void 0 : arg;
     }
+    var Variant_up_down = /* @__PURE__ */ ((Variant_up_down2) => {
+      Variant_up_down2["up"] = "up";
+      Variant_up_down2["down"] = "down";
+      return Variant_up_down2;
+    })(Variant_up_down || {});
     class Backend {
       constructor(actor, _uploadFile, _downloadFile, processError2) {
         this.actor = actor;
@@ -34155,6 +34348,20 @@ variant ${k2} -> ${e.message}`, {
           return result;
         }
       }
+      async __nextPhaseId() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__nextPhaseId();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__nextPhaseId();
+          return result;
+        }
+      }
       async __nextPositionId() {
         if (this.processError) {
           try {
@@ -34169,32 +34376,74 @@ variant ${k2} -> ${e.message}`, {
           return result;
         }
       }
-      async __positions(arg0, arg1) {
+      async __nextTaskId() {
         if (this.processError) {
           try {
-            const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.__nextTaskId();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__nextTaskId();
+          return result;
+        }
+      }
+      async __nsoPhases(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__nsoPhases(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__nsoPhases(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return result;
+        }
+      }
+      async __nsoTasks(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
             return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
           return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
         }
       }
-      async __profiles(arg0, arg1) {
+      async __positions(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n17(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
             return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n17(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
           return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async __profiles(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__profiles(to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n22(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__profiles(to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n22(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageBlobsAreLive(arg0) {
@@ -34256,15 +34505,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n24(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n27(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n28(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n31(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n24(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n27(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n28(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n31(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34299,14 +34548,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n31(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n35(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n31(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n35(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34326,14 +34575,14 @@ variant ${k2} -> ${e.message}`, {
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n35(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n39(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n35(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n39(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34354,28 +34603,28 @@ variant ${k2} -> ${e.message}`, {
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34383,28 +34632,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n20(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n20(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
         }
       }
-      async createPosition(arg0, arg1, arg2) {
+      async createNsoPhase(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2));
-            return from_candid_Position_n15(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createNsoPhase(arg0);
+            return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2));
-          return from_candid_Position_n15(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createNsoPhase(arg0);
+          return result;
+        }
+      }
+      async createNsoTask(arg0, arg1, arg2, arg3) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Task_n15(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Task_n15(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async createPosition(arg0, arg1, arg2) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+          return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
         }
       }
       async deleteCategory(arg0) {
@@ -34435,6 +34712,34 @@ variant ${k2} -> ${e.message}`, {
           return result;
         }
       }
+      async deleteNsoPhase(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.deleteNsoPhase(arg0);
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.deleteNsoPhase(arg0);
+          return result;
+        }
+      }
+      async deleteNsoTask(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.deleteNsoTask(arg0);
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.deleteNsoTask(arg0);
+          return result;
+        }
+      }
       async deletePosition(arg0) {
         if (this.processError) {
           try {
@@ -34453,56 +34758,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n38(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n42(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n38(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n42(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllPositions();
-            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllPositions();
-          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n47(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n51(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n47(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n51(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -34523,28 +34828,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n49(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n49(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItem(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n54(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n54(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -34579,28 +34884,112 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n51(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n55(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n51(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n55(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getNsoAssignableUsers() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoAssignableUsers();
+            return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoAssignableUsers();
+          return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getNsoOverallProgress() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoOverallProgress();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoOverallProgress();
+          return result;
+        }
+      }
+      async getNsoPhase(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoPhase(arg0);
+            return from_candid_opt_n56(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoPhase(arg0);
+          return from_candid_opt_n56(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getNsoPhases() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoPhases();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoPhases();
+          return result;
+        }
+      }
+      async getNsoTask(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoTask(arg0);
+            return from_candid_opt_n57(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoTask(arg0);
+          return from_candid_opt_n57(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getNsoTasksByPhase(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoTasksByPhase(arg0);
+            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoTasksByPhase(arg0);
+          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
         }
       }
       async getPosition(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n52(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n58(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n52(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n58(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -34621,14 +35010,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async importNsoTasks(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n60(this._uploadFile, this._downloadFile, arg0));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n60(this._uploadFile, this._downloadFile, arg0));
+          return result;
         }
       }
       async isCallerAdmin() {
@@ -34673,18 +35076,46 @@ variant ${k2} -> ${e.message}`, {
           return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
         }
       }
+      async reorderNsoPhases(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+          return result;
+        }
+      }
+      async reorderNsoTasks(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+          return result;
+        }
+      }
       async reorderPositions(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.reorderPositions(arg0);
-            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.reorderPositions(arg0);
-          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async schema() {
@@ -34718,29 +35149,71 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n54(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n69(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n54(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n69(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
-      async setUserRole(arg0, arg1) {
+      async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n56(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n20(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg1));
+            return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n56(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n20(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg1));
+          return result;
+        }
+      }
+      async setNsoTaskCompletionDate(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1));
+          return result;
+        }
+      }
+      async setUserRole(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n71(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n71(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async toggleNsoTask(arg0, arg1, arg2) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+          return result;
         }
       }
       async unassignPosition(arg0, arg1) {
@@ -34760,28 +35233,28 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34789,28 +35262,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n20(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n20(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
         }
       }
-      async updatePosition(arg0, arg1, arg2, arg3) {
+      async updateNsoPhase(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Position_n15(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateNsoPhase(arg0, arg1);
+            return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n37(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n37(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Position_n15(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateNsoPhase(arg0, arg1);
+          return result;
+        }
+      }
+      async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg6));
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg6));
+          return result;
+        }
+      }
+      async updatePosition(arg0, arg1, arg2, arg3) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
         }
       }
     }
@@ -34820,11 +35321,11 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n42(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n43(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n46(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n47(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n33(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n34(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n37(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n38(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -34832,53 +35333,65 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, value) {
       return from_candid_record_n4(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Position_n15(_uploadFile, _downloadFile, value) {
+    function from_candid_Position_n19(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n20(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Result__1_n35(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n36(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Result_n42(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n43(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Role_n26(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n27(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Task_n15(_uploadFile, _downloadFile, value) {
       return from_candid_record_n16(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n31(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n32(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n24(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n25(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n38(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n39(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n51(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n52(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Role_n22(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n23(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n48(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n49(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserProfile_n20(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n21(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_UserRole_n47(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n48(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_Value_n44(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n45(_uploadFile, _downloadFile, value);
-    }
-    function from_candid__ImmutableObjectStorageRefillResult_n27(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n28(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n31(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n32(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n29(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n17(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n30(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n33(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n49(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n50(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n51(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n20(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n52(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n15(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n34(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : value[0];
     }
     function from_candid_opt_n53(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n22(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n54(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n55(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_UserProfile_n24(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n56(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : value[0];
+    }
+    function from_candid_opt_n57(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n15(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n58(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n19(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n59(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n26(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
       return {
@@ -34897,30 +35410,37 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_record_n16(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
+        completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
+        assignedTo: record_opt_to_undefined(from_candid_opt_n17(_uploadFile, _downloadFile, value.assignedTo)),
+        sortOrder: value.sortOrder,
+        done: value.done,
+        text: value.text,
+        section: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.section)),
+        notes: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.notes)),
+        phaseId: value.phaseId
+      };
+    }
+    function from_candid_record_n20(_uploadFile, _downloadFile, value) {
+      return {
+        id: value.id,
         sortOrder: value.sortOrder,
         name: value.name,
         description: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.description)),
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_record_n21(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n25(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         name: value.name,
-        role: from_candid_Role_n22(_uploadFile, _downloadFile, value.role),
+        role: from_candid_Role_n26(_uploadFile, _downloadFile, value.role),
         storeLocation: value.storeLocation
       };
     }
-    function from_candid_record_n28(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n32(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n29(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n30(_uploadFile, _downloadFile, value.topped_up_amount))
-      };
-    }
-    function from_candid_record_n39(_uploadFile, _downloadFile, value) {
-      return {
-        hasMore: value.hasMore,
-        rows: from_candid_vec_n40(_uploadFile, _downloadFile, value.rows)
+        success: record_opt_to_undefined(from_candid_opt_n33(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n34(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
     function from_candid_record_n4(_uploadFile, _downloadFile, value) {
@@ -34932,7 +35452,13 @@ variant ${k2} -> ${e.message}`, {
     }
     function from_candid_record_n43(_uploadFile, _downloadFile, value) {
       return {
-        value: from_candid_Value_n44(_uploadFile, _downloadFile, value.value),
+        hasMore: value.hasMore,
+        rows: from_candid_vec_n44(_uploadFile, _downloadFile, value.rows)
+      };
+    }
+    function from_candid_record_n47(_uploadFile, _downloadFile, value) {
+      return {
+        value: from_candid_Value_n48(_uploadFile, _downloadFile, value.value),
         name: value.name
       };
     }
@@ -34945,25 +35471,25 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_tuple_n19(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n23(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n20(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n24(_uploadFile, _downloadFile, value[1])
       ];
     }
-    function from_candid_variant_n23(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n27(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n32(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n36(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n33(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n37(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n34(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n38(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -34996,7 +35522,7 @@ variant ${k2} -> ${e.message}`, {
         FrontendOriginMismatch: value.FrontendOriginMismatch
       } : value;
     }
-    function from_candid_variant_n45(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n49(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -35017,7 +35543,7 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n48(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n52(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
     }
     function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
@@ -35027,56 +35553,87 @@ variant ${k2} -> ${e.message}`, {
       return value.map((x2) => from_candid_LibraryItem_n12(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n14(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Position_n15(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Task_n15(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n18(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n19(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Position_n19(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n2(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n40(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n41(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n22(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n23(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n41(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n42(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n44(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n45(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n46(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n20(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n46(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n50(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n24(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_AssignmentStatus_n54(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n55(_uploadFile, _downloadFile, value);
+    function to_candid_AssignmentStatus_n69(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n70(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n56(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n57(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportInput_n60(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n61(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n35(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n36(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportPhase_n63(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n64(_uploadFile, _downloadFile, value);
     }
-    function to_candid__ImmutableObjectStorageRefillInformation_n25(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n26(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportTask_n66(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n67(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Role_n71(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n72(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UserRole_n39(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n40(_uploadFile, _downloadFile, value);
+    }
+    function to_candid__ImmutableObjectStorageRefillInformation_n29(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n30(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n17(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n21(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n24(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n25(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n28(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n29(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n37(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n41(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_record_n26(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n30(_uploadFile, _downloadFile, value) {
       return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
       };
     }
-    function to_candid_variant_n36(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n61(_uploadFile, _downloadFile, value) {
+      return {
+        moduleName: value.moduleName,
+        phases: to_candid_vec_n62(_uploadFile, _downloadFile, value.phases)
+      };
+    }
+    function to_candid_record_n64(_uploadFile, _downloadFile, value) {
+      return {
+        tasks: to_candid_vec_n65(_uploadFile, _downloadFile, value.tasks),
+        name: value.name
+      };
+    }
+    function to_candid_record_n67(_uploadFile, _downloadFile, value) {
+      return {
+        text: value.text,
+        section: value.section ? candid_some(value.section) : candid_none(),
+        notes: value.notes ? candid_some(value.notes) : candid_none()
+      };
+    }
+    function to_candid_variant_n40(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -35085,14 +35642,21 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n55(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n68(_uploadFile, _downloadFile, value) {
+      return value == "up" ? {
+        up: null
+      } : value == "down" ? {
+        down: null
+      } : value;
+    }
+    function to_candid_variant_n70(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n57(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n72(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -35102,6 +35666,12 @@ variant ${k2} -> ${e.message}`, {
       } : value == "trainer" ? {
         trainer: null
       } : value;
+    }
+    function to_candid_vec_n62(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n63(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_vec_n65(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n66(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -35727,12 +36297,12 @@ variant ${k2} -> ${e.message}`, {
     const colorFunctionRegex = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/;
     const shadowRegex = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/;
     const imageRegex = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/;
-    const isLength$1 = (value) => isNumber(value) || stringLengths.has(value) || fractionRegex.test(value);
+    const isLength$1 = (value) => isNumber$1(value) || stringLengths.has(value) || fractionRegex.test(value);
     const isArbitraryLength = (value) => getIsArbitraryValue(value, "length", isLengthOnly);
-    const isNumber = (value) => Boolean(value) && !Number.isNaN(Number(value));
-    const isArbitraryNumber = (value) => getIsArbitraryValue(value, "number", isNumber);
+    const isNumber$1 = (value) => Boolean(value) && !Number.isNaN(Number(value));
+    const isArbitraryNumber = (value) => getIsArbitraryValue(value, "number", isNumber$1);
     const isInteger = (value) => Boolean(value) && Number.isInteger(Number(value));
-    const isPercent = (value) => value.endsWith("%") && isNumber(value.slice(0, -1));
+    const isPercent = (value) => value.endsWith("%") && isNumber$1(value.slice(0, -1));
     const isArbitraryValue = (value) => arbitraryValueRegex.test(value);
     const isTshirtSize = (value) => tshirtUnitRegex.test(value);
     const sizeLabels = /* @__PURE__ */ new Set(["length", "size", "percentage"]);
@@ -35792,14 +36362,14 @@ variant ${k2} -> ${e.message}`, {
       const getSpacingWithAutoAndArbitrary = () => ["auto", isArbitraryValue, spacing];
       const getSpacingWithArbitrary = () => [isArbitraryValue, spacing];
       const getLengthWithEmptyAndArbitrary = () => ["", isLength$1, isArbitraryLength];
-      const getNumberWithAutoAndArbitrary = () => ["auto", isNumber, isArbitraryValue];
+      const getNumberWithAutoAndArbitrary = () => ["auto", isNumber$1, isArbitraryValue];
       const getPositions = () => ["bottom", "center", "left", "left-bottom", "left-top", "right", "right-bottom", "right-top", "top"];
       const getLineStyles = () => ["solid", "dashed", "dotted", "double", "none"];
       const getBlendModes = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"];
       const getAlign = () => ["start", "end", "center", "between", "around", "evenly", "stretch"];
       const getZeroAndEmpty = () => ["", "0", isArbitraryValue];
       const getBreaks = () => ["auto", "avoid", "all", "avoid-page", "page", "left", "right", "column"];
-      const getNumberAndArbitrary = () => [isNumber, isArbitraryValue];
+      const getNumberAndArbitrary = () => [isNumber$1, isArbitraryValue];
       return {
         cacheSize: 500,
         separator: ":",
@@ -36538,7 +37108,7 @@ variant ${k2} -> ${e.message}`, {
            * @see https://tailwindcss.com/docs/line-clamp
            */
           "line-clamp": [{
-            "line-clamp": ["none", isNumber, isArbitraryNumber]
+            "line-clamp": ["none", isNumber$1, isArbitraryNumber]
           }],
           /**
            * Line Height
@@ -37943,13 +38513,13 @@ variant ${k2} -> ${e.message}`, {
       );
     });
     Label$1.displayName = NAME$2;
-    var Root$1 = Label$1;
+    var Root$3 = Label$1;
     function Label({
       className,
       ...props
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Root$1,
+        Root$3,
         {
           "data-slot": "label",
           className: cn(
@@ -38065,40 +38635,40 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$m = [
+    const __iconNode$q = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$m);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$l = [
+    const __iconNode$p = [
       ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
       ["path", { d: "M19 12H5", key: "x3x0zl" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$l);
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$p);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$k = [
+    const __iconNode$o = [
       ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
       ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$k);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$o);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$j = [
+    const __iconNode$n = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -38108,31 +38678,93 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$j);
+    const BookOpen = createLucideIcon("book-open", __iconNode$n);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$i = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$i);
+    const __iconNode$m = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$m);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$h = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$h);
+    const __iconNode$l = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$l);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$g = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$g);
+    const __iconNode$k = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$k);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$j = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$j);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$i = [
+      ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
+      [
+        "path",
+        {
+          d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+          key: "116196"
+        }
+      ],
+      ["path", { d: "M12 11h4", key: "1jrz19" }],
+      ["path", { d: "M12 16h4", key: "n85exb" }],
+      ["path", { d: "M8 11h.01", key: "1dfujw" }],
+      ["path", { d: "M8 16h.01", key: "18s6g9" }]
+    ];
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$i);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$h = [
+      [
+        "path",
+        {
+          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+          key: "c3ymky"
+        }
+      ],
+      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+    ];
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$h);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$g = [
+      [
+        "path",
+        {
+          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+          key: "c3ymky"
+        }
+      ]
+    ];
+    const Heart = createLucideIcon("heart", __iconNode$g);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38736,11 +39368,57 @@ variant ${k2} -> ${e.message}`, {
         )
       ] }) });
     }
+    const EIGHT_HOURS_NS = BigInt(8 * 60 * 60 * 1e3 * 1e3 * 1e3);
+    let redirectClient = null;
+    async function getRedirectClient() {
+      if (redirectClient) return redirectClient;
+      redirectClient = new AuthClient({
+        // No windowOpenerFeatures => same-tab redirect mode.
+      });
+      return redirectClient;
+    }
+    function useRedirectAuth() {
+      const [isRedirecting, setIsRedirecting] = reactExports.useState(false);
+      const loginWithRedirect = reactExports.useCallback(async () => {
+        setIsRedirecting(true);
+        try {
+          const client2 = await getRedirectClient();
+          await client2.signIn({ maxTimeToLive: EIGHT_HOURS_NS });
+          window.location.reload();
+        } catch (e) {
+          setIsRedirecting(false);
+          throw e;
+        }
+      }, []);
+      reactExports.useEffect(() => {
+        getRedirectClient().catch(() => {
+        });
+      }, []);
+      return { loginWithRedirect, isRedirecting };
+    }
+    function isMobileUserAgent() {
+      if (typeof navigator === "undefined") return false;
+      const ua = navigator.userAgent;
+      if (/iphone|ipad|ipod/i.test(ua)) return true;
+      if (/macintosh/i.test(ua) && (navigator.maxTouchPoints ?? 0) > 1) return true;
+      return /android/i.test(ua);
+    }
+    function isChannelClosedError(err) {
+      if (!err || !err.message) return false;
+      return err.message.toLowerCase().includes("channel was closed");
+    }
     function SignInScreen({
       onSignIn,
       isLoggingIn,
       error
     }) {
+      const showRetry = !!error;
+      const channelClosed = isChannelClosedError(error);
+      const { loginWithRedirect, isRedirecting } = useRedirectAuth();
+      const isMobile = isMobileUserAgent();
+      const showRedirect = channelClosed || isMobile;
+      const redirectIsPrimary = isMobile;
+      const busy = isLoggingIn || isRedirecting;
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh flex-col items-center justify-center bg-background px-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full max-w-sm flex-col items-center text-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-5xl uppercase leading-none tracking-wide text-foreground", children: "Bubba’s 33" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-heading text-sm uppercase tracking-[0.2em] text-muted-foreground", children: "Roadie Training" }),
@@ -38756,20 +39434,40 @@ variant ${k2} -> ${e.message}`, {
             ]
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
-          {
-            variant: "default",
-            size: "lg",
-            className: "mt-10 w-full font-heading uppercase tracking-wide",
-            onClick: onSignIn,
-            disabled: isLoggingIn,
-            "data-ocid": "signin.primary_button",
-            children: isLoggingIn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
-              "Connecting…"
-            ] }) : "Sign in with Internet Identity"
-          }
+        redirectIsPrimary ? (
+          // Mobile/iOS: redirect is the primary action (popup is unreliable).
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              variant: "default",
+              size: "lg",
+              className: "mt-10 w-full font-heading uppercase tracking-wide",
+              onClick: loginWithRedirect,
+              disabled: busy,
+              "data-ocid": "signin.redirect_primary_button",
+              children: isRedirecting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                "Redirecting…"
+              ] }) : "Sign in with Internet Identity"
+            }
+          )
+        ) : (
+          // Desktop: popup remains the primary action.
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              variant: "default",
+              size: "lg",
+              className: "mt-10 w-full font-heading uppercase tracking-wide",
+              onClick: onSignIn,
+              disabled: busy,
+              "data-ocid": "signin.primary_button",
+              children: isLoggingIn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                "Connecting…"
+              ] }) : "Sign in with Internet Identity"
+            }
+          )
         ),
         error && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "p",
@@ -38778,6 +39476,44 @@ variant ${k2} -> ${e.message}`, {
             className: "mt-4 font-body text-sm text-primary",
             "data-ocid": "signin.error_state",
             children: error.message || "Sign-in failed. Try again."
+          }
+        ),
+        showRetry && channelClosed && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "mt-2 font-body text-sm text-muted-foreground",
+            "data-ocid": "signin.channel_closed_message",
+            children: "The sign-in window closed before it could finish. This can happen on iPhone Safari when the popup is suspended. Use the redirect sign-in below to continue in this tab, or tap Try again to re-open the popup."
+          }
+        ),
+        showRedirect && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            variant: redirectIsPrimary ? "outline" : "default",
+            size: "lg",
+            className: "mt-4 w-full font-heading uppercase tracking-wide",
+            onClick: loginWithRedirect,
+            disabled: busy,
+            "data-ocid": "signin.redirect_button",
+            children: isRedirecting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              "Redirecting…"
+            ] }) : "Sign in (redirect)"
+          }
+        ),
+        showRetry && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            variant: "outline",
+            size: "lg",
+            className: "mt-4 w-full font-heading uppercase tracking-wide",
+            onClick: onSignIn,
+            disabled: busy,
+            "data-ocid": "signin.retry_button",
+            children: isLoggingIn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              "Connecting…"
+            ] }) : "Try again"
           }
         )
       ] }) });
@@ -39497,11 +40233,11 @@ variant ${k2} -> ${e.message}`, {
     function last(arr) {
       return arr[arr.length - 1];
     }
-    function isFunction$4(d2) {
+    function isFunction$6(d2) {
       return typeof d2 === "function";
     }
     function functionalUpdate(updater, previous) {
-      if (isFunction$4(updater)) {
+      if (isFunction$6(updater)) {
         return updater(previous);
       }
       return updater;
@@ -44318,6 +45054,8 @@ variant ${k2} -> ${e.message}`, {
       };
       const initials = getInitials(profile == null ? void 0 : profile.name, principal);
       const isAdmin = (profile == null ? void 0 : profile.role) === "admin";
+      const isManager = (profile == null ? void 0 : profile.role) === "manager";
+      const canOpenNewStore = isAdmin || isManager;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-h-dvh flex-col bg-background", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "header",
@@ -44337,6 +45075,23 @@ variant ${k2} -> ${e.message}`, {
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                canOpenNewStore && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link$1,
+                  {
+                    to: "/new-store-opening",
+                    className: cn(
+                      "rounded-md border border-primary/60 px-3 py-1.5",
+                      "font-heading text-xs uppercase tracking-wide text-foreground",
+                      "transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
+                    ),
+                    activeProps: {
+                      className: "bg-primary text-primary-foreground"
+                    },
+                    "data-ocid": "layout.new_store_opening_link",
+                    children: "New Store Opening"
+                  }
+                ),
                 isAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Link$1,
                   {
@@ -44473,7 +45228,7 @@ variant ${k2} -> ${e.message}`, {
         (nextValue) => {
           var _a2;
           if (isControlled) {
-            const value2 = isFunction$3(nextValue) ? nextValue(prop) : nextValue;
+            const value2 = isFunction$5(nextValue) ? nextValue(prop) : nextValue;
             if (value2 !== prop) {
               (_a2 = onChangeRef.current) == null ? void 0 : _a2.call(onChangeRef, value2);
             }
@@ -44504,7 +45259,7 @@ variant ${k2} -> ${e.message}`, {
       }, [value, prevValueRef]);
       return [value, setValue, onChangeRef];
     }
-    function isFunction$3(value) {
+    function isFunction$5(value) {
       return typeof value === "function";
     }
     var DISMISSABLE_LAYER_NAME = "DismissableLayer";
@@ -44829,7 +45584,7 @@ variant ${k2} -> ${e.message}`, {
     }
     var AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
     var AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
-    var EVENT_OPTIONS = { bubbles: false, cancelable: true };
+    var EVENT_OPTIONS$1 = { bubbles: false, cancelable: true };
     var FOCUS_SCOPE_NAME = "FocusScope";
     var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
       const {
@@ -44894,11 +45649,11 @@ variant ${k2} -> ${e.message}`, {
           const previouslyFocusedElement = document.activeElement;
           const hasFocusedCandidate = container.contains(previouslyFocusedElement);
           if (!hasFocusedCandidate) {
-            const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
+            const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS$1);
             container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
             container.dispatchEvent(mountEvent);
             if (!mountEvent.defaultPrevented) {
-              focusFirst(removeLinks(getTabbableCandidates(container)), { select: true });
+              focusFirst$1(removeLinks(getTabbableCandidates(container)), { select: true });
               if (document.activeElement === previouslyFocusedElement) {
                 focus(container);
               }
@@ -44907,7 +45662,7 @@ variant ${k2} -> ${e.message}`, {
           return () => {
             container.removeEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
             setTimeout(() => {
-              const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+              const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS$1);
               container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
               container.dispatchEvent(unmountEvent);
               if (!unmountEvent.defaultPrevented) {
@@ -44947,7 +45702,7 @@ variant ${k2} -> ${e.message}`, {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { tabIndex: -1, ...scopeProps, ref: composedRefs, onKeyDown: handleKeyDown });
     });
     FocusScope.displayName = FOCUS_SCOPE_NAME;
-    function focusFirst(candidates, { select = false } = {}) {
+    function focusFirst$1(candidates, { select = false } = {}) {
       const previouslyFocusedElement = document.activeElement;
       for (const candidate of candidates) {
         focus(candidate, { select });
@@ -46046,11 +46801,11 @@ variant ${k2} -> ${e.message}`, {
       );
     };
     Dialog$1.displayName = DIALOG_NAME;
-    var TRIGGER_NAME$3 = "DialogTrigger";
+    var TRIGGER_NAME$5 = "DialogTrigger";
     var DialogTrigger = reactExports.forwardRef(
       (props, forwardedRef) => {
         const { __scopeDialog, ...triggerProps } = props;
-        const context = useDialogContext(TRIGGER_NAME$3, __scopeDialog);
+        const context = useDialogContext(TRIGGER_NAME$5, __scopeDialog);
         const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           Primitive.button,
@@ -46059,7 +46814,7 @@ variant ${k2} -> ${e.message}`, {
             "aria-haspopup": "dialog",
             "aria-expanded": context.open,
             "aria-controls": context.open ? context.contentId : void 0,
-            "data-state": getState$1(context.open),
+            "data-state": getState$3(context.open),
             ...triggerProps,
             ref: composedTriggerRef,
             onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
@@ -46067,7 +46822,7 @@ variant ${k2} -> ${e.message}`, {
         );
       }
     );
-    DialogTrigger.displayName = TRIGGER_NAME$3;
+    DialogTrigger.displayName = TRIGGER_NAME$5;
     var PORTAL_NAME$2 = "DialogPortal";
     var [PortalProvider$1, usePortalContext$1] = createDialogContext(PORTAL_NAME$2, {
       forceMount: void 0
@@ -46101,7 +46856,7 @@ variant ${k2} -> ${e.message}`, {
           /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, { as: Slot$1, allowPinchZoom: true, shards: [context.contentRef], children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             Primitive.div,
             {
-              "data-state": getState$1(context.open),
+              "data-state": getState$3(context.open),
               ...overlayProps,
               ref: composedRefs,
               style: { pointerEvents: "auto", ...overlayProps.style }
@@ -46217,7 +46972,7 @@ variant ${k2} -> ${e.message}`, {
                 id: context.contentId,
                 "aria-describedby": context.descriptionId,
                 "aria-labelledby": context.titleId,
-                "data-state": getState$1(context.open),
+                "data-state": getState$3(context.open),
                 ...contentProps,
                 ref: forwardedRef,
                 deferPointerDownOutside: true,
@@ -46263,7 +47018,7 @@ variant ${k2} -> ${e.message}`, {
       }
     );
     DialogClose.displayName = CLOSE_NAME;
-    function getState$1(open) {
+    function getState$3(open) {
       return open ? "open" : "closed";
     }
     function Dialog({
@@ -47075,7 +47830,7 @@ variant ${k2} -> ${e.message}`, {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { ...dialogScope, ...alertDialogProps, modal: true });
     };
     AlertDialog$1.displayName = ROOT_NAME;
-    var TRIGGER_NAME$2 = "AlertDialogTrigger";
+    var TRIGGER_NAME$4 = "AlertDialogTrigger";
     var AlertDialogTrigger = reactExports.forwardRef(
       (props, forwardedRef) => {
         const { __scopeAlertDialog, ...triggerProps } = props;
@@ -47083,7 +47838,7 @@ variant ${k2} -> ${e.message}`, {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTrigger, { ...dialogScope, ...triggerProps, ref: forwardedRef });
       }
     );
-    AlertDialogTrigger.displayName = TRIGGER_NAME$2;
+    AlertDialogTrigger.displayName = TRIGGER_NAME$4;
     var PORTAL_NAME$1 = "AlertDialogPortal";
     var AlertDialogPortal$1 = (props) => {
       const { __scopeAlertDialog, ...portalProps } = props;
@@ -47370,7 +48125,7 @@ variant ${k2} -> ${e.message}`, {
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingState, {}) : ordered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyState$1, { onCreate: openCreate }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingState, {}) : ordered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyState$2, { onCreate: openCreate }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
           PositionList,
           {
             positions: ordered,
@@ -47558,7 +48313,7 @@ variant ${k2} -> ${e.message}`, {
         }
       );
     }
-    function EmptyState$1({ onCreate }) {
+    function EmptyState$2({ onCreate }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -47608,6 +48363,760 @@ variant ${k2} -> ${e.message}`, {
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1.5 font-body text-sm text-muted-foreground", children: "You need an admin role to manage positions." })
             ] })
           ]
+        }
+      );
+    }
+    function createCollection(name) {
+      const PROVIDER_NAME2 = name + "CollectionProvider";
+      const [createCollectionContext, createCollectionScope2] = createContextScope(PROVIDER_NAME2);
+      const [CollectionProviderImpl, useCollectionContext] = createCollectionContext(
+        PROVIDER_NAME2,
+        { collectionRef: { current: null }, itemMap: /* @__PURE__ */ new Map() }
+      );
+      const CollectionProvider = (props) => {
+        const { scope, children } = props;
+        const ref = reactExports.useRef(null);
+        const itemMap = reactExports.useRef(/* @__PURE__ */ new Map()).current;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionProviderImpl, { scope, itemMap, collectionRef: ref, children });
+      };
+      CollectionProvider.displayName = PROVIDER_NAME2;
+      const COLLECTION_SLOT_NAME = name + "CollectionSlot";
+      const CollectionSlotImpl = /* @__PURE__ */ createSlot(COLLECTION_SLOT_NAME);
+      const CollectionSlot = reactExports.forwardRef(
+        (props, forwardedRef) => {
+          const { scope, children } = props;
+          const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
+          const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionSlotImpl, { ref: composedRefs, children });
+        }
+      );
+      CollectionSlot.displayName = COLLECTION_SLOT_NAME;
+      const ITEM_SLOT_NAME = name + "CollectionItemSlot";
+      const ITEM_DATA_ATTR = "data-radix-collection-item";
+      const CollectionItemSlotImpl = /* @__PURE__ */ createSlot(ITEM_SLOT_NAME);
+      const CollectionItemSlot = reactExports.forwardRef(
+        (props, forwardedRef) => {
+          const { scope, children, ...itemData } = props;
+          const ref = reactExports.useRef(null);
+          const composedRefs = useComposedRefs(forwardedRef, ref);
+          const context = useCollectionContext(ITEM_SLOT_NAME, scope);
+          reactExports.useEffect(() => {
+            context.itemMap.set(ref, { ref, ...itemData });
+            return () => void context.itemMap.delete(ref);
+          });
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionItemSlotImpl, { ...{ [ITEM_DATA_ATTR]: "" }, ref: composedRefs, children });
+        }
+      );
+      CollectionItemSlot.displayName = ITEM_SLOT_NAME;
+      function useCollection2(scope) {
+        const context = useCollectionContext(name + "CollectionConsumer", scope);
+        const getItems = reactExports.useCallback(() => {
+          const collectionNode = context.collectionRef.current;
+          if (!collectionNode) return [];
+          const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
+          const items = Array.from(context.itemMap.values());
+          const orderedItems = items.sort(
+            (a2, b2) => orderedNodes.indexOf(a2.ref.current) - orderedNodes.indexOf(b2.ref.current)
+          );
+          return orderedItems;
+        }, [context.collectionRef, context.itemMap]);
+        return getItems;
+      }
+      return [
+        { Provider: CollectionProvider, Slot: CollectionSlot, ItemSlot: CollectionItemSlot },
+        useCollection2,
+        createCollectionScope2
+      ];
+    }
+    var DirectionContext = reactExports.createContext(void 0);
+    function useDirection(localDir) {
+      const globalDir = reactExports.useContext(DirectionContext);
+      return localDir || globalDir || "ltr";
+    }
+    var ENTRY_FOCUS = "rovingFocusGroup.onEntryFocus";
+    var EVENT_OPTIONS = { bubbles: false, cancelable: true };
+    var GROUP_NAME$1 = "RovingFocusGroup";
+    var [Collection$1, useCollection$1, createCollectionScope$1] = createCollection(GROUP_NAME$1);
+    var [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
+      GROUP_NAME$1,
+      [createCollectionScope$1]
+    );
+    var [RovingFocusProvider, useRovingFocusContext] = createRovingFocusGroupContext(GROUP_NAME$1);
+    var RovingFocusGroup = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Provider, { scope: props.__scopeRovingFocusGroup, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Slot, { scope: props.__scopeRovingFocusGroup, children: /* @__PURE__ */ jsxRuntimeExports.jsx(RovingFocusGroupImpl, { ...props, ref: forwardedRef }) }) });
+      }
+    );
+    RovingFocusGroup.displayName = GROUP_NAME$1;
+    var RovingFocusGroupImpl = reactExports.forwardRef((props, forwardedRef) => {
+      const {
+        __scopeRovingFocusGroup,
+        orientation,
+        loop = false,
+        dir,
+        currentTabStopId: currentTabStopIdProp,
+        defaultCurrentTabStopId,
+        onCurrentTabStopIdChange,
+        onEntryFocus,
+        preventScrollOnEntryFocus = false,
+        ...groupProps
+      } = props;
+      const ref = reactExports.useRef(null);
+      const composedRefs = useComposedRefs(forwardedRef, ref);
+      const direction = useDirection(dir);
+      const [currentTabStopId, setCurrentTabStopId] = useControllableState({
+        prop: currentTabStopIdProp,
+        defaultProp: defaultCurrentTabStopId ?? null,
+        onChange: onCurrentTabStopIdChange,
+        caller: GROUP_NAME$1
+      });
+      const [isTabbingBackOut, setIsTabbingBackOut] = reactExports.useState(false);
+      const handleEntryFocus = useCallbackRef$1(onEntryFocus);
+      const getItems = useCollection$1(__scopeRovingFocusGroup);
+      const isClickFocusRef = reactExports.useRef(false);
+      const [focusableItemsCount, setFocusableItemsCount] = reactExports.useState(0);
+      reactExports.useEffect(() => {
+        const node = ref.current;
+        if (node) {
+          node.addEventListener(ENTRY_FOCUS, handleEntryFocus);
+          return () => node.removeEventListener(ENTRY_FOCUS, handleEntryFocus);
+        }
+      }, [handleEntryFocus]);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RovingFocusProvider,
+        {
+          scope: __scopeRovingFocusGroup,
+          orientation,
+          dir: direction,
+          loop,
+          currentTabStopId,
+          onItemFocus: reactExports.useCallback(
+            (tabStopId) => setCurrentTabStopId(tabStopId),
+            [setCurrentTabStopId]
+          ),
+          onItemShiftTab: reactExports.useCallback(() => setIsTabbingBackOut(true), []),
+          onFocusableItemAdd: reactExports.useCallback(
+            () => setFocusableItemsCount((prevCount) => prevCount + 1),
+            []
+          ),
+          onFocusableItemRemove: reactExports.useCallback(
+            () => setFocusableItemsCount((prevCount) => prevCount - 1),
+            []
+          ),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Primitive.div,
+            {
+              tabIndex: isTabbingBackOut || focusableItemsCount === 0 ? -1 : 0,
+              "data-orientation": orientation,
+              ...groupProps,
+              ref: composedRefs,
+              style: { outline: "none", ...props.style },
+              onMouseDown: composeEventHandlers(props.onMouseDown, () => {
+                isClickFocusRef.current = true;
+              }),
+              onFocus: composeEventHandlers(props.onFocus, (event) => {
+                const isKeyboardFocus = !isClickFocusRef.current;
+                if (event.target === event.currentTarget && isKeyboardFocus && !isTabbingBackOut) {
+                  const entryFocusEvent = new CustomEvent(ENTRY_FOCUS, EVENT_OPTIONS);
+                  event.currentTarget.dispatchEvent(entryFocusEvent);
+                  if (!entryFocusEvent.defaultPrevented) {
+                    const items = getItems().filter((item) => item.focusable);
+                    const activeItem = items.find((item) => item.active);
+                    const currentItem = items.find((item) => item.id === currentTabStopId);
+                    const candidateItems = [activeItem, currentItem, ...items].filter(
+                      Boolean
+                    );
+                    const candidateNodes = candidateItems.map((item) => item.ref.current);
+                    focusFirst(candidateNodes, preventScrollOnEntryFocus);
+                  }
+                }
+                isClickFocusRef.current = false;
+              }),
+              onBlur: composeEventHandlers(props.onBlur, () => setIsTabbingBackOut(false))
+            }
+          )
+        }
+      );
+    });
+    var ITEM_NAME$2 = "RovingFocusGroupItem";
+    var RovingFocusGroupItem = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          __scopeRovingFocusGroup,
+          focusable = true,
+          active = false,
+          tabStopId,
+          children,
+          ...itemProps
+        } = props;
+        const autoId = useId();
+        const id = tabStopId || autoId;
+        const context = useRovingFocusContext(ITEM_NAME$2, __scopeRovingFocusGroup);
+        const isCurrentTabStop = context.currentTabStopId === id;
+        const getItems = useCollection$1(__scopeRovingFocusGroup);
+        const { onFocusableItemAdd, onFocusableItemRemove, currentTabStopId } = context;
+        reactExports.useEffect(() => {
+          if (focusable) {
+            onFocusableItemAdd();
+            return () => onFocusableItemRemove();
+          }
+        }, [focusable, onFocusableItemAdd, onFocusableItemRemove]);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Collection$1.ItemSlot,
+          {
+            scope: __scopeRovingFocusGroup,
+            id,
+            focusable,
+            active,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive.span,
+              {
+                tabIndex: isCurrentTabStop ? 0 : -1,
+                "data-orientation": context.orientation,
+                ...itemProps,
+                ref: forwardedRef,
+                onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
+                  if (!focusable) event.preventDefault();
+                  else context.onItemFocus(id);
+                }),
+                onFocus: composeEventHandlers(props.onFocus, () => context.onItemFocus(id)),
+                onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
+                  if (event.key === "Tab" && event.shiftKey) {
+                    context.onItemShiftTab();
+                    return;
+                  }
+                  if (event.target !== event.currentTarget) return;
+                  const focusIntent = getFocusIntent(event, context.orientation, context.dir);
+                  if (focusIntent !== void 0) {
+                    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+                    event.preventDefault();
+                    const items = getItems().filter((item) => item.focusable);
+                    let candidateNodes = items.map((item) => item.ref.current);
+                    if (focusIntent === "last") candidateNodes.reverse();
+                    else if (focusIntent === "prev" || focusIntent === "next") {
+                      if (focusIntent === "prev") candidateNodes.reverse();
+                      const currentIndex = candidateNodes.indexOf(event.currentTarget);
+                      candidateNodes = context.loop ? wrapArray$1(candidateNodes, currentIndex + 1) : candidateNodes.slice(currentIndex + 1);
+                    }
+                    setTimeout(() => focusFirst(candidateNodes));
+                  }
+                }),
+                children: typeof children === "function" ? children({ isCurrentTabStop, hasTabStop: currentTabStopId != null }) : children
+              }
+            )
+          }
+        );
+      }
+    );
+    RovingFocusGroupItem.displayName = ITEM_NAME$2;
+    var MAP_KEY_TO_FOCUS_INTENT = {
+      ArrowLeft: "prev",
+      ArrowUp: "prev",
+      ArrowRight: "next",
+      ArrowDown: "next",
+      PageUp: "first",
+      Home: "first",
+      PageDown: "last",
+      End: "last"
+    };
+    function getDirectionAwareKey(key, dir) {
+      if (dir !== "rtl") return key;
+      return key === "ArrowLeft" ? "ArrowRight" : key === "ArrowRight" ? "ArrowLeft" : key;
+    }
+    function getFocusIntent(event, orientation, dir) {
+      const key = getDirectionAwareKey(event.key, dir);
+      if (orientation === "vertical" && ["ArrowLeft", "ArrowRight"].includes(key)) return void 0;
+      if (orientation === "horizontal" && ["ArrowUp", "ArrowDown"].includes(key)) return void 0;
+      return MAP_KEY_TO_FOCUS_INTENT[key];
+    }
+    function focusFirst(candidates, preventScroll = false) {
+      const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+      for (const candidate of candidates) {
+        if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
+        candidate.focus({ preventScroll });
+        if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+      }
+    }
+    function wrapArray$1(array, startIndex) {
+      return array.map((_2, index2) => array[(startIndex + index2) % array.length]);
+    }
+    var Root$2 = RovingFocusGroup;
+    var Item = RovingFocusGroupItem;
+    function useSize(element) {
+      const [size2, setSize] = reactExports.useState(void 0);
+      useLayoutEffect2(() => {
+        if (element) {
+          setSize({ width: element.offsetWidth, height: element.offsetHeight });
+          const resizeObserver = new ResizeObserver((entries) => {
+            if (!Array.isArray(entries)) {
+              return;
+            }
+            if (!entries.length) {
+              return;
+            }
+            const entry = entries[0];
+            let width;
+            let height;
+            if ("borderBoxSize" in entry) {
+              const borderSizeEntry = entry["borderBoxSize"];
+              const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
+              width = borderSize["inlineSize"];
+              height = borderSize["blockSize"];
+            } else {
+              width = element.offsetWidth;
+              height = element.offsetHeight;
+            }
+            setSize({ width, height });
+          });
+          resizeObserver.observe(element, { box: "border-box" });
+          return () => resizeObserver.unobserve(element);
+        } else {
+          setSize(void 0);
+        }
+      }, [element]);
+      return size2;
+    }
+    function usePrevious(value) {
+      const ref = reactExports.useRef({ value, previous: value });
+      return reactExports.useMemo(() => {
+        if (ref.current.value !== value) {
+          ref.current.previous = ref.current.value;
+          ref.current.value = value;
+        }
+        return ref.current.previous;
+      }, [value]);
+    }
+    var RADIO_NAME = "Radio";
+    var [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
+    var [RadioProviderImpl, useRadioContext] = createRadioContext(RADIO_NAME);
+    function RadioProvider(props) {
+      const {
+        __scopeRadio,
+        checked = false,
+        children,
+        disabled,
+        form,
+        name,
+        onCheck,
+        required,
+        value = "on",
+        // @ts-expect-error
+        internal_do_not_use_render
+      } = props;
+      const [control, setControl] = reactExports.useState(null);
+      const [bubbleInput, setBubbleInput] = reactExports.useState(null);
+      const hasConsumerStoppedPropagationRef = reactExports.useRef(false);
+      const isFormControl = control ? !!form || !!control.closest("form") : (
+        // We set this to true by default so that events bubble to forms without JS (SSR)
+        true
+      );
+      const context = {
+        checked,
+        disabled,
+        required,
+        name,
+        form,
+        value,
+        control,
+        setControl,
+        hasConsumerStoppedPropagationRef,
+        isFormControl,
+        bubbleInput,
+        setBubbleInput,
+        onCheck: () => onCheck == null ? void 0 : onCheck()
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioProviderImpl, { scope: __scopeRadio, ...context, children: isFunction$4(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
+    }
+    var TRIGGER_NAME$3 = "RadioTrigger";
+    var RadioTrigger = reactExports.forwardRef(
+      ({ __scopeRadio, onClick, ...radioProps }, forwardedRef) => {
+        const {
+          checked,
+          disabled,
+          value,
+          setControl,
+          onCheck,
+          hasConsumerStoppedPropagationRef,
+          isFormControl,
+          bubbleInput
+        } = useRadioContext(TRIGGER_NAME$3, __scopeRadio);
+        const composedRefs = useComposedRefs(forwardedRef, setControl);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.button,
+          {
+            type: "button",
+            role: "radio",
+            "aria-checked": checked,
+            "data-state": getState$2(checked),
+            "data-disabled": disabled ? "" : void 0,
+            disabled,
+            value,
+            ...radioProps,
+            ref: composedRefs,
+            onClick: composeEventHandlers(onClick, (event) => {
+              if (!checked) onCheck();
+              if (bubbleInput && isFormControl) {
+                hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+                if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+              }
+            })
+          }
+        );
+      }
+    );
+    RadioTrigger.displayName = TRIGGER_NAME$3;
+    var Radio = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeRadio, name, checked, required, disabled, value, onCheck, form, ...radioProps } = props;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          RadioProvider,
+          {
+            __scopeRadio,
+            checked,
+            disabled,
+            required,
+            onCheck,
+            name,
+            form,
+            value,
+            internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                RadioTrigger,
+                {
+                  ...radioProps,
+                  ref: forwardedRef,
+                  __scopeRadio
+                }
+              ),
+              isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                RadioBubbleInput,
+                {
+                  __scopeRadio
+                }
+              )
+            ] })
+          }
+        );
+      }
+    );
+    Radio.displayName = RADIO_NAME;
+    var INDICATOR_NAME$2 = "RadioIndicator";
+    var RadioIndicator = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeRadio, forceMount, ...indicatorProps } = props;
+        const context = useRadioContext(INDICATOR_NAME$2, __scopeRadio);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || context.checked, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.span,
+          {
+            "data-state": getState$2(context.checked),
+            "data-disabled": context.disabled ? "" : void 0,
+            ...indicatorProps,
+            ref: forwardedRef
+          }
+        ) });
+      }
+    );
+    RadioIndicator.displayName = INDICATOR_NAME$2;
+    var BUBBLE_INPUT_NAME$3 = "RadioBubbleInput";
+    var RadioBubbleInput = reactExports.forwardRef(
+      ({ __scopeRadio, ...props }, forwardedRef) => {
+        const {
+          control,
+          checked,
+          required,
+          disabled,
+          name,
+          value,
+          form,
+          bubbleInput,
+          setBubbleInput,
+          hasConsumerStoppedPropagationRef
+        } = useRadioContext(BUBBLE_INPUT_NAME$3, __scopeRadio);
+        const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
+        const prevChecked = usePrevious(checked);
+        const controlSize = useSize(control);
+        reactExports.useEffect(() => {
+          const input = bubbleInput;
+          if (!input) return;
+          const inputProto = window.HTMLInputElement.prototype;
+          const descriptor = Object.getOwnPropertyDescriptor(
+            inputProto,
+            "checked"
+          );
+          const setChecked = descriptor.set;
+          const bubbles = !hasConsumerStoppedPropagationRef.current;
+          if (prevChecked !== checked && setChecked) {
+            const event = new Event("click", { bubbles });
+            setChecked.call(input, checked);
+            input.dispatchEvent(event);
+          }
+        }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+        const defaultCheckedRef = reactExports.useRef(checked);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.input,
+          {
+            type: "radio",
+            "aria-hidden": true,
+            defaultChecked: defaultCheckedRef.current,
+            required,
+            disabled,
+            name,
+            value,
+            form,
+            ...props,
+            tabIndex: -1,
+            ref: composedRefs,
+            style: {
+              ...props.style,
+              ...controlSize,
+              position: "absolute",
+              pointerEvents: "none",
+              opacity: 0,
+              margin: 0,
+              // We transform because the input is absolutely positioned but we have
+              // rendered it **after** the button. This pulls it back to sit on top
+              // of the button.
+              transform: "translateX(-100%)"
+            }
+          }
+        );
+      }
+    );
+    RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$3;
+    function isFunction$4(value) {
+      return typeof value === "function";
+    }
+    function getState$2(checked) {
+      return checked ? "checked" : "unchecked";
+    }
+    var ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+    var RADIO_GROUP_NAME = "RadioGroup";
+    var [createRadioGroupContext] = createContextScope(RADIO_GROUP_NAME, [
+      createRovingFocusGroupScope,
+      createRadioScope
+    ]);
+    var useRovingFocusGroupScope = createRovingFocusGroupScope();
+    var useRadioScope = createRadioScope();
+    var [RadioGroupProvider, useRadioGroupContext] = createRadioGroupContext(RADIO_GROUP_NAME);
+    var RadioGroup$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          __scopeRadioGroup,
+          name,
+          defaultValue,
+          value: valueProp,
+          required = false,
+          disabled = false,
+          orientation,
+          dir,
+          loop = true,
+          onValueChange,
+          ...groupProps
+        } = props;
+        const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
+        const direction = useDirection(dir);
+        const [value, setValue] = useControllableState({
+          prop: valueProp,
+          defaultProp: defaultValue ?? null,
+          onChange: onValueChange,
+          caller: RADIO_GROUP_NAME
+        });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          RadioGroupProvider,
+          {
+            scope: __scopeRadioGroup,
+            name,
+            required,
+            disabled,
+            value,
+            onValueChange: setValue,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Root$2,
+              {
+                asChild: true,
+                ...rovingFocusGroupScope,
+                orientation,
+                dir: direction,
+                loop,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Primitive.div,
+                  {
+                    role: "radiogroup",
+                    "aria-required": required,
+                    "aria-orientation": orientation,
+                    "data-disabled": disabled ? "" : void 0,
+                    dir: direction,
+                    ...groupProps,
+                    ref: forwardedRef
+                  }
+                )
+              }
+            )
+          }
+        );
+      }
+    );
+    RadioGroup$1.displayName = RADIO_GROUP_NAME;
+    var ITEM_NAME$1 = "RadioGroupItem";
+    var ITEM_PROVIDER_NAME = "RadioGroupItemProvider";
+    var ITEM_TRIGGER_NAME = "RadioGroupItemTrigger";
+    var ITEM_BUBBLE_INPUT_NAME = "RadioGroupItemBubbleInput";
+    function RadioGroupItemProvider(props) {
+      const {
+        __scopeRadioGroup,
+        value,
+        disabled,
+        children,
+        // @ts-expect-error
+        internal_do_not_use_render
+      } = props;
+      const context = useRadioGroupContext(ITEM_PROVIDER_NAME, __scopeRadioGroup);
+      const radioScope = useRadioScope(__scopeRadioGroup);
+      const isDisabled = context.disabled || disabled;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RadioProvider,
+        {
+          ...radioScope,
+          checked: context.value === value,
+          disabled: isDisabled,
+          required: context.required,
+          name: context.name,
+          value,
+          onCheck: () => context.onValueChange(value),
+          internal_do_not_use_render,
+          children
+        }
+      );
+    }
+    var RadioGroupItemTrigger = reactExports.forwardRef((props, forwardedRef) => {
+      const { __scopeRadioGroup, ...triggerProps } = props;
+      const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
+      const radioScope = useRadioScope(__scopeRadioGroup);
+      const { checked, disabled } = useRadioContext(ITEM_TRIGGER_NAME, radioScope.__scopeRadio);
+      const ref = reactExports.useRef(null);
+      const composedRefs = useComposedRefs(forwardedRef, ref);
+      const isArrowKeyPressedRef = reactExports.useRef(false);
+      reactExports.useEffect(() => {
+        const handleKeyDown = (event) => {
+          if (ARROW_KEYS.includes(event.key)) {
+            isArrowKeyPressedRef.current = true;
+          }
+        };
+        const handleKeyUp = () => isArrowKeyPressedRef.current = false;
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("keyup", handleKeyUp);
+        return () => {
+          document.removeEventListener("keydown", handleKeyDown);
+          document.removeEventListener("keyup", handleKeyUp);
+        };
+      }, []);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Item,
+        {
+          asChild: true,
+          ...rovingFocusGroupScope,
+          focusable: !disabled,
+          active: checked,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioTrigger,
+            {
+              ...radioScope,
+              ...triggerProps,
+              ref: composedRefs,
+              onKeyDown: composeEventHandlers(triggerProps.onKeyDown, (event) => {
+                if (event.key === "Enter") event.preventDefault();
+              }),
+              onFocus: composeEventHandlers(triggerProps.onFocus, () => {
+                var _a2;
+                if (isArrowKeyPressedRef.current) {
+                  (_a2 = ref.current) == null ? void 0 : _a2.click();
+                }
+              })
+            }
+          )
+        }
+      );
+    });
+    RadioGroupItemTrigger.displayName = ITEM_TRIGGER_NAME;
+    var RadioGroupItem$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeRadioGroup, value, disabled, ...itemProps } = props;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          RadioGroupItemProvider,
+          {
+            __scopeRadioGroup,
+            value,
+            disabled,
+            internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                RadioGroupItemTrigger,
+                {
+                  ...itemProps,
+                  ref: forwardedRef,
+                  __scopeRadioGroup
+                }
+              ),
+              isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                RadioGroupItemBubbleInput,
+                {
+                  __scopeRadioGroup
+                }
+              )
+            ] })
+          }
+        );
+      }
+    );
+    RadioGroupItem$1.displayName = ITEM_NAME$1;
+    var RadioGroupItemBubbleInput = reactExports.forwardRef((props, forwardedRef) => {
+      const { __scopeRadioGroup, ...bubbleProps } = props;
+      const radioScope = useRadioScope(__scopeRadioGroup);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioBubbleInput, { ...radioScope, ...bubbleProps, ref: forwardedRef });
+    });
+    RadioGroupItemBubbleInput.displayName = ITEM_BUBBLE_INPUT_NAME;
+    var INDICATOR_NAME2 = "RadioGroupIndicator";
+    var RadioGroupIndicator = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeRadioGroup, ...indicatorProps } = props;
+        const radioScope = useRadioScope(__scopeRadioGroup);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioIndicator, { ...radioScope, ...indicatorProps, ref: forwardedRef });
+      }
+    );
+    RadioGroupIndicator.displayName = INDICATOR_NAME2;
+    function RadioGroup({
+      className,
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RadioGroup$1,
+        {
+          "data-slot": "radio-group",
+          className: cn("grid gap-3", className),
+          ...props
+        }
+      );
+    }
+    function RadioGroupItem({
+      className,
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RadioGroupItem$1,
+        {
+          "data-slot": "radio-group-item",
+          className: cn(
+            "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+            className
+          ),
+          ...props,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioGroupIndicator,
+            {
+              "data-slot": "radio-group-indicator",
+              className: "relative flex items-center justify-center",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Circle, { className: "fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" })
+            }
+          )
         }
       );
     }
@@ -47895,22 +49404,25 @@ variant ${k2} -> ${e.message}`, {
       existingCategories
     }) {
       const [text, setText] = reactExports.useState("");
+      const [importMode, setImportMode] = reactExports.useState("skip");
       const [error, setError] = reactExports.useState(null);
       const [summary, setSummary] = reactExports.useState(null);
       const [progress, setProgress] = reactExports.useState(null);
       const createCategory = useCreateCategory();
       const createItem = useCreateItem();
+      const updateItem = useUpdateItem();
       const queryClient2 = useQueryClient();
       reactExports.useEffect(() => {
         if (open) {
           setText("");
+          setImportMode("skip");
           setError(null);
           setSummary(null);
           setProgress(null);
         }
       }, [open]);
       const trimmed = text.trim();
-      const importing = createCategory.isPending || createItem.isPending || progress !== null;
+      const importing = createCategory.isPending || createItem.isPending || updateItem.isPending || progress !== null;
       const canSubmit = trimmed.length > 0 && !importing;
       async function handleImport(e) {
         e.preventDefault();
@@ -47924,7 +49436,7 @@ variant ${k2} -> ${e.message}`, {
           setError("Invalid JSON — could not parse the pasted text.");
           return;
         }
-        const validation = validateImportBlob(parsed);
+        const validation = validateImportBlob$1(parsed);
         if (!validation.ok || !validation.categories) {
           setError(validation.error ?? "Invalid JSON structure.");
           return;
@@ -47932,6 +49444,7 @@ variant ${k2} -> ${e.message}`, {
         const categories = validation.categories;
         let createdCategories = 0;
         let createdItems = 0;
+        let updatedItems = 0;
         let skippedItems = 0;
         const categoryIdByName = /* @__PURE__ */ new Map();
         for (const c2 of existingCategories) {
@@ -47954,10 +49467,34 @@ variant ${k2} -> ${e.message}`, {
             }
             touchedCategoryIds.add(categoryId);
             const existingItems = await loadItemsForCategory(categoryId);
-            const existingTitles = new Set(existingItems.map((i) => i.title));
+            const existingByTitle = new Map(
+              existingItems.map((i) => [i.title, i])
+            );
             for (const item of cat.items) {
-              if (existingTitles.has(item.title)) {
-                skippedItems += 1;
+              const existing = existingByTitle.get(item.title);
+              if (existing) {
+                if (importMode === "skip") {
+                  skippedItems += 1;
+                  continue;
+                }
+                setProgress(`Updating item: ${item.title} (${cat.name})`);
+                const details2 = item.fields.map((f2) => ({
+                  id: makeDetailFieldId(),
+                  fieldLabel: f2.label,
+                  value: f2.value
+                }));
+                await updateItem.mutateAsync({
+                  itemId: existing.id,
+                  categoryId,
+                  title: existing.title,
+                  subtitle: existing.subtitle,
+                  photo: existing.photo,
+                  details: details2,
+                  notes: item.notes,
+                  tags: item.tags,
+                  seasonal: item.seasonal
+                });
+                updatedItems += 1;
                 continue;
               }
               setProgress(`Importing item: ${item.title} (${cat.name})`);
@@ -47976,7 +49513,18 @@ variant ${k2} -> ${e.message}`, {
                 tags: item.tags,
                 seasonal: item.seasonal
               });
-              existingTitles.add(item.title);
+              existingByTitle.set(item.title, {
+                id: "",
+                categoryId,
+                title: item.title,
+                subtitle: null,
+                photo: null,
+                details,
+                notes: item.notes,
+                tags: item.tags,
+                seasonal: item.seasonal,
+                sortOrder: 0
+              });
               createdItems += 1;
             }
           }
@@ -47988,18 +49536,21 @@ variant ${k2} -> ${e.message}`, {
               queryKey: ["library-items", cid]
             });
           }
-          const message = `Created ${createdCategories} ${createdCategories === 1 ? "category" : "categories"}, ${createdItems} ${createdItems === 1 ? "item" : "items"}. Skipped ${skippedItems} ${skippedItems === 1 ? "item" : "items"} that already existed.`;
+          const message = formatSummary$1(
+            createdCategories,
+            updatedItems,
+            createdItems,
+            skippedItems
+          );
           setSummary(message);
           ue.success("Import complete", { description: message });
           setTimeout(() => {
             onOpenChange(false);
           }, 900);
         } catch (err) {
-          const partial = `Created ${createdCategories} ${createdCategories === 1 ? "category" : "categories"}, ${createdItems} ${createdItems === 1 ? "item" : "items"} before the failure.`;
+          const partial = `Created ${createdCategories} ${createdCategories === 1 ? "category" : "categories"}, updated ${updatedItems} ${updatedItems === 1 ? "item" : "items"}, created ${createdItems} ${createdItems === 1 ? "item" : "items"} before the failure.`;
           const description = err instanceof Error ? err.message : void 0;
-          setError(
-            `Import stopped: ${description ?? "a create call failed"}. ${partial}`
-          );
+          setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
           ue.error("Import stopped", { description: `${partial}` });
           await queryClient2.invalidateQueries({
             queryKey: ["library-categories", positionId]
@@ -48050,10 +49601,68 @@ variant ${k2} -> ${e.message}`, {
                 "Paste a JSON blob of categories and items. The JSON",
                 " ",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "position" }),
-                " field is ignored — import always targets this position’s library. Existing categories (matched by name) and items (matched by title) are skipped, not duplicated."
+                " field is ignored — import always targets this position’s library. Existing categories (matched by name) are reused, not duplicated. Items matched by title are skipped or updated depending on the mode below."
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleImport, className: "grid gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Import mode" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  RadioGroup,
+                  {
+                    value: importMode,
+                    onValueChange: (v2) => setImportMode(v2),
+                    className: "grid gap-2",
+                    "data-ocid": "library.admin.import.dialog.mode.toggle",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "label",
+                        {
+                          htmlFor: "import-mode-skip",
+                          className: "flex items-start gap-3 rounded-md border border-border bg-library-card px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              RadioGroupItem,
+                              {
+                                id: "import-mode-skip",
+                                value: "skip",
+                                className: "mt-0.5",
+                                "data-ocid": "library.admin.import.dialog.mode.skip.radio"
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "grid gap-0.5", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-sm text-foreground", children: "Skip existing" }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: "Items whose title already exists are left untouched and counted as skipped." })
+                            ] })
+                          ]
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "label",
+                        {
+                          htmlFor: "import-mode-update",
+                          className: "flex items-start gap-3 rounded-md border border-border bg-library-card px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              RadioGroupItem,
+                              {
+                                id: "import-mode-update",
+                                value: "update",
+                                className: "mt-0.5",
+                                "data-ocid": "library.admin.import.dialog.mode.update.radio"
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "grid gap-0.5", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-sm text-foreground", children: "Update existing" }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: "Items whose title already exists are updated in place — detail fields, notes, tags, and seasonal flag are replaced. The existing photo and sort order are preserved." })
+                            ] })
+                          ]
+                        }
+                      )
+                    ]
+                  }
+                )
+              ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Label,
@@ -48069,7 +49678,7 @@ variant ${k2} -> ${e.message}`, {
                     id: "import-json",
                     value: text,
                     onChange: (e) => setText(e.target.value),
-                    placeholder: PLACEHOLDER,
+                    placeholder: PLACEHOLDER$1,
                     "aria-invalid": !!error,
                     "aria-describedby": error ? "import-error" : void 0,
                     "data-ocid": "library.admin.import.dialog.json_input",
@@ -48145,7 +49754,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ) });
     }
-    function validateImportBlob(parsed) {
+    function formatSummary$1(createdCategories, updatedItems, createdItems, skippedItems) {
+      const catWord = createdCategories === 1 ? "category" : "categories";
+      const updatedWord = updatedItems === 1 ? "item" : "items";
+      const createdWord = createdItems === 1 ? "item" : "items";
+      const skippedWord = skippedItems === 1 ? "item" : "items";
+      return `Created ${createdCategories} ${catWord}, updated ${updatedItems} ${updatedWord}, created ${createdItems} ${createdWord}, skipped ${skippedItems} ${skippedWord}.`;
+    }
+    function validateImportBlob$1(parsed) {
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
         return {
           ok: false,
@@ -48222,7 +49838,7 @@ variant ${k2} -> ${e.message}`, {
       }
       return { ok: true, categories };
     }
-    const PLACEHOLDER = `{
+    const PLACEHOLDER$1 = `{
   "position": "Bartender",
   "categories": [
     {
@@ -49233,7 +50849,7 @@ variant ${k2} -> ${e.message}`, {
       return value;
     }
     var asyncTag = "[object AsyncFunction]", funcTag$2 = "[object Function]", genTag$1 = "[object GeneratorFunction]", proxyTag = "[object Proxy]";
-    function isFunction$2(value) {
+    function isFunction$3(value) {
       if (!isObject(value)) {
         return false;
       }
@@ -49275,7 +50891,7 @@ variant ${k2} -> ${e.message}`, {
       if (!isObject(value) || isMasked(value)) {
         return false;
       }
-      var pattern = isFunction$2(value) ? reIsNative : reIsHostCtor;
+      var pattern = isFunction$3(value) ? reIsNative : reIsHostCtor;
       return pattern.test(toSource(value));
     }
     function getValue(object, key) {
@@ -49445,7 +51061,7 @@ variant ${k2} -> ${e.message}`, {
       return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
     }
     function isArrayLike(value) {
-      return value != null && isLength(value.length) && !isFunction$2(value);
+      return value != null && isLength(value.length) && !isFunction$3(value);
     }
     function isIterateeCall(value, index2, object) {
       if (!isObject(object)) {
@@ -50322,7 +51938,7 @@ variant ${k2} -> ${e.message}`, {
           newValue = objValue;
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
-          } else if (!isObject(objValue) || isFunction$2(objValue)) {
+          } else if (!isObject(objValue) || isFunction$3(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         } else {
@@ -60274,7 +61890,7 @@ ${escapeText(this.code(index2, length))}
       ["break"]
     ];
     const QUILL_FORMATS = ["bold", "italic", "underline", "list"];
-    const MAX_HTML_LENGTH = 500;
+    const MAX_HTML_LENGTH = 5e3;
     function QuillAutoGrow({ children }) {
       const wrapperRef = reactExports.useRef(null);
       const growContainer = reactExports.useCallback(
@@ -60410,7 +62026,7 @@ ${escapeText(this.code(index2, length))}
                       placeholder: "Label e.g. Rocks Ingredients",
                       "aria-label": `Detail field ${index2 + 1} label`,
                       disabled,
-                      maxLength: 80,
+                      maxLength: 200,
                       autoComplete: "off",
                       "data-ocid": `library.admin.item.field.${index2 + 1}.label`,
                       className: "font-heading text-xs uppercase tracking-wider"
@@ -60496,50 +62112,6 @@ ${escapeText(this.code(index2, length))}
         )
       ] });
     }
-    function usePrevious(value) {
-      const ref = reactExports.useRef({ value, previous: value });
-      return reactExports.useMemo(() => {
-        if (ref.current.value !== value) {
-          ref.current.previous = ref.current.value;
-          ref.current.value = value;
-        }
-        return ref.current.previous;
-      }, [value]);
-    }
-    function useSize(element) {
-      const [size2, setSize] = reactExports.useState(void 0);
-      useLayoutEffect2(() => {
-        if (element) {
-          setSize({ width: element.offsetWidth, height: element.offsetHeight });
-          const resizeObserver = new ResizeObserver((entries) => {
-            if (!Array.isArray(entries)) {
-              return;
-            }
-            if (!entries.length) {
-              return;
-            }
-            const entry = entries[0];
-            let width;
-            let height;
-            if ("borderBoxSize" in entry) {
-              const borderSizeEntry = entry["borderBoxSize"];
-              const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
-              width = borderSize["inlineSize"];
-              height = borderSize["blockSize"];
-            } else {
-              width = element.offsetWidth;
-              height = element.offsetHeight;
-            }
-            setSize({ width, height });
-          });
-          resizeObserver.observe(element, { box: "border-box" });
-          return () => resizeObserver.unobserve(element);
-        } else {
-          setSize(void 0);
-        }
-      }, [element]);
-      return size2;
-    }
     var SWITCH_NAME = "Switch";
     var [createSwitchContext] = createContextScope(SWITCH_NAME);
     var [SwitchProviderImpl, useSwitchContext] = createSwitchContext(SWITCH_NAME);
@@ -60587,9 +62159,9 @@ ${escapeText(this.code(index2, length))}
         bubbleInput,
         setBubbleInput
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchProviderImpl, { scope: __scopeSwitch, ...context, children: isFunction$1(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchProviderImpl, { scope: __scopeSwitch, ...context, children: isFunction$2(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
     }
-    var TRIGGER_NAME$1 = "SwitchTrigger";
+    var TRIGGER_NAME$2 = "SwitchTrigger";
     var SwitchTrigger = reactExports.forwardRef(
       ({ __scopeSwitch, onClick, ...switchProps }, forwardedRef) => {
         const {
@@ -60602,7 +62174,7 @@ ${escapeText(this.code(index2, length))}
           hasConsumerStoppedPropagationRef,
           isFormControl,
           bubbleInput
-        } = useSwitchContext(TRIGGER_NAME$1, __scopeSwitch);
+        } = useSwitchContext(TRIGGER_NAME$2, __scopeSwitch);
         const composedRefs = useComposedRefs(forwardedRef, setControl);
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           Primitive.button,
@@ -60611,7 +62183,7 @@ ${escapeText(this.code(index2, length))}
             role: "switch",
             "aria-checked": checked,
             "aria-required": required,
-            "data-state": getState(checked),
+            "data-state": getState$1(checked),
             "data-disabled": disabled ? "" : void 0,
             disabled,
             value,
@@ -60628,7 +62200,7 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    SwitchTrigger.displayName = TRIGGER_NAME$1;
+    SwitchTrigger.displayName = TRIGGER_NAME$2;
     var Switch$1 = reactExports.forwardRef(
       (props, forwardedRef) => {
         const {
@@ -60684,7 +62256,7 @@ ${escapeText(this.code(index2, length))}
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           Primitive.span,
           {
-            "data-state": getState(context.checked),
+            "data-state": getState$1(context.checked),
             "data-disabled": context.disabled ? "" : void 0,
             ...thumbProps,
             ref: forwardedRef
@@ -60693,7 +62265,7 @@ ${escapeText(this.code(index2, length))}
       }
     );
     SwitchThumb.displayName = THUMB_NAME;
-    var BUBBLE_INPUT_NAME$1 = "SwitchBubbleInput";
+    var BUBBLE_INPUT_NAME$2 = "SwitchBubbleInput";
     var SwitchBubbleInput = reactExports.forwardRef(
       ({ __scopeSwitch, ...props }, forwardedRef) => {
         const {
@@ -60708,7 +62280,7 @@ ${escapeText(this.code(index2, length))}
           form,
           bubbleInput,
           setBubbleInput
-        } = useSwitchContext(BUBBLE_INPUT_NAME$1, __scopeSwitch);
+        } = useSwitchContext(BUBBLE_INPUT_NAME$2, __scopeSwitch);
         const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
         const prevChecked = usePrevious(checked);
         const controlSize = useSize(control);
@@ -60759,11 +62331,11 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
-    function isFunction$1(value) {
+    SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
+    function isFunction$2(value) {
       return typeof value === "function";
     }
-    function getState(checked) {
+    function getState$1(checked) {
       return checked ? "checked" : "unchecked";
     }
     function Switch({
@@ -61272,73 +62844,6 @@ ${escapeText(this.code(index2, length))}
     }
     function clamp$1(value, [min2, max2]) {
       return Math.min(max2, Math.max(min2, value));
-    }
-    function createCollection(name) {
-      const PROVIDER_NAME2 = name + "CollectionProvider";
-      const [createCollectionContext, createCollectionScope2] = createContextScope(PROVIDER_NAME2);
-      const [CollectionProviderImpl, useCollectionContext] = createCollectionContext(
-        PROVIDER_NAME2,
-        { collectionRef: { current: null }, itemMap: /* @__PURE__ */ new Map() }
-      );
-      const CollectionProvider = (props) => {
-        const { scope, children } = props;
-        const ref = reactExports.useRef(null);
-        const itemMap = reactExports.useRef(/* @__PURE__ */ new Map()).current;
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionProviderImpl, { scope, itemMap, collectionRef: ref, children });
-      };
-      CollectionProvider.displayName = PROVIDER_NAME2;
-      const COLLECTION_SLOT_NAME = name + "CollectionSlot";
-      const CollectionSlotImpl = /* @__PURE__ */ createSlot(COLLECTION_SLOT_NAME);
-      const CollectionSlot = reactExports.forwardRef(
-        (props, forwardedRef) => {
-          const { scope, children } = props;
-          const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
-          const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionSlotImpl, { ref: composedRefs, children });
-        }
-      );
-      CollectionSlot.displayName = COLLECTION_SLOT_NAME;
-      const ITEM_SLOT_NAME = name + "CollectionItemSlot";
-      const ITEM_DATA_ATTR = "data-radix-collection-item";
-      const CollectionItemSlotImpl = /* @__PURE__ */ createSlot(ITEM_SLOT_NAME);
-      const CollectionItemSlot = reactExports.forwardRef(
-        (props, forwardedRef) => {
-          const { scope, children, ...itemData } = props;
-          const ref = reactExports.useRef(null);
-          const composedRefs = useComposedRefs(forwardedRef, ref);
-          const context = useCollectionContext(ITEM_SLOT_NAME, scope);
-          reactExports.useEffect(() => {
-            context.itemMap.set(ref, { ref, ...itemData });
-            return () => void context.itemMap.delete(ref);
-          });
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionItemSlotImpl, { ...{ [ITEM_DATA_ATTR]: "" }, ref: composedRefs, children });
-        }
-      );
-      CollectionItemSlot.displayName = ITEM_SLOT_NAME;
-      function useCollection2(scope) {
-        const context = useCollectionContext(name + "CollectionConsumer", scope);
-        const getItems = reactExports.useCallback(() => {
-          const collectionNode = context.collectionRef.current;
-          if (!collectionNode) return [];
-          const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
-          const items = Array.from(context.itemMap.values());
-          const orderedItems = items.sort(
-            (a2, b2) => orderedNodes.indexOf(a2.ref.current) - orderedNodes.indexOf(b2.ref.current)
-          );
-          return orderedItems;
-        }, [context.collectionRef, context.itemMap]);
-        return getItems;
-      }
-      return [
-        { Provider: CollectionProvider, Slot: CollectionSlot, ItemSlot: CollectionItemSlot },
-        useCollection2,
-        createCollectionScope2
-      ];
-    }
-    var DirectionContext = reactExports.createContext(void 0);
-    function useDirection(localDir) {
-      const globalDir = reactExports.useContext(DirectionContext);
-      return localDir || globalDir || "ltr";
     }
     const sides = ["top", "right", "bottom", "left"];
     const min = Math.min;
@@ -63272,7 +64777,7 @@ ${escapeText(this.code(index2, length))}
       );
     });
     Arrow$1.displayName = NAME$1;
-    var Root = Arrow$1;
+    var Root$1 = Arrow$1;
     var POPPER_NAME = "Popper";
     var [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME);
     var [PopperProvider, usePopperContext] = createPopperContext(POPPER_NAME);
@@ -63539,7 +65044,7 @@ ${escapeText(this.code(index2, length))}
               visibility: contentContext.shouldHideArrow ? "hidden" : void 0
             },
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Root,
+              Root$1,
               {
                 ...arrowProps,
                 ref: forwardedRef,
@@ -63717,7 +65222,7 @@ ${escapeText(this.code(index2, length))}
           scope: __scopeSelect,
           onNativeOptionAdd: handleNativeOptionAdd,
           onNativeOptionRemove: handleNativeOptionRemove,
-          children: isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
+          children: isFunction$1(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
         }
       ) }) }) });
     }
@@ -63742,12 +65247,12 @@ ${escapeText(this.code(index2, length))}
       );
     };
     Select$1.displayName = SELECT_NAME;
-    var TRIGGER_NAME = "SelectTrigger";
+    var TRIGGER_NAME$1 = "SelectTrigger";
     var SelectTrigger$1 = reactExports.forwardRef(
       (props, forwardedRef) => {
         const { __scopeSelect, disabled = false, ...triggerProps } = props;
         const popperScope = usePopperScope(__scopeSelect);
-        const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
+        const context = useSelectContext(TRIGGER_NAME$1, __scopeSelect);
         const isDisabled = context.disabled || disabled;
         const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
         const getItems = useCollection(__scopeSelect);
@@ -63819,7 +65324,7 @@ ${escapeText(this.code(index2, length))}
         ) });
       }
     );
-    SelectTrigger$1.displayName = TRIGGER_NAME;
+    SelectTrigger$1.displayName = TRIGGER_NAME$1;
     var VALUE_NAME = "SelectValue";
     var SelectValue$1 = reactExports.forwardRef(
       (props, forwardedRef) => {
@@ -64693,10 +66198,10 @@ ${escapeText(this.code(index2, length))}
       }
     );
     SelectArrow.displayName = ARROW_NAME;
-    var BUBBLE_INPUT_NAME = "SelectBubbleInput";
+    var BUBBLE_INPUT_NAME$1 = "SelectBubbleInput";
     var SelectBubbleInput = reactExports.forwardRef(
       ({ __scopeSelect, ...props }, forwardedRef) => {
-        const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
+        const context = useSelectContext(BUBBLE_INPUT_NAME$1, __scopeSelect);
         const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
         const { nativeOptions, nativeSelectKey } = context;
         const ref = reactExports.useRef(null);
@@ -64745,8 +66250,8 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
-    function isFunction(value) {
+    SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+    function isFunction$1(value) {
       return typeof value === "function";
     }
     function shouldShowPlaceholder(value) {
@@ -65553,7 +67058,7 @@ ${escapeText(this.code(index2, length))}
         return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-dvh bg-background", "aria-hidden": true });
       }
       if (myProfile && myProfile.role !== "admin") {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(AccessDenied, {});
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(AccessDenied$1, {});
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-4xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Header, {}),
@@ -65720,7 +67225,7 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
-    function AccessDenied() {
+    function AccessDenied$1() {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -65856,7 +67361,7 @@ ${escapeText(this.code(index2, length))}
       const list = positions ?? [];
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(HeroSection, {}),
-        loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(TileSkeleton, {}) : list.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyState, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(PositionGrid, { positions: list, assignments: assignments ?? [] })
+        loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(TileSkeleton, {}) : list.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyState$1, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(PositionGrid, { positions: list, assignments: assignments ?? [] })
       ] });
     }
     function HeroSection() {
@@ -65899,7 +67404,7 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
-    function EmptyState() {
+    function EmptyState$1() {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -65926,6 +67431,2300 @@ ${escapeText(this.code(index2, length))}
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-4 w-16 bg-muted" })
             ] })
           ] }, k2))
+        }
+      );
+    }
+    function toFrontendPhase(c2) {
+      return {
+        id: c2.id.toString(),
+        name: c2.name,
+        sortOrder: Number(c2.sortOrder)
+      };
+    }
+    function toFrontendTask(t) {
+      return {
+        id: t.id.toString(),
+        phaseId: t.phaseId.toString(),
+        text: t.text,
+        section: t.section ?? null,
+        done: t.done,
+        assignedTo: t.assignedTo ? t.assignedTo.toString() : null,
+        completionDate: t.completionDate ?? null,
+        notes: t.notes ?? null,
+        sortOrder: Number(t.sortOrder)
+      };
+    }
+    function toFrontendSummary(s) {
+      return {
+        phasesCreated: Number(s.phasesCreated),
+        phasesReused: Number(s.phasesReused),
+        tasksAdded: Number(s.tasksAdded)
+      };
+    }
+    function toFrontendProgress(p2) {
+      return {
+        doneCount: Number(p2.doneCount),
+        totalCount: Number(p2.totalCount)
+      };
+    }
+    function useNsoPhases() {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["nso-phases"],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getNsoPhases();
+          return result.map(toFrontendPhase);
+        },
+        enabled: !!actor && !isFetching
+      });
+    }
+    function useNsoTasksByPhase(phaseId) {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["nso-tasks", phaseId],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getNsoTasksByPhase(BigInt(phaseId));
+          return result.map(toFrontendTask);
+        },
+        enabled: !!actor && !isFetching && !!phaseId
+      });
+    }
+    function useNsoOverallProgress() {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["nso-progress"],
+        queryFn: async () => {
+          if (!actor) return { doneCount: 0, totalCount: 0 };
+          const result = await actor.getNsoOverallProgress();
+          return toFrontendProgress(result);
+        },
+        enabled: !!actor && !isFetching
+      });
+    }
+    function useNsoAssignableUsers() {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["nso-assignable-users"],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getNsoAssignableUsers();
+          return result.map((p2) => ({
+            principal: p2.id.toString(),
+            name: p2.name,
+            storeLocation: p2.storeLocation,
+            role: p2.role
+          }));
+        },
+        enabled: !!actor && !isFetching
+      });
+    }
+    function useCreateNsoPhase() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.createNsoPhase(input.name);
+          return toFrontendPhase(result);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    function useUpdateNsoPhase() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.updateNsoPhase(BigInt(input.id), input.name);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
+        }
+      });
+    }
+    function useDeleteNsoPhase() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.deleteNsoPhase(BigInt(input.id));
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-tasks"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    function useReorderNsoPhases() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.reorderNsoPhases(
+            BigInt(input.id),
+            input.direction === "up" ? Variant_up_down.up : Variant_up_down.down
+          );
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
+        }
+      });
+    }
+    function useCreateNsoTask() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.createNsoTask(
+            BigInt(input.phaseId),
+            input.text,
+            input.section && input.section.length > 0 ? input.section : null,
+            input.assignedTo ? Principal$1.fromText(input.assignedTo) : null
+          );
+          return toFrontendTask(result);
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    function useUpdateNsoTask() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.updateNsoTask(
+            BigInt(input.id),
+            input.text,
+            input.section && input.section.length > 0 ? input.section : null,
+            input.done,
+            input.assignedTo ? Principal$1.fromText(input.assignedTo) : null,
+            input.completionDate && input.completionDate.length > 0 ? input.completionDate : null,
+            input.notes && input.notes.length > 0 ? input.notes : null
+          );
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    function useToggleNsoTask() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.toggleNsoTask(
+            BigInt(input.id),
+            input.done,
+            input.completionDate && input.completionDate.length > 0 ? input.completionDate : null
+          );
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    function useSetNsoTaskAssignment() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.setNsoTaskAssignment(
+            BigInt(input.id),
+            input.assignedTo ? Principal$1.fromText(input.assignedTo) : null
+          );
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+        }
+      });
+    }
+    function useSetNsoTaskCompletionDate() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.setNsoTaskCompletionDate(
+            BigInt(input.id),
+            input.completionDate && input.completionDate.length > 0 ? input.completionDate : null
+          );
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+        }
+      });
+    }
+    function useDeleteNsoTask() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.deleteNsoTask(BigInt(input.id));
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    function useReorderNsoTasks() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.reorderNsoTasks(
+            BigInt(input.id),
+            input.direction === "up" ? Variant_up_down.up : Variant_up_down.down
+          );
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["nso-tasks", variables.phaseId]
+          });
+        }
+      });
+    }
+    function useImportNsoTasks() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.importNsoTasks({
+            moduleName: input.moduleName,
+            phases: input.phases.map((p2) => ({
+              name: p2.name,
+              tasks: p2.tasks.map((t) => ({
+                text: t.text,
+                section: t.section && t.section.length > 0 ? t.section : void 0,
+                notes: t.notes && t.notes.length > 0 ? t.notes : void 0
+              }))
+            }))
+          });
+          return toFrontendSummary(result);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-tasks"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+        }
+      });
+    }
+    const IMPORT_CHUNK_SIZE = 200;
+    function NsoBulkImportDialog({
+      open,
+      onOpenChange
+    }) {
+      const [text, setText] = reactExports.useState("");
+      const [error, setError] = reactExports.useState(null);
+      const [chunkIndex, setChunkIndex] = reactExports.useState(0);
+      const [totalChunks, setTotalChunks] = reactExports.useState(0);
+      const importMutation = useImportNsoTasks();
+      reactExports.useEffect(() => {
+        if (open) {
+          setText("");
+          setError(null);
+          setChunkIndex(0);
+          setTotalChunks(0);
+        }
+      }, [open]);
+      const trimmed = text.trim();
+      const importing = importMutation.isPending;
+      const canSubmit = trimmed.length > 0 && !importing;
+      async function handleImport(e) {
+        e.preventDefault();
+        if (trimmed.length === 0) return;
+        setError(null);
+        let parsed;
+        try {
+          parsed = JSON.parse(trimmed);
+        } catch {
+          setError("Invalid JSON — could not parse the pasted text.");
+          return;
+        }
+        const validation = validateImportBlob(parsed);
+        if (!validation.ok || !validation.input) {
+          setError(validation.error ?? "Invalid JSON structure.");
+          return;
+        }
+        const chunks = chunkImportInput(validation.input, IMPORT_CHUNK_SIZE);
+        setTotalChunks(chunks.length);
+        setChunkIndex(0);
+        const aggregate = {
+          phasesCreated: 0,
+          phasesReused: 0,
+          tasksAdded: 0
+        };
+        for (let i = 0; i < chunks.length; i += 1) {
+          setChunkIndex(i + 1);
+          try {
+            const summary = await importMutation.mutateAsync(chunks[i]);
+            aggregate.phasesCreated += summary.phasesCreated;
+            aggregate.phasesReused += summary.phasesReused;
+            aggregate.tasksAdded += summary.tasksAdded;
+          } catch (err) {
+            const description = err instanceof Error ? err.message : void 0;
+            const chunkLabel = `chunk ${i + 1} of ${chunks.length}`;
+            const message2 = `Import failed at ${chunkLabel}${description ? `: ${description}` : "."} Earlier chunks were imported successfully and were NOT rolled back. Re-run import for the remaining tasks.`;
+            setError(message2);
+            ue.error("Import failed", {
+              description: `Stopped at ${chunkLabel}${description ? ` — ${description}` : ""}. Earlier chunks kept.`
+            });
+            return;
+          }
+        }
+        const message = formatSummary(
+          aggregate.phasesCreated,
+          aggregate.phasesReused,
+          aggregate.tasksAdded
+        );
+        ue.success("Import complete", { description: message });
+        onOpenChange(false);
+      }
+      const showProgress = importing && totalChunks > 0;
+      const progressPct = totalChunks > 0 ? Math.round(chunkIndex / totalChunks * 100) : 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange: importing ? void 0 : onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        DialogContent,
+        {
+          className: "bg-card border-border sm:max-w-2xl",
+          "data-ocid": "nso.import.dialog",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                DialogTitle,
+                {
+                  className: "font-heading uppercase tracking-wide text-foreground",
+                  "data-ocid": "nso.import.dialog.title",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "inline size-5 align-text-bottom text-primary" }),
+                    " ",
+                    "Import tasks"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogDescription, { children: [
+                "Paste a JSON preset of phases and tasks. Existing phases (matched by name, case-sensitive) are reused, not duplicated. New phases are created with the next sort order. Imported tasks start not-done, unassigned, and without a completion date. Large imports are sent in batches of ~",
+                IMPORT_CHUNK_SIZE,
+                " tasks."
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleImport, className: "grid gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    htmlFor: "nso-import-json",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: "JSON"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Textarea,
+                  {
+                    id: "nso-import-json",
+                    value: text,
+                    onChange: (e) => setText(e.target.value),
+                    placeholder: PLACEHOLDER,
+                    "aria-invalid": !!error,
+                    "aria-describedby": error ? "nso-import-error" : void 0,
+                    "data-ocid": "nso.import.dialog.json_input",
+                    autoComplete: "off",
+                    spellCheck: false,
+                    className: "min-h-56 font-mono text-xs",
+                    disabled: importing
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-xs text-muted-foreground", children: [
+                  "Expected shape:",
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ module, phases: [{ name, tasks: [{ text, section?, notes? }] }] }" })
+                ] })
+              ] }),
+              error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  id: "nso-import-error",
+                  className: "text-xs text-primary font-body",
+                  "data-ocid": "nso.import.dialog.error_state",
+                  role: "alert",
+                  children: error
+                }
+              ),
+              showProgress && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "grid gap-2",
+                  "data-ocid": "nso.import.dialog.loading_state",
+                  "aria-live": "polite",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("output", { className: "text-xs text-muted-foreground font-body flex items-center gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-3 animate-spin" }),
+                      "Importing chunk ",
+                      chunkIndex,
+                      " of ",
+                      totalChunks,
+                      "…"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        className: "h-2 w-full overflow-hidden rounded-sm border border-border bg-background",
+                        role: "progressbar",
+                        tabIndex: 0,
+                        "aria-valuenow": progressPct,
+                        "aria-valuemin": 0,
+                        "aria-valuemax": 100,
+                        "aria-label": `Import progress: ${progressPct}%`,
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: "h-full bg-primary transition-all duration-200 ease-out",
+                            style: { width: `${progressPct}%` }
+                          }
+                        )
+                      }
+                    )
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "outline",
+                    onClick: () => onOpenChange(false),
+                    disabled: importing,
+                    "data-ocid": "nso.import.dialog.cancel_button",
+                    children: "Cancel"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "submit",
+                    disabled: !canSubmit,
+                    "data-ocid": "nso.import.dialog.submit_button",
+                    children: [
+                      importing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                      "Import"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          ]
+        }
+      ) });
+    }
+    function chunkImportInput(input, chunkSize) {
+      const chunks = [];
+      let current = [];
+      const flush = () => {
+        if (current.length > 0) {
+          chunks.push({ moduleName: input.moduleName, phases: current });
+          current = [];
+        }
+      };
+      for (const phase of input.phases) {
+        let remaining = phase.tasks;
+        while (remaining.length > 0) {
+          const currentCount = current.reduce((sum, p2) => sum + p2.tasks.length, 0);
+          const room = chunkSize - currentCount;
+          if (room <= 0) {
+            flush();
+            continue;
+          }
+          const slice = remaining.slice(0, room);
+          current.push({ name: phase.name, tasks: slice });
+          remaining = remaining.slice(slice.length);
+        }
+      }
+      flush();
+      return chunks;
+    }
+    function formatSummary(phasesCreated, phasesReused, tasksAdded) {
+      const createdWord = phasesCreated === 1 ? "phase" : "phases";
+      const reusedWord = phasesReused === 1 ? "phase" : "phases";
+      const tasksWord = tasksAdded === 1 ? "task" : "tasks";
+      return `Created ${phasesCreated} ${createdWord}, reused ${phasesReused} ${reusedWord}, added ${tasksAdded} ${tasksWord}.`;
+    }
+    function validateImportBlob(parsed) {
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        return {
+          ok: false,
+          error: "JSON must be an object with a 'module' string and 'phases' array."
+        };
+      }
+      const root2 = parsed;
+      if (typeof root2.module !== "string" || root2.module.trim().length === 0) {
+        return {
+          ok: false,
+          error: "Missing or invalid 'module' string at the top level."
+        };
+      }
+      if (!Array.isArray(root2.phases)) {
+        return { ok: false, error: "Missing or invalid 'phases' array." };
+      }
+      const phases = [];
+      for (let i = 0; i < root2.phases.length; i += 1) {
+        const rawPhase = root2.phases[i];
+        if (typeof rawPhase !== "object" || rawPhase === null || Array.isArray(rawPhase)) {
+          return { ok: false, error: `phases[${i}] must be an object.` };
+        }
+        const phase = rawPhase;
+        if (typeof phase.name !== "string" || phase.name.trim().length === 0) {
+          return {
+            ok: false,
+            error: `phases[${i}].name must be a non-empty string.`
+          };
+        }
+        if (!Array.isArray(phase.tasks)) {
+          return { ok: false, error: `phases[${i}].tasks must be an array.` };
+        }
+        const tasks = [];
+        for (let j2 = 0; j2 < phase.tasks.length; j2 += 1) {
+          const rawTask = phase.tasks[j2];
+          if (typeof rawTask !== "object" || rawTask === null || Array.isArray(rawTask)) {
+            return {
+              ok: false,
+              error: `phases[${i}].tasks[${j2}] must be an object.`
+            };
+          }
+          const task = rawTask;
+          if (typeof task.text !== "string" || task.text.trim().length === 0) {
+            return {
+              ok: false,
+              error: `phases[${i}].tasks[${j2}].text must be a non-empty string.`
+            };
+          }
+          const section = typeof task.section === "string" && task.section.trim().length > 0 ? task.section.trim() : null;
+          const notes = typeof task.notes === "string" && task.notes.trim().length > 0 ? task.notes.trim() : null;
+          tasks.push({ text: task.text.trim(), section, notes });
+        }
+        phases.push({ name: phase.name.trim(), tasks });
+      }
+      return {
+        ok: true,
+        input: { moduleName: root2.module.trim(), phases }
+      };
+    }
+    const PLACEHOLDER = `{
+  "module": "Standard Opening",
+  "phases": [
+    {
+      "name": "Pre-Opening",
+      "tasks": [
+        { "text": "Confirm final staff schedule", "section": "Staffing", "notes": "Cross-check with HR by EOW" },
+        { "text": "Walk the line with the GM", "section": "Operations" }
+      ]
+    },
+    {
+      "name": "Soft Opening",
+      "tasks": [
+        { "text": "Run a full service rehearsal", "notes": "Invite-only friends & family" }
+      ]
+    }
+  ]
+}`;
+    function NsoPhaseFormDialog({
+      open,
+      onOpenChange,
+      phase
+    }) {
+      const isEdit = !!phase;
+      const [name, setName] = reactExports.useState("");
+      const [touched, setTouched] = reactExports.useState(false);
+      const createMutation = useCreateNsoPhase();
+      const updateMutation = useUpdateNsoPhase();
+      reactExports.useEffect(() => {
+        if (open) {
+          setName((phase == null ? void 0 : phase.name) ?? "");
+          setTouched(false);
+        }
+      }, [open, phase]);
+      const nameError = touched && name.trim().length === 0 ? "Name is required" : null;
+      const canSubmit = name.trim().length > 0;
+      const isPending = createMutation.isPending || updateMutation.isPending;
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setTouched(true);
+        if (!canSubmit) return;
+        const trimmedName = name.trim();
+        try {
+          if (isEdit && phase) {
+            await updateMutation.mutateAsync({ id: phase.id, name: trimmedName });
+            ue.success("Phase updated");
+          } else {
+            await createMutation.mutateAsync({ name: trimmedName });
+            ue.success("Phase created");
+          }
+          onOpenChange(false);
+        } catch (err) {
+          ue.error(
+            isEdit ? "Could not update phase" : "Could not create phase",
+            {
+              description: err instanceof Error ? err.message : void 0
+            }
+          );
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        DialogContent,
+        {
+          className: "bg-card border-border",
+          "data-ocid": "nso.phase.form.dialog",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: isEdit ? "Edit phase" : "New phase" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Rename this opening phase." : "Add a phase to the New Store Opening tracker (e.g. Pre-Opening, Soft Opening)." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "grid gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    htmlFor: "nso-phase-name",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: "Phase name"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input$1,
+                  {
+                    id: "nso-phase-name",
+                    value: name,
+                    onChange: (e) => setName(e.target.value),
+                    onBlur: () => setTouched(true),
+                    placeholder: "e.g. Pre-Opening",
+                    "aria-invalid": !!nameError,
+                    "aria-describedby": nameError ? "nso-phase-name-error" : void 0,
+                    "data-ocid": "nso.phase.form.name_input",
+                    autoComplete: "off",
+                    maxLength: 80
+                  }
+                ),
+                nameError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    id: "nso-phase-name-error",
+                    className: "text-xs text-primary font-body",
+                    "data-ocid": "nso.phase.form.name_input.field_error",
+                    children: nameError
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "outline",
+                    onClick: () => onOpenChange(false),
+                    disabled: isPending,
+                    "data-ocid": "nso.phase.form.cancel_button",
+                    children: "Cancel"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "submit",
+                    disabled: !canSubmit || isPending,
+                    "data-ocid": "nso.phase.form.save_button",
+                    children: [
+                      isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                      isEdit ? "Save changes" : "Create phase"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          ]
+        }
+      ) });
+    }
+    function NsoTaskFormDialog({
+      open,
+      onOpenChange,
+      phaseId,
+      task
+    }) {
+      const isEdit = !!task;
+      const [text, setText] = reactExports.useState("");
+      const [section, setSection] = reactExports.useState("");
+      const [notes, setNotes] = reactExports.useState("");
+      const [touched, setTouched] = reactExports.useState(false);
+      const createMutation = useCreateNsoTask();
+      const updateMutation = useUpdateNsoTask();
+      reactExports.useEffect(() => {
+        if (open) {
+          setText((task == null ? void 0 : task.text) ?? "");
+          setSection((task == null ? void 0 : task.section) ?? "");
+          setNotes((task == null ? void 0 : task.notes) ?? "");
+          setTouched(false);
+        }
+      }, [open, task]);
+      const textError = touched && text.trim().length === 0 ? "Task text is required" : null;
+      const canSubmit = text.trim().length > 0;
+      const isPending = createMutation.isPending || updateMutation.isPending;
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setTouched(true);
+        if (!canSubmit) return;
+        const trimmedText = text.trim();
+        const trimmedSection = section.trim();
+        const trimmedNotes = notes.trim();
+        try {
+          if (isEdit && task) {
+            await updateMutation.mutateAsync({
+              id: task.id,
+              phaseId: task.phaseId,
+              text: trimmedText,
+              section: trimmedSection.length > 0 ? trimmedSection : null,
+              done: task.done,
+              assignedTo: task.assignedTo,
+              completionDate: task.completionDate,
+              notes: trimmedNotes.length > 0 ? trimmedNotes : null
+            });
+            ue.success("Task updated");
+          } else {
+            await createMutation.mutateAsync({
+              phaseId,
+              text: trimmedText,
+              section: trimmedSection.length > 0 ? trimmedSection : null,
+              assignedTo: null
+            });
+            ue.success("Task added");
+          }
+          onOpenChange(false);
+        } catch (err) {
+          ue.error(isEdit ? "Could not update task" : "Could not add task", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        DialogContent,
+        {
+          className: "bg-card border-border sm:max-w-xl",
+          "data-ocid": "nso.task.form.dialog",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: isEdit ? "Edit task" : "New task" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the task text, section grouping, or notes." : "Add a task to this phase. Section and notes are optional." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "grid gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    htmlFor: "nso-task-text",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: "Task"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Textarea,
+                  {
+                    id: "nso-task-text",
+                    value: text,
+                    onChange: (e) => setText(e.target.value),
+                    onBlur: () => setTouched(true),
+                    placeholder: "e.g. Confirm final staff schedule",
+                    "aria-invalid": !!textError,
+                    "aria-describedby": textError ? "nso-task-text-error" : void 0,
+                    "data-ocid": "nso.task.form.text_input",
+                    autoComplete: "off",
+                    maxLength: 400
+                  }
+                ),
+                textError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    id: "nso-task-text-error",
+                    className: "text-xs text-primary font-body",
+                    "data-ocid": "nso.task.form.text_input.field_error",
+                    children: textError
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Label,
+                  {
+                    htmlFor: "nso-task-section",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: [
+                      "Section ",
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "(optional)" })
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input$1,
+                  {
+                    id: "nso-task-section",
+                    value: section,
+                    onChange: (e) => setSection(e.target.value),
+                    placeholder: "e.g. Staffing",
+                    "data-ocid": "nso.task.form.section_input",
+                    autoComplete: "off",
+                    maxLength: 60
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Tasks sharing a section name are grouped together under that header. Leave blank for an unlabeled group." })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Label,
+                  {
+                    htmlFor: "nso-task-notes",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: [
+                      "Notes ",
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "(optional)" })
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Textarea,
+                  {
+                    id: "nso-task-notes",
+                    value: notes,
+                    onChange: (e) => setNotes(e.target.value),
+                    placeholder: "Any extra context for whoever picks up this task.",
+                    "data-ocid": "nso.task.form.notes_input",
+                    autoComplete: "off",
+                    maxLength: 1e3
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "outline",
+                    onClick: () => onOpenChange(false),
+                    disabled: isPending,
+                    "data-ocid": "nso.task.form.cancel_button",
+                    children: "Cancel"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "submit",
+                    disabled: !canSubmit || isPending,
+                    "data-ocid": "nso.task.form.save_button",
+                    children: [
+                      isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                      isEdit ? "Save changes" : "Add task"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          ]
+        }
+      ) });
+    }
+    var CHECKBOX_NAME = "Checkbox";
+    var [createCheckboxContext] = createContextScope(CHECKBOX_NAME);
+    var [CheckboxProviderImpl, useCheckboxContext] = createCheckboxContext(CHECKBOX_NAME);
+    function CheckboxProvider(props) {
+      const {
+        __scopeCheckbox,
+        checked: checkedProp,
+        children,
+        defaultChecked,
+        disabled,
+        form,
+        name,
+        onCheckedChange,
+        required,
+        value = "on",
+        // @ts-expect-error
+        internal_do_not_use_render
+      } = props;
+      const [checked, setChecked] = useControllableState({
+        prop: checkedProp,
+        defaultProp: defaultChecked ?? false,
+        onChange: onCheckedChange,
+        caller: CHECKBOX_NAME
+      });
+      const [control, setControl] = reactExports.useState(null);
+      const [bubbleInput, setBubbleInput] = reactExports.useState(null);
+      const hasConsumerStoppedPropagationRef = reactExports.useRef(false);
+      const isFormControl = control ? !!form || !!control.closest("form") : (
+        // We set this to true by default so that events bubble to forms without JS (SSR)
+        true
+      );
+      const context = {
+        checked,
+        disabled,
+        setChecked,
+        control,
+        setControl,
+        name,
+        form,
+        value,
+        hasConsumerStoppedPropagationRef,
+        required,
+        defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
+        isFormControl,
+        bubbleInput,
+        setBubbleInput
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CheckboxProviderImpl,
+        {
+          scope: __scopeCheckbox,
+          ...context,
+          children: isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
+        }
+      );
+    }
+    var TRIGGER_NAME = "CheckboxTrigger";
+    var CheckboxTrigger = reactExports.forwardRef(
+      ({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
+        const {
+          control,
+          value,
+          disabled,
+          checked,
+          required,
+          setControl,
+          setChecked,
+          hasConsumerStoppedPropagationRef,
+          isFormControl,
+          bubbleInput
+        } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
+        const composedRefs = useComposedRefs(forwardedRef, setControl);
+        const initialCheckedStateRef = reactExports.useRef(checked);
+        reactExports.useEffect(() => {
+          const form = control == null ? void 0 : control.form;
+          if (form) {
+            const reset = () => setChecked(initialCheckedStateRef.current);
+            form.addEventListener("reset", reset);
+            return () => form.removeEventListener("reset", reset);
+          }
+        }, [control, setChecked]);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.button,
+          {
+            type: "button",
+            role: "checkbox",
+            "aria-checked": isIndeterminate(checked) ? "mixed" : checked,
+            "aria-required": required,
+            "data-state": getState(checked),
+            "data-disabled": disabled ? "" : void 0,
+            disabled,
+            value,
+            ...checkboxProps,
+            ref: composedRefs,
+            onKeyDown: composeEventHandlers(onKeyDown, (event) => {
+              if (event.key === "Enter") event.preventDefault();
+            }),
+            onClick: composeEventHandlers(onClick, (event) => {
+              setChecked((prevChecked) => isIndeterminate(prevChecked) ? true : !prevChecked);
+              if (bubbleInput && isFormControl) {
+                hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+                if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+              }
+            })
+          }
+        );
+      }
+    );
+    CheckboxTrigger.displayName = TRIGGER_NAME;
+    var Checkbox$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          __scopeCheckbox,
+          name,
+          checked,
+          defaultChecked,
+          required,
+          disabled,
+          value,
+          onCheckedChange,
+          form,
+          ...checkboxProps
+        } = props;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CheckboxProvider,
+          {
+            __scopeCheckbox,
+            checked,
+            defaultChecked,
+            disabled,
+            required,
+            onCheckedChange,
+            name,
+            form,
+            value,
+            internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                CheckboxTrigger,
+                {
+                  ...checkboxProps,
+                  ref: forwardedRef,
+                  __scopeCheckbox
+                }
+              ),
+              isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                CheckboxBubbleInput,
+                {
+                  __scopeCheckbox
+                }
+              )
+            ] })
+          }
+        );
+      }
+    );
+    Checkbox$1.displayName = CHECKBOX_NAME;
+    var INDICATOR_NAME$1 = "CheckboxIndicator";
+    var CheckboxIndicator = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
+        const context = useCheckboxContext(INDICATOR_NAME$1, __scopeCheckbox);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Presence,
+          {
+            present: forceMount || isIndeterminate(context.checked) || context.checked === true,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive.span,
+              {
+                "data-state": getState(context.checked),
+                "data-disabled": context.disabled ? "" : void 0,
+                ...indicatorProps,
+                ref: forwardedRef,
+                style: { pointerEvents: "none", ...props.style }
+              }
+            )
+          }
+        );
+      }
+    );
+    CheckboxIndicator.displayName = INDICATOR_NAME$1;
+    var BUBBLE_INPUT_NAME = "CheckboxBubbleInput";
+    var CheckboxBubbleInput = reactExports.forwardRef(
+      ({ __scopeCheckbox, ...props }, forwardedRef) => {
+        const {
+          control,
+          hasConsumerStoppedPropagationRef,
+          checked,
+          defaultChecked,
+          required,
+          disabled,
+          name,
+          value,
+          form,
+          bubbleInput,
+          setBubbleInput
+        } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
+        const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
+        const prevChecked = usePrevious(checked);
+        const controlSize = useSize(control);
+        reactExports.useEffect(() => {
+          const input = bubbleInput;
+          if (!input) return;
+          const inputProto = window.HTMLInputElement.prototype;
+          const descriptor = Object.getOwnPropertyDescriptor(
+            inputProto,
+            "checked"
+          );
+          const setChecked = descriptor.set;
+          const bubbles = !hasConsumerStoppedPropagationRef.current;
+          if (prevChecked !== checked && setChecked) {
+            const event = new Event("click", { bubbles });
+            input.indeterminate = isIndeterminate(checked);
+            setChecked.call(input, isIndeterminate(checked) ? false : checked);
+            input.dispatchEvent(event);
+          }
+        }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+        const defaultCheckedRef = reactExports.useRef(isIndeterminate(checked) ? false : checked);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.input,
+          {
+            type: "checkbox",
+            "aria-hidden": true,
+            defaultChecked: defaultChecked ?? defaultCheckedRef.current,
+            required,
+            disabled,
+            name,
+            value,
+            form,
+            ...props,
+            tabIndex: -1,
+            ref: composedRefs,
+            style: {
+              ...props.style,
+              ...controlSize,
+              position: "absolute",
+              pointerEvents: "none",
+              opacity: 0,
+              margin: 0,
+              // We transform because the input is absolutely positioned but we have
+              // rendered it **after** the button. This pulls it back to sit on top
+              // of the button.
+              transform: "translateX(-100%)"
+            }
+          }
+        );
+      }
+    );
+    CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
+    function isFunction(value) {
+      return typeof value === "function";
+    }
+    function isIndeterminate(checked) {
+      return checked === "indeterminate";
+    }
+    function getState(checked) {
+      return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
+    }
+    function Checkbox({
+      className,
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Checkbox$1,
+        {
+          "data-slot": "checkbox",
+          className: cn(
+            "peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+            className
+          ),
+          ...props,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CheckboxIndicator,
+            {
+              "data-slot": "checkbox-indicator",
+              className: "flex items-center justify-center text-current transition-none",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5" })
+            }
+          )
+        }
+      );
+    }
+    function NsoTaskRow({
+      task,
+      index: index2,
+      total
+    }) {
+      const toggleMutation = useToggleNsoTask();
+      const assignMutation = useSetNsoTaskAssignment();
+      const dateMutation = useSetNsoTaskCompletionDate();
+      const reorderMutation = useReorderNsoTasks();
+      const deleteMutation = useDeleteNsoTask();
+      const { data: users } = useNsoAssignableUsers();
+      const [formOpen, setFormOpen] = reactExports.useState(false);
+      const [deleting, setDeleting] = reactExports.useState(false);
+      const [notesExpanded, setNotesExpanded] = reactExports.useState(false);
+      const isFirst = index2 === 0;
+      const isLast = index2 === total - 1;
+      const assignableUsers = reactExports.useMemo(
+        () => (users ?? []).filter((u2) => u2.role === "manager" || u2.role === "admin").sort((a2, b2) => a2.name.localeCompare(b2.name)),
+        [users]
+      );
+      const assigneeName = reactExports.useMemo(() => {
+        if (!task.assignedTo) return null;
+        const u2 = assignableUsers.find((x2) => x2.principal === task.assignedTo);
+        return (u2 == null ? void 0 : u2.name) ?? null;
+      }, [task.assignedTo, assignableUsers]);
+      const notesIsLong = reactExports.useMemo(() => {
+        if (!task.notes || task.notes.length === 0) return false;
+        if (task.notes.includes("\n")) {
+          return task.notes.split("\n").filter((l2) => l2.trim().length > 0).length > 2;
+        }
+        return task.notes.length > 90;
+      }, [task.notes]);
+      function todayIso() {
+        const d2 = /* @__PURE__ */ new Date();
+        const yyyy = d2.getFullYear();
+        const mm = String(d2.getMonth() + 1).padStart(2, "0");
+        const dd = String(d2.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      async function handleToggle(checked) {
+        const done = checked === true;
+        const completionDate = done ? todayIso() : null;
+        try {
+          await toggleMutation.mutateAsync({
+            id: task.id,
+            phaseId: task.phaseId,
+            done,
+            completionDate
+          });
+        } catch (err) {
+          ue.error("Could not update task", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      async function handleAssign(value) {
+        const assignedTo = value === "__none__" ? null : value;
+        try {
+          await assignMutation.mutateAsync({
+            id: task.id,
+            phaseId: task.phaseId,
+            assignedTo
+          });
+        } catch (err) {
+          ue.error("Could not assign task", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      async function handleDateChange(e) {
+        const value = e.target.value;
+        const completionDate = value.length > 0 ? value : null;
+        try {
+          await dateMutation.mutateAsync({
+            id: task.id,
+            phaseId: task.phaseId,
+            completionDate
+          });
+        } catch (err) {
+          ue.error("Could not set completion date", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      async function handleReorder(direction) {
+        try {
+          await reorderMutation.mutateAsync({
+            id: task.id,
+            phaseId: task.phaseId,
+            direction
+          });
+        } catch (err) {
+          ue.error("Could not reorder task", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      async function handleDelete() {
+        try {
+          await deleteMutation.mutateAsync({
+            id: task.id,
+            phaseId: task.phaseId
+          });
+          ue.success("Task deleted");
+          setDeleting(false);
+        } catch (err) {
+          ue.error("Could not delete task", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      const saving = toggleMutation.isPending || assignMutation.isPending || dateMutation.isPending;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "li",
+        {
+          className: "rounded-md border border-border bg-card transition-smooth hover:border-primary/40",
+          "data-ocid": `nso.task.row.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 p-3 sm:flex-row sm:items-start sm:gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 flex-1 items-start gap-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Checkbox,
+                  {
+                    checked: task.done,
+                    onCheckedChange: handleToggle,
+                    disabled: toggleMutation.isPending,
+                    "aria-label": `Mark "${task.text}" as ${task.done ? "not done" : "done"}`,
+                    "data-ocid": `nso.task.checkbox.${index2 + 1}`,
+                    className: "mt-0.5 size-5"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: cn(
+                        "font-body text-sm leading-snug break-words",
+                        task.done ? "text-muted-foreground line-through" : "text-foreground"
+                      ),
+                      "data-ocid": `nso.task.text.${index2 + 1}`,
+                      children: task.text
+                    }
+                  ),
+                  saving && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "span",
+                    {
+                      className: "mt-1 inline-flex items-center gap-1 font-body text-xs text-muted-foreground",
+                      "data-ocid": `nso.task.loading_state.${index2 + 1}`,
+                      "aria-live": "polite",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-3 animate-spin" }),
+                        "Saving…"
+                      ]
+                    }
+                  ),
+                  task.notes && task.notes.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1 min-w-0", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "p",
+                      {
+                        className: cn(
+                          "font-body text-xs text-muted-foreground break-words",
+                          notesExpanded ? "whitespace-pre-wrap leading-relaxed" : "line-clamp-2"
+                        ),
+                        "data-ocid": `nso.task.notes.${index2 + 1}`,
+                        children: task.notes
+                      }
+                    ),
+                    notesIsLong && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: () => setNotesExpanded((v2) => !v2),
+                        "aria-expanded": notesExpanded,
+                        "aria-controls": `nso-task-notes-${index2 + 1}`,
+                        "data-ocid": `nso.task.notes_toggle.${index2 + 1}`,
+                        className: cn(
+                          "mt-1 inline-flex min-w-0 items-center gap-1 font-heading text-xs uppercase tracking-wider",
+                          "text-primary hover:text-primary-hover focus-visible:text-primary-hover",
+                          "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                          "min-h-6 px-0.5 py-0.5 transition-smooth"
+                        ),
+                        children: notesExpanded ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-3.5" }),
+                          "Show less"
+                        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-3.5" }),
+                          "Show more"
+                        ] })
+                      }
+                    )
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground", children: "Assign" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    Select,
+                    {
+                      value: task.assignedTo ?? "__none__",
+                      onValueChange: handleAssign,
+                      disabled: assignMutation.isPending,
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          SelectTrigger,
+                          {
+                            size: "sm",
+                            className: "h-8 w-32 min-w-0 sm:w-40",
+                            "aria-label": `Assign "${task.text}"`,
+                            "data-ocid": `nso.task.assign_select.${index2 + 1}`,
+                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Unassigned" })
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          SelectContent,
+                          {
+                            className: "bg-popover text-popover-foreground",
+                            "data-ocid": `nso.task.assign_menu.${index2 + 1}`,
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "__none__", children: "Unassigned" }),
+                              assignableUsers.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                SelectItem,
+                                {
+                                  value: u2.principal,
+                                  "data-ocid": `nso.task.assign_option.${index2 + 1}`,
+                                  children: u2.name
+                                },
+                                u2.principal
+                              ))
+                            ]
+                          }
+                        )
+                      ]
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground", children: "Done" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "date",
+                      value: task.completionDate ?? "",
+                      onChange: handleDateChange,
+                      disabled: dateMutation.isPending,
+                      "aria-label": `Completion date for "${task.text}"`,
+                      "data-ocid": `nso.task.date_input.${index2 + 1}`,
+                      className: cn(
+                        "h-8 rounded-md border border-input bg-transparent px-2 py-1 font-body text-xs text-foreground",
+                        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
+                        "disabled:cursor-not-allowed disabled:opacity-50"
+                      )
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-0.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      variant: "ghost",
+                      size: "icon",
+                      className: "size-7",
+                      onClick: () => handleReorder("up"),
+                      disabled: isFirst || reorderMutation.isPending,
+                      "aria-label": `Move "${task.text}" up`,
+                      "data-ocid": `nso.task.move_up_button.${index2 + 1}`,
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, {})
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      variant: "ghost",
+                      size: "icon",
+                      className: "size-7",
+                      onClick: () => handleReorder("down"),
+                      disabled: isLast || reorderMutation.isPending,
+                      "aria-label": `Move "${task.text}" down`,
+                      "data-ocid": `nso.task.move_down_button.${index2 + 1}`,
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, {})
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      variant: "ghost",
+                      size: "icon",
+                      className: "size-7",
+                      onClick: () => setFormOpen(true),
+                      "aria-label": `Edit "${task.text}"`,
+                      "data-ocid": `nso.task.edit_button.${index2 + 1}`,
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, {})
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      variant: "ghost",
+                      size: "icon",
+                      className: "size-7 text-primary hover:bg-primary/10 hover:text-primary",
+                      onClick: () => setDeleting(true),
+                      "aria-label": `Delete "${task.text}"`,
+                      "data-ocid": `nso.task.delete_button.${index2 + 1}`,
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                    }
+                  )
+                ] })
+              ] })
+            ] }),
+            assigneeName && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "sr-only", children: [
+              "Assigned to ",
+              assigneeName,
+              task.completionDate ? `, completed ${task.completionDate}` : ""
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NsoTaskFormDialog,
+              {
+                open: formOpen,
+                onOpenChange: setFormOpen,
+                phaseId: task.phaseId,
+                task
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              AlertDialog,
+              {
+                open: deleting,
+                onOpenChange: (o) => !o && setDeleting(false),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  AlertDialogContent,
+                  {
+                    className: "bg-card border-border",
+                    "data-ocid": `nso.task.delete_dialog.${index2 + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: "Delete task?" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogDescription, { children: [
+                          "This removes the task",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-foreground", children: [
+                            "“",
+                            task.text,
+                            "”"
+                          ] }),
+                          " ",
+                          "from this phase. This action cannot be undone."
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          AlertDialogCancel,
+                          {
+                            disabled: deleteMutation.isPending,
+                            "data-ocid": `nso.task.delete_dialog.cancel_button.${index2 + 1}`,
+                            children: "Cancel"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          AlertDialogAction,
+                          {
+                            onClick: handleDelete,
+                            disabled: deleteMutation.isPending,
+                            className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+                            "data-ocid": `nso.task.delete_dialog.confirm_button.${index2 + 1}`,
+                            children: [
+                              deleteMutation.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                              "Delete"
+                            ]
+                          }
+                        )
+                      ] })
+                    ]
+                  }
+                )
+              }
+            )
+          ]
+        }
+      );
+    }
+    var PROGRESS_NAME = "Progress";
+    var DEFAULT_MAX = 100;
+    var [createProgressContext] = createContextScope(PROGRESS_NAME);
+    var [ProgressProvider, useProgressContext] = createProgressContext(PROGRESS_NAME);
+    var Progress$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          __scopeProgress,
+          value: valueProp = null,
+          max: maxProp,
+          getValueLabel = defaultGetValueLabel,
+          ...progressProps
+        } = props;
+        if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) {
+          console.error(getInvalidMaxError(`${maxProp}`, "Progress"));
+        }
+        const max2 = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+        if (valueProp !== null && !isValidValueNumber(valueProp, max2)) {
+          console.error(getInvalidValueError(`${valueProp}`, "Progress"));
+        }
+        const value = isValidValueNumber(valueProp, max2) ? valueProp : null;
+        const valueLabel = isNumber(value) ? getValueLabel(value, max2) : void 0;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressProvider, { scope: __scopeProgress, value, max: max2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.div,
+          {
+            "aria-valuemax": max2,
+            "aria-valuemin": 0,
+            "aria-valuenow": isNumber(value) ? value : void 0,
+            "aria-valuetext": valueLabel,
+            role: "progressbar",
+            "data-state": getProgressState(value, max2),
+            "data-value": value ?? void 0,
+            "data-max": max2,
+            ...progressProps,
+            ref: forwardedRef
+          }
+        ) });
+      }
+    );
+    Progress$1.displayName = PROGRESS_NAME;
+    var INDICATOR_NAME = "ProgressIndicator";
+    var ProgressIndicator = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeProgress, ...indicatorProps } = props;
+        const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.div,
+          {
+            "data-state": getProgressState(context.value, context.max),
+            "data-value": context.value ?? void 0,
+            "data-max": context.max,
+            ...indicatorProps,
+            ref: forwardedRef
+          }
+        );
+      }
+    );
+    ProgressIndicator.displayName = INDICATOR_NAME;
+    function defaultGetValueLabel(value, max2) {
+      return `${Math.round(value / max2 * 100)}%`;
+    }
+    function getProgressState(value, maxValue) {
+      return value == null ? "indeterminate" : value === maxValue ? "complete" : "loading";
+    }
+    function isNumber(value) {
+      return typeof value === "number";
+    }
+    function isValidMaxNumber(max2) {
+      return isNumber(max2) && !isNaN(max2) && max2 > 0;
+    }
+    function isValidValueNumber(value, max2) {
+      return isNumber(value) && !isNaN(value) && value <= max2 && value >= 0;
+    }
+    function getInvalidMaxError(propValue, componentName) {
+      return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
+    }
+    function getInvalidValueError(propValue, componentName) {
+      return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+  - a positive number
+  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
+  - \`null\` or \`undefined\` if the progress is indeterminate.
+
+Defaulting to \`null\`.`;
+    }
+    var Root = Progress$1;
+    var Indicator = ProgressIndicator;
+    function Progress({
+      className,
+      value,
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Root,
+        {
+          "data-slot": "progress",
+          className: cn(
+            "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
+            className
+          ),
+          ...props,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Indicator,
+            {
+              "data-slot": "progress-indicator",
+              className: "bg-primary h-full w-full flex-1 transition-all",
+              style: { transform: `translateX(-${100 - (value || 0)}%)` }
+            }
+          )
+        }
+      );
+    }
+    function NsoPhaseSection({
+      phase,
+      index: index2,
+      total
+    }) {
+      const { data: tasks, isLoading } = useNsoTasksByPhase(phase.id);
+      const reorderMutation = useReorderNsoPhases();
+      const deleteMutation = useDeleteNsoPhase();
+      const [open, setOpen] = reactExports.useState(true);
+      const [formOpen, setFormOpen] = reactExports.useState(false);
+      const [formMode, setFormMode] = reactExports.useState("create");
+      const [taskFormOpen, setTaskFormOpen] = reactExports.useState(false);
+      const [deleting, setDeleting] = reactExports.useState(false);
+      const isFirst = index2 === 0;
+      const isLast = index2 === total - 1;
+      const orderedTasks = reactExports.useMemo(
+        () => [...tasks ?? []].sort((a2, b2) => a2.sortOrder - b2.sortOrder),
+        [tasks]
+      );
+      const doneCount = orderedTasks.filter((t) => t.done).length;
+      const totalCount = orderedTasks.length;
+      const pct = totalCount > 0 ? Math.round(doneCount / totalCount * 100) : 0;
+      const grouped = reactExports.useMemo(() => {
+        const map = /* @__PURE__ */ new Map();
+        for (const t of orderedTasks) {
+          const key = t.section && t.section.length > 0 ? t.section : "";
+          const arr = map.get(key);
+          if (arr) arr.push(t);
+          else map.set(key, [t]);
+        }
+        return Array.from(map.entries()).sort((a2, b2) => {
+          if (a2[0] === "") return -1;
+          if (b2[0] === "") return 1;
+          return a2[0].localeCompare(b2[0]);
+        });
+      }, [orderedTasks]);
+      async function handleReorder(direction) {
+        try {
+          await reorderMutation.mutateAsync({ id: phase.id, direction });
+        } catch (err) {
+          ue.error("Could not reorder phase", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      async function handleDelete() {
+        try {
+          await deleteMutation.mutateAsync({ id: phase.id });
+          ue.success("Phase deleted");
+          setDeleting(false);
+        } catch (err) {
+          ue.error("Could not delete phase", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      function openEdit() {
+        setFormMode("edit");
+        setFormOpen(true);
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "rounded-md border border-border bg-card",
+          "data-ocid": `nso.phase.section.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "flex items-stretch gap-0",
+                "data-ocid": `nso.phase.header.${index2 + 1}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "flex w-10 shrink-0 items-center justify-center rounded-l-md border-r border-border bg-nav font-heading text-lg text-foreground",
+                      "aria-label": `Phase ${index2 + 1} of ${total}`,
+                      "data-ocid": `nso.phase.sort_number.${index2 + 1}`,
+                      children: index2 + 1
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => setOpen((o) => !o),
+                      "aria-expanded": open,
+                      "aria-controls": `nso-phase-body-${phase.id}`,
+                      className: "flex min-w-0 flex-1 flex-col gap-1 px-3 py-2.5 text-left transition-colors duration-200 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset",
+                      "data-ocid": `nso.phase.toggle.${index2 + 1}`,
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            ChevronDown,
+                            {
+                              className: cn(
+                                "size-4 shrink-0 text-muted-foreground transition-transform duration-200",
+                                open ? "" : "-rotate-90"
+                              )
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "truncate font-heading text-base uppercase leading-tight tracking-wide text-foreground", children: phase.name })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 pl-6", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Progress,
+                            {
+                              value: pct,
+                              className: "h-1.5 max-w-32",
+                              "data-ocid": `nso.phase.progress.${index2 + 1}`
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-body text-xs text-muted-foreground whitespace-nowrap", children: [
+                            doneCount,
+                            " of ",
+                            totalCount,
+                            " done"
+                          ] })
+                        ] })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 items-center gap-0.5 pr-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Button,
+                      {
+                        variant: "ghost",
+                        size: "icon",
+                        className: "size-7",
+                        onClick: () => handleReorder("up"),
+                        disabled: isFirst || reorderMutation.isPending,
+                        "aria-label": `Move ${phase.name} phase up`,
+                        "data-ocid": `nso.phase.move_up_button.${index2 + 1}`,
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, {})
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Button,
+                      {
+                        variant: "ghost",
+                        size: "icon",
+                        className: "size-7",
+                        onClick: () => handleReorder("down"),
+                        disabled: isLast || reorderMutation.isPending,
+                        "aria-label": `Move ${phase.name} phase down`,
+                        "data-ocid": `nso.phase.move_down_button.${index2 + 1}`,
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, {})
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Button,
+                      {
+                        variant: "ghost",
+                        size: "icon",
+                        className: "size-7",
+                        onClick: openEdit,
+                        "aria-label": `Edit ${phase.name} phase`,
+                        "data-ocid": `nso.phase.edit_button.${index2 + 1}`,
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, {})
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Button,
+                      {
+                        variant: "ghost",
+                        size: "icon",
+                        className: "size-7 text-primary hover:bg-primary/10 hover:text-primary",
+                        onClick: () => setDeleting(true),
+                        "aria-label": `Delete ${phase.name} phase`,
+                        "data-ocid": `nso.phase.delete_button.${index2 + 1}`,
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      Button,
+                      {
+                        variant: "secondary",
+                        size: "sm",
+                        onClick: () => setTaskFormOpen(true),
+                        className: "ml-1",
+                        "data-ocid": `nso.phase.add_task_button.${index2 + 1}`,
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "Add task" })
+                        ]
+                      }
+                    )
+                  ] })
+                ]
+              }
+            ),
+            open && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                id: `nso-phase-body-${phase.id}`,
+                className: "border-t border-border px-3 py-3",
+                "data-ocid": `nso.phase.body.${index2 + 1}`,
+                children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(PhaseTasksSkeleton, {}) : orderedTasks.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background px-4 py-8 text-center",
+                    "data-ocid": `nso.phase.empty_state.${index2 + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-8 items-center justify-center rounded-full bg-nav text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-xs uppercase tracking-wide text-foreground", children: "No tasks yet" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Add a task or import a preset to start this phase." }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        Button,
+                        {
+                          variant: "outline",
+                          size: "sm",
+                          onClick: () => setTaskFormOpen(true),
+                          "data-ocid": `nso.phase.empty_state.add_task_button.${index2 + 1}`,
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                            "Add task"
+                          ]
+                        }
+                      )
+                    ]
+                  }
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-4", children: grouped.map(([sectionName, sectionTasks]) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex flex-col gap-2",
+                    "data-ocid": `nso.phase.section_group.${index2 + 1}`,
+                    children: [
+                      sectionName.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground pl-1", children: sectionName }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-col gap-2", children: sectionTasks.map((task) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        NsoTaskRow,
+                        {
+                          task,
+                          index: orderedTasks.indexOf(task),
+                          total: totalCount
+                        },
+                        task.id
+                      )) })
+                    ]
+                  },
+                  sectionName || "__unlabeled__"
+                )) })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NsoPhaseFormDialog,
+              {
+                open: formOpen,
+                onOpenChange: setFormOpen,
+                phase: formMode === "edit" ? phase : null
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NsoTaskFormDialog,
+              {
+                open: taskFormOpen,
+                onOpenChange: setTaskFormOpen,
+                phaseId: phase.id
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              AlertDialog,
+              {
+                open: deleting,
+                onOpenChange: (o) => !o && setDeleting(false),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  AlertDialogContent,
+                  {
+                    className: "bg-card border-border",
+                    "data-ocid": `nso.phase.delete_dialog.${index2 + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: "Delete phase?" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogDescription, { children: [
+                          "This removes the phase",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-foreground", children: [
+                            "“",
+                            phase.name,
+                            "”"
+                          ] }),
+                          " ",
+                          "and",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-foreground", children: [
+                            "all ",
+                            totalCount,
+                            " ",
+                            totalCount === 1 ? "task" : "tasks"
+                          ] }),
+                          " ",
+                          "inside it. This action cannot be undone."
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          AlertDialogCancel,
+                          {
+                            disabled: deleteMutation.isPending,
+                            "data-ocid": `nso.phase.delete_dialog.cancel_button.${index2 + 1}`,
+                            children: "Cancel"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          AlertDialogAction,
+                          {
+                            onClick: handleDelete,
+                            disabled: deleteMutation.isPending,
+                            className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+                            "data-ocid": `nso.phase.delete_dialog.confirm_button.${index2 + 1}`,
+                            children: [
+                              deleteMutation.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                              "Delete phase"
+                            ]
+                          }
+                        )
+                      ] })
+                    ]
+                  }
+                )
+              }
+            )
+          ]
+        }
+      );
+    }
+    function PhaseTasksSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "ul",
+        {
+          className: "flex flex-col gap-2",
+          "data-ocid": "nso.phase.loading_state",
+          "aria-hidden": true,
+          children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "li",
+            {
+              className: "flex items-center gap-3 rounded-md border border-border bg-card p-3",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-5 shrink-0 animate-pulse rounded bg-muted" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-4 flex-1 animate-pulse rounded bg-muted" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-8 w-24 animate-pulse rounded bg-muted/60" })
+              ]
+            },
+            k2
+          ))
+        }
+      );
+    }
+    function NsoPage() {
+      const { data: profile } = useMyProfile();
+      if (profile === void 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-dvh bg-background", "aria-hidden": true });
+      }
+      const canAccess = (profile == null ? void 0 : profile.role) === "admin" || (profile == null ? void 0 : profile.role) === "manager";
+      if (!canAccess) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(AccessDenied, {});
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(NsoTracker, {});
+    }
+    function NsoTracker() {
+      const { data: phases, isLoading } = useNsoPhases();
+      const { data: progress } = useNsoOverallProgress();
+      const [importOpen, setImportOpen] = reactExports.useState(false);
+      const [phaseFormOpen, setPhaseFormOpen] = reactExports.useState(false);
+      const doneCount = (progress == null ? void 0 : progress.doneCount) ?? 0;
+      const totalCount = (progress == null ? void 0 : progress.totalCount) ?? 0;
+      const pct = totalCount > 0 ? Math.round(doneCount / totalCount * 100) : 0;
+      const phaseList = phases ?? [];
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mx-auto w-full max-w-3xl px-4 py-8",
+          "data-ocid": "nso.page.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "header",
+              {
+                className: "flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between",
+                "data-ocid": "nso.header.section",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-6 text-primary" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "h1",
+                      {
+                        className: "font-display text-3xl uppercase leading-none tracking-wide text-foreground",
+                        "data-ocid": "nso.title",
+                        children: "New Store Opening"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      Button,
+                      {
+                        variant: "outline",
+                        size: "sm",
+                        onClick: () => setImportOpen(true),
+                        className: "rounded border-primary/60 font-heading uppercase tracking-wide hover:bg-primary/10 hover:text-primary",
+                        "data-ocid": "nso.import_button",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, {}),
+                          "Import tasks"
+                        ]
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      Button,
+                      {
+                        variant: "default",
+                        size: "sm",
+                        onClick: () => setPhaseFormOpen(true),
+                        className: "rounded font-heading uppercase tracking-wide",
+                        "data-ocid": "nso.add_phase_button",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                          "Add phase"
+                        ]
+                      }
+                    )
+                  ] })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "mb-6 rounded-md border border-border bg-card p-4",
+                "data-ocid": "nso.overall_progress.card",
+                "aria-label": "Overall opening progress",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline justify-between gap-3", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "p",
+                      {
+                        className: "font-heading text-sm uppercase tracking-wide text-foreground",
+                        "data-ocid": "nso.overall_progress.label",
+                        children: "Overall progress"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "p",
+                      {
+                        className: "font-body text-sm text-muted-foreground",
+                        "data-ocid": "nso.overall_progress.count",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-base text-foreground", children: doneCount }),
+                          " ",
+                          "of",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-base text-foreground", children: totalCount }),
+                          " ",
+                          "tasks complete —",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-heading text-base text-primary", children: [
+                            pct,
+                            "%"
+                          ] })
+                        ]
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "mt-3 h-2.5 w-full overflow-hidden rounded bg-muted",
+                      role: "progressbar",
+                      tabIndex: 0,
+                      "aria-valuenow": pct,
+                      "aria-valuemin": 0,
+                      "aria-valuemax": 100,
+                      "aria-label": "Percent of opening tasks complete",
+                      "data-ocid": "nso.overall_progress.bar",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "h-full rounded bg-primary transition-all duration-300",
+                          style: { width: `${pct}%` },
+                          "data-ocid": "nso.overall_progress.fill"
+                        }
+                      )
+                    }
+                  )
+                ]
+              }
+            ),
+            isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "py-12 text-center font-body text-sm text-muted-foreground",
+                "data-ocid": "nso.phases.loading_state",
+                children: "Loading…"
+              }
+            ) : phaseList.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              EmptyState,
+              {
+                onAddPhase: () => setPhaseFormOpen(true),
+                onImport: () => setImportOpen(true)
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3", "data-ocid": "nso.phases.list", children: phaseList.map((phase, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NsoPhaseSection,
+              {
+                phase,
+                index: index2,
+                total: phaseList.length
+              },
+              phase.id
+            )) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(NsoBulkImportDialog, { open: importOpen, onOpenChange: setImportOpen }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NsoPhaseFormDialog,
+              {
+                open: phaseFormOpen,
+                onOpenChange: setPhaseFormOpen
+              }
+            )
+          ]
+        }
+      );
+    }
+    function EmptyState({
+      onAddPhase,
+      onImport
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-4 py-12 text-center",
+          "data-ocid": "nso.phases.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "flex size-12 items-center justify-center rounded-full bg-nav text-primary",
+                "aria-hidden": true,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-6" })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h2",
+              {
+                className: "font-heading text-lg uppercase tracking-wide text-foreground",
+                "data-ocid": "nso.phases.empty_state.title",
+                children: "No phases yet"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "Add a phase or import tasks to get started." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 flex flex-wrap items-center justify-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Button,
+                {
+                  variant: "outline",
+                  size: "sm",
+                  onClick: onImport,
+                  className: "rounded border-primary/60 font-heading uppercase tracking-wide hover:bg-primary/10 hover:text-primary",
+                  "data-ocid": "nso.phases.empty_state.import_button",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, {}),
+                    "Import tasks"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Button,
+                {
+                  variant: "default",
+                  size: "sm",
+                  onClick: onAddPhase,
+                  className: "rounded font-heading uppercase tracking-wide",
+                  "data-ocid": "nso.phases.empty_state.add_phase_button",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                    "Add phase"
+                  ]
+                }
+              )
+            ] })
+          ]
+        }
+      );
+    }
+    function AccessDenied() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center",
+          "data-ocid": "nso.access_denied",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "size-10 text-primary" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl uppercase leading-none tracking-wide text-foreground", children: "Managers only" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-sm text-muted-foreground", children: "You need a Manager or Admin role to view the New Store Opening tracker. Ask an admin to upgrade your account." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, variant: "default", "data-ocid": "nso.go_home_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/", children: "Back to home" }) })
+          ]
         }
       );
     }
@@ -66015,6 +69814,12 @@ ${escapeText(this.code(index2, length))}
         ),
         [categoriesQuery.data]
       );
+      const heartCategory = reactExports.useMemo(
+        () => (categoriesQuery.data ?? []).find(
+          (c2) => c2.name === "Service with HEART"
+        ) ?? null,
+        [categoriesQuery.data]
+      );
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "mt-8", "data-ocid": "library.section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "size-5 text-primary", "aria-hidden": true }),
@@ -66027,6 +69832,13 @@ ${escapeText(this.code(index2, length))}
             }
           )
         ] }),
+        heartCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          HeartEntryButton,
+          {
+            positionId,
+            categoryId: heartCategory.id
+          }
+        ) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsx(SearchBox, { value: searchText, onChange: setSearchText }),
         isSearching ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           SearchResults,
@@ -66044,6 +69856,40 @@ ${escapeText(this.code(index2, length))}
           }
         )
       ] });
+    }
+    function HeartEntryButton({
+      positionId,
+      categoryId
+    }) {
+      const to = `/position/${positionId}/heart/${categoryId}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Link$1,
+        {
+          to,
+          className: cn(
+            "mt-4 flex items-center gap-3 rounded-md bg-primary px-4 py-3",
+            "transition-smooth hover:bg-primary-hover",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": "heart.entry_button",
+          "aria-label": "Open Service with HEART showcase",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Heart, { className: "size-5 text-primary-foreground", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex flex-1 flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg uppercase leading-none tracking-wide text-primary-foreground", children: "Service with HEART" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-0.5 font-body text-xs text-primary-foreground/80", children: "The five pillars of legendary service" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "font-heading text-xs uppercase tracking-wider text-primary-foreground/80",
+                "aria-hidden": true,
+                children: "Open"
+              }
+            )
+          ]
+        }
+      );
     }
     function SearchBox({
       value,
@@ -66322,6 +70168,266 @@ ${escapeText(this.code(index2, length))}
         /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-4 h-10 w-full" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2", children: ["s1", "s2", "s3", "s4"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-20 w-full rounded-md" }, k2)) })
       ] });
+    }
+    function HeartShowcaseHeader() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-col items-center text-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "h1",
+          {
+            className: "font-display text-4xl uppercase leading-[0.95] tracking-wide text-foreground sm:text-5xl md:text-6xl",
+            "data-ocid": "heart.heading",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground", children: "Service with " }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-primary", children: "HEART" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mt-4 flex h-1.5 w-full max-w-md overflow-hidden rounded-full",
+            "data-ocid": "heart.stripe",
+            "aria-hidden": true,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 bg-primary" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 bg-foreground" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 bg-secondary" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "mt-4 max-w-xl font-body text-base italic leading-relaxed text-muted-foreground sm:text-lg",
+            "data-ocid": "heart.mission",
+            children: "Legendary service is never having to ask — it’s always there."
+          }
+        )
+      ] });
+    }
+    function PillarCard({
+      item,
+      index: index2
+    }) {
+      const [expanded, setExpanded] = reactExports.useState(false);
+      const firstLetter = item.title.trim().charAt(0).toUpperCase() || "?";
+      const timing = item.details.find(
+        (d2) => d2.fieldLabel.trim().toLowerCase() === "timing"
+      );
+      const steps = item.notes ? item.notes.split("\n").map((line) => line.trim()).filter((line) => line.length > 0) : [];
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "bg-library-card border border-border",
+          "data-ocid": `heart.pillar.card.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => setExpanded((prev) => !prev),
+                "aria-expanded": expanded,
+                "aria-controls": `heart-pillar-${index2 + 1}-steps`,
+                "data-ocid": `heart.pillar.toggle.${index2 + 1}`,
+                className: cn(
+                  "flex w-full items-center gap-4 px-4 py-4 text-left sm:px-5",
+                  "transition-smooth hover:border-primary/60",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                ),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: "font-display text-5xl leading-none text-primary sm:text-6xl",
+                      "aria-hidden": true,
+                      children: firstLetter
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-1 flex-col gap-1.5", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xl uppercase tracking-wide text-foreground sm:text-2xl", children: item.title }),
+                    timing ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "span",
+                      {
+                        className: "inline-flex w-fit bg-secondary px-2 py-0.5 font-heading text-[0.65rem] uppercase tracking-wider text-secondary-foreground",
+                        "data-ocid": `heart.pillar.timing_badge.${index2 + 1}`,
+                        children: timing.value
+                      }
+                    ) : null
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    ChevronDown,
+                    {
+                      className: cn(
+                        "size-5 shrink-0 text-muted-foreground transition-transform duration-200",
+                        expanded && "rotate-180"
+                      ),
+                      "aria-hidden": true
+                    }
+                  )
+                ]
+              }
+            ),
+            expanded && steps.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "ul",
+              {
+                id: `heart-pillar-${index2 + 1}-steps`,
+                className: "flex flex-col gap-2 border-t border-border px-4 py-4 sm:px-5",
+                "data-ocid": `heart.pillar.steps.${index2 + 1}`,
+                children: steps.map((step, stepIndex) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "li",
+                  {
+                    className: "flex gap-2.5 font-body text-sm leading-relaxed text-foreground",
+                    "data-ocid": `heart.pillar.step.${index2 + 1}.${stepIndex + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          className: "mt-2 size-1.5 shrink-0 rounded-full bg-primary",
+                          "aria-hidden": true
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0", children: step })
+                    ]
+                  },
+                  `step-${stepIndex}-${step.slice(0, 24)}`
+                ))
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function ServingSpecsStrip({
+      item
+    }) {
+      if (!item || item.details.length === 0) return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "mt-8 w-full",
+          "data-ocid": "heart.serving_specs",
+          "aria-label": "Serving specs",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h2",
+              {
+                className: "font-heading text-xs uppercase tracking-wider text-muted-foreground",
+                "data-ocid": "heart.serving_specs.title",
+                children: item.title
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5",
+                "data-ocid": "heart.serving_specs.strip",
+                children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  StatCard,
+                  {
+                    label: field.fieldLabel,
+                    value: field.value,
+                    index: index2
+                  },
+                  `${field.fieldLabel}-${index2}`
+                ))
+              }
+            )
+          ]
+        }
+      );
+    }
+    function StatCard({
+      label,
+      value,
+      index: index2
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "flex flex-col gap-1 bg-library-card border border-border px-3 py-3 text-center",
+          "data-ocid": `heart.serving_specs.card.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-[0.65rem] uppercase tracking-wider text-muted-foreground", children: label }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-base font-medium leading-tight text-foreground", children: value })
+          ]
+        }
+      );
+    }
+    const PILLAR_TITLES = ["Hello", "Engage", "Arrive", "Respond", "Thank You"];
+    const SPECS_TITLE = "Serving Specs";
+    function HeartShowcasePage({
+      positionId,
+      categoryId
+    }) {
+      const itemsQuery = useItemsByCategory(categoryId);
+      const isLoading = itemsQuery.isLoading;
+      const items = itemsQuery.data ?? [];
+      const { specsItem, pillars } = reactExports.useMemo(() => {
+        const specs = items.find((it2) => it2.title === SPECS_TITLE) ?? null;
+        const pillarSet = new Set(PILLAR_TITLES);
+        const pillarItems = items.filter((it2) => pillarSet.has(it2.title)).sort((a2, b2) => a2.sortOrder - b2.sortOrder);
+        return { specsItem: specs, pillars: pillarItems };
+      }, [items]);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition$1, { positionId }),
+        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(HeartShowcaseSkeleton, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(HeartShowcaseHeader, {}),
+          specsItem ? /* @__PURE__ */ jsxRuntimeExports.jsx(ServingSpecsStrip, { item: specsItem }) : null,
+          pillars.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "section",
+            {
+              className: "mt-8 flex flex-col gap-3",
+              "data-ocid": "heart.pillars",
+              "aria-label": "HEART pillars",
+              children: pillars.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(PillarCard, { item, index: index2 }, item.id))
+            }
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyPillars, {})
+        ] })
+      ] });
+    }
+    function BackToPosition$1({
+      positionId
+    }) {
+      const to = `/position/${positionId}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", asChild: true, "data-ocid": "heart.back_button", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+        "Back to position"
+      ] }) });
+    }
+    function EmptyPillars() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mt-8 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          "data-ocid": "heart.pillars.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(HeartCrack, { className: "size-8 text-muted-foreground", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-base uppercase tracking-wide text-foreground", children: "No pillars yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-xs font-body text-sm text-muted-foreground", children: "An admin can add the five HEART pillars (Hello, Engage, Arrive, Respond, Thank You) to this category. Once they exist, you’ll see them here." })
+            ] })
+          ]
+        }
+      );
+    }
+    function HeartShowcaseSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col items-center gap-4", "aria-hidden": true, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-2/3" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-1.5 w-2/3 rounded-full" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-6 w-4/5" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 grid w-full grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5", children: ["s1", "s2", "s3", "s4", "s5"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-16 w-full" }, k2)) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 flex w-full flex-col gap-3", children: ["s1", "s2", "s3", "s4", "s5"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-20 w-full" }, k2)) })
+      ] });
+    }
+    function HeartShowcaseRoute() {
+      const { id, categoryId } = useParams({ strict: false });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        HeartShowcasePage,
+        {
+          positionId: String(id ?? ""),
+          categoryId: String(categoryId ?? "")
+        }
+      );
     }
     function SeasonalBadge({
       className,
@@ -66776,6 +70882,16 @@ ${escapeText(this.code(index2, length))}
       path: "/position/$id/library/$categoryId",
       component: CategoryDetailRoute
     });
+    const heartShowcaseRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/position/$id/heart/$categoryId",
+      component: HeartShowcaseRoute
+    });
+    const nsoRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/new-store-opening",
+      component: NsoPage
+    });
     const itemDetailRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/library/$categoryId/item/$itemId",
@@ -66815,7 +70931,9 @@ ${escapeText(this.code(index2, length))}
       homeRoute,
       positionDetailRoute,
       categoryDetailRoute,
+      heartShowcaseRoute,
       itemDetailRoute,
+      nsoRoute,
       adminRoute.addChildren([
         adminIndexRoute,
         adminPositionsRoute,
