@@ -147,6 +147,11 @@ export type Value = {
     __kind__: "text";
     text: string;
 };
+export interface NsoPhaseProgressCount {
+    doneCount: bigint;
+    totalCount: bigint;
+    phaseId: bigint;
+}
 export interface UserProfile {
     id: Principal;
     name: string;
@@ -209,6 +214,7 @@ export interface backendInterface {
         totalCount: bigint;
     }>;
     getNsoPhase(id: bigint): Promise<Phase | null>;
+    getNsoPhaseProgressCounts(): Promise<Array<NsoPhaseProgressCount>>;
     getNsoPhases(): Promise<Array<Phase>>;
     getNsoTask(id: bigint): Promise<Task | null>;
     getNsoTasksByPhase(phaseId: bigint): Promise<Array<Task>>;

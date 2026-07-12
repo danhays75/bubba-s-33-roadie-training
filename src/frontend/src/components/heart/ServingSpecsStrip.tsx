@@ -2,15 +2,18 @@ import type { LibraryItem } from "@/types/foundation";
 import type { ReactElement } from "react";
 
 /**
- * ServingSpecsStrip — a horizontal responsive strip of small stat cards
- * built from the "Serving Specs" item's detail fields.
+ * ServingSpecsStrip — a single horizontal row of compact stat chips built
+ * from the "Serving Specs" item's detail fields (Apps, Salads, Entrées,
+ * Refills).
  *
- * Each detail field becomes one stat card:
- *   - fieldLabel above (Oswald, uppercase, small, muted)
- *   - value below (Barlow, larger, foreground)
+ * Phone-first: all chips sit on ONE row with tight horizontal spacing. Each
+ * chip is a flex item that shrinks to fit (flex-1 min-w-0) so the four chips
+ * stay inline on a phone. On very narrow viewports the row scrolls
+ * horizontally (overflow-x-auto) rather than wrapping to a second line.
  *
- * Mobile-first: cards wrap on small screens, sit in a row on larger ones.
- * Hidden entirely when the item is null/undefined or has no details.
+ * Each chip: small label above (Oswald, uppercase, muted) over value below
+ * (Barlow, foreground). Hidden entirely when the item is null/undefined or
+ * has no details.
  */
 export function ServingSpecsStrip({
   item,
@@ -31,24 +34,24 @@ export function ServingSpecsStrip({
       >
         {item.title}
       </h2>
-      <div
-        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5"
+      <ul
+        className="mt-3 flex w-full list-none gap-1.5 overflow-x-auto pb-1 m-0"
         data-ocid="heart.serving_specs.strip"
       >
         {item.details.map((field, index) => (
-          <StatCard
+          <StatChip
             key={`${field.fieldLabel}-${index}`}
             label={field.fieldLabel}
             value={field.value}
             index={index}
           />
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
 
-function StatCard({
+function StatChip({
   label,
   value,
   index,
@@ -58,17 +61,17 @@ function StatCard({
   index: number;
 }): ReactElement {
   return (
-    <div
-      className="flex flex-col gap-1 bg-library-card border border-border px-3 py-3 text-center"
+    <li
+      className="flex min-w-0 flex-1 flex-col gap-0.5 bg-library-card border border-border px-2 py-2 text-center"
       data-ocid={`heart.serving_specs.card.${index + 1}`}
     >
-      <span className="font-heading text-[0.65rem] uppercase tracking-wider text-muted-foreground">
+      <span className="font-heading text-[0.6rem] uppercase leading-tight tracking-wider text-muted-foreground">
         {label}
       </span>
-      <span className="font-body text-base font-medium leading-tight text-foreground">
+      <span className="font-body text-sm font-medium leading-tight text-foreground">
         {value}
       </span>
-    </div>
+    </li>
   );
 }
 

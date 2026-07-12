@@ -204,6 +204,11 @@ export type Value = {
     __kind__: "text";
     text: string;
 };
+export interface NsoPhaseProgressCount {
+    doneCount: bigint;
+    totalCount: bigint;
+    phaseId: bigint;
+}
 export interface UserProfile {
     id: Principal;
     name: string;
@@ -288,6 +293,7 @@ export interface backendInterface {
         totalCount: bigint;
     }>;
     getNsoPhase(id: bigint): Promise<Phase | null>;
+    getNsoPhaseProgressCounts(): Promise<Array<NsoPhaseProgressCount>>;
     getNsoPhases(): Promise<Array<Phase>>;
     getNsoTask(id: bigint): Promise<Task | null>;
     getNsoTasksByPhase(phaseId: bigint): Promise<Array<Task>>;
@@ -992,6 +998,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getNsoPhase(arg0);
             return from_candid_opt_n56(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getNsoPhaseProgressCounts(): Promise<Array<NsoPhaseProgressCount>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getNsoPhaseProgressCounts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getNsoPhaseProgressCounts();
+            return result;
         }
     }
     async getNsoPhases(): Promise<Array<Phase>> {

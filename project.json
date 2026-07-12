@@ -1,22 +1,18 @@
 {
-  "overview": "A manager-only New Store Opening checklist and progress tracker for the Bubba's 33 management team, added alongside the existing roadie position training libraries.",
+  "overview": "A New Store Opening task tracker that loads phases, sections, and tasks incrementally for fast, responsive use.",
   "features": [
-    "Manager/Admin-only New Store Opening tracker in the top nav",
-    "Ordered phases with collapsible sections and red progress bars",
-    "Task rows with checkboxes, assign-to-manager, and editable completion dates",
-    "Overall progress header across all phases",
-    "Immediate save when a task is checked",
-    "Add, edit, reorder, and delete phases and tasks",
-    "Bulk import tasks from pasted JSON with a summary",
-    "Dark Bubba's 33 theme, mobile-friendly"
+    "Phase headers with live done/total counts",
+    "Expand a phase to see its section groups",
+    "Expand a section to see its tasks",
+    "Lightweight task rows with a single Edit dialog for all controls",
+    "Dark theme with preserved error boundary"
   ],
   "category": "productivity",
   "tags": [
-    "checklist",
-    "tracker",
-    "manager-tools",
-    "new-store-opening",
-    "bubbas-33"
+    "nso",
+    "task-tracker",
+    "incremental-loading",
+    "dark-theme"
   ],
-  "last_updated": "2026-07-07T15:43:05.995Z"
+  "last_updated": "2026-07-08T00:59:21.179Z"
 }

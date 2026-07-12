@@ -66,6 +66,11 @@ export interface NsoImportTask {
   'section' : [] | [string],
   'notes' : [] | [string],
 }
+export interface NsoPhaseProgressCount {
+  'doneCount' : bigint,
+  'totalCount' : bigint,
+  'phaseId' : bigint,
+}
 export interface Phase { 'id' : bigint, 'sortOrder' : bigint, 'name' : string }
 export interface Position {
   'id' : bigint,
@@ -211,6 +216,7 @@ export interface _SERVICE {
     { 'doneCount' : bigint, 'totalCount' : bigint }
   >,
   'getNsoPhase' : ActorMethod<[bigint], [] | [Phase]>,
+  'getNsoPhaseProgressCounts' : ActorMethod<[], Array<NsoPhaseProgressCount>>,
   'getNsoPhases' : ActorMethod<[], Array<Phase>>,
   'getNsoTask' : ActorMethod<[bigint], [] | [Task]>,
   'getNsoTasksByPhase' : ActorMethod<[bigint], Array<Task>>,

@@ -15,6 +15,7 @@ import Types "../types/nso";
 module {
   public type Phase = Types.Phase;
   public type Task = Types.Task;
+  public type NsoPhaseProgressCount = Types.NsoPhaseProgressCount;
   public type NsoImportInput = Types.NsoImportInput;
   public type NsoImportPhase = Types.NsoImportPhase;
   public type NsoImportTask = Types.NsoImportTask;
@@ -348,6 +349,45 @@ module {
       if (t.done) { doneCount := doneCount + 1 };
     });
     (doneCount, totalCount);
+  };
+
+  // Compute per-phase progress counts for ALL phases in a single pass over
+  // the tasks list. Returns one NsoPhaseProgressCount per phase (in phase
+  // sortOrder), with doneCount/totalCount aggregated from the tasks belonging
+  // to that phase. Phases with no tasks report 0/0. This is the lightweight
+  // alternative to calling getNsoTasksByPhase for every phase header — it
+  // touches each task exactly once and returns only counts, not rows.
+  public func phaseProgressCounts(
+    phases : List.List<Phase>,
+    tasks : List.List<Task>,
+  ) : [NsoPhaseProgressCount] {
+    // Seed a mutable count pair per phase id (phaseId -> (done, total)).
+    // Use a Map so we can look up by phaseId in O(log n) while iterating
+    // tasks once.
+    let counts = Map.empty<Nat, { var done : Nat; var total : Nat }>();
+    phases.forEach(func(p) {
+      counts.add(p.id, { var done = 0; var total = 0 });
+    });
+    // Single pass over tasks: increment the matching phase's counters.
+    tasks.forEach(func(t) {
+      switch (counts.get(t.phaseId)) {
+        case (?c) {
+          c.total := c.total + 1;
+          if (t.done) { c.done := c.done + 1 };
+        };
+        case null {
+          // Task references a phase that no longer exists (orphaned). Skip
+          // it — it contributes to no phase header's count.
+        };
+      };
+    });
+    // Emit one count per phase, in phase sortOrder.
+    listPhases(phases).map(func(p) {
+      switch (counts.get(p.id)) {
+        case (?c) { { phaseId = p.id; doneCount = c.done; totalCount = c.total } };
+        case null { { phaseId = p.id; doneCount = 0; totalCount = 0 } };
+      };
+    });
   };
 
   // --- Bulk import ---

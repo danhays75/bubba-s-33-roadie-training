@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useItemsByCategory } from "@/hooks/useLibrary";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, HeartCrack } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { ReactElement } from "react";
 
 /**
@@ -49,6 +49,10 @@ export function HeartShowcasePage({
     return { specsItem: specs, pillars: pillarItems };
   }, [items]);
 
+  // Accordion state: only ONE pillar open at a time. Start with the first
+  // pillar (Hello) open. -1 means all collapsed.
+  const [openIndex, setOpenIndex] = useState(0);
+
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6">
       <BackToPosition positionId={positionId} />
@@ -68,7 +72,15 @@ export function HeartShowcasePage({
               aria-label="HEART pillars"
             >
               {pillars.map((item, index) => (
-                <PillarCard key={item.id} item={item} index={index} />
+                <PillarCard
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  expanded={index === openIndex}
+                  onToggle={() =>
+                    setOpenIndex((prev) => (prev === index ? -1 : index))
+                  }
+                />
               ))}
             </section>
           ) : (

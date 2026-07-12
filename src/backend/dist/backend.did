@@ -82,6 +82,12 @@ type Phase =
    name: text;
    sortOrder: nat;
  };
+type NsoPhaseProgressCount = 
+ record {
+   doneCount: nat;
+   phaseId: nat;
+   totalCount: nat;
+ };
 type NsoImportTask = 
  record {
    notes: opt text;
@@ -229,6 +235,7 @@ service : {
       totalCount: nat;
     }) query;
   getNsoPhase: (id: nat) -> (opt Phase) query;
+  getNsoPhaseProgressCounts: () -> (vec NsoPhaseProgressCount) query;
   getNsoPhases: () -> (vec Phase) query;
   getNsoTask: (id: nat) -> (opt Task) query;
   getNsoTasksByPhase: (phaseId: nat) -> (vec Task) query;

@@ -126,6 +126,11 @@ export const Result = IDL.Record({
   'hasMore' : IDL.Bool,
   'rows' : IDL.Vec(IDL.Vec(Cell)),
 });
+export const NsoPhaseProgressCount = IDL.Record({
+  'doneCount' : IDL.Nat,
+  'totalCount' : IDL.Nat,
+  'phaseId' : IDL.Nat,
+});
 export const NsoImportTask = IDL.Record({
   'text' : IDL.Text,
   'section' : IDL.Opt(IDL.Text),
@@ -279,6 +284,11 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getNsoPhase' : IDL.Func([IDL.Nat], [IDL.Opt(Phase)], ['query']),
+  'getNsoPhaseProgressCounts' : IDL.Func(
+      [],
+      [IDL.Vec(NsoPhaseProgressCount)],
+      ['query'],
+    ),
   'getNsoPhases' : IDL.Func([], [IDL.Vec(Phase)], ['query']),
   'getNsoTask' : IDL.Func([IDL.Nat], [IDL.Opt(Task)], ['query']),
   'getNsoTasksByPhase' : IDL.Func([IDL.Nat], [IDL.Vec(Task)], ['query']),
@@ -490,6 +500,11 @@ export const idlFactory = ({ IDL }) => {
     'hasMore' : IDL.Bool,
     'rows' : IDL.Vec(IDL.Vec(Cell)),
   });
+  const NsoPhaseProgressCount = IDL.Record({
+    'doneCount' : IDL.Nat,
+    'totalCount' : IDL.Nat,
+    'phaseId' : IDL.Nat,
+  });
   const NsoImportTask = IDL.Record({
     'text' : IDL.Text,
     'section' : IDL.Opt(IDL.Text),
@@ -647,6 +662,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getNsoPhase' : IDL.Func([IDL.Nat], [IDL.Opt(Phase)], ['query']),
+    'getNsoPhaseProgressCounts' : IDL.Func(
+        [],
+        [IDL.Vec(NsoPhaseProgressCount)],
+        ['query'],
+      ),
     'getNsoPhases' : IDL.Func([], [IDL.Vec(Phase)], ['query']),
     'getNsoTask' : IDL.Func([IDL.Nat], [IDL.Opt(Task)], ['query']),
     'getNsoTasksByPhase' : IDL.Func([IDL.Nat], [IDL.Vec(Task)], ['query']),

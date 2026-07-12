@@ -94,6 +94,18 @@ export type NsoOverallProgress = {
   totalCount: number;
 };
 
+/**
+ * Per-phase progress count for a single phase. `phaseId` is the stringified
+ * bigint; `doneCount` / `totalCount` are number forms of the backend's bigint
+ * counters. Used to render collapsed phase headers ("N of M done") without
+ * loading the phase's full task list.
+ */
+export type NsoPhaseProgressCount = {
+  phaseId: string;
+  doneCount: number;
+  totalCount: number;
+};
+
 /** Direction for the per-parent reorder mutations. */
 export type NsoReorderDirection = "up" | "down";
 
@@ -128,6 +140,13 @@ type CandidSummary = {
 
 /** Candid overall-progress shape from backend.d.ts (inline record). */
 type CandidProgress = {
+  doneCount: bigint;
+  totalCount: bigint;
+};
+
+/** Candid per-phase progress-count shape from backend.d.ts (bigint fields). */
+type CandidPhaseProgressCount = {
+  phaseId: bigint;
   doneCount: bigint;
   totalCount: bigint;
 };
@@ -170,5 +189,16 @@ export function toFrontendProgress(p: CandidProgress): NsoOverallProgress {
   return {
     doneCount: Number(p.doneCount),
     totalCount: Number(p.totalCount),
+  };
+}
+
+/** Translates a Candid per-phase progress-count record (bigint) to local. */
+export function toFrontendPhaseProgressCount(
+  c: CandidPhaseProgressCount,
+): NsoPhaseProgressCount {
+  return {
+    phaseId: c.phaseId.toString(),
+    doneCount: Number(c.doneCount),
+    totalCount: Number(c.totalCount),
   };
 }

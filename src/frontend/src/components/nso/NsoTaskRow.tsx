@@ -1,4 +1,3 @@
-import { NsoTaskFormDialog } from "@/components/nso/NsoTaskFormDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,12 +11,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
   useDeleteNsoTask,
   useNsoAssignableUsers,
@@ -25,36 +35,35 @@ import {
   useSetNsoTaskAssignment,
   useSetNsoTaskCompletionDate,
   useToggleNsoTask,
+  useUpdateNsoTask,
 } from "@/hooks/useNso";
 import { cn } from "@/lib/utils";
 import type { UserProfile } from "@/types/foundation";
 import type { NsoTask } from "@/types/nso";
 import { ChevronDown, ChevronUp, Loader2, Pencil, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 /**
- * A single NSO task row.
+ * A single NSO task row — lightweight by default.
  *
- * Layout (mobile-first):
- *   - Line 1: checkbox + task text (strikethrough/muted when done).
- *   - Line 2: Assign select, completion date input, and the row controls
- *     (reorder up/down, edit, delete). On wider screens these sit on one
- *     row; on phones they wrap but stay tappable.
+ * Default (collapsed) row renders ONLY:
+ *   - checkbox (toggles done via useToggleNsoTask, optimistic)
+ *   - task text (strikethrough/muted when done)
+ *   - small plain-text labels for assignee and completion date WHEN set
+ *   - a single "Edit" button
  *
- * Immediate save (no save button):
- *   - Checkbox toggle → useToggleNsoTask. Checking sets completionDate to
- *     today (ISO YYYY-MM-DD); unchecking clears it.
- *   - Assign select change → useSetNsoTaskAssignment.
- *   - Completion date change → useSetNsoTaskCompletionDate.
+ * No Radix Select, date input, or AlertDialog is mounted in the default
+ * state. Clicking Edit opens ONE dialog (mounted only while open) that
+ * hosts the Assign dropdown, completion-date input, reorder up/down,
+ * edit fields (text/section/notes), and delete-with-confirm — preserving
+ * every control that used to be inline.
  *
- * The Assign control lists only users whose profile.role is 'manager' or
- * 'admin'. It uses useNsoAssignableUsers (the manager-accessible
- * getNsoAssignableUsers endpoint) so the dropdown populates for both
- * Manager and Admin roles; the endpoint already returns only
- * managers/admins, so the local role filter is a no-op safety.
+ * Notes stay accessible two ways: a small expandable preview in the
+ * collapsed row (no dialog), and the full notes textarea inside the Edit
+ * dialog.
  */
-export function NsoTaskRow({
+export const NsoTaskRow = memo(function NsoTaskRow({
   task,
   index,
   total,
@@ -66,33 +75,8 @@ export function NsoTaskRow({
   total: number;
 }) {
   const toggleMutation = useToggleNsoTask();
-  const assignMutation = useSetNsoTaskAssignment();
-  const dateMutation = useSetNsoTaskCompletionDate();
-  const reorderMutation = useReorderNsoTasks();
-  const deleteMutation = useDeleteNsoTask();
-  const { data: users } = useNsoAssignableUsers();
-
-  const [formOpen, setFormOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [notesExpanded, setNotesExpanded] = useState(false);
-
-  const isFirst = index === 0;
-  const isLast = index === total - 1;
-
-  // Manager + Admin users only, sorted by name for a stable dropdown.
-  const assignableUsers = useMemo<UserProfile[]>(
-    () =>
-      (users ?? [])
-        .filter((u) => u.role === "manager" || u.role === "admin")
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [users],
-  );
-
-  const assigneeName = useMemo(() => {
-    if (!task.assignedTo) return null;
-    const u = assignableUsers.find((x) => x.principal === task.assignedTo);
-    return u?.name ?? null;
-  }, [task.assignedTo, assignableUsers]);
 
   // Notes are considered "long" when they overflow a 2-line clamp preview.
   // Heuristic: more than ~90 chars OR contains 3+ newline-separated lines
@@ -131,6 +115,212 @@ export function NsoTaskRow({
       });
     }
   }
+
+  return (
+    <li
+      className="rounded-md border border-border bg-card transition-smooth hover:border-primary/40"
+      data-ocid={`nso.task.row.${index + 1}`}
+    >
+      <div className="flex items-start gap-3 p-3">
+        {/* Checkbox */}
+        <Checkbox
+          checked={task.done}
+          onCheckedChange={handleToggle}
+          disabled={toggleMutation.isPending}
+          aria-label={`Mark "${task.text}" as ${task.done ? "not done" : "done"}`}
+          data-ocid={`nso.task.checkbox.${index + 1}`}
+          className="mt-0.5 size-5"
+        />
+
+        {/* Text + small plain-text labels + notes preview */}
+        <div className="min-w-0 flex-1">
+          <p
+            className={cn(
+              "font-body text-sm leading-snug break-words",
+              task.done
+                ? "text-muted-foreground line-through"
+                : "text-foreground",
+            )}
+            data-ocid={`nso.task.text.${index + 1}`}
+          >
+            {task.text}
+          </p>
+
+          {/* Saving indicator */}
+          {toggleMutation.isPending && (
+            <span
+              className="mt-1 inline-flex items-center gap-1 font-body text-xs text-muted-foreground"
+              data-ocid={`nso.task.loading_state.${index + 1}`}
+              aria-live="polite"
+            >
+              <Loader2 className="size-3 animate-spin" />
+              Saving…
+            </span>
+          )}
+
+          {/* Small plain-text labels: assignee + completion date (only when set) */}
+          {(task.assignedTo || task.completionDate) && (
+            <p className="mt-1 font-body text-xs text-muted-foreground break-words">
+              {task.assignedTo && (
+                <span data-ocid={`nso.task.assignee_label.${index + 1}`}>
+                  Assigned
+                  {task.completionDate ? " " : ""}
+                </span>
+              )}
+              {task.assignedTo && task.completionDate && (
+                <span aria-hidden="true"> · </span>
+              )}
+              {task.completionDate && (
+                <span data-ocid={`nso.task.date_label.${index + 1}`}>
+                  Done {task.completionDate}
+                </span>
+              )}
+            </p>
+          )}
+
+          {/* Notes preview (expandable for long content; collapsed = 2-line clamp) */}
+          {task.notes && task.notes.length > 0 && (
+            <div className="mt-1 min-w-0">
+              <p
+                className={cn(
+                  "font-body text-xs text-muted-foreground break-words",
+                  notesExpanded
+                    ? "whitespace-pre-wrap leading-relaxed"
+                    : "line-clamp-2",
+                )}
+                data-ocid={`nso.task.notes.${index + 1}`}
+              >
+                {task.notes}
+              </p>
+              {notesIsLong && (
+                <button
+                  type="button"
+                  onClick={() => setNotesExpanded((v) => !v)}
+                  aria-expanded={notesExpanded}
+                  aria-controls={`nso-task-notes-${index + 1}`}
+                  data-ocid={`nso.task.notes_toggle.${index + 1}`}
+                  className={cn(
+                    "mt-1 inline-flex min-w-0 items-center gap-1 font-heading text-xs uppercase tracking-wider",
+                    "text-primary hover:text-primary-hover focus-visible:text-primary-hover",
+                    "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                    "min-h-6 px-0.5 py-0.5 transition-smooth",
+                  )}
+                >
+                  {notesExpanded ? (
+                    <>
+                      <ChevronUp className="size-3.5" />
+                      Show less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="size-3.5" />
+                      Show more
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Single per-row Edit button — opens the one combined dialog */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7 shrink-0"
+          onClick={() => setEditOpen(true)}
+          aria-label={`Edit "${task.text}"`}
+          data-ocid={`nso.task.edit_button.${index + 1}`}
+        >
+          <Pencil />
+        </Button>
+      </div>
+
+      {/* One combined Edit dialog — mounted ONLY when open */}
+      {editOpen && (
+        <NsoTaskEditDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          task={task}
+          index={index}
+          total={total}
+        />
+      )}
+    </li>
+  );
+});
+
+/* -------------------------------------------------------------------------- */
+/* Per-row Edit dialog                                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The single per-row Edit dialog. Hosts every control that used to be
+ * inline: Assign dropdown (Radix Select via useNsoAssignableUsers — only
+ * mounted when this dialog opens), completion-date input, reorder up/down,
+ * edit fields (text/section/notes via useUpdateNsoTask), and delete with
+ * AlertDialog confirm.
+ *
+ * Mounted only while `open` is true (the parent conditionally renders it),
+ * so no Select, date input, or AlertDialog lives in the DOM for a collapsed
+ * row. useNsoAssignableUsers() is called HERE, not in the default row.
+ */
+function NsoTaskEditDialog({
+  open,
+  onOpenChange,
+  task,
+  index,
+  total,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  task: NsoTask;
+  index: number;
+  total: number;
+}) {
+  const assignMutation = useSetNsoTaskAssignment();
+  const dateMutation = useSetNsoTaskCompletionDate();
+  const reorderMutation = useReorderNsoTasks();
+  const deleteMutation = useDeleteNsoTask();
+  const updateMutation = useUpdateNsoTask();
+  const { data: users } = useNsoAssignableUsers();
+
+  const [text, setText] = useState("");
+  const [section, setSection] = useState("");
+  const [notes, setNotes] = useState("");
+  const [touched, setTouched] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const isFirst = index === 0;
+  const isLast = index === total - 1;
+
+  // Manager + Admin users only, sorted by name for a stable dropdown.
+  const assignableUsers = useMemo<UserProfile[]>(
+    () =>
+      (users ?? [])
+        .filter((u) => u.role === "manager" || u.role === "admin")
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [users],
+  );
+
+  // Reset fields whenever the dialog opens or the target task changes.
+  useEffect(() => {
+    if (open) {
+      setText(task.text);
+      setSection(task.section ?? "");
+      setNotes(task.notes ?? "");
+      setTouched(false);
+      setConfirmDelete(false);
+    }
+  }, [open, task]);
+
+  const textError =
+    touched && text.trim().length === 0 ? "Task text is required" : null;
+  const canSubmit = text.trim().length > 0;
+  const isSaving =
+    assignMutation.isPending ||
+    dateMutation.isPending ||
+    updateMutation.isPending;
 
   async function handleAssign(value: string) {
     // "__none__" sentinel represents the Unassign option.
@@ -171,6 +361,9 @@ export function NsoTaskRow({
         phaseId: task.phaseId,
         direction,
       });
+      // After a successful reorder the list re-renders; close the dialog so
+      // the user sees the new position rather than a stale dialog.
+      onOpenChange(false);
     } catch (err) {
       toast.error("Could not reorder task", {
         description: err instanceof Error ? err.message : undefined,
@@ -185,7 +378,7 @@ export function NsoTaskRow({
         phaseId: task.phaseId,
       });
       toast.success("Task deleted");
-      setDeleting(false);
+      onOpenChange(false);
     } catch (err) {
       toast.error("Could not delete task", {
         description: err instanceof Error ? err.message : undefined,
@@ -193,256 +386,297 @@ export function NsoTaskRow({
     }
   }
 
-  const saving =
-    toggleMutation.isPending ||
-    assignMutation.isPending ||
-    dateMutation.isPending;
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setTouched(true);
+    if (!canSubmit) return;
+
+    const trimmedText = text.trim();
+    const trimmedSection = section.trim();
+    const trimmedNotes = notes.trim();
+
+    try {
+      await updateMutation.mutateAsync({
+        id: task.id,
+        phaseId: task.phaseId,
+        text: trimmedText,
+        section: trimmedSection.length > 0 ? trimmedSection : null,
+        done: task.done,
+        assignedTo: task.assignedTo,
+        completionDate: task.completionDate,
+        notes: trimmedNotes.length > 0 ? trimmedNotes : null,
+      });
+      toast.success("Task updated");
+      onOpenChange(false);
+    } catch (err) {
+      toast.error("Could not update task", {
+        description: err instanceof Error ? err.message : undefined,
+      });
+    }
+  }
 
   return (
-    <li
-      className="rounded-md border border-border bg-card transition-smooth hover:border-primary/40"
-      data-ocid={`nso.task.row.${index + 1}`}
-    >
-      <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-start sm:gap-3">
-        {/* Line 1 (mobile) / left column (desktop): checkbox + text */}
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-          <Checkbox
-            checked={task.done}
-            onCheckedChange={handleToggle}
-            disabled={toggleMutation.isPending}
-            aria-label={`Mark "${task.text}" as ${task.done ? "not done" : "done"}`}
-            data-ocid={`nso.task.checkbox.${index + 1}`}
-            className="mt-0.5 size-5"
-          />
-          <div className="min-w-0 flex-1">
-            <p
-              className={cn(
-                "font-body text-sm leading-snug break-words",
-                task.done
-                  ? "text-muted-foreground line-through"
-                  : "text-foreground",
-              )}
-              data-ocid={`nso.task.text.${index + 1}`}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="bg-card border-border sm:max-w-xl"
+        data-ocid={`nso.task.edit_dialog.${index + 1}`}
+      >
+        <DialogHeader>
+          <DialogTitle className="font-heading uppercase tracking-wide text-foreground">
+            Edit task
+          </DialogTitle>
+          <DialogDescription>
+            Update assignment, completion date, task details, reorder, or delete
+            this task.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="grid gap-4">
+          {/* Task text — required */}
+          <div className="grid gap-2">
+            <Label
+              htmlFor="nso-task-edit-text"
+              className="font-heading uppercase text-xs tracking-wider"
             >
-              {task.text}
-            </p>
-            {/* Saving indicator */}
-            {saving && (
-              <span
-                className="mt-1 inline-flex items-center gap-1 font-body text-xs text-muted-foreground"
-                data-ocid={`nso.task.loading_state.${index + 1}`}
-                aria-live="polite"
+              Task
+            </Label>
+            <Textarea
+              id="nso-task-edit-text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onBlur={() => setTouched(true)}
+              placeholder="e.g. Confirm final staff schedule"
+              aria-invalid={!!textError}
+              aria-describedby={
+                textError ? "nso-task-edit-text-error" : undefined
+              }
+              data-ocid={`nso.task.edit.text_input.${index + 1}`}
+              autoComplete="off"
+              maxLength={400}
+            />
+            {textError && (
+              <p
+                id="nso-task-edit-text-error"
+                className="text-xs text-primary font-body"
+                data-ocid={`nso.task.edit.text_input.field_error.${index + 1}`}
               >
-                <Loader2 className="size-3 animate-spin" />
-                Saving…
-              </span>
-            )}
-            {/* Notes (expandable for long content; collapsed = 2-line clamp) */}
-            {task.notes && task.notes.length > 0 && (
-              <div className="mt-1 min-w-0">
-                <p
-                  className={cn(
-                    "font-body text-xs text-muted-foreground break-words",
-                    notesExpanded
-                      ? "whitespace-pre-wrap leading-relaxed"
-                      : "line-clamp-2",
-                  )}
-                  data-ocid={`nso.task.notes.${index + 1}`}
-                >
-                  {task.notes}
-                </p>
-                {notesIsLong && (
-                  <button
-                    type="button"
-                    onClick={() => setNotesExpanded((v) => !v)}
-                    aria-expanded={notesExpanded}
-                    aria-controls={`nso-task-notes-${index + 1}`}
-                    data-ocid={`nso.task.notes_toggle.${index + 1}`}
-                    className={cn(
-                      "mt-1 inline-flex min-w-0 items-center gap-1 font-heading text-xs uppercase tracking-wider",
-                      "text-primary hover:text-primary-hover focus-visible:text-primary-hover",
-                      "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                      "min-h-6 px-0.5 py-0.5 transition-smooth",
-                    )}
-                  >
-                    {notesExpanded ? (
-                      <>
-                        <ChevronUp className="size-3.5" />
-                        Show less
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="size-3.5" />
-                        Show more
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+                {textError}
+              </p>
             )}
           </div>
-        </div>
 
-        {/* Line 2 (mobile) / right column (desktop): assign + date + controls */}
-        <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
-          {/* Assign */}
-          <div className="flex items-center gap-1.5">
-            <span className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
-              Assign
-            </span>
-            <Select
-              value={task.assignedTo ?? "__none__"}
-              onValueChange={handleAssign}
-              disabled={assignMutation.isPending}
+          {/* Section — optional */}
+          <div className="grid gap-2">
+            <Label
+              htmlFor="nso-task-edit-section"
+              className="font-heading uppercase text-xs tracking-wider"
             >
-              <SelectTrigger
-                size="sm"
-                className="h-8 w-32 min-w-0 sm:w-40"
-                aria-label={`Assign "${task.text}"`}
-                data-ocid={`nso.task.assign_select.${index + 1}`}
-              >
-                <SelectValue placeholder="Unassigned" />
-              </SelectTrigger>
-              <SelectContent
-                className="bg-popover text-popover-foreground"
-                data-ocid={`nso.task.assign_menu.${index + 1}`}
-              >
-                <SelectItem value="__none__">Unassigned</SelectItem>
-                {assignableUsers.map((u) => (
-                  <SelectItem
-                    key={u.principal}
-                    value={u.principal}
-                    data-ocid={`nso.task.assign_option.${index + 1}`}
-                  >
-                    {u.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Completion date */}
-          <div className="flex items-center gap-1.5">
-            <span className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
-              Done
-            </span>
-            <input
-              type="date"
-              value={task.completionDate ?? ""}
-              onChange={handleDateChange}
-              disabled={dateMutation.isPending}
-              aria-label={`Completion date for "${task.text}"`}
-              data-ocid={`nso.task.date_input.${index + 1}`}
-              className={cn(
-                "h-8 rounded-md border border-input bg-transparent px-2 py-1 font-body text-xs text-foreground",
-                "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
-                "disabled:cursor-not-allowed disabled:opacity-50",
-              )}
+              Section <span className="text-muted-foreground">(optional)</span>
+            </Label>
+            <Input
+              id="nso-task-edit-section"
+              value={section}
+              onChange={(e) => setSection(e.target.value)}
+              placeholder="e.g. Staffing"
+              data-ocid={`nso.task.edit.section_input.${index + 1}`}
+              autoComplete="off"
+              maxLength={60}
             />
           </div>
 
-          {/* Reorder + edit + delete */}
-          <div className="flex items-center gap-0.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => handleReorder("up")}
-              disabled={isFirst || reorderMutation.isPending}
-              aria-label={`Move "${task.text}" up`}
-              data-ocid={`nso.task.move_up_button.${index + 1}`}
+          {/* Notes — optional */}
+          <div className="grid gap-2">
+            <Label
+              htmlFor="nso-task-edit-notes"
+              className="font-heading uppercase text-xs tracking-wider"
             >
-              <ChevronUp />
-            </Button>
+              Notes <span className="text-muted-foreground">(optional)</span>
+            </Label>
+            <Textarea
+              id="nso-task-edit-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Any extra context for whoever picks up this task."
+              data-ocid={`nso.task.edit.notes_input.${index + 1}`}
+              autoComplete="off"
+              maxLength={1000}
+            />
+          </div>
+
+          {/* Assign + completion date row */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {/* Assign */}
+            <div className="grid gap-2">
+              <Label
+                htmlFor="nso-task-edit-assign"
+                className="font-heading uppercase text-xs tracking-wider"
+              >
+                Assign
+              </Label>
+              <Select
+                value={task.assignedTo ?? "__none__"}
+                onValueChange={handleAssign}
+                disabled={assignMutation.isPending}
+              >
+                <SelectTrigger
+                  size="sm"
+                  className="h-9 w-full min-w-0"
+                  aria-label={`Assign "${task.text}"`}
+                  data-ocid={`nso.task.edit.assign_select.${index + 1}`}
+                >
+                  <SelectValue placeholder="Unassigned" />
+                </SelectTrigger>
+                <SelectContent
+                  className="bg-popover text-popover-foreground"
+                  data-ocid={`nso.task.edit.assign_menu.${index + 1}`}
+                >
+                  <SelectItem value="__none__">Unassigned</SelectItem>
+                  {assignableUsers.map((u) => (
+                    <SelectItem
+                      key={u.principal}
+                      value={u.principal}
+                      data-ocid={`nso.task.edit.assign_option.${index + 1}`}
+                    >
+                      {u.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Completion date */}
+            <div className="grid gap-2">
+              <Label
+                htmlFor="nso-task-edit-date"
+                className="font-heading uppercase text-xs tracking-wider"
+              >
+                Done
+              </Label>
+              <input
+                id="nso-task-edit-date"
+                type="date"
+                value={task.completionDate ?? ""}
+                onChange={handleDateChange}
+                disabled={dateMutation.isPending}
+                aria-label={`Completion date for "${task.text}"`}
+                data-ocid={`nso.task.edit.date_input.${index + 1}`}
+                className={cn(
+                  "h-9 rounded-md border border-input bg-transparent px-3 py-1 font-body text-sm text-foreground",
+                  "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
+                  "disabled:cursor-not-allowed disabled:opacity-50",
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Reorder + delete row */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleReorder("up")}
+                disabled={isFirst || reorderMutation.isPending}
+                aria-label={`Move "${task.text}" up`}
+                data-ocid={`nso.task.edit.move_up_button.${index + 1}`}
+              >
+                <ChevronUp className="size-4" />
+                Up
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleReorder("down")}
+                disabled={isLast || reorderMutation.isPending}
+                aria-label={`Move "${task.text}" down`}
+                data-ocid={`nso.task.edit.move_down_button.${index + 1}`}
+              >
+                <ChevronDown className="size-4" />
+                Down
+              </Button>
+            </div>
             <Button
+              type="button"
               variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => handleReorder("down")}
-              disabled={isLast || reorderMutation.isPending}
-              aria-label={`Move "${task.text}" down`}
-              data-ocid={`nso.task.move_down_button.${index + 1}`}
-            >
-              <ChevronDown />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => setFormOpen(true)}
-              aria-label={`Edit "${task.text}"`}
-              data-ocid={`nso.task.edit_button.${index + 1}`}
-            >
-              <Pencil />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 text-primary hover:bg-primary/10 hover:text-primary"
-              onClick={() => setDeleting(true)}
+              size="sm"
+              className="text-primary hover:bg-primary/10 hover:text-primary"
+              onClick={() => setConfirmDelete(true)}
               aria-label={`Delete "${task.text}"`}
-              data-ocid={`nso.task.delete_button.${index + 1}`}
+              data-ocid={`nso.task.edit.delete_button.${index + 1}`}
             >
-              <Trash2 />
+              <Trash2 className="size-4" />
+              Delete
             </Button>
           </div>
-        </div>
-      </div>
 
-      {/* Hidden but accessible assignee summary for screen readers */}
-      {assigneeName && (
-        <span className="sr-only">
-          Assigned to {assigneeName}
-          {task.completionDate ? `, completed ${task.completionDate}` : ""}
-        </span>
-      )}
-
-      <NsoTaskFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        phaseId={task.phaseId}
-        task={task}
-      />
-
-      <AlertDialog
-        open={deleting}
-        onOpenChange={(o) => !o && setDeleting(false)}
-      >
-        <AlertDialogContent
-          className="bg-card border-border"
-          data-ocid={`nso.task.delete_dialog.${index + 1}`}
-        >
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-heading uppercase tracking-wide text-foreground">
-              Delete task?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This removes the task{" "}
-              <strong className="text-foreground">
-                &ldquo;{task.text}&rdquo;
-              </strong>{" "}
-              from this phase. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleteMutation.isPending}
-              data-ocid={`nso.task.delete_dialog.cancel_button.${index + 1}`}
+          <DialogFooter className="pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSaving}
+              data-ocid={`nso.task.edit.cancel_button.${index + 1}`}
             >
               Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-primary text-primary-foreground hover:bg-primary-hover"
-              data-ocid={`nso.task.delete_dialog.confirm_button.${index + 1}`}
+            </Button>
+            <Button
+              type="submit"
+              disabled={!canSubmit || isSaving}
+              data-ocid={`nso.task.edit.save_button.${index + 1}`}
             >
-              {deleteMutation.isPending && <Loader2 className="animate-spin" />}
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </li>
+              {isSaving && <Loader2 className="animate-spin" />}
+              Save changes
+            </Button>
+          </DialogFooter>
+        </form>
+
+        {/* Delete confirm — mounted only when requested */}
+        {confirmDelete && (
+          <AlertDialog
+            open={confirmDelete}
+            onOpenChange={(o) => !o && setConfirmDelete(false)}
+          >
+            <AlertDialogContent
+              className="bg-card border-border"
+              data-ocid={`nso.task.edit.delete_dialog.${index + 1}`}
+            >
+              <AlertDialogHeader>
+                <AlertDialogTitle className="font-heading uppercase tracking-wide text-foreground">
+                  Delete task?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This removes the task{" "}
+                  <strong className="text-foreground">
+                    &ldquo;{task.text}&rdquo;
+                  </strong>{" "}
+                  from this phase. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  disabled={deleteMutation.isPending}
+                  data-ocid={`nso.task.edit.delete_dialog.cancel_button.${index + 1}`}
+                >
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  disabled={deleteMutation.isPending}
+                  className="bg-primary text-primary-foreground hover:bg-primary-hover"
+                  data-ocid={`nso.task.edit.delete_dialog.confirm_button.${index + 1}`}
+                >
+                  {deleteMutation.isPending && (
+                    <Loader2 className="animate-spin" />
+                  )}
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

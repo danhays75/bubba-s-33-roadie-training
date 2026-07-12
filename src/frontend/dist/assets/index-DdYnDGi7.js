@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-CaexxB2B.js"(exports, module) {
+  "assets/index-DdYnDGi7.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -29005,6 +29005,11 @@ variant ${k2} -> ${e.message}`, {
       "hasMore": Bool,
       "rows": Vec(Vec(Cell))
     });
+    const NsoPhaseProgressCount = Record({
+      "doneCount": Nat,
+      "totalCount": Nat,
+      "phaseId": Nat
+    });
     const NsoImportTask = Record({
       "text": Text$2,
       "section": Opt(Text$2),
@@ -29157,6 +29162,11 @@ variant ${k2} -> ${e.message}`, {
         ["query"]
       ),
       "getNsoPhase": Func([Nat], [Opt(Phase)], ["query"]),
+      "getNsoPhaseProgressCounts": Func(
+        [],
+        [Vec(NsoPhaseProgressCount)],
+        ["query"]
+      ),
       "getNsoPhases": Func([], [Vec(Phase)], ["query"]),
       "getNsoTask": Func([Nat], [Opt(Task)], ["query"]),
       "getNsoTasksByPhase": Func([Nat], [Vec(Task)], ["query"]),
@@ -29365,6 +29375,11 @@ variant ${k2} -> ${e.message}`, {
         "hasMore": IDL2.Bool,
         "rows": IDL2.Vec(IDL2.Vec(Cell2))
       });
+      const NsoPhaseProgressCount2 = IDL2.Record({
+        "doneCount": IDL2.Nat,
+        "totalCount": IDL2.Nat,
+        "phaseId": IDL2.Nat
+      });
       const NsoImportTask2 = IDL2.Record({
         "text": IDL2.Text,
         "section": IDL2.Opt(IDL2.Text),
@@ -29521,6 +29536,11 @@ variant ${k2} -> ${e.message}`, {
           ["query"]
         ),
         "getNsoPhase": IDL2.Func([IDL2.Nat], [IDL2.Opt(Phase2)], ["query"]),
+        "getNsoPhaseProgressCounts": IDL2.Func(
+          [],
+          [IDL2.Vec(NsoPhaseProgressCount2)],
+          ["query"]
+        ),
         "getNsoPhases": IDL2.Func([], [IDL2.Vec(Phase2)], ["query"]),
         "getNsoTask": IDL2.Func([IDL2.Nat], [IDL2.Opt(Task2)], ["query"]),
         "getNsoTasksByPhase": IDL2.Func([IDL2.Nat], [IDL2.Vec(Task2)], ["query"]),
@@ -34934,6 +34954,20 @@ variant ${k2} -> ${e.message}`, {
         } else {
           const result = await this.actor.getNsoPhase(arg0);
           return from_candid_opt_n56(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getNsoPhaseProgressCounts() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getNsoPhaseProgressCounts();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getNsoPhaseProgressCounts();
+          return result;
         }
       }
       async getNsoPhases() {
@@ -67467,6 +67501,13 @@ ${escapeText(this.code(index2, length))}
         totalCount: Number(p2.totalCount)
       };
     }
+    function toFrontendPhaseProgressCount(c2) {
+      return {
+        phaseId: c2.phaseId.toString(),
+        doneCount: Number(c2.doneCount),
+        totalCount: Number(c2.totalCount)
+      };
+    }
     function useNsoPhases() {
       const { actor, isFetching } = useBackend();
       return useQuery({
@@ -67479,7 +67520,7 @@ ${escapeText(this.code(index2, length))}
         enabled: !!actor && !isFetching
       });
     }
-    function useNsoTasksByPhase(phaseId) {
+    function useNsoTasksByPhase(phaseId, isOpen = true) {
       const { actor, isFetching } = useBackend();
       return useQuery({
         queryKey: ["nso-tasks", phaseId],
@@ -67488,7 +67529,7 @@ ${escapeText(this.code(index2, length))}
           const result = await actor.getNsoTasksByPhase(BigInt(phaseId));
           return result.map(toFrontendTask);
         },
-        enabled: !!actor && !isFetching && !!phaseId
+        enabled: !!actor && !isFetching && !!phaseId && isOpen
       });
     }
     function useNsoOverallProgress() {
@@ -67499,6 +67540,18 @@ ${escapeText(this.code(index2, length))}
           if (!actor) return { doneCount: 0, totalCount: 0 };
           const result = await actor.getNsoOverallProgress();
           return toFrontendProgress(result);
+        },
+        enabled: !!actor && !isFetching
+      });
+    }
+    function useNsoPhaseProgressCounts() {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["nso-phase-progress"],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getNsoPhaseProgressCounts();
+          return result.map(toFrontendPhaseProgressCount);
         },
         enabled: !!actor && !isFetching
       });
@@ -67532,6 +67585,7 @@ ${escapeText(this.code(index2, length))}
         onSuccess: () => {
           queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -67560,6 +67614,7 @@ ${escapeText(this.code(index2, length))}
           queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
           queryClient2.invalidateQueries({ queryKey: ["nso-tasks"] });
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -67598,6 +67653,7 @@ ${escapeText(this.code(index2, length))}
             queryKey: ["nso-tasks", variables.phaseId]
           });
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -67622,6 +67678,7 @@ ${escapeText(this.code(index2, length))}
             queryKey: ["nso-tasks", variables.phaseId]
           });
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -67637,11 +67694,43 @@ ${escapeText(this.code(index2, length))}
             input.completionDate && input.completionDate.length > 0 ? input.completionDate : null
           );
         },
-        onSuccess: (_data, variables) => {
-          queryClient2.invalidateQueries({
-            queryKey: ["nso-tasks", variables.phaseId]
-          });
+        onMutate: async (input) => {
+          const tasksKey = ["nso-tasks", input.phaseId];
+          const progressKey = ["nso-progress"];
+          await queryClient2.cancelQueries({ queryKey: tasksKey });
+          const previousTasks = queryClient2.getQueryData(tasksKey);
+          const previousProgress = queryClient2.getQueryData(progressKey);
+          if (previousTasks) {
+            const todayIso = (/* @__PURE__ */ new Date()).toISOString();
+            const updatedTasks = previousTasks.map(
+              (task) => task.id === input.id ? {
+                ...task,
+                done: input.done,
+                completionDate: input.done ? todayIso : null
+              } : task
+            );
+            queryClient2.setQueryData(tasksKey, updatedTasks);
+          }
+          if (previousProgress) {
+            const delta = input.done ? 1 : -1;
+            queryClient2.setQueryData(progressKey, {
+              ...previousProgress,
+              doneCount: Math.max(0, previousProgress.doneCount + delta)
+            });
+          }
+          return { previousTasks, previousProgress };
+        },
+        onError: (_error, input, context) => {
+          if (!context) return;
+          queryClient2.setQueryData(
+            ["nso-tasks", input.phaseId],
+            context.previousTasks
+          );
+          queryClient2.setQueryData(["nso-progress"], context.previousProgress);
+        },
+        onSuccess: (_data, _variables) => {
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -67694,6 +67783,7 @@ ${escapeText(this.code(index2, length))}
             queryKey: ["nso-tasks", variables.phaseId]
           });
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -67738,6 +67828,7 @@ ${escapeText(this.code(index2, length))}
           queryClient2.invalidateQueries({ queryKey: ["nso-phases"] });
           queryClient2.invalidateQueries({ queryKey: ["nso-tasks"] });
           queryClient2.invalidateQueries({ queryKey: ["nso-progress"] });
+          queryClient2.invalidateQueries({ queryKey: ["nso-phase-progress"] });
         }
       });
     }
@@ -68642,31 +68733,14 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
-    function NsoTaskRow({
+    const NsoTaskRow = reactExports.memo(function NsoTaskRow2({
       task,
       index: index2,
       total
     }) {
       const toggleMutation = useToggleNsoTask();
-      const assignMutation = useSetNsoTaskAssignment();
-      const dateMutation = useSetNsoTaskCompletionDate();
-      const reorderMutation = useReorderNsoTasks();
-      const deleteMutation = useDeleteNsoTask();
-      const { data: users } = useNsoAssignableUsers();
-      const [formOpen, setFormOpen] = reactExports.useState(false);
-      const [deleting, setDeleting] = reactExports.useState(false);
+      const [editOpen, setEditOpen] = reactExports.useState(false);
       const [notesExpanded, setNotesExpanded] = reactExports.useState(false);
-      const isFirst = index2 === 0;
-      const isLast = index2 === total - 1;
-      const assignableUsers = reactExports.useMemo(
-        () => (users ?? []).filter((u2) => u2.role === "manager" || u2.role === "admin").sort((a2, b2) => a2.name.localeCompare(b2.name)),
-        [users]
-      );
-      const assigneeName = reactExports.useMemo(() => {
-        if (!task.assignedTo) return null;
-        const u2 = assignableUsers.find((x2) => x2.principal === task.assignedTo);
-        return (u2 == null ? void 0 : u2.name) ?? null;
-      }, [task.assignedTo, assignableUsers]);
       const notesIsLong = reactExports.useMemo(() => {
         if (!task.notes || task.notes.length === 0) return false;
         if (task.notes.includes("\n")) {
@@ -68697,6 +68771,159 @@ ${escapeText(this.code(index2, length))}
           });
         }
       }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "li",
+        {
+          className: "rounded-md border border-border bg-card transition-smooth hover:border-primary/40",
+          "data-ocid": `nso.task.row.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-3 p-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Checkbox,
+                {
+                  checked: task.done,
+                  onCheckedChange: handleToggle,
+                  disabled: toggleMutation.isPending,
+                  "aria-label": `Mark "${task.text}" as ${task.done ? "not done" : "done"}`,
+                  "data-ocid": `nso.task.checkbox.${index2 + 1}`,
+                  className: "mt-0.5 size-5"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    className: cn(
+                      "font-body text-sm leading-snug break-words",
+                      task.done ? "text-muted-foreground line-through" : "text-foreground"
+                    ),
+                    "data-ocid": `nso.task.text.${index2 + 1}`,
+                    children: task.text
+                  }
+                ),
+                toggleMutation.isPending && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "span",
+                  {
+                    className: "mt-1 inline-flex items-center gap-1 font-body text-xs text-muted-foreground",
+                    "data-ocid": `nso.task.loading_state.${index2 + 1}`,
+                    "aria-live": "polite",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-3 animate-spin" }),
+                      "Saving…"
+                    ]
+                  }
+                ),
+                (task.assignedTo || task.completionDate) && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 font-body text-xs text-muted-foreground break-words", children: [
+                  task.assignedTo && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { "data-ocid": `nso.task.assignee_label.${index2 + 1}`, children: [
+                    "Assigned",
+                    task.completionDate ? " " : ""
+                  ] }),
+                  task.assignedTo && task.completionDate && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: " · " }),
+                  task.completionDate && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { "data-ocid": `nso.task.date_label.${index2 + 1}`, children: [
+                    "Done ",
+                    task.completionDate
+                  ] })
+                ] }),
+                task.notes && task.notes.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1 min-w-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: cn(
+                        "font-body text-xs text-muted-foreground break-words",
+                        notesExpanded ? "whitespace-pre-wrap leading-relaxed" : "line-clamp-2"
+                      ),
+                      "data-ocid": `nso.task.notes.${index2 + 1}`,
+                      children: task.notes
+                    }
+                  ),
+                  notesIsLong && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => setNotesExpanded((v2) => !v2),
+                      "aria-expanded": notesExpanded,
+                      "aria-controls": `nso-task-notes-${index2 + 1}`,
+                      "data-ocid": `nso.task.notes_toggle.${index2 + 1}`,
+                      className: cn(
+                        "mt-1 inline-flex min-w-0 items-center gap-1 font-heading text-xs uppercase tracking-wider",
+                        "text-primary hover:text-primary-hover focus-visible:text-primary-hover",
+                        "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                        "min-h-6 px-0.5 py-0.5 transition-smooth"
+                      ),
+                      children: notesExpanded ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-3.5" }),
+                        "Show less"
+                      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-3.5" }),
+                        "Show more"
+                      ] })
+                    }
+                  )
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  variant: "ghost",
+                  size: "icon",
+                  className: "size-7 shrink-0",
+                  onClick: () => setEditOpen(true),
+                  "aria-label": `Edit "${task.text}"`,
+                  "data-ocid": `nso.task.edit_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, {})
+                }
+              )
+            ] }),
+            editOpen && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NsoTaskEditDialog,
+              {
+                open: editOpen,
+                onOpenChange: setEditOpen,
+                task,
+                index: index2,
+                total
+              }
+            )
+          ]
+        }
+      );
+    });
+    function NsoTaskEditDialog({
+      open,
+      onOpenChange,
+      task,
+      index: index2,
+      total
+    }) {
+      const assignMutation = useSetNsoTaskAssignment();
+      const dateMutation = useSetNsoTaskCompletionDate();
+      const reorderMutation = useReorderNsoTasks();
+      const deleteMutation = useDeleteNsoTask();
+      const updateMutation = useUpdateNsoTask();
+      const { data: users } = useNsoAssignableUsers();
+      const [text, setText] = reactExports.useState("");
+      const [section, setSection] = reactExports.useState("");
+      const [notes, setNotes] = reactExports.useState("");
+      const [touched, setTouched] = reactExports.useState(false);
+      const [confirmDelete, setConfirmDelete] = reactExports.useState(false);
+      const isFirst = index2 === 0;
+      const isLast = index2 === total - 1;
+      const assignableUsers = reactExports.useMemo(
+        () => (users ?? []).filter((u2) => u2.role === "manager" || u2.role === "admin").sort((a2, b2) => a2.name.localeCompare(b2.name)),
+        [users]
+      );
+      reactExports.useEffect(() => {
+        if (open) {
+          setText(task.text);
+          setSection(task.section ?? "");
+          setNotes(task.notes ?? "");
+          setTouched(false);
+          setConfirmDelete(false);
+        }
+      }, [open, task]);
+      const textError = touched && text.trim().length === 0 ? "Task text is required" : null;
+      const canSubmit = text.trim().length > 0;
+      const isSaving = assignMutation.isPending || dateMutation.isPending || updateMutation.isPending;
       async function handleAssign(value) {
         const assignedTo = value === "__none__" ? null : value;
         try {
@@ -68733,6 +68960,7 @@ ${escapeText(this.code(index2, length))}
             phaseId: task.phaseId,
             direction
           });
+          onOpenChange(false);
         } catch (err) {
           ue.error("Could not reorder task", {
             description: err instanceof Error ? err.message : void 0
@@ -68746,98 +68974,144 @@ ${escapeText(this.code(index2, length))}
             phaseId: task.phaseId
           });
           ue.success("Task deleted");
-          setDeleting(false);
+          onOpenChange(false);
         } catch (err) {
           ue.error("Could not delete task", {
             description: err instanceof Error ? err.message : void 0
           });
         }
       }
-      const saving = toggleMutation.isPending || assignMutation.isPending || dateMutation.isPending;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "li",
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setTouched(true);
+        if (!canSubmit) return;
+        const trimmedText = text.trim();
+        const trimmedSection = section.trim();
+        const trimmedNotes = notes.trim();
+        try {
+          await updateMutation.mutateAsync({
+            id: task.id,
+            phaseId: task.phaseId,
+            text: trimmedText,
+            section: trimmedSection.length > 0 ? trimmedSection : null,
+            done: task.done,
+            assignedTo: task.assignedTo,
+            completionDate: task.completionDate,
+            notes: trimmedNotes.length > 0 ? trimmedNotes : null
+          });
+          ue.success("Task updated");
+          onOpenChange(false);
+        } catch (err) {
+          ue.error("Could not update task", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        DialogContent,
         {
-          className: "rounded-md border border-border bg-card transition-smooth hover:border-primary/40",
-          "data-ocid": `nso.task.row.${index2 + 1}`,
+          className: "bg-card border-border sm:max-w-xl",
+          "data-ocid": `nso.task.edit_dialog.${index2 + 1}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 p-3 sm:flex-row sm:items-start sm:gap-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 flex-1 items-start gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: "Edit task" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Update assignment, completion date, task details, reorder, or delete this task." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "grid gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Checkbox,
+                  Label,
                   {
-                    checked: task.done,
-                    onCheckedChange: handleToggle,
-                    disabled: toggleMutation.isPending,
-                    "aria-label": `Mark "${task.text}" as ${task.done ? "not done" : "done"}`,
-                    "data-ocid": `nso.task.checkbox.${index2 + 1}`,
-                    className: "mt-0.5 size-5"
+                    htmlFor: "nso-task-edit-text",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: "Task"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "p",
-                    {
-                      className: cn(
-                        "font-body text-sm leading-snug break-words",
-                        task.done ? "text-muted-foreground line-through" : "text-foreground"
-                      ),
-                      "data-ocid": `nso.task.text.${index2 + 1}`,
-                      children: task.text
-                    }
-                  ),
-                  saving && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "span",
-                    {
-                      className: "mt-1 inline-flex items-center gap-1 font-body text-xs text-muted-foreground",
-                      "data-ocid": `nso.task.loading_state.${index2 + 1}`,
-                      "aria-live": "polite",
-                      children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-3 animate-spin" }),
-                        "Saving…"
-                      ]
-                    }
-                  ),
-                  task.notes && task.notes.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1 min-w-0", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "p",
-                      {
-                        className: cn(
-                          "font-body text-xs text-muted-foreground break-words",
-                          notesExpanded ? "whitespace-pre-wrap leading-relaxed" : "line-clamp-2"
-                        ),
-                        "data-ocid": `nso.task.notes.${index2 + 1}`,
-                        children: task.notes
-                      }
-                    ),
-                    notesIsLong && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "button",
-                      {
-                        type: "button",
-                        onClick: () => setNotesExpanded((v2) => !v2),
-                        "aria-expanded": notesExpanded,
-                        "aria-controls": `nso-task-notes-${index2 + 1}`,
-                        "data-ocid": `nso.task.notes_toggle.${index2 + 1}`,
-                        className: cn(
-                          "mt-1 inline-flex min-w-0 items-center gap-1 font-heading text-xs uppercase tracking-wider",
-                          "text-primary hover:text-primary-hover focus-visible:text-primary-hover",
-                          "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                          "min-h-6 px-0.5 py-0.5 transition-smooth"
-                        ),
-                        children: notesExpanded ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-3.5" }),
-                          "Show less"
-                        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-3.5" }),
-                          "Show more"
-                        ] })
-                      }
-                    )
-                  ] })
-                ] })
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Textarea,
+                  {
+                    id: "nso-task-edit-text",
+                    value: text,
+                    onChange: (e) => setText(e.target.value),
+                    onBlur: () => setTouched(true),
+                    placeholder: "e.g. Confirm final staff schedule",
+                    "aria-invalid": !!textError,
+                    "aria-describedby": textError ? "nso-task-edit-text-error" : void 0,
+                    "data-ocid": `nso.task.edit.text_input.${index2 + 1}`,
+                    autoComplete: "off",
+                    maxLength: 400
+                  }
+                ),
+                textError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    id: "nso-task-edit-text-error",
+                    className: "text-xs text-primary font-body",
+                    "data-ocid": `nso.task.edit.text_input.field_error.${index2 + 1}`,
+                    children: textError
+                  }
+                )
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground", children: "Assign" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Label,
+                  {
+                    htmlFor: "nso-task-edit-section",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: [
+                      "Section ",
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "(optional)" })
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input$1,
+                  {
+                    id: "nso-task-edit-section",
+                    value: section,
+                    onChange: (e) => setSection(e.target.value),
+                    placeholder: "e.g. Staffing",
+                    "data-ocid": `nso.task.edit.section_input.${index2 + 1}`,
+                    autoComplete: "off",
+                    maxLength: 60
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Label,
+                  {
+                    htmlFor: "nso-task-edit-notes",
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    children: [
+                      "Notes ",
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "(optional)" })
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Textarea,
+                  {
+                    id: "nso-task-edit-notes",
+                    value: notes,
+                    onChange: (e) => setNotes(e.target.value),
+                    placeholder: "Any extra context for whoever picks up this task.",
+                    "data-ocid": `nso.task.edit.notes_input.${index2 + 1}`,
+                    autoComplete: "off",
+                    maxLength: 1e3
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-3 sm:grid-cols-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Label,
+                    {
+                      htmlFor: "nso-task-edit-assign",
+                      className: "font-heading uppercase text-xs tracking-wider",
+                      children: "Assign"
+                    }
+                  ),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Select,
                     {
@@ -68849,9 +69123,9 @@ ${escapeText(this.code(index2, length))}
                           SelectTrigger,
                           {
                             size: "sm",
-                            className: "h-8 w-32 min-w-0 sm:w-40",
+                            className: "h-9 w-full min-w-0",
                             "aria-label": `Assign "${task.text}"`,
-                            "data-ocid": `nso.task.assign_select.${index2 + 1}`,
+                            "data-ocid": `nso.task.edit.assign_select.${index2 + 1}`,
                             children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Unassigned" })
                           }
                         ),
@@ -68859,14 +69133,14 @@ ${escapeText(this.code(index2, length))}
                           SelectContent,
                           {
                             className: "bg-popover text-popover-foreground",
-                            "data-ocid": `nso.task.assign_menu.${index2 + 1}`,
+                            "data-ocid": `nso.task.edit.assign_menu.${index2 + 1}`,
                             children: [
                               /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "__none__", children: "Unassigned" }),
                               assignableUsers.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                                 SelectItem,
                                 {
                                   value: u2.principal,
-                                  "data-ocid": `nso.task.assign_option.${index2 + 1}`,
+                                  "data-ocid": `nso.task.edit.assign_option.${index2 + 1}`,
                                   children: u2.name
                                 },
                                 u2.principal
@@ -68878,103 +69152,122 @@ ${escapeText(this.code(index2, length))}
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground", children: "Done" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Label,
+                    {
+                      htmlFor: "nso-task-edit-date",
+                      className: "font-heading uppercase text-xs tracking-wider",
+                      children: "Done"
+                    }
+                  ),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
                     {
+                      id: "nso-task-edit-date",
                       type: "date",
                       value: task.completionDate ?? "",
                       onChange: handleDateChange,
                       disabled: dateMutation.isPending,
                       "aria-label": `Completion date for "${task.text}"`,
-                      "data-ocid": `nso.task.date_input.${index2 + 1}`,
+                      "data-ocid": `nso.task.edit.date_input.${index2 + 1}`,
                       className: cn(
-                        "h-8 rounded-md border border-input bg-transparent px-2 py-1 font-body text-xs text-foreground",
+                        "h-9 rounded-md border border-input bg-transparent px-3 py-1 font-body text-sm text-foreground",
                         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
                         "disabled:cursor-not-allowed disabled:opacity-50"
                       )
                     }
                   )
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-0.5", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Button,
                     {
-                      variant: "ghost",
-                      size: "icon",
-                      className: "size-7",
+                      type: "button",
+                      variant: "outline",
+                      size: "sm",
                       onClick: () => handleReorder("up"),
                       disabled: isFirst || reorderMutation.isPending,
                       "aria-label": `Move "${task.text}" up`,
-                      "data-ocid": `nso.task.move_up_button.${index2 + 1}`,
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, {})
+                      "data-ocid": `nso.task.edit.move_up_button.${index2 + 1}`,
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-4" }),
+                        "Up"
+                      ]
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Button,
                     {
-                      variant: "ghost",
-                      size: "icon",
-                      className: "size-7",
+                      type: "button",
+                      variant: "outline",
+                      size: "sm",
                       onClick: () => handleReorder("down"),
                       disabled: isLast || reorderMutation.isPending,
                       "aria-label": `Move "${task.text}" down`,
-                      "data-ocid": `nso.task.move_down_button.${index2 + 1}`,
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, {})
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    Button,
-                    {
-                      variant: "ghost",
-                      size: "icon",
-                      className: "size-7",
-                      onClick: () => setFormOpen(true),
-                      "aria-label": `Edit "${task.text}"`,
-                      "data-ocid": `nso.task.edit_button.${index2 + 1}`,
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, {})
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    Button,
-                    {
-                      variant: "ghost",
-                      size: "icon",
-                      className: "size-7 text-primary hover:bg-primary/10 hover:text-primary",
-                      onClick: () => setDeleting(true),
-                      "aria-label": `Delete "${task.text}"`,
-                      "data-ocid": `nso.task.delete_button.${index2 + 1}`,
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                      "data-ocid": `nso.task.edit.move_down_button.${index2 + 1}`,
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4" }),
+                        "Down"
+                      ]
                     }
                   )
-                ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "sm",
+                    className: "text-primary hover:bg-primary/10 hover:text-primary",
+                    onClick: () => setConfirmDelete(true),
+                    "aria-label": `Delete "${task.text}"`,
+                    "data-ocid": `nso.task.edit.delete_button.${index2 + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-4" }),
+                      "Delete"
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "outline",
+                    onClick: () => onOpenChange(false),
+                    disabled: isSaving,
+                    "data-ocid": `nso.task.edit.cancel_button.${index2 + 1}`,
+                    children: "Cancel"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "submit",
+                    disabled: !canSubmit || isSaving,
+                    "data-ocid": `nso.task.edit.save_button.${index2 + 1}`,
+                    children: [
+                      isSaving && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                      "Save changes"
+                    ]
+                  }
+                )
               ] })
             ] }),
-            assigneeName && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "sr-only", children: [
-              "Assigned to ",
-              assigneeName,
-              task.completionDate ? `, completed ${task.completionDate}` : ""
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              NsoTaskFormDialog,
-              {
-                open: formOpen,
-                onOpenChange: setFormOpen,
-                phaseId: task.phaseId,
-                task
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            confirmDelete && /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlertDialog,
               {
-                open: deleting,
-                onOpenChange: (o) => !o && setDeleting(false),
+                open: confirmDelete,
+                onOpenChange: (o) => !o && setConfirmDelete(false),
                 children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   AlertDialogContent,
                   {
                     className: "bg-card border-border",
-                    "data-ocid": `nso.task.delete_dialog.${index2 + 1}`,
+                    "data-ocid": `nso.task.edit.delete_dialog.${index2 + 1}`,
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: "Delete task?" }),
@@ -68995,7 +69288,7 @@ ${escapeText(this.code(index2, length))}
                           AlertDialogCancel,
                           {
                             disabled: deleteMutation.isPending,
-                            "data-ocid": `nso.task.delete_dialog.cancel_button.${index2 + 1}`,
+                            "data-ocid": `nso.task.edit.delete_dialog.cancel_button.${index2 + 1}`,
                             children: "Cancel"
                           }
                         ),
@@ -69005,7 +69298,7 @@ ${escapeText(this.code(index2, length))}
                             onClick: handleDelete,
                             disabled: deleteMutation.isPending,
                             className: "bg-primary text-primary-foreground hover:bg-primary-hover",
-                            "data-ocid": `nso.task.delete_dialog.confirm_button.${index2 + 1}`,
+                            "data-ocid": `nso.task.edit.delete_dialog.confirm_button.${index2 + 1}`,
                             children: [
                               deleteMutation.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
                               "Delete"
@@ -69020,7 +69313,7 @@ ${escapeText(this.code(index2, length))}
             )
           ]
         }
-      );
+      ) });
     }
     var PROGRESS_NAME = "Progress";
     var DEFAULT_MAX = 100;
@@ -69133,42 +69426,59 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    const NONE_SECTION = "__none__";
     function NsoPhaseSection({
       phase,
       index: index2,
       total
     }) {
-      const { data: tasks, isLoading } = useNsoTasksByPhase(phase.id);
-      const reorderMutation = useReorderNsoPhases();
-      const deleteMutation = useDeleteNsoPhase();
-      const [open, setOpen] = reactExports.useState(true);
+      const [open, setOpen] = reactExports.useState(false);
       const [formOpen, setFormOpen] = reactExports.useState(false);
       const [formMode, setFormMode] = reactExports.useState("create");
       const [taskFormOpen, setTaskFormOpen] = reactExports.useState(false);
       const [deleting, setDeleting] = reactExports.useState(false);
+      const [openSections, setOpenSections] = reactExports.useState(
+        () => /* @__PURE__ */ new Set()
+      );
+      const { data: phaseCounts } = useNsoPhaseProgressCounts();
+      const phaseCount = reactExports.useMemo(
+        () => phaseCounts == null ? void 0 : phaseCounts.find((c2) => c2.phaseId === phase.id),
+        [phaseCounts, phase.id]
+      );
+      const { data: tasks, isLoading } = useNsoTasksByPhase(phase.id, open);
+      const reorderMutation = useReorderNsoPhases();
+      const deleteMutation = useDeleteNsoPhase();
       const isFirst = index2 === 0;
       const isLast = index2 === total - 1;
       const orderedTasks = reactExports.useMemo(
         () => [...tasks ?? []].sort((a2, b2) => a2.sortOrder - b2.sortOrder),
         [tasks]
       );
-      const doneCount = orderedTasks.filter((t) => t.done).length;
-      const totalCount = orderedTasks.length;
+      const doneCount = (phaseCount == null ? void 0 : phaseCount.doneCount) ?? 0;
+      const totalCount = (phaseCount == null ? void 0 : phaseCount.totalCount) ?? 0;
       const pct = totalCount > 0 ? Math.round(doneCount / totalCount * 100) : 0;
       const grouped = reactExports.useMemo(() => {
         const map = /* @__PURE__ */ new Map();
         for (const t of orderedTasks) {
-          const key = t.section && t.section.length > 0 ? t.section : "";
+          const key = t.section && t.section.length > 0 ? t.section : NONE_SECTION;
           const arr = map.get(key);
           if (arr) arr.push(t);
           else map.set(key, [t]);
         }
         return Array.from(map.entries()).sort((a2, b2) => {
-          if (a2[0] === "") return -1;
-          if (b2[0] === "") return 1;
+          if (a2[0] === NONE_SECTION) return -1;
+          if (b2[0] === NONE_SECTION) return 1;
           return a2[0].localeCompare(b2[0]);
         });
       }, [orderedTasks]);
+      function toggleSection(key) {
+        setOpenSections((prev) => {
+          const next = new Set(prev);
+          if (next.has(key)) next.delete(key);
+          else next.add(key);
+          return next;
+        });
+      }
       async function handleReorder(direction) {
         try {
           await reorderMutation.mutateAsync({ id: phase.id, direction });
@@ -69354,29 +69664,70 @@ Defaulting to \`null\`.`;
                       )
                     ]
                   }
-                ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-4", children: grouped.map(([sectionName, sectionTasks]) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
-                  {
-                    className: "flex flex-col gap-2",
-                    "data-ocid": `nso.phase.section_group.${index2 + 1}`,
-                    children: [
-                      sectionName.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground pl-1", children: sectionName }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-col gap-2", children: sectionTasks.map((task) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        NsoTaskRow,
-                        {
-                          task,
-                          index: orderedTasks.indexOf(task),
-                          total: totalCount
-                        },
-                        task.id
-                      )) })
-                    ]
-                  },
-                  sectionName || "__unlabeled__"
-                )) })
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-2", children: grouped.map(([sectionKey, sectionTasks]) => {
+                  const sectionDone = sectionTasks.filter((t) => t.done).length;
+                  const sectionTotal = sectionTasks.length;
+                  const sectionLabel = sectionKey === NONE_SECTION ? null : sectionKey;
+                  const isSectionOpen = openSections.has(sectionKey);
+                  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "flex flex-col gap-1.5",
+                      "data-ocid": `nso.phase.section_group.${index2 + 1}`,
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "button",
+                          {
+                            type: "button",
+                            onClick: () => toggleSection(sectionKey),
+                            "aria-expanded": isSectionOpen,
+                            "aria-controls": `nso-section-body-${phase.id}-${sectionKey}`,
+                            className: "flex items-center gap-2 rounded-md px-1.5 py-1.5 text-left transition-colors duration-200 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset",
+                            "data-ocid": `nso.section.toggle.${index2 + 1}`,
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                ChevronDown,
+                                {
+                                  className: cn(
+                                    "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200",
+                                    isSectionOpen ? "" : "-rotate-90"
+                                  )
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "flex min-w-0 flex-1 items-center gap-2 font-heading text-xs uppercase tracking-wider text-muted-foreground", children: sectionLabel ?? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "italic text-muted-foreground/70", children: "Unlabeled" }) }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-body text-xs text-muted-foreground whitespace-nowrap", children: [
+                                sectionDone,
+                                " of ",
+                                sectionTotal,
+                                " done"
+                              ] })
+                            ]
+                          }
+                        ),
+                        isSectionOpen && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "ul",
+                          {
+                            id: `nso-section-body-${phase.id}-${sectionKey}`,
+                            className: "flex flex-col gap-2 pl-5",
+                            children: sectionTasks.map((task, taskIndex) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              NsoTaskRow,
+                              {
+                                task,
+                                index: taskIndex,
+                                total: sectionTotal
+                              },
+                              task.id
+                            ))
+                          }
+                        )
+                      ]
+                    },
+                    sectionKey
+                  );
+                }) })
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            formOpen && /* @__PURE__ */ jsxRuntimeExports.jsx(
               NsoPhaseFormDialog,
               {
                 open: formOpen,
@@ -69384,7 +69735,7 @@ Defaulting to \`null\`.`;
                 phase: formMode === "edit" ? phase : null
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            taskFormOpen && /* @__PURE__ */ jsxRuntimeExports.jsx(
               NsoTaskFormDialog,
               {
                 open: taskFormOpen,
@@ -69392,7 +69743,7 @@ Defaulting to \`null\`.`;
                 phaseId: phase.id
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            deleting && /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlertDialog,
               {
                 open: deleting,
@@ -69874,7 +70225,13 @@ Defaulting to \`null\`.`;
           "data-ocid": "heart.entry_button",
           "aria-label": "Open Service with HEART showcase",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Heart, { className: "size-5 text-primary-foreground", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Heart,
+              {
+                className: "size-5 animate-heartbeat text-primary-foreground",
+                "aria-hidden": true
+              }
+            ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex flex-1 flex-col", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg uppercase leading-none tracking-wide text-primary-foreground", children: "Service with HEART" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-0.5 font-body text-xs text-primary-foreground/80", children: "The five pillars of legendary service" })
@@ -70207,9 +70564,10 @@ Defaulting to \`null\`.`;
     }
     function PillarCard({
       item,
-      index: index2
+      index: index2,
+      expanded,
+      onToggle
     }) {
-      const [expanded, setExpanded] = reactExports.useState(false);
       const firstLetter = item.title.trim().charAt(0).toUpperCase() || "?";
       const timing = item.details.find(
         (d2) => d2.fieldLabel.trim().toLowerCase() === "timing"
@@ -70225,12 +70583,12 @@ Defaulting to \`null\`.`;
               "button",
               {
                 type: "button",
-                onClick: () => setExpanded((prev) => !prev),
+                onClick: onToggle,
                 "aria-expanded": expanded,
                 "aria-controls": `heart-pillar-${index2 + 1}-steps`,
                 "data-ocid": `heart.pillar.toggle.${index2 + 1}`,
                 className: cn(
-                  "flex w-full items-center gap-4 px-4 py-4 text-left sm:px-5",
+                  "flex w-full items-center gap-2.5 px-4 py-3 text-left sm:gap-3 sm:px-5",
                   "transition-smooth hover:border-primary/60",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 ),
@@ -70238,17 +70596,17 @@ Defaulting to \`null\`.`;
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "span",
                     {
-                      className: "font-display text-5xl leading-none text-primary sm:text-6xl",
+                      className: "font-display text-xl leading-none text-primary sm:text-2xl",
                       "aria-hidden": true,
                       children: firstLetter
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-1 flex-col gap-1.5", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xl uppercase tracking-wide text-foreground sm:text-2xl", children: item.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-1 items-baseline gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-lg uppercase tracking-wide text-foreground sm:text-xl", children: item.title }),
                     timing ? /* @__PURE__ */ jsxRuntimeExports.jsx(
                       "span",
                       {
-                        className: "inline-flex w-fit bg-secondary px-2 py-0.5 font-heading text-[0.65rem] uppercase tracking-wider text-secondary-foreground",
+                        className: "inline-flex w-fit shrink-0 bg-secondary px-1.5 py-0.5 font-heading text-[0.6rem] uppercase tracking-wider text-secondary-foreground sm:text-[0.65rem]",
                         "data-ocid": `heart.pillar.timing_badge.${index2 + 1}`,
                         children: timing.value
                       }
@@ -70268,25 +70626,29 @@ Defaulting to \`null\`.`;
               }
             ),
             expanded && steps.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "ul",
+              "ol",
               {
                 id: `heart-pillar-${index2 + 1}-steps`,
-                className: "flex flex-col gap-2 border-t border-border px-4 py-4 sm:px-5",
+                className: "flex flex-col gap-1.5 border-t border-border px-4 py-3 sm:px-5",
                 "data-ocid": `heart.pillar.steps.${index2 + 1}`,
                 children: steps.map((step, stepIndex) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "li",
                   {
-                    className: "flex gap-2.5 font-body text-sm leading-relaxed text-foreground",
+                    className: "flex gap-2 font-body text-[0.8rem] leading-snug text-foreground sm:text-sm sm:leading-snug",
                     "data-ocid": `heart.pillar.step.${index2 + 1}.${stepIndex + 1}`,
                     children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
                         "span",
                         {
-                          className: "mt-2 size-1.5 shrink-0 rounded-full bg-primary",
-                          "aria-hidden": true
+                          className: "font-heading shrink-0 font-bold text-primary",
+                          "aria-hidden": true,
+                          children: [
+                            stepIndex + 1,
+                            "."
+                          ]
                         }
                       ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0", children: step })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0", children: boldFirstWord(step) })
                     ]
                   },
                   `step-${stepIndex}-${step.slice(0, 24)}`
@@ -70296,6 +70658,22 @@ Defaulting to \`null\`.`;
           ]
         }
       );
+    }
+    function boldFirstWord(step) {
+      const trimmed = step.trim();
+      if (trimmed.length === 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: step });
+      }
+      const firstSpace = trimmed.search(/\s/);
+      if (firstSpace === -1) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-foreground", children: trimmed });
+      }
+      const firstWord = trimmed.slice(0, firstSpace);
+      const rest = trimmed.slice(firstSpace);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-foreground", children: firstWord }),
+        rest
+      ] });
     }
     function ServingSpecsStrip({
       item
@@ -70317,12 +70695,12 @@ Defaulting to \`null\`.`;
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
+              "ul",
               {
-                className: "mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5",
+                className: "mt-3 flex w-full list-none gap-1.5 overflow-x-auto pb-1 m-0",
                 "data-ocid": "heart.serving_specs.strip",
                 children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  StatCard,
+                  StatChip,
                   {
                     label: field.fieldLabel,
                     value: field.value,
@@ -70336,19 +70714,19 @@ Defaulting to \`null\`.`;
         }
       );
     }
-    function StatCard({
+    function StatChip({
       label,
       value,
       index: index2
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
+        "li",
         {
-          className: "flex flex-col gap-1 bg-library-card border border-border px-3 py-3 text-center",
+          className: "flex min-w-0 flex-1 flex-col gap-0.5 bg-library-card border border-border px-2 py-2 text-center",
           "data-ocid": `heart.serving_specs.card.${index2 + 1}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-[0.65rem] uppercase tracking-wider text-muted-foreground", children: label }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-base font-medium leading-tight text-foreground", children: value })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-[0.6rem] uppercase leading-tight tracking-wider text-muted-foreground", children: label }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-sm font-medium leading-tight text-foreground", children: value })
           ]
         }
       );
@@ -70368,6 +70746,7 @@ Defaulting to \`null\`.`;
         const pillarItems = items.filter((it2) => pillarSet.has(it2.title)).sort((a2, b2) => a2.sortOrder - b2.sortOrder);
         return { specsItem: specs, pillars: pillarItems };
       }, [items]);
+      const [openIndex, setOpenIndex] = reactExports.useState(0);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition$1, { positionId }),
         isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(HeartShowcaseSkeleton, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-2", children: [
@@ -70379,7 +70758,16 @@ Defaulting to \`null\`.`;
               className: "mt-8 flex flex-col gap-3",
               "data-ocid": "heart.pillars",
               "aria-label": "HEART pillars",
-              children: pillars.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(PillarCard, { item, index: index2 }, item.id))
+              children: pillars.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                PillarCard,
+                {
+                  item,
+                  index: index2,
+                  expanded: index2 === openIndex,
+                  onToggle: () => setOpenIndex((prev) => prev === index2 ? -1 : index2)
+                },
+                item.id
+              ))
             }
           ) : /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyPillars, {})
         ] })

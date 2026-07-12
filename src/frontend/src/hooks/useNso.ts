@@ -5,11 +5,13 @@ import type {
   NsoImportSummary,
   NsoOverallProgress,
   NsoPhase,
+  NsoPhaseProgressCount,
   NsoReorderDirection,
   NsoTask,
 } from "@/types/nso";
 import {
   toFrontendPhase,
+  toFrontendPhaseProgressCount,
   toFrontendProgress,
   toFrontendSummary,
   toFrontendTask,
@@ -31,6 +33,7 @@ import { useBackend } from "./useBackend";
  *   - ["nso-phases"]                       — every phase, ordered by sortOrder
  *   - ["nso-tasks", phaseId]               — tasks in a phase, ordered by sortOrder
  *   - ["nso-progress"]                      — overall done/total across all tasks
+ *   - ["nso-phase-progress"]               — per-phase done/total counts (one call)
  *
  * All hooks render inside the existing single QueryClientProvider (main.tsx)
  * and ErrorBoundary — no second provider is added here.
@@ -52,8 +55,15 @@ export function useNsoPhases() {
   });
 }
 
-/** Reads every NSO task in a phase, ordered by per-parent sortOrder. */
-export function useNsoTasksByPhase(phaseId: string) {
+/**
+ * Reads every NSO task in a phase, ordered by per-parent sortOrder.
+ *
+ * Gated on `isOpen` (defaults to true for backward compatibility): the query
+ * only runs when its phase is expanded, so the page fetches zero task rows on
+ * load. Pass `isOpen` from the phase-section's expanded state to keep
+ * collapsed phases from triggering a fetch.
+ */
+export function useNsoTasksByPhase(phaseId: string, isOpen = true) {
   const { actor, isFetching } = useBackend();
   return useQuery<NsoTask[]>({
     queryKey: ["nso-tasks", phaseId],
@@ -62,7 +72,7 @@ export function useNsoTasksByPhase(phaseId: string) {
       const result = await actor.getNsoTasksByPhase(BigInt(phaseId));
       return result.map(toFrontendTask);
     },
-    enabled: !!actor && !isFetching && !!phaseId,
+    enabled: !!actor && !isFetching && !!phaseId && isOpen,
   });
 }
 
@@ -75,6 +85,27 @@ export function useNsoOverallProgress() {
       if (!actor) return { doneCount: 0, totalCount: 0 };
       const result = await actor.getNsoOverallProgress();
       return toFrontendProgress(result);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+/**
+ * Reads per-phase done/total counts in a single backend call. Supplies each
+ * collapsed phase header's "N of M done" without loading the phase's full
+ * task list — the page fetches zero task rows on load because
+ * useNsoTasksByPhase is gated on the phase being expanded.
+ *
+ * Query key: ["nso-phase-progress"].
+ */
+export function useNsoPhaseProgressCounts() {
+  const { actor, isFetching } = useBackend();
+  return useQuery<NsoPhaseProgressCount[]>({
+    queryKey: ["nso-phase-progress"],
+    queryFn: async () => {
+      if (!actor) return [];
+      const result = await actor.getNsoPhaseProgressCounts();
+      return result.map(toFrontendPhaseProgressCount);
     },
     enabled: !!actor && !isFetching,
   });
@@ -130,6 +161,7 @@ export function useCreateNsoPhase() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nso-phases"] });
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }
@@ -176,6 +208,7 @@ export function useDeleteNsoPhase() {
       queryClient.invalidateQueries({ queryKey: ["nso-phases"] });
       queryClient.invalidateQueries({ queryKey: ["nso-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }
@@ -234,6 +267,7 @@ export function useCreateNsoTask() {
         queryKey: ["nso-tasks", variables.phaseId],
       });
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }
@@ -275,6 +309,7 @@ export function useUpdateNsoTask() {
         queryKey: ["nso-tasks", variables.phaseId],
       });
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }
@@ -290,6 +325,13 @@ export interface ToggleNsoTaskInput {
  * Toggles an NSO task's done flag (manager/admin only). This is the
  * immediate-save hook for checkbox toggles — there is no separate save
  * button; the checkbox fires this mutation on every change.
+ *
+ * Optimistic: onMutate flips the toggled task's `done` flag and
+ * completionDate in the ["nso-tasks", phaseId] cache and adjusts the
+ * ["nso-progress"] doneCount, snapshots both for rollback. onError restores
+ * the snapshots. onSuccess does NOT invalidate the task list (the optimistic
+ * value already holds); it only invalidates ["nso-progress"] to reconcile
+ * server truth. No full phase task-list refetch on every checkbox toggle.
  */
 export function useToggleNsoTask() {
   const queryClient = useQueryClient();
@@ -306,11 +348,56 @@ export function useToggleNsoTask() {
           : null,
       );
     },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["nso-tasks", variables.phaseId],
-      });
+    onMutate: async (input) => {
+      const tasksKey = ["nso-tasks", input.phaseId] as const;
+      const progressKey = ["nso-progress"] as const;
+
+      // Snapshot current caches for rollback. Cancel in-flight queries so
+      // they don't clobber the optimistic value.
+      await queryClient.cancelQueries({ queryKey: tasksKey });
+      const previousTasks = queryClient.getQueryData<NsoTask[]>(tasksKey);
+      const previousProgress =
+        queryClient.getQueryData<NsoOverallProgress>(progressKey);
+
+      // Optimistically patch the toggled task in the phase's task list.
+      if (previousTasks) {
+        const todayIso = new Date().toISOString();
+        const updatedTasks = previousTasks.map((task) =>
+          task.id === input.id
+            ? {
+                ...task,
+                done: input.done,
+                completionDate: input.done ? todayIso : null,
+              }
+            : task,
+        );
+        queryClient.setQueryData(tasksKey, updatedTasks);
+      }
+
+      // Optimistically adjust the overall done count.
+      if (previousProgress) {
+        const delta = input.done ? 1 : -1;
+        queryClient.setQueryData(progressKey, {
+          ...previousProgress,
+          doneCount: Math.max(0, previousProgress.doneCount + delta),
+        });
+      }
+
+      return { previousTasks, previousProgress };
+    },
+    onError: (_error, input, context) => {
+      if (!context) return;
+      queryClient.setQueryData(
+        ["nso-tasks", input.phaseId],
+        context.previousTasks,
+      );
+      queryClient.setQueryData(["nso-progress"], context.previousProgress);
+    },
+    onSuccess: (_data, _variables) => {
+      // Reconcile server truth for progress only; the task list already
+      // holds the correct optimistic value, so do NOT invalidate it.
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }
@@ -391,6 +478,7 @@ export function useDeleteNsoTask() {
         queryKey: ["nso-tasks", variables.phaseId],
       });
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }
@@ -455,6 +543,7 @@ export function useImportNsoTasks() {
       queryClient.invalidateQueries({ queryKey: ["nso-phases"] });
       queryClient.invalidateQueries({ queryKey: ["nso-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["nso-progress"] });
+      queryClient.invalidateQueries({ queryKey: ["nso-phase-progress"] });
     },
   });
 }

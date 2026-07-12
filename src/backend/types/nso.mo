@@ -27,6 +27,16 @@ module {
     sortOrder : Nat;
   };
 
+  // Lightweight per-phase progress count. Returned by the
+  // getNsoPhaseProgressCounts query so collapsed phase headers can show
+  // "N of M done" WITHOUT loading any task rows (the full Task[] for a phase
+  // is only fetched via getNsoTasksByPhase when the phase is expanded).
+  public type NsoPhaseProgressCount = {
+    phaseId : Nat;
+    doneCount : Nat;
+    totalCount : Nat;
+  };
+
   // Summary returned by the bulk import endpoint.
   public type NsoImportSummary = {
     phasesCreated : Nat;

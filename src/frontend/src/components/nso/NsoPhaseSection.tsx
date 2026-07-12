@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   useDeleteNsoPhase,
+  useNsoPhaseProgressCounts,
   useNsoTasksByPhase,
   useReorderNsoPhases,
 } from "@/hooks/useNso";
@@ -30,6 +31,9 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+
+/** Sentinel key for tasks with no section, so the open-state Set can track them. */
+const NONE_SECTION = "__none__";
 
 /**
  * A collapsible NSO phase section.
@@ -63,15 +67,28 @@ export function NsoPhaseSection({
   /** Total phases (for disabling first/last reorder). */
   total: number;
 }) {
-  const { data: tasks, isLoading } = useNsoTasksByPhase(phase.id);
-  const reorderMutation = useReorderNsoPhases();
-  const deleteMutation = useDeleteNsoPhase();
-
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [taskFormOpen, setTaskFormOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  // Local expand state for sections. On first phase expand, all sections
+  // are collapsed (empty Set). Keys are section strings or NONE_SECTION.
+  const [openSections, setOpenSections] = useState<Set<string>>(
+    () => new Set(),
+  );
+
+  const { data: phaseCounts } = useNsoPhaseProgressCounts();
+  const phaseCount = useMemo(
+    () => phaseCounts?.find((c) => c.phaseId === phase.id),
+    [phaseCounts, phase.id],
+  );
+  // Gate the tasks query on the phase's open state so collapsed phases
+  // load NO tasks. Pass the actual open state — the hook defaults to true
+  // for backward compat, so we MUST pass `open` explicitly.
+  const { data: tasks, isLoading } = useNsoTasksByPhase(phase.id, open);
+  const reorderMutation = useReorderNsoPhases();
+  const deleteMutation = useDeleteNsoPhase();
 
   const isFirst = index === 0;
   const isLast = index === total - 1;
@@ -82,27 +99,41 @@ export function NsoPhaseSection({
     [tasks],
   );
 
-  const doneCount = orderedTasks.filter((t) => t.done).length;
-  const totalCount = orderedTasks.length;
+  // Header counts come from useNsoPhaseProgressCounts (looked up by phase.id),
+  // NOT from loaded tasks. This keeps the header accurate even when the
+  // phase is collapsed and no tasks are loaded.
+  const doneCount = phaseCount?.doneCount ?? 0;
+  const totalCount = phaseCount?.totalCount ?? 0;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
   // Group tasks by section. Tasks with null/empty section go into an
-  // unlabeled group keyed by "" and rendered first for a stable order.
+  // unlabeled group keyed by NONE_SECTION and rendered first for a stable
+  // order. Each group carries its own done/total counts computed from the
+  // loaded tasks in that section.
   const grouped = useMemo(() => {
     const map = new Map<string, NsoTask[]>();
     for (const t of orderedTasks) {
-      const key = t.section && t.section.length > 0 ? t.section : "";
+      const key = t.section && t.section.length > 0 ? t.section : NONE_SECTION;
       const arr = map.get(key);
       if (arr) arr.push(t);
       else map.set(key, [t]);
     }
     // Stable order: unlabeled group first, then sections alphabetically.
     return Array.from(map.entries()).sort((a, b) => {
-      if (a[0] === "") return -1;
-      if (b[0] === "") return 1;
+      if (a[0] === NONE_SECTION) return -1;
+      if (b[0] === NONE_SECTION) return 1;
       return a[0].localeCompare(b[0]);
     });
   }, [orderedTasks]);
+
+  function toggleSection(key: string) {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
 
   async function handleReorder(direction: "up" | "down") {
     try {
@@ -273,90 +304,133 @@ export function NsoPhaseSection({
               </Button>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
-              {grouped.map(([sectionName, sectionTasks]) => (
-                <div
-                  key={sectionName || "__unlabeled__"}
-                  className="flex flex-col gap-2"
-                  data-ocid={`nso.phase.section_group.${index + 1}`}
-                >
-                  {sectionName.length > 0 && (
-                    <h4 className="font-heading text-xs uppercase tracking-wider text-muted-foreground pl-1">
-                      {sectionName}
-                    </h4>
-                  )}
-                  <ul className="flex flex-col gap-2">
-                    {sectionTasks.map((task) => (
-                      <NsoTaskRow
-                        key={task.id}
-                        task={task}
-                        index={orderedTasks.indexOf(task)}
-                        total={totalCount}
+            <div className="flex flex-col gap-2">
+              {grouped.map(([sectionKey, sectionTasks]) => {
+                const sectionDone = sectionTasks.filter((t) => t.done).length;
+                const sectionTotal = sectionTasks.length;
+                const sectionLabel =
+                  sectionKey === NONE_SECTION ? null : sectionKey;
+                const isSectionOpen = openSections.has(sectionKey);
+                return (
+                  <div
+                    key={sectionKey}
+                    className="flex flex-col gap-1.5"
+                    data-ocid={`nso.phase.section_group.${index + 1}`}
+                  >
+                    {/* Section sub-header — collapsible, shows its own count */}
+                    <button
+                      type="button"
+                      onClick={() => toggleSection(sectionKey)}
+                      aria-expanded={isSectionOpen}
+                      aria-controls={`nso-section-body-${phase.id}-${sectionKey}`}
+                      className="flex items-center gap-2 rounded-md px-1.5 py-1.5 text-left transition-colors duration-200 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                      data-ocid={`nso.section.toggle.${index + 1}`}
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200",
+                          isSectionOpen ? "" : "-rotate-90",
+                        )}
                       />
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                      <h4 className="flex min-w-0 flex-1 items-center gap-2 font-heading text-xs uppercase tracking-wider text-muted-foreground">
+                        {sectionLabel ?? (
+                          <span className="italic text-muted-foreground/70">
+                            Unlabeled
+                          </span>
+                        )}
+                      </h4>
+                      <span className="font-body text-xs text-muted-foreground whitespace-nowrap">
+                        {sectionDone} of {sectionTotal} done
+                      </span>
+                    </button>
+
+                    {/* Section task rows — render ONLY when section is expanded */}
+                    {isSectionOpen && (
+                      <ul
+                        id={`nso-section-body-${phase.id}-${sectionKey}`}
+                        className="flex flex-col gap-2 pl-5"
+                      >
+                        {sectionTasks.map((task, taskIndex) => (
+                          <NsoTaskRow
+                            key={task.id}
+                            task={task}
+                            index={taskIndex}
+                            total={sectionTotal}
+                          />
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
       )}
 
-      <NsoPhaseFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        phase={formMode === "edit" ? phase : null}
-      />
+      {formOpen && (
+        <NsoPhaseFormDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          phase={formMode === "edit" ? phase : null}
+        />
+      )}
 
-      <NsoTaskFormDialog
-        open={taskFormOpen}
-        onOpenChange={setTaskFormOpen}
-        phaseId={phase.id}
-      />
+      {taskFormOpen && (
+        <NsoTaskFormDialog
+          open={taskFormOpen}
+          onOpenChange={setTaskFormOpen}
+          phaseId={phase.id}
+        />
+      )}
 
-      <AlertDialog
-        open={deleting}
-        onOpenChange={(o) => !o && setDeleting(false)}
-      >
-        <AlertDialogContent
-          className="bg-card border-border"
-          data-ocid={`nso.phase.delete_dialog.${index + 1}`}
+      {deleting && (
+        <AlertDialog
+          open={deleting}
+          onOpenChange={(o) => !o && setDeleting(false)}
         >
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-heading uppercase tracking-wide text-foreground">
-              Delete phase?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This removes the phase{" "}
-              <strong className="text-foreground">
-                &ldquo;{phase.name}&rdquo;
-              </strong>{" "}
-              and{" "}
-              <strong className="text-foreground">
-                all {totalCount} {totalCount === 1 ? "task" : "tasks"}
-              </strong>{" "}
-              inside it. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleteMutation.isPending}
-              data-ocid={`nso.phase.delete_dialog.cancel_button.${index + 1}`}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-primary text-primary-foreground hover:bg-primary-hover"
-              data-ocid={`nso.phase.delete_dialog.confirm_button.${index + 1}`}
-            >
-              {deleteMutation.isPending && <Loader2 className="animate-spin" />}
-              Delete phase
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          <AlertDialogContent
+            className="bg-card border-border"
+            data-ocid={`nso.phase.delete_dialog.${index + 1}`}
+          >
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-heading uppercase tracking-wide text-foreground">
+                Delete phase?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This removes the phase{" "}
+                <strong className="text-foreground">
+                  &ldquo;{phase.name}&rdquo;
+                </strong>{" "}
+                and{" "}
+                <strong className="text-foreground">
+                  all {totalCount} {totalCount === 1 ? "task" : "tasks"}
+                </strong>{" "}
+                inside it. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                disabled={deleteMutation.isPending}
+                data-ocid={`nso.phase.delete_dialog.cancel_button.${index + 1}`}
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                className="bg-primary text-primary-foreground hover:bg-primary-hover"
+                data-ocid={`nso.phase.delete_dialog.confirm_button.${index + 1}`}
+              >
+                {deleteMutation.isPending && (
+                  <Loader2 className="animate-spin" />
+                )}
+                Delete phase
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </section>
   );
 }

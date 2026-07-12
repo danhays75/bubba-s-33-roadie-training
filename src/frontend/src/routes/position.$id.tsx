@@ -219,7 +219,10 @@ function HeartEntryButton({
       data-ocid="heart.entry_button"
       aria-label="Open Service with HEART showcase"
     >
-      <Heart className="size-5 text-primary-foreground" aria-hidden />
+      <Heart
+        className="size-5 animate-heartbeat text-primary-foreground"
+        aria-hidden
+      />
       <span className="flex flex-1 flex-col">
         <span className="font-display text-lg uppercase leading-none tracking-wide text-primary-foreground">
           Service with HEART

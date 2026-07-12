@@ -1,34 +1,43 @@
 import { cn } from "@/lib/utils";
 import type { LibraryItem } from "@/types/foundation";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 import type { ReactElement } from "react";
 
 /**
  * PillarCard — one of the five HEART pillars (Hello, Engage, Arrive,
  * Respond, Thank You).
  *
- * Collapsed by default. Shows:
- *   - A large red first letter (from item.title) in Anton
- *   - The pillar word in Oswald as the title
- *   - The "Timing" detail field as a small navy badge (bg-secondary)
+ * Controlled accordion card. The parent (HeartShowcasePage) owns the
+ * open state so only ONE pillar is expanded at a time; this component
+ * is purely presentational given `expanded` + `onToggle`.
  *
- * Tap to expand and reveal the item's notes rendered as a bulleted list
- * of steps (split notes by newline, one step per line, empty lines
- * ignored). Tap again to collapse.
+ * Collapsed row (compact):
+ *   - Red first letter INLINE in the header row at ~20px (Anton)
+ *   - Pillar word in Oswald uppercase
+ *   - Small navy Timing badge (bg-secondary) when a Timing detail exists
+ *   - Chevron that rotates 180° when expanded
  *
- * The whole card is a button for accessibility — keyboard users can
- * toggle with Enter/Space, and the chevron rotates to signal state.
+ * Expanded body:
+ *   - Steps from item.notes (one per line, empties dropped) rendered as a
+ *     NUMBERED list (1, 2, 3...) with the number in red
+ *   - The first word/verb of each step is bolded
+ *   - Tighter line spacing + slightly smaller body text so steps take
+ *     less vertical room and don't wrap awkwardly on phones
+ *
+ * The whole header is a <button> for accessibility — keyboard users can
+ * toggle with Enter/Space, aria-expanded + aria-controls are wired up.
  */
 export function PillarCard({
   item,
   index,
+  expanded,
+  onToggle,
 }: {
   item: LibraryItem;
   index: number;
+  expanded: boolean;
+  onToggle: () => void;
 }): ReactElement {
-  const [expanded, setExpanded] = useState(false);
-
   const firstLetter = item.title.trim().charAt(0).toUpperCase() || "?";
   const timing = item.details.find(
     (d) => d.fieldLabel.trim().toLowerCase() === "timing",
@@ -47,32 +56,32 @@ export function PillarCard({
     >
       <button
         type="button"
-        onClick={() => setExpanded((prev) => !prev)}
+        onClick={onToggle}
         aria-expanded={expanded}
         aria-controls={`heart-pillar-${index + 1}-steps`}
         data-ocid={`heart.pillar.toggle.${index + 1}`}
         className={cn(
-          "flex w-full items-center gap-4 px-4 py-4 text-left sm:px-5",
+          "flex w-full items-center gap-2.5 px-4 py-3 text-left sm:gap-3 sm:px-5",
           "transition-smooth hover:border-primary/60",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         )}
       >
-        {/* Large red first letter in Anton */}
+        {/* Red first letter INLINE in the header row at ~20px */}
         <span
-          className="font-display text-5xl leading-none text-primary sm:text-6xl"
+          className="font-display text-xl leading-none text-primary sm:text-2xl"
           aria-hidden
         >
           {firstLetter}
         </span>
 
         {/* Pillar word + Timing badge */}
-        <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="font-heading text-xl uppercase tracking-wide text-foreground sm:text-2xl">
+        <span className="flex min-w-0 flex-1 items-baseline gap-2">
+          <span className="font-heading text-lg uppercase tracking-wide text-foreground sm:text-xl">
             {item.title}
           </span>
           {timing ? (
             <span
-              className="inline-flex w-fit bg-secondary px-2 py-0.5 font-heading text-[0.65rem] uppercase tracking-wider text-secondary-foreground"
+              className="inline-flex w-fit shrink-0 bg-secondary px-1.5 py-0.5 font-heading text-[0.6rem] uppercase tracking-wider text-secondary-foreground sm:text-[0.65rem]"
               data-ocid={`heart.pillar.timing_badge.${index + 1}`}
             >
               {timing.value}
@@ -90,29 +99,56 @@ export function PillarCard({
         />
       </button>
 
-      {/* Steps — bulleted list, revealed on expand */}
+      {/* Steps — numbered list, revealed on expand */}
       {expanded && steps.length > 0 ? (
-        <ul
+        <ol
           id={`heart-pillar-${index + 1}-steps`}
-          className="flex flex-col gap-2 border-t border-border px-4 py-4 sm:px-5"
+          className="flex flex-col gap-1.5 border-t border-border px-4 py-3 sm:px-5"
           data-ocid={`heart.pillar.steps.${index + 1}`}
         >
           {steps.map((step, stepIndex) => (
             <li
               key={`step-${stepIndex}-${step.slice(0, 24)}`}
-              className="flex gap-2.5 font-body text-sm leading-relaxed text-foreground"
+              className="flex gap-2 font-body text-[0.8rem] leading-snug text-foreground sm:text-sm sm:leading-snug"
               data-ocid={`heart.pillar.step.${index + 1}.${stepIndex + 1}`}
             >
               <span
-                className="mt-2 size-1.5 shrink-0 rounded-full bg-primary"
+                className="font-heading shrink-0 font-bold text-primary"
                 aria-hidden
-              />
-              <span className="min-w-0">{step}</span>
+              >
+                {stepIndex + 1}.
+              </span>
+              <span className="min-w-0">{boldFirstWord(step)}</span>
             </li>
           ))}
-        </ul>
+        </ol>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Bold the first word/verb of a step. The first whitespace-delimited
+ * token is wrapped in <strong>; the rest is rendered as-is. Leading
+ * punctuation (e.g. a bullet or dash) is skipped so the actual verb
+ * gets the bold treatment.
+ */
+function boldFirstWord(step: string): ReactElement {
+  const trimmed = step.trim();
+  if (trimmed.length === 0) {
+    return <span>{step}</span>;
+  }
+  const firstSpace = trimmed.search(/\s/);
+  if (firstSpace === -1) {
+    return <strong className="font-semibold text-foreground">{trimmed}</strong>;
+  }
+  const firstWord = trimmed.slice(0, firstSpace);
+  const rest = trimmed.slice(firstSpace);
+  return (
+    <>
+      <strong className="font-semibold text-foreground">{firstWord}</strong>
+      {rest}
+    </>
   );
 }
 

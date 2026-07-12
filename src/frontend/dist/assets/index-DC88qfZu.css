@@ -1348,9 +1348,6 @@ video {
 .invisible {
   visibility: hidden;
 }
-.collapse {
-  visibility: collapse;
-}
 .static {
   position: static;
 }
@@ -2033,6 +2030,35 @@ video {
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+@keyframes heartbeat {
+
+  0% {
+    transform: scale(1);
+  }
+
+  14% {
+    transform: scale(1.25);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.25);
+  }
+
+  70% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-heartbeat {
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
 @keyframes in-training-pulse {
 
   0%, 100% {
@@ -2608,6 +2634,9 @@ video {
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
 .pb-3 {
   padding-bottom: 0.75rem;
 }
@@ -2616,9 +2645,6 @@ video {
 }
 .pb-6 {
   padding-bottom: 1.5rem;
-}
-.pl-1 {
-  padding-left: 0.25rem;
 }
 .pl-10 {
   padding-left: 2.5rem;
@@ -2631,6 +2657,9 @@ video {
 }
 .pl-4 {
   padding-left: 1rem;
+}
+.pl-5 {
+  padding-left: 1.25rem;
 }
 .pl-6 {
   padding-left: 1.5rem;
@@ -2754,6 +2783,9 @@ video {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+.font-bold {
+  font-weight: 700;
 }
 .font-medium {
   font-weight: 500;
@@ -4652,10 +4684,6 @@ video {
     width: 8rem;
   }
 
-  .sm\:w-40 {
-    width: 10rem;
-  }
-
   .sm\:max-w-2xl {
     max-width: 42rem;
   }
@@ -4690,10 +4718,6 @@ video {
 
   .sm\:flex-row {
     flex-direction: row;
-  }
-
-  .sm\:items-start {
-    align-items: flex-start;
   }
 
   .sm\:items-end {
@@ -4760,14 +4784,27 @@ video {
     line-height: 1;
   }
 
-  .sm\:text-6xl {
-    font-size: 3.75rem;
-    line-height: 1;
+  .sm\:text-\[0\.65rem\] {
+    font-size: 0.65rem;
   }
 
   .sm\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
+  }
+
+  .sm\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .sm\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .sm\:leading-snug {
+    line-height: 1.375;
   }
 
   .data-\[vaul-drawer-direction\=left\]\:sm\:max-w-sm[data-vaul-drawer-direction="left"] {

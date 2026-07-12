@@ -125,6 +125,14 @@ export default {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
         },
+        heartbeat: {
+          "0%": { transform: "scale(1)" },
+          "14%": { transform: "scale(1.25)" },
+          "28%": { transform: "scale(1)" },
+          "42%": { transform: "scale(1.25)" },
+          "70%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -132,6 +140,7 @@ export default {
         "in-training": "in-training-pulse 2s ease-in-out infinite",
         "seasonal-shimmer": "seasonal-shimmer 3s ease-in-out infinite",
         "photo-shimmer": "photo-shimmer 1.1s ease-in-out infinite",
+        heartbeat: "heartbeat 1.4s ease-in-out infinite",
       },
     },
   },

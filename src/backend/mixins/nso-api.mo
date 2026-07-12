@@ -68,6 +68,16 @@ mixin (
     { doneCount; totalCount };
   };
 
+  // Lightweight per-phase progress counts for ALL phases in ONE call. Returns
+  // a list of { phaseId, doneCount, totalCount } computed by iterating the
+  // tasks list once and grouping by phaseId. Use this for collapsed phase
+  // headers' "N of M done" — it does NOT load any task rows. Full task rows
+  // for a phase are only fetched via getNsoTasksByPhase when the phase is
+  // expanded.
+  public query func getNsoPhaseProgressCounts() : async [Types.NsoPhaseProgressCount] {
+    Nso.phaseProgressCounts(nsoPhases, nsoTasks);
+  };
+
   // Returns the users assignable to an NSO task — i.e. those whose app-domain
   // role is #manager or #admin. This is a READ (public query, no role guard):
   // it only returns manager/admin profiles (no trainee/trainer data leaks) and
