@@ -86,3 +86,51 @@ Either/or single photo slot added to PositionFormDialog, CategoryFormDialog, Ite
 - Non-image file: `.photo-field-error` — red left-edge stripe + inline message (mirrors navy edge-stripe pattern).
 - Replace / Remove controls: secondary navy + ghost-border buttons, Oswald uppercase, 4px radius — match existing button patterns.
 - Resize cap: 1600px longest edge at ~80% JPEG quality, client-side only. No server re-encoding.
+
+## Be Legendary Learning Hub (additive — premium gold/red layer)
+
+> ADDITIVE only — no existing token altered. The single place where gradients, glow, and pulse are permitted. Be Legendary feels one tier more premium than the flat roadhouse chrome around it.
+
+### Direction
+Marquee spotlight — gold→red gradient banner with ambient gold glow, elevated warm-tinted activity cards, 3D flashcard flips. Practice-only: no scores, no tracking, no manager visibility.
+
+### Tone
+Premium, motivational, celebratory. Condensed Anton marquee type over a glowing gold-red gradient — a stage warming up, not a corporate quiz tool.
+
+### Be Legendary Palette (additive)
+| Token | OKLCH (L C H) | Use |
+|---|---|---|
+| legendary-banner-from | 0.82 0.17 75 | gold gradient start (brighter than in-training) |
+| legendary-banner-via | 0.62 0.22 35 | warm red-orange mid stop |
+| legendary-banner-to | 0.595 0.232 27 | red gradient end (existing primary) |
+| legendary-glow | 0.82 0.17 75 | ambient gold glow halo |
+| legendary-card | 0.30 0.012 75 | warm-tinted activity card surface |
+| legendary-card-border | 0.42 0.05 75 | gold-tinted card border |
+| legendary-correct | 0.72 0.16 145 | quiz correct (green, distinct from gold/seasonal) |
+| legendary-incorrect | 0.595 0.232 27 | quiz incorrect (reuses destructive red) |
+| legendary-flip-front | 0.30 0.012 75 | flashcard front face |
+| legendary-flip-back | 0.273 0.018 35 | flashcard back face (warm red tint) |
+
+### Be Legendary Zones
+| Zone | Surface | Treatment |
+|---|---|---|
+| Banner | gold→red gradient | `.bg-legendary-banner`, Anton wordmark, `.legendary-glow-layer` halo, tappable |
+| Activity card | legendary-card | `.bg-legendary-card`, gold-tinted border, Oswald title, Barlow body |
+| Quiz feedback | correct/incorrect fills | green correct / red incorrect borders + fills, no pass-fail state |
+| Flashcard | flip-front / flip-back | 3D `rotateY(180deg)`, backface hidden, 0.6s ease |
+
+### Be Legendary Motion
+- Banner glow: `legendary-glow` 3s ease-in-out, opacity 0.35↔0.7 ambient halo.
+- Banner pulse: `legendary-pulse` 2.5s ease-in-out, gold box-shadow breathes.
+- Flashcard flip: 0.6s cubic-bezier rotateY, `.flashcard-flipper.is-flipped` toggles.
+- No scores, no progress bars, no completion animations — practice only.
+
+### Be Legendary Constraints
+- Additive only — never alter existing tokens, keyframes, or the flat roadhouse rules.
+- Gradients and glow are permitted ONLY inside Be Legendary surfaces (banner, cards, flashcards).
+- Gold gradient is distinct from the in-training gold fill — gradient vs flat, never confused.
+- Quiz feedback shows correct/incorrect per-question only; no aggregate score, no pass/fail.
+- No progress tracking, no manager visibility of practice activity.
+- Admin-triggered generation only; nothing auto-generates.
+- Mobile-first; activity cards stack single-column on phone.
+- Built to easily add more activity types later (activity cards are generic).

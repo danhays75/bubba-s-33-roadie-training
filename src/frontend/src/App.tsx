@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReactElement } from "react";
+import { Toaster } from "sonner";
 import { Route as RootRoute } from "./routes/__root";
 import { AdminPositionsPage } from "./routes/admin.positions";
 import { AdminPositionLibraryRoute } from "./routes/admin.positions.$positionId.library";
@@ -20,6 +21,9 @@ import { Home } from "./routes/index";
 import { NsoPage } from "./routes/new-store-opening";
 import { PositionDetailRoute } from "./routes/position.$id";
 import { HeartShowcaseRoute } from "./routes/position.$id.heart.$categoryId";
+import { BeLegendaryRoute } from "./routes/position.$id.legendary";
+import { LegendaryFlashcardsRoute } from "./routes/position.$id.legendary.flashcards.$activityId";
+import { LegendaryQuizRoute } from "./routes/position.$id.legendary.quiz.$activityId";
 import { CategoryDetailRoute } from "./routes/position.$id.library.$categoryId";
 import { ItemDetailRoute } from "./routes/position.$id.library.$categoryId.item.$itemId";
 
@@ -132,6 +136,39 @@ const heartShowcaseRoute = createRoute({
   component: HeartShowcaseRoute,
 });
 
+// Per-position "Be Legendary" practice area (admin-built quiz / flashcard
+// activities). Additive route — uses the Be Legendary backend methods and
+// the useLegendary hooks. Registered as a child of RootRoute with the full
+// path (matching heartShowcaseRoute / categoryDetailRoute) so it mounts
+// without requiring PositionDetailPage to render an <Outlet/>.
+const beLegendaryRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/position/$id/legendary",
+  component: BeLegendaryRoute,
+});
+
+// Be Legendary quiz practice flow. Registered as a flat child of RootRoute
+// with the full path (matching heartShowcaseRoute / categoryDetailRoute) so
+// it mounts without requiring BeLegendaryPage to render an <Outlet/>. Reads
+// $activityId and renders QuizActivity, which fetches the activity and reads
+// positionId from it.
+const legendaryQuizRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/position/$id/legendary/quiz/$activityId",
+  component: LegendaryQuizRoute,
+});
+
+// Be Legendary flashcard practice flow. Registered as a flat child of
+// RootRoute with the full path (matching heartShowcaseRoute /
+// categoryDetailRoute) so it mounts without requiring BeLegendaryPage to
+// render an <Outlet/>. Reads $activityId and renders FlashcardActivity,
+// which fetches the activity and reads positionId from it.
+const legendaryFlashcardsRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/position/$id/legendary/flashcards/$activityId",
+  component: LegendaryFlashcardsRoute,
+});
+
 // New Store Opening tracker — additive top-level route (own page under the
 // Layout nav, NOT nested under /admin). Manager/Admin gated inside NsoPage.
 const nsoRoute = createRoute({
@@ -191,6 +228,9 @@ const adminPositionLibraryItemEditorRoute = createRoute({
 const routeTree = RootRoute.addChildren([
   homeRoute,
   positionDetailRoute,
+  beLegendaryRoute,
+  legendaryQuizRoute,
+  legendaryFlashcardsRoute,
   categoryDetailRoute,
   heartShowcaseRoute,
   itemDetailRoute,
@@ -221,6 +261,7 @@ export default function App() {
   return (
     <AuthGate>
       <RouterProvider router={router} />
+      <Toaster richColors position="top-right" />
     </AuthGate>
   );
 }

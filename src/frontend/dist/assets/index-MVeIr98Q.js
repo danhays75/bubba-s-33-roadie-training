@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-DdYnDGi7.js"(exports, module) {
+  "assets/index-MVeIr98Q.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -125,6 +125,8 @@ var require_index_001 = __commonJS({
       constructor(directURL, blob) {
         __publicField(this, "_blob");
         __publicField(this, "directURL");
+        __publicField(this, "contentType");
+        __publicField(this, "filename");
         __publicField(this, "onProgress");
         if (blob) {
           this._blob = blob;
@@ -134,11 +136,18 @@ var require_index_001 = __commonJS({
       static fromURL(url) {
         return new ExternalBlob(url, null);
       }
-      static fromBytes(blob) {
+      static fromBytes(blob, contentType, filename) {
         const url = URL.createObjectURL(new Blob([new Uint8Array(blob)], {
-          type: "application/octet-stream"
+          type: (contentType == null ? void 0 : contentType.trim()) || "application/octet-stream"
         }));
-        return new ExternalBlob(url, blob);
+        const externalBlob = new ExternalBlob(url, blob);
+        if (contentType == null ? void 0 : contentType.trim()) {
+          externalBlob.contentType = contentType.trim();
+        }
+        if (filename == null ? void 0 : filename.trim()) {
+          externalBlob.filename = filename.trim();
+        }
+        return externalBlob;
       }
       async getBytes() {
         if (this._blob) {
@@ -11304,38 +11313,4279 @@ variant ${k2} -> ${e.message}`, {
       handler.withOptions = (options2) => (...args) => caller(options2, ...args);
       return handler;
     }
-    const MAXIMUM_CONCURRENT_UPLOADS$1 = 10;
-    const MAX_RETRIES$1 = 3;
-    const BASE_DELAY_MS$1 = 1e3;
-    const MAX_DELAY_MS$1 = 3e4;
-    const GATEWAY_VERSION$1 = "v1";
-    const HASH_ALGORITHM$1 = "SHA-256";
-    const SHA256_PREFIX$1 = "sha256:";
-    const DOMAIN_SEPARATOR_FOR_CHUNKS$1 = new TextEncoder().encode("icfs-chunk/");
-    const DOMAIN_SEPARATOR_FOR_METADATA$1 = new TextEncoder().encode("icfs-metadata/");
-    const DOMAIN_SEPARATOR_FOR_NODES$1 = new TextEncoder().encode("ynode/");
-    async function withRetry$1(operation) {
+    function formatBlobContentDisposition(filename) {
+      const trimmed = filename == null ? void 0 : filename.trim();
+      if (!trimmed) {
+        return void 0;
+      }
+      if (/^[A-Za-z0-9._-]+$/.test(trimmed)) {
+        return `attachment; filename=${trimmed}`;
+      }
+      if (/[^\x20-\x7E]/.test(trimmed)) {
+        return `attachment; filename*=UTF-8''${encodeURIComponent(trimmed)}`;
+      }
+      const escaped = trimmed.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      return `attachment; filename="${escaped}"`;
+    }
+    const WINDOWS_1252_EXTRA = {
+      128: "€",
+      130: "‚",
+      131: "ƒ",
+      132: "„",
+      133: "…",
+      134: "†",
+      135: "‡",
+      136: "ˆ",
+      137: "‰",
+      138: "Š",
+      139: "‹",
+      140: "Œ",
+      142: "Ž",
+      145: "‘",
+      146: "’",
+      147: "“",
+      148: "”",
+      149: "•",
+      150: "–",
+      151: "—",
+      152: "˜",
+      153: "™",
+      154: "š",
+      155: "›",
+      156: "œ",
+      158: "ž",
+      159: "Ÿ"
+    };
+    for (const [code, char] of Object.entries(WINDOWS_1252_EXTRA)) {
+    }
+    let _utf8Decoder;
+    function utf8Decoder() {
+      if (typeof globalThis.TextDecoder === "undefined")
+        return void 0;
+      return _utf8Decoder !== null && _utf8Decoder !== void 0 ? _utf8Decoder : _utf8Decoder = new globalThis.TextDecoder("utf-8");
+    }
+    const CHUNK = 32 * 1024;
+    const REPLACEMENT = 65533;
+    function textDecode(bytes, encoding = "utf-8") {
+      switch (encoding.toLowerCase()) {
+        case "utf-8":
+        case "utf8": {
+          const dec = utf8Decoder();
+          return dec ? dec.decode(bytes) : decodeUTF8(bytes);
+        }
+        case "utf-16le":
+          return decodeUTF16LE(bytes);
+        case "us-ascii":
+        case "ascii":
+          return decodeASCII(bytes);
+        case "latin1":
+        case "iso-8859-1":
+          return decodeLatin1(bytes);
+        case "windows-1252":
+          return decodeWindows1252(bytes);
+        default:
+          throw new RangeError(`Encoding '${encoding}' not supported`);
+      }
+    }
+    function flushChunk(parts, chunk) {
+      if (chunk.length === 0)
+        return;
+      parts.push(String.fromCharCode.apply(null, chunk));
+      chunk.length = 0;
+    }
+    function pushCodeUnit(parts, chunk, codeUnit) {
+      chunk.push(codeUnit);
+      if (chunk.length >= CHUNK)
+        flushChunk(parts, chunk);
+    }
+    function pushCodePoint(parts, chunk, cp) {
+      if (cp <= 65535) {
+        pushCodeUnit(parts, chunk, cp);
+        return;
+      }
+      cp -= 65536;
+      pushCodeUnit(parts, chunk, 55296 + (cp >> 10));
+      pushCodeUnit(parts, chunk, 56320 + (cp & 1023));
+    }
+    function decodeUTF8(bytes) {
+      const parts = [];
+      const chunk = [];
+      let i = 0;
+      if (bytes.length >= 3 && bytes[0] === 239 && bytes[1] === 187 && bytes[2] === 191) {
+        i = 3;
+      }
+      while (i < bytes.length) {
+        const b1 = bytes[i];
+        if (b1 <= 127) {
+          pushCodeUnit(parts, chunk, b1);
+          i++;
+          continue;
+        }
+        if (b1 < 194 || b1 > 244) {
+          pushCodeUnit(parts, chunk, REPLACEMENT);
+          i++;
+          continue;
+        }
+        if (b1 <= 223) {
+          if (i + 1 >= bytes.length) {
+            pushCodeUnit(parts, chunk, REPLACEMENT);
+            i++;
+            continue;
+          }
+          const b22 = bytes[i + 1];
+          if ((b22 & 192) !== 128) {
+            pushCodeUnit(parts, chunk, REPLACEMENT);
+            i++;
+            continue;
+          }
+          const cp2 = (b1 & 31) << 6 | b22 & 63;
+          pushCodeUnit(parts, chunk, cp2);
+          i += 2;
+          continue;
+        }
+        if (b1 <= 239) {
+          if (i + 2 >= bytes.length) {
+            pushCodeUnit(parts, chunk, REPLACEMENT);
+            i++;
+            continue;
+          }
+          const b22 = bytes[i + 1];
+          const b32 = bytes[i + 2];
+          const valid2 = (b22 & 192) === 128 && (b32 & 192) === 128 && !(b1 === 224 && b22 < 160) && // overlong
+          !(b1 === 237 && b22 >= 160);
+          if (!valid2) {
+            pushCodeUnit(parts, chunk, REPLACEMENT);
+            i++;
+            continue;
+          }
+          const cp2 = (b1 & 15) << 12 | (b22 & 63) << 6 | b32 & 63;
+          pushCodeUnit(parts, chunk, cp2);
+          i += 3;
+          continue;
+        }
+        if (i + 3 >= bytes.length) {
+          pushCodeUnit(parts, chunk, REPLACEMENT);
+          i++;
+          continue;
+        }
+        const b2 = bytes[i + 1];
+        const b3 = bytes[i + 2];
+        const b4 = bytes[i + 3];
+        const valid = (b2 & 192) === 128 && (b3 & 192) === 128 && (b4 & 192) === 128 && !(b1 === 240 && b2 < 144) && // overlong
+        !(b1 === 244 && b2 > 143);
+        if (!valid) {
+          pushCodeUnit(parts, chunk, REPLACEMENT);
+          i++;
+          continue;
+        }
+        const cp = (b1 & 7) << 18 | (b2 & 63) << 12 | (b3 & 63) << 6 | b4 & 63;
+        pushCodePoint(parts, chunk, cp);
+        i += 4;
+      }
+      flushChunk(parts, chunk);
+      return parts.join("");
+    }
+    function decodeUTF16LE(bytes) {
+      const parts = [];
+      const chunk = [];
+      const len = bytes.length;
+      let i = 0;
+      while (i + 1 < len) {
+        const u1 = bytes[i] | bytes[i + 1] << 8;
+        i += 2;
+        if (u1 >= 55296 && u1 <= 56319) {
+          if (i + 1 < len) {
+            const u2 = bytes[i] | bytes[i + 1] << 8;
+            if (u2 >= 56320 && u2 <= 57343) {
+              pushCodeUnit(parts, chunk, u1);
+              pushCodeUnit(parts, chunk, u2);
+              i += 2;
+            } else {
+              pushCodeUnit(parts, chunk, REPLACEMENT);
+            }
+          } else {
+            pushCodeUnit(parts, chunk, REPLACEMENT);
+          }
+          continue;
+        }
+        if (u1 >= 56320 && u1 <= 57343) {
+          pushCodeUnit(parts, chunk, REPLACEMENT);
+          continue;
+        }
+        pushCodeUnit(parts, chunk, u1);
+      }
+      if (i < len) {
+        pushCodeUnit(parts, chunk, REPLACEMENT);
+      }
+      flushChunk(parts, chunk);
+      return parts.join("");
+    }
+    function decodeASCII(bytes) {
+      const parts = [];
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        const end = Math.min(bytes.length, i + CHUNK);
+        const codes = new Array(end - i);
+        for (let j2 = i, k2 = 0; j2 < end; j2++, k2++) {
+          codes[k2] = bytes[j2] & 127;
+        }
+        parts.push(String.fromCharCode.apply(null, codes));
+      }
+      return parts.join("");
+    }
+    function decodeLatin1(bytes) {
+      const parts = [];
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        const end = Math.min(bytes.length, i + CHUNK);
+        const codes = new Array(end - i);
+        for (let j2 = i, k2 = 0; j2 < end; j2++, k2++) {
+          codes[k2] = bytes[j2];
+        }
+        parts.push(String.fromCharCode.apply(null, codes));
+      }
+      return parts.join("");
+    }
+    function decodeWindows1252(bytes) {
+      const parts = [];
+      let out = "";
+      for (let i = 0; i < bytes.length; i++) {
+        const b2 = bytes[i];
+        const extra = b2 >= 128 && b2 <= 159 ? WINDOWS_1252_EXTRA[b2] : void 0;
+        out += extra !== null && extra !== void 0 ? extra : String.fromCharCode(b2);
+        if (out.length >= CHUNK) {
+          parts.push(out);
+          out = "";
+        }
+      }
+      if (out)
+        parts.push(out);
+      return parts.join("");
+    }
+    function dv(array) {
+      return new DataView(array.buffer, array.byteOffset);
+    }
+    const UINT8 = {
+      len: 1,
+      get(array, offset2) {
+        return dv(array).getUint8(offset2);
+      },
+      put(array, offset2, value) {
+        dv(array).setUint8(offset2, value);
+        return offset2 + 1;
+      }
+    };
+    const UINT16_LE = {
+      len: 2,
+      get(array, offset2) {
+        return dv(array).getUint16(offset2, true);
+      },
+      put(array, offset2, value) {
+        dv(array).setUint16(offset2, value, true);
+        return offset2 + 2;
+      }
+    };
+    const UINT16_BE = {
+      len: 2,
+      get(array, offset2) {
+        return dv(array).getUint16(offset2);
+      },
+      put(array, offset2, value) {
+        dv(array).setUint16(offset2, value);
+        return offset2 + 2;
+      }
+    };
+    const UINT32_LE = {
+      len: 4,
+      get(array, offset2) {
+        return dv(array).getUint32(offset2, true);
+      },
+      put(array, offset2, value) {
+        dv(array).setUint32(offset2, value, true);
+        return offset2 + 4;
+      }
+    };
+    const UINT32_BE = {
+      len: 4,
+      get(array, offset2) {
+        return dv(array).getUint32(offset2);
+      },
+      put(array, offset2, value) {
+        dv(array).setUint32(offset2, value);
+        return offset2 + 4;
+      }
+    };
+    const INT32_BE = {
+      len: 4,
+      get(array, offset2) {
+        return dv(array).getInt32(offset2);
+      },
+      put(array, offset2, value) {
+        dv(array).setInt32(offset2, value);
+        return offset2 + 4;
+      }
+    };
+    const UINT64_LE = {
+      len: 8,
+      get(array, offset2) {
+        return dv(array).getBigUint64(offset2, true);
+      },
+      put(array, offset2, value) {
+        dv(array).setBigUint64(offset2, value, true);
+        return offset2 + 8;
+      }
+    };
+    class StringType {
+      constructor(len, encoding) {
+        this.len = len;
+        this.encoding = encoding;
+      }
+      get(data, offset2 = 0) {
+        const bytes = data.subarray(offset2, offset2 + this.len);
+        return textDecode(bytes, this.encoding);
+      }
+    }
+    const defaultMessages = "End-Of-Stream";
+    class EndOfStreamError extends Error {
+      constructor() {
+        super(defaultMessages);
+        this.name = "EndOfStreamError";
+      }
+    }
+    class AbortError extends Error {
+      constructor(message = "The operation was aborted") {
+        super(message);
+        this.name = "AbortError";
+      }
+    }
+    class AbstractStreamReader {
+      constructor() {
+        this.endOfStream = false;
+        this.interrupted = false;
+        this.peekQueue = [];
+      }
+      async peek(uint8Array, mayBeLess = false) {
+        const bytesRead = await this.read(uint8Array, mayBeLess);
+        this.peekQueue.push(uint8Array.subarray(0, bytesRead));
+        return bytesRead;
+      }
+      async read(buffer, mayBeLess = false) {
+        if (buffer.length === 0) {
+          return 0;
+        }
+        let bytesRead = this.readFromPeekBuffer(buffer);
+        if (!this.endOfStream) {
+          bytesRead += await this.readRemainderFromStream(buffer.subarray(bytesRead), mayBeLess);
+        }
+        if (bytesRead === 0 && !mayBeLess) {
+          throw new EndOfStreamError();
+        }
+        return bytesRead;
+      }
+      /**
+       * Read chunk from stream
+       * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
+       * @returns Number of bytes read
+       */
+      readFromPeekBuffer(buffer) {
+        let remaining = buffer.length;
+        let bytesRead = 0;
+        while (this.peekQueue.length > 0 && remaining > 0) {
+          const peekData = this.peekQueue.pop();
+          if (!peekData)
+            throw new Error("peekData should be defined");
+          const lenCopy = Math.min(peekData.length, remaining);
+          buffer.set(peekData.subarray(0, lenCopy), bytesRead);
+          bytesRead += lenCopy;
+          remaining -= lenCopy;
+          if (lenCopy < peekData.length) {
+            this.peekQueue.push(peekData.subarray(lenCopy));
+          }
+        }
+        return bytesRead;
+      }
+      async readRemainderFromStream(buffer, mayBeLess) {
+        let bytesRead = 0;
+        while (bytesRead < buffer.length && !this.endOfStream) {
+          if (this.interrupted) {
+            throw new AbortError();
+          }
+          const chunkLen = await this.readFromStream(buffer.subarray(bytesRead), mayBeLess);
+          if (chunkLen === 0)
+            break;
+          bytesRead += chunkLen;
+        }
+        if (!mayBeLess && bytesRead < buffer.length) {
+          throw new EndOfStreamError();
+        }
+        return bytesRead;
+      }
+    }
+    class WebStreamReader extends AbstractStreamReader {
+      constructor(reader) {
+        super();
+        this.reader = reader;
+      }
+      async abort() {
+        return this.close();
+      }
+      async close() {
+        this.reader.releaseLock();
+      }
+    }
+    class WebStreamByobReader extends WebStreamReader {
+      /**
+       * Read from stream
+       * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
+       * @param mayBeLess - If true, may fill the buffer partially
+       * @protected Bytes read
+       */
+      async readFromStream(buffer, mayBeLess) {
+        if (buffer.length === 0)
+          return 0;
+        const result = await this.reader.read(new Uint8Array(buffer.length), { min: mayBeLess ? void 0 : buffer.length });
+        if (result.done) {
+          this.endOfStream = result.done;
+        }
+        if (result.value) {
+          buffer.set(result.value);
+          return result.value.length;
+        }
+        return 0;
+      }
+    }
+    class WebStreamDefaultReader extends AbstractStreamReader {
+      constructor(reader) {
+        super();
+        this.reader = reader;
+        this.buffer = null;
+      }
+      /**
+       * Copy chunk to target, and store the remainder in this.buffer
+       */
+      writeChunk(target, chunk) {
+        const written = Math.min(chunk.length, target.length);
+        target.set(chunk.subarray(0, written));
+        if (written < chunk.length) {
+          this.buffer = chunk.subarray(written);
+        } else {
+          this.buffer = null;
+        }
+        return written;
+      }
+      /**
+       * Read from stream
+       * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
+       * @param mayBeLess - If true, may fill the buffer partially
+       * @protected Bytes read
+       */
+      async readFromStream(buffer, mayBeLess) {
+        if (buffer.length === 0)
+          return 0;
+        let totalBytesRead = 0;
+        if (this.buffer) {
+          totalBytesRead += this.writeChunk(buffer, this.buffer);
+        }
+        while (totalBytesRead < buffer.length && !this.endOfStream) {
+          const result = await this.reader.read();
+          if (result.done) {
+            this.endOfStream = true;
+            break;
+          }
+          if (result.value) {
+            totalBytesRead += this.writeChunk(buffer.subarray(totalBytesRead), result.value);
+          }
+        }
+        if (!mayBeLess && totalBytesRead === 0 && this.endOfStream) {
+          throw new EndOfStreamError();
+        }
+        return totalBytesRead;
+      }
+      abort() {
+        this.interrupted = true;
+        return this.reader.cancel();
+      }
+      async close() {
+        await this.abort();
+        this.reader.releaseLock();
+      }
+    }
+    function makeWebStreamReader(stream) {
+      try {
+        const reader = stream.getReader({ mode: "byob" });
+        if (reader instanceof ReadableStreamDefaultReader) {
+          return new WebStreamDefaultReader(reader);
+        }
+        return new WebStreamByobReader(reader);
+      } catch (error) {
+        if (error instanceof TypeError) {
+          return new WebStreamDefaultReader(stream.getReader());
+        }
+        throw error;
+      }
+    }
+    class AbstractTokenizer {
+      /**
+       * Constructor
+       * @param options Tokenizer options
+       * @protected
+       */
+      constructor(options2) {
+        this.numBuffer = new Uint8Array(8);
+        this.position = 0;
+        this.onClose = options2 == null ? void 0 : options2.onClose;
+        if (options2 == null ? void 0 : options2.abortSignal) {
+          options2.abortSignal.addEventListener("abort", () => {
+            this.abort();
+          });
+        }
+      }
+      /**
+       * Read a token from the tokenizer-stream
+       * @param token - The token to read
+       * @param position - If provided, the desired position in the tokenizer-stream
+       * @returns Promise with token data
+       */
+      async readToken(token, position = this.position) {
+        const uint8Array = new Uint8Array(token.len);
+        const len = await this.readBuffer(uint8Array, { position });
+        if (len < token.len)
+          throw new EndOfStreamError();
+        return token.get(uint8Array, 0);
+      }
+      /**
+       * Peek a token from the tokenizer-stream.
+       * @param token - Token to peek from the tokenizer-stream.
+       * @param position - Offset where to begin reading within the file. If position is null, data will be read from the current file position.
+       * @returns Promise with token data
+       */
+      async peekToken(token, position = this.position) {
+        const uint8Array = new Uint8Array(token.len);
+        const len = await this.peekBuffer(uint8Array, { position });
+        if (len < token.len)
+          throw new EndOfStreamError();
+        return token.get(uint8Array, 0);
+      }
+      /**
+       * Read a numeric token from the stream
+       * @param token - Numeric token
+       * @returns Promise with number
+       */
+      async readNumber(token) {
+        const len = await this.readBuffer(this.numBuffer, { length: token.len });
+        if (len < token.len)
+          throw new EndOfStreamError();
+        return token.get(this.numBuffer, 0);
+      }
+      /**
+       * Read a numeric token from the stream
+       * @param token - Numeric token
+       * @returns Promise with number
+       */
+      async peekNumber(token) {
+        const len = await this.peekBuffer(this.numBuffer, { length: token.len });
+        if (len < token.len)
+          throw new EndOfStreamError();
+        return token.get(this.numBuffer, 0);
+      }
+      /**
+       * Ignore number of bytes, advances the pointer in under tokenizer-stream.
+       * @param length - Number of bytes to ignore.  Must be ≥ 0.
+       * @return resolves the number of bytes ignored, equals length if this available, otherwise the number of bytes available
+       */
+      async ignore(length) {
+        if (length < 0) {
+          throw new RangeError("ignore length must be ≥ 0 bytes");
+        }
+        if (this.fileInfo.size !== void 0) {
+          const bytesLeft = this.fileInfo.size - this.position;
+          if (length > bytesLeft) {
+            this.position += bytesLeft;
+            return bytesLeft;
+          }
+        }
+        this.position += length;
+        return length;
+      }
+      async close() {
+        var _a2;
+        await this.abort();
+        await ((_a2 = this.onClose) == null ? void 0 : _a2.call(this));
+      }
+      normalizeOptions(uint8Array, options2) {
+        if (!this.supportsRandomAccess() && options2 && options2.position !== void 0 && options2.position < this.position) {
+          throw new Error("`options.position` must be equal or greater than `tokenizer.position`");
+        }
+        return {
+          ...{
+            mayBeLess: false,
+            offset: 0,
+            length: uint8Array.length,
+            position: this.position
+          },
+          ...options2
+        };
+      }
+      abort() {
+        return Promise.resolve();
+      }
+    }
+    const maxBufferSize = 256e3;
+    class ReadStreamTokenizer extends AbstractTokenizer {
+      /**
+       * Constructor
+       * @param streamReader stream-reader to read from
+       * @param options Tokenizer options
+       */
+      constructor(streamReader, options2) {
+        super(options2);
+        this.streamReader = streamReader;
+        this.fileInfo = (options2 == null ? void 0 : options2.fileInfo) ?? {};
+      }
+      /**
+       * Read buffer from tokenizer
+       * @param uint8Array - Target Uint8Array to fill with data read from the tokenizer-stream
+       * @param options - Read behaviour options
+       * @returns Promise with number of bytes read
+       */
+      async readBuffer(uint8Array, options2) {
+        const normOptions = this.normalizeOptions(uint8Array, options2);
+        const skipBytes = normOptions.position - this.position;
+        if (skipBytes > 0) {
+          await this.ignore(skipBytes);
+          return this.readBuffer(uint8Array, options2);
+        }
+        if (skipBytes < 0) {
+          throw new Error("`options.position` must be equal or greater than `tokenizer.position`");
+        }
+        if (normOptions.length === 0) {
+          return 0;
+        }
+        const bytesRead = await this.streamReader.read(uint8Array.subarray(0, normOptions.length), normOptions.mayBeLess);
+        this.position += bytesRead;
+        if ((!options2 || !options2.mayBeLess) && bytesRead < normOptions.length) {
+          throw new EndOfStreamError();
+        }
+        return bytesRead;
+      }
+      /**
+       * Peek (read ahead) buffer from tokenizer
+       * @param uint8Array - Uint8Array (or Buffer) to write data to
+       * @param options - Read behaviour options
+       * @returns Promise with number of bytes peeked
+       */
+      async peekBuffer(uint8Array, options2) {
+        const normOptions = this.normalizeOptions(uint8Array, options2);
+        let bytesRead = 0;
+        if (normOptions.position) {
+          const skipBytes = normOptions.position - this.position;
+          if (skipBytes > 0) {
+            const skipBuffer = new Uint8Array(normOptions.length + skipBytes);
+            bytesRead = await this.peekBuffer(skipBuffer, { mayBeLess: normOptions.mayBeLess });
+            uint8Array.set(skipBuffer.subarray(skipBytes));
+            return bytesRead - skipBytes;
+          }
+          if (skipBytes < 0) {
+            throw new Error("Cannot peek from a negative offset in a stream");
+          }
+        }
+        if (normOptions.length > 0) {
+          try {
+            bytesRead = await this.streamReader.peek(uint8Array.subarray(0, normOptions.length), normOptions.mayBeLess);
+          } catch (err) {
+            if ((options2 == null ? void 0 : options2.mayBeLess) && err instanceof EndOfStreamError) {
+              return 0;
+            }
+            throw err;
+          }
+          if (!normOptions.mayBeLess && bytesRead < normOptions.length) {
+            throw new EndOfStreamError();
+          }
+        }
+        return bytesRead;
+      }
+      /**
+       * @param length Number of bytes to ignore. Must be ≥ 0.
+       */
+      async ignore(length) {
+        if (length < 0) {
+          throw new RangeError("ignore length must be ≥ 0 bytes");
+        }
+        const bufSize = Math.min(maxBufferSize, length);
+        const buf = new Uint8Array(bufSize);
+        let totBytesRead = 0;
+        while (totBytesRead < length) {
+          const remaining = length - totBytesRead;
+          const bytesRead = await this.readBuffer(buf, { length: Math.min(bufSize, remaining) });
+          if (bytesRead < 0) {
+            return bytesRead;
+          }
+          totBytesRead += bytesRead;
+        }
+        return totBytesRead;
+      }
+      abort() {
+        return this.streamReader.abort();
+      }
+      async close() {
+        return this.streamReader.close();
+      }
+      supportsRandomAccess() {
+        return false;
+      }
+    }
+    class BufferTokenizer extends AbstractTokenizer {
+      /**
+       * Construct BufferTokenizer
+       * @param uint8Array - Uint8Array to tokenize
+       * @param options Tokenizer options
+       */
+      constructor(uint8Array, options2) {
+        super(options2);
+        this.uint8Array = uint8Array;
+        this.fileInfo = { ...(options2 == null ? void 0 : options2.fileInfo) ?? {}, ...{ size: uint8Array.length } };
+      }
+      /**
+       * Read buffer from tokenizer
+       * @param uint8Array - Uint8Array to tokenize
+       * @param options - Read behaviour options
+       * @returns {Promise<number>}
+       */
+      async readBuffer(uint8Array, options2) {
+        if (options2 == null ? void 0 : options2.position) {
+          this.position = options2.position;
+        }
+        const bytesRead = await this.peekBuffer(uint8Array, options2);
+        this.position += bytesRead;
+        return bytesRead;
+      }
+      /**
+       * Peek (read ahead) buffer from tokenizer
+       * @param uint8Array
+       * @param options - Read behaviour options
+       * @returns {Promise<number>}
+       */
+      async peekBuffer(uint8Array, options2) {
+        const normOptions = this.normalizeOptions(uint8Array, options2);
+        const bytes2read = Math.min(this.uint8Array.length - normOptions.position, normOptions.length);
+        if (!normOptions.mayBeLess && bytes2read < normOptions.length) {
+          throw new EndOfStreamError();
+        }
+        uint8Array.set(this.uint8Array.subarray(normOptions.position, normOptions.position + bytes2read));
+        return bytes2read;
+      }
+      close() {
+        return super.close();
+      }
+      supportsRandomAccess() {
+        return true;
+      }
+      setPosition(position) {
+        this.position = position;
+      }
+    }
+    class BlobTokenizer extends AbstractTokenizer {
+      /**
+       * Construct BufferTokenizer
+       * @param blob - Uint8Array to tokenize
+       * @param options Tokenizer options
+       */
+      constructor(blob, options2) {
+        super(options2);
+        this.blob = blob;
+        this.fileInfo = { ...(options2 == null ? void 0 : options2.fileInfo) ?? {}, ...{ size: blob.size, mimeType: blob.type } };
+      }
+      /**
+       * Read buffer from tokenizer
+       * @param uint8Array - Uint8Array to tokenize
+       * @param options - Read behaviour options
+       * @returns {Promise<number>}
+       */
+      async readBuffer(uint8Array, options2) {
+        if (options2 == null ? void 0 : options2.position) {
+          this.position = options2.position;
+        }
+        const bytesRead = await this.peekBuffer(uint8Array, options2);
+        this.position += bytesRead;
+        return bytesRead;
+      }
+      /**
+       * Peek (read ahead) buffer from tokenizer
+       * @param buffer
+       * @param options - Read behaviour options
+       * @returns {Promise<number>}
+       */
+      async peekBuffer(buffer, options2) {
+        const normOptions = this.normalizeOptions(buffer, options2);
+        const bytes2read = Math.min(this.blob.size - normOptions.position, normOptions.length);
+        if (!normOptions.mayBeLess && bytes2read < normOptions.length) {
+          throw new EndOfStreamError();
+        }
+        const arrayBuffer = await this.blob.slice(normOptions.position, normOptions.position + bytes2read).arrayBuffer();
+        buffer.set(new Uint8Array(arrayBuffer));
+        return bytes2read;
+      }
+      close() {
+        return super.close();
+      }
+      supportsRandomAccess() {
+        return true;
+      }
+      setPosition(position) {
+        this.position = position;
+      }
+    }
+    function fromWebStream(webStream, options2) {
+      const webStreamReader = makeWebStreamReader(webStream);
+      const _options7 = options2 ?? {};
+      const chainedClose = _options7.onClose;
+      _options7.onClose = async () => {
+        await webStreamReader.close();
+        if (chainedClose) {
+          return chainedClose();
+        }
+      };
+      return new ReadStreamTokenizer(webStreamReader, _options7);
+    }
+    function fromBuffer(uint8Array, options2) {
+      return new BufferTokenizer(uint8Array, options2);
+    }
+    function fromBlob(blob, options2) {
+      return new BlobTokenizer(blob, options2);
+    }
+    var browser = { exports: {} };
+    var ms;
+    var hasRequiredMs;
+    function requireMs() {
+      if (hasRequiredMs) return ms;
+      hasRequiredMs = 1;
+      var s = 1e3;
+      var m2 = s * 60;
+      var h2 = m2 * 60;
+      var d2 = h2 * 24;
+      var w2 = d2 * 7;
+      var y2 = d2 * 365.25;
+      ms = function(val, options2) {
+        options2 = options2 || {};
+        var type = typeof val;
+        if (type === "string" && val.length > 0) {
+          return parse2(val);
+        } else if (type === "number" && isFinite(val)) {
+          return options2.long ? fmtLong(val) : fmtShort(val);
+        }
+        throw new Error(
+          "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
+        );
+      };
+      function parse2(str) {
+        str = String(str);
+        if (str.length > 100) {
+          return;
+        }
+        var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+          str
+        );
+        if (!match2) {
+          return;
+        }
+        var n = parseFloat(match2[1]);
+        var type = (match2[2] || "ms").toLowerCase();
+        switch (type) {
+          case "years":
+          case "year":
+          case "yrs":
+          case "yr":
+          case "y":
+            return n * y2;
+          case "weeks":
+          case "week":
+          case "w":
+            return n * w2;
+          case "days":
+          case "day":
+          case "d":
+            return n * d2;
+          case "hours":
+          case "hour":
+          case "hrs":
+          case "hr":
+          case "h":
+            return n * h2;
+          case "minutes":
+          case "minute":
+          case "mins":
+          case "min":
+          case "m":
+            return n * m2;
+          case "seconds":
+          case "second":
+          case "secs":
+          case "sec":
+          case "s":
+            return n * s;
+          case "milliseconds":
+          case "millisecond":
+          case "msecs":
+          case "msec":
+          case "ms":
+            return n;
+          default:
+            return void 0;
+        }
+      }
+      function fmtShort(ms2) {
+        var msAbs = Math.abs(ms2);
+        if (msAbs >= d2) {
+          return Math.round(ms2 / d2) + "d";
+        }
+        if (msAbs >= h2) {
+          return Math.round(ms2 / h2) + "h";
+        }
+        if (msAbs >= m2) {
+          return Math.round(ms2 / m2) + "m";
+        }
+        if (msAbs >= s) {
+          return Math.round(ms2 / s) + "s";
+        }
+        return ms2 + "ms";
+      }
+      function fmtLong(ms2) {
+        var msAbs = Math.abs(ms2);
+        if (msAbs >= d2) {
+          return plural(ms2, msAbs, d2, "day");
+        }
+        if (msAbs >= h2) {
+          return plural(ms2, msAbs, h2, "hour");
+        }
+        if (msAbs >= m2) {
+          return plural(ms2, msAbs, m2, "minute");
+        }
+        if (msAbs >= s) {
+          return plural(ms2, msAbs, s, "second");
+        }
+        return ms2 + " ms";
+      }
+      function plural(ms2, msAbs, n, name) {
+        var isPlural = msAbs >= n * 1.5;
+        return Math.round(ms2 / n) + " " + name + (isPlural ? "s" : "");
+      }
+      return ms;
+    }
+    function setup(env) {
+      createDebug.debug = createDebug;
+      createDebug.default = createDebug;
+      createDebug.coerce = coerce;
+      createDebug.disable = disable;
+      createDebug.enable = enable;
+      createDebug.enabled = enabled;
+      createDebug.humanize = requireMs();
+      createDebug.destroy = destroy;
+      Object.keys(env).forEach((key) => {
+        createDebug[key] = env[key];
+      });
+      createDebug.names = [];
+      createDebug.skips = [];
+      createDebug.formatters = {};
+      function selectColor(namespace2) {
+        let hash = 0;
+        for (let i = 0; i < namespace2.length; i++) {
+          hash = (hash << 5) - hash + namespace2.charCodeAt(i);
+          hash |= 0;
+        }
+        return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+      }
+      createDebug.selectColor = selectColor;
+      function createDebug(namespace2) {
+        let prevTime;
+        let enableOverride = null;
+        let namespacesCache;
+        let enabledCache;
+        function debug2(...args) {
+          if (!debug2.enabled) {
+            return;
+          }
+          const self2 = debug2;
+          const curr = Number(/* @__PURE__ */ new Date());
+          const ms2 = curr - (prevTime || curr);
+          self2.diff = ms2;
+          self2.prev = prevTime;
+          self2.curr = curr;
+          prevTime = curr;
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
+          }
+          let index2 = 0;
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
+            if (match2 === "%%") {
+              return "%";
+            }
+            index2++;
+            const formatter = createDebug.formatters[format];
+            if (typeof formatter === "function") {
+              const val = args[index2];
+              match2 = formatter.call(self2, val);
+              args.splice(index2, 1);
+              index2--;
+            }
+            return match2;
+          });
+          createDebug.formatArgs.call(self2, args);
+          const logFn = self2.log || createDebug.log;
+          logFn.apply(self2, args);
+        }
+        debug2.namespace = namespace2;
+        debug2.useColors = createDebug.useColors();
+        debug2.color = createDebug.selectColor(namespace2);
+        debug2.extend = extend;
+        debug2.destroy = createDebug.destroy;
+        Object.defineProperty(debug2, "enabled", {
+          enumerable: true,
+          configurable: false,
+          get: () => {
+            if (enableOverride !== null) {
+              return enableOverride;
+            }
+            if (namespacesCache !== createDebug.namespaces) {
+              namespacesCache = createDebug.namespaces;
+              enabledCache = createDebug.enabled(namespace2);
+            }
+            return enabledCache;
+          },
+          set: (v2) => {
+            enableOverride = v2;
+          }
+        });
+        if (typeof createDebug.init === "function") {
+          createDebug.init(debug2);
+        }
+        return debug2;
+      }
+      function extend(namespace2, delimiter) {
+        const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace2);
+        newDebug.log = this.log;
+        return newDebug;
+      }
+      function enable(namespaces) {
+        createDebug.save(namespaces);
+        createDebug.namespaces = namespaces;
+        createDebug.names = [];
+        createDebug.skips = [];
+        const split2 = (typeof namespaces === "string" ? namespaces : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
+        for (const ns of split2) {
+          if (ns[0] === "-") {
+            createDebug.skips.push(ns.slice(1));
+          } else {
+            createDebug.names.push(ns);
+          }
+        }
+      }
+      function matchesTemplate(search, template) {
+        let searchIndex = 0;
+        let templateIndex = 0;
+        let starIndex = -1;
+        let matchIndex = 0;
+        while (searchIndex < search.length) {
+          if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
+            if (template[templateIndex] === "*") {
+              starIndex = templateIndex;
+              matchIndex = searchIndex;
+              templateIndex++;
+            } else {
+              searchIndex++;
+              templateIndex++;
+            }
+          } else if (starIndex !== -1) {
+            templateIndex = starIndex + 1;
+            matchIndex++;
+            searchIndex = matchIndex;
+          } else {
+            return false;
+          }
+        }
+        while (templateIndex < template.length && template[templateIndex] === "*") {
+          templateIndex++;
+        }
+        return templateIndex === template.length;
+      }
+      function disable() {
+        const namespaces = [
+          ...createDebug.names,
+          ...createDebug.skips.map((namespace2) => "-" + namespace2)
+        ].join(",");
+        createDebug.enable("");
+        return namespaces;
+      }
+      function enabled(name) {
+        for (const skip of createDebug.skips) {
+          if (matchesTemplate(name, skip)) {
+            return false;
+          }
+        }
+        for (const ns of createDebug.names) {
+          if (matchesTemplate(name, ns)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      function coerce(val) {
+        if (val instanceof Error) {
+          return val.stack || val.message;
+        }
+        return val;
+      }
+      function destroy() {
+        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+      }
+      createDebug.enable(createDebug.load());
+      return createDebug;
+    }
+    var common = setup;
+    (function(module2, exports2) {
+      var define_process_env_default2 = {};
+      exports2.formatArgs = formatArgs;
+      exports2.save = save;
+      exports2.load = load;
+      exports2.useColors = useColors;
+      exports2.storage = localstorage();
+      exports2.destroy = /* @__PURE__ */ (() => {
+        let warned = false;
+        return () => {
+          if (!warned) {
+            warned = true;
+            console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+          }
+        };
+      })();
+      exports2.colors = [
+        "#0000CC",
+        "#0000FF",
+        "#0033CC",
+        "#0033FF",
+        "#0066CC",
+        "#0066FF",
+        "#0099CC",
+        "#0099FF",
+        "#00CC00",
+        "#00CC33",
+        "#00CC66",
+        "#00CC99",
+        "#00CCCC",
+        "#00CCFF",
+        "#3300CC",
+        "#3300FF",
+        "#3333CC",
+        "#3333FF",
+        "#3366CC",
+        "#3366FF",
+        "#3399CC",
+        "#3399FF",
+        "#33CC00",
+        "#33CC33",
+        "#33CC66",
+        "#33CC99",
+        "#33CCCC",
+        "#33CCFF",
+        "#6600CC",
+        "#6600FF",
+        "#6633CC",
+        "#6633FF",
+        "#66CC00",
+        "#66CC33",
+        "#9900CC",
+        "#9900FF",
+        "#9933CC",
+        "#9933FF",
+        "#99CC00",
+        "#99CC33",
+        "#CC0000",
+        "#CC0033",
+        "#CC0066",
+        "#CC0099",
+        "#CC00CC",
+        "#CC00FF",
+        "#CC3300",
+        "#CC3333",
+        "#CC3366",
+        "#CC3399",
+        "#CC33CC",
+        "#CC33FF",
+        "#CC6600",
+        "#CC6633",
+        "#CC9900",
+        "#CC9933",
+        "#CCCC00",
+        "#CCCC33",
+        "#FF0000",
+        "#FF0033",
+        "#FF0066",
+        "#FF0099",
+        "#FF00CC",
+        "#FF00FF",
+        "#FF3300",
+        "#FF3333",
+        "#FF3366",
+        "#FF3399",
+        "#FF33CC",
+        "#FF33FF",
+        "#FF6600",
+        "#FF6633",
+        "#FF9900",
+        "#FF9933",
+        "#FFCC00",
+        "#FFCC33"
+      ];
+      function useColors() {
+        if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+          return true;
+        }
+        if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+          return false;
+        }
+        let m2;
+        return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
+        typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
+        // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+        typeof navigator !== "undefined" && navigator.userAgent && (m2 = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m2[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
+        typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+      }
+      function formatArgs(args) {
+        args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+        if (!this.useColors) {
+          return;
+        }
+        const c2 = "color: " + this.color;
+        args.splice(1, 0, c2, "color: inherit");
+        let index2 = 0;
+        let lastC = 0;
+        args[0].replace(/%[a-zA-Z%]/g, (match2) => {
+          if (match2 === "%%") {
+            return;
+          }
+          index2++;
+          if (match2 === "%c") {
+            lastC = index2;
+          }
+        });
+        args.splice(lastC, 0, c2);
+      }
+      exports2.log = console.debug || console.log || (() => {
+      });
+      function save(namespaces) {
+        try {
+          if (namespaces) {
+            exports2.storage.setItem("debug", namespaces);
+          } else {
+            exports2.storage.removeItem("debug");
+          }
+        } catch (error) {
+        }
+      }
+      function load() {
+        let r2;
+        try {
+          r2 = exports2.storage.getItem("debug") || exports2.storage.getItem("DEBUG");
+        } catch (error) {
+        }
+        if (!r2 && typeof process !== "undefined" && "env" in process) {
+          r2 = define_process_env_default2.DEBUG;
+        }
+        return r2;
+      }
+      function localstorage() {
+        try {
+          return localStorage;
+        } catch (error) {
+        }
+      }
+      module2.exports = common(exports2);
+      const { formatters } = module2.exports;
+      formatters.j = function(v2) {
+        try {
+          return JSON.stringify(v2);
+        } catch (error) {
+          return "[UnexpectedJSONParseError]: " + error.message;
+        }
+      };
+    })(browser, browser.exports);
+    var browserExports = browser.exports;
+    const initDebug = /* @__PURE__ */ getDefaultExportFromCjs(browserExports);
+    const Signature = {
+      LocalFileHeader: 67324752,
+      DataDescriptor: 134695760,
+      CentralFileHeader: 33639248,
+      EndOfCentralDirectory: 101010256
+    };
+    const DataDescriptor = {
+      get(array) {
+        return {
+          signature: UINT32_LE.get(array, 0),
+          compressedSize: UINT32_LE.get(array, 8),
+          uncompressedSize: UINT32_LE.get(array, 12)
+        };
+      },
+      len: 16
+    };
+    const LocalFileHeaderToken = {
+      get(array) {
+        const flags = UINT16_LE.get(array, 6);
+        return {
+          signature: UINT32_LE.get(array, 0),
+          minVersion: UINT16_LE.get(array, 4),
+          dataDescriptor: !!(flags & 8),
+          compressedMethod: UINT16_LE.get(array, 8),
+          compressedSize: UINT32_LE.get(array, 18),
+          uncompressedSize: UINT32_LE.get(array, 22),
+          filenameLength: UINT16_LE.get(array, 26),
+          extraFieldLength: UINT16_LE.get(array, 28),
+          filename: null
+        };
+      },
+      len: 30
+    };
+    const EndOfCentralDirectoryRecordToken = {
+      get(array) {
+        return {
+          signature: UINT32_LE.get(array, 0),
+          nrOfThisDisk: UINT16_LE.get(array, 4),
+          nrOfThisDiskWithTheStart: UINT16_LE.get(array, 6),
+          nrOfEntriesOnThisDisk: UINT16_LE.get(array, 8),
+          nrOfEntriesOfSize: UINT16_LE.get(array, 10),
+          sizeOfCd: UINT32_LE.get(array, 12),
+          offsetOfStartOfCd: UINT32_LE.get(array, 16),
+          zipFileCommentLength: UINT16_LE.get(array, 20)
+        };
+      },
+      len: 22
+    };
+    const FileHeader = {
+      get(array) {
+        const flags = UINT16_LE.get(array, 8);
+        return {
+          signature: UINT32_LE.get(array, 0),
+          minVersion: UINT16_LE.get(array, 6),
+          dataDescriptor: !!(flags & 8),
+          compressedMethod: UINT16_LE.get(array, 10),
+          compressedSize: UINT32_LE.get(array, 20),
+          uncompressedSize: UINT32_LE.get(array, 24),
+          filenameLength: UINT16_LE.get(array, 28),
+          extraFieldLength: UINT16_LE.get(array, 30),
+          fileCommentLength: UINT16_LE.get(array, 32),
+          relativeOffsetOfLocalHeader: UINT32_LE.get(array, 42),
+          filename: null
+        };
+      },
+      len: 46
+    };
+    function signatureToArray(signature) {
+      const signatureBytes = new Uint8Array(UINT32_LE.len);
+      UINT32_LE.put(signatureBytes, 0, signature);
+      return signatureBytes;
+    }
+    const debug$7 = initDebug("tokenizer:inflate");
+    const syncBufferSize = 256 * 1024;
+    const ddSignatureArray = signatureToArray(Signature.DataDescriptor);
+    const eocdSignatureBytes = signatureToArray(Signature.EndOfCentralDirectory);
+    class ZipHandler {
+      constructor(tokenizer) {
+        this.tokenizer = tokenizer;
+        this.syncBuffer = new Uint8Array(syncBufferSize);
+      }
+      async isZip() {
+        return await this.peekSignature() === Signature.LocalFileHeader;
+      }
+      peekSignature() {
+        return this.tokenizer.peekToken(UINT32_LE);
+      }
+      async findEndOfCentralDirectoryLocator() {
+        const randomReadTokenizer = this.tokenizer;
+        const chunkLength = Math.min(16 * 1024, randomReadTokenizer.fileInfo.size);
+        const buffer = this.syncBuffer.subarray(0, chunkLength);
+        await this.tokenizer.readBuffer(buffer, { position: randomReadTokenizer.fileInfo.size - chunkLength });
+        for (let i = buffer.length - 4; i >= 0; i--) {
+          if (buffer[i] === eocdSignatureBytes[0] && buffer[i + 1] === eocdSignatureBytes[1] && buffer[i + 2] === eocdSignatureBytes[2] && buffer[i + 3] === eocdSignatureBytes[3]) {
+            return randomReadTokenizer.fileInfo.size - chunkLength + i;
+          }
+        }
+        return -1;
+      }
+      async readCentralDirectory() {
+        if (!this.tokenizer.supportsRandomAccess()) {
+          debug$7("Cannot reading central-directory without random-read support");
+          return;
+        }
+        debug$7("Reading central-directory...");
+        const pos = this.tokenizer.position;
+        const offset2 = await this.findEndOfCentralDirectoryLocator();
+        if (offset2 > 0) {
+          debug$7("Central-directory 32-bit signature found");
+          const eocdHeader = await this.tokenizer.readToken(EndOfCentralDirectoryRecordToken, offset2);
+          const files = [];
+          this.tokenizer.setPosition(eocdHeader.offsetOfStartOfCd);
+          for (let n = 0; n < eocdHeader.nrOfEntriesOfSize; ++n) {
+            const entry = await this.tokenizer.readToken(FileHeader);
+            if (entry.signature !== Signature.CentralFileHeader) {
+              throw new Error("Expected Central-File-Header signature");
+            }
+            entry.filename = await this.tokenizer.readToken(new StringType(entry.filenameLength, "utf-8"));
+            await this.tokenizer.ignore(entry.extraFieldLength);
+            await this.tokenizer.ignore(entry.fileCommentLength);
+            files.push(entry);
+            debug$7(`Add central-directory file-entry: n=${n + 1}/${files.length}: filename=${files[n].filename}`);
+          }
+          this.tokenizer.setPosition(pos);
+          return files;
+        }
+        this.tokenizer.setPosition(pos);
+      }
+      async unzip(fileCb) {
+        const entries = await this.readCentralDirectory();
+        if (entries) {
+          return this.iterateOverCentralDirectory(entries, fileCb);
+        }
+        let stop = false;
+        do {
+          const zipHeader = await this.readLocalFileHeader();
+          if (!zipHeader)
+            break;
+          const next = fileCb(zipHeader);
+          stop = !!next.stop;
+          let fileData;
+          await this.tokenizer.ignore(zipHeader.extraFieldLength);
+          if (zipHeader.dataDescriptor && zipHeader.compressedSize === 0) {
+            const chunks = [];
+            let len = syncBufferSize;
+            debug$7("Compressed-file-size unknown, scanning for next data-descriptor-signature....");
+            let nextHeaderIndex = -1;
+            while (nextHeaderIndex < 0 && len === syncBufferSize) {
+              len = await this.tokenizer.peekBuffer(this.syncBuffer, { mayBeLess: true });
+              nextHeaderIndex = indexOf(this.syncBuffer.subarray(0, len), ddSignatureArray);
+              const size2 = nextHeaderIndex >= 0 ? nextHeaderIndex : len;
+              if (next.handler) {
+                const data = new Uint8Array(size2);
+                await this.tokenizer.readBuffer(data);
+                chunks.push(data);
+              } else {
+                await this.tokenizer.ignore(size2);
+              }
+            }
+            debug$7(`Found data-descriptor-signature at pos=${this.tokenizer.position}`);
+            if (next.handler) {
+              await this.inflate(zipHeader, mergeArrays(chunks), next.handler);
+            }
+          } else {
+            if (next.handler) {
+              debug$7(`Reading compressed-file-data: ${zipHeader.compressedSize} bytes`);
+              fileData = new Uint8Array(zipHeader.compressedSize);
+              await this.tokenizer.readBuffer(fileData);
+              await this.inflate(zipHeader, fileData, next.handler);
+            } else {
+              debug$7(`Ignoring compressed-file-data: ${zipHeader.compressedSize} bytes`);
+              await this.tokenizer.ignore(zipHeader.compressedSize);
+            }
+          }
+          debug$7(`Reading data-descriptor at pos=${this.tokenizer.position}`);
+          if (zipHeader.dataDescriptor) {
+            const dataDescriptor = await this.tokenizer.readToken(DataDescriptor);
+            if (dataDescriptor.signature !== 134695760) {
+              throw new Error(`Expected data-descriptor-signature at position ${this.tokenizer.position - DataDescriptor.len}`);
+            }
+          }
+        } while (!stop);
+      }
+      async iterateOverCentralDirectory(entries, fileCb) {
+        for (const fileHeader of entries) {
+          const next = fileCb(fileHeader);
+          if (next.handler) {
+            this.tokenizer.setPosition(fileHeader.relativeOffsetOfLocalHeader);
+            const zipHeader = await this.readLocalFileHeader();
+            if (zipHeader) {
+              await this.tokenizer.ignore(zipHeader.extraFieldLength);
+              const fileData = new Uint8Array(fileHeader.compressedSize);
+              await this.tokenizer.readBuffer(fileData);
+              await this.inflate(zipHeader, fileData, next.handler);
+            }
+          }
+          if (next.stop)
+            break;
+        }
+      }
+      async inflate(zipHeader, fileData, cb) {
+        if (zipHeader.compressedMethod === 0) {
+          return cb(fileData);
+        }
+        if (zipHeader.compressedMethod !== 8) {
+          throw new Error(`Unsupported ZIP compression method: ${zipHeader.compressedMethod}`);
+        }
+        debug$7(`Decompress filename=${zipHeader.filename}, compressed-size=${fileData.length}`);
+        const uncompressedData = await ZipHandler.decompressDeflateRaw(fileData);
+        return cb(uncompressedData);
+      }
+      static async decompressDeflateRaw(data) {
+        const input = new ReadableStream({
+          start(controller) {
+            controller.enqueue(data);
+            controller.close();
+          }
+        });
+        const ds = new DecompressionStream("deflate-raw");
+        const output = input.pipeThrough(ds);
+        try {
+          const response = new Response(output);
+          const buffer = await response.arrayBuffer();
+          return new Uint8Array(buffer);
+        } catch (err) {
+          const message = err instanceof Error ? `Failed to deflate ZIP entry: ${err.message}` : "Unknown decompression error in ZIP entry";
+          throw new TypeError(message);
+        }
+      }
+      async readLocalFileHeader() {
+        const signature = await this.tokenizer.peekToken(UINT32_LE);
+        if (signature === Signature.LocalFileHeader) {
+          const header = await this.tokenizer.readToken(LocalFileHeaderToken);
+          header.filename = await this.tokenizer.readToken(new StringType(header.filenameLength, "utf-8"));
+          return header;
+        }
+        if (signature === Signature.CentralFileHeader) {
+          return false;
+        }
+        if (signature === 3759263696) {
+          throw new Error("Encrypted ZIP");
+        }
+        throw new Error("Unexpected signature");
+      }
+    }
+    function indexOf(buffer, portion) {
+      const bufferLength = buffer.length;
+      const portionLength = portion.length;
+      if (portionLength > bufferLength)
+        return -1;
+      for (let i = 0; i <= bufferLength - portionLength; i++) {
+        let found = true;
+        for (let j2 = 0; j2 < portionLength; j2++) {
+          if (buffer[i + j2] !== portion[j2]) {
+            found = false;
+            break;
+          }
+        }
+        if (found) {
+          return i;
+        }
+      }
+      return -1;
+    }
+    function mergeArrays(chunks) {
+      const totalLength = chunks.reduce((acc, curr) => acc + curr.length, 0);
+      const mergedArray = new Uint8Array(totalLength);
+      let offset2 = 0;
+      for (const chunk of chunks) {
+        mergedArray.set(chunk, offset2);
+        offset2 += chunk.length;
+      }
+      return mergedArray;
+    }
+    class GzipHandler {
+      constructor(tokenizer) {
+        this.tokenizer = tokenizer;
+      }
+      inflate() {
+        const tokenizer = this.tokenizer;
+        return new ReadableStream({
+          async pull(controller) {
+            const buffer = new Uint8Array(1024);
+            const size2 = await tokenizer.readBuffer(buffer, { mayBeLess: true });
+            if (size2 === 0) {
+              controller.close();
+              return;
+            }
+            controller.enqueue(buffer.subarray(0, size2));
+          }
+        }).pipeThrough(new DecompressionStream("gzip"));
+      }
+    }
+    ({
+      utf8: new globalThis.TextDecoder("utf8")
+    });
+    new globalThis.TextEncoder();
+    Array.from({ length: 256 }, (_2, index2) => index2.toString(16).padStart(2, "0"));
+    function getUintBE(view) {
+      const { byteLength } = view;
+      if (byteLength === 6) {
+        return view.getUint16(0) * 2 ** 32 + view.getUint32(2);
+      }
+      if (byteLength === 5) {
+        return view.getUint8(0) * 2 ** 32 + view.getUint32(1);
+      }
+      if (byteLength === 4) {
+        return view.getUint32(0);
+      }
+      if (byteLength === 3) {
+        return view.getUint8(0) * 2 ** 16 + view.getUint16(1);
+      }
+      if (byteLength === 2) {
+        return view.getUint16(0);
+      }
+      if (byteLength === 1) {
+        return view.getUint8(0);
+      }
+    }
+    function stringToBytes(string, encoding) {
+      if (encoding === "utf-16le") {
+        const bytes = [];
+        for (let index2 = 0; index2 < string.length; index2++) {
+          const code = string.charCodeAt(index2);
+          bytes.push(code & 255, code >> 8 & 255);
+        }
+        return bytes;
+      }
+      if (encoding === "utf-16be") {
+        const bytes = [];
+        for (let index2 = 0; index2 < string.length; index2++) {
+          const code = string.charCodeAt(index2);
+          bytes.push(code >> 8 & 255, code & 255);
+        }
+        return bytes;
+      }
+      return [...string].map((character) => character.charCodeAt(0));
+    }
+    function tarHeaderChecksumMatches(arrayBuffer, offset2 = 0) {
+      const readSum = Number.parseInt(new StringType(6).get(arrayBuffer, 148).replace(/\0.*$/, "").trim(), 8);
+      if (Number.isNaN(readSum)) {
+        return false;
+      }
+      let sum = 8 * 32;
+      for (let index2 = offset2; index2 < offset2 + 148; index2++) {
+        sum += arrayBuffer[index2];
+      }
+      for (let index2 = offset2 + 156; index2 < offset2 + 512; index2++) {
+        sum += arrayBuffer[index2];
+      }
+      return readSum === sum;
+    }
+    const uint32SyncSafeToken = {
+      get: (buffer, offset2) => buffer[offset2 + 3] & 127 | buffer[offset2 + 2] << 7 | buffer[offset2 + 1] << 14 | buffer[offset2] << 21,
+      len: 4
+    };
+    const extensions = [
+      "jpg",
+      "png",
+      "apng",
+      "gif",
+      "webp",
+      "flif",
+      "xcf",
+      "cr2",
+      "cr3",
+      "orf",
+      "arw",
+      "dng",
+      "nef",
+      "rw2",
+      "raf",
+      "tif",
+      "bmp",
+      "icns",
+      "jxr",
+      "psd",
+      "indd",
+      "zip",
+      "tar",
+      "rar",
+      "gz",
+      "bz2",
+      "7z",
+      "dmg",
+      "mp4",
+      "mid",
+      "mkv",
+      "webm",
+      "mov",
+      "avi",
+      "mpg",
+      "mp2",
+      "mp3",
+      "m4a",
+      "oga",
+      "ogg",
+      "ogv",
+      "opus",
+      "flac",
+      "wav",
+      "spx",
+      "amr",
+      "pdf",
+      "epub",
+      "elf",
+      "macho",
+      "exe",
+      "swf",
+      "rtf",
+      "wasm",
+      "woff",
+      "woff2",
+      "eot",
+      "ttf",
+      "otf",
+      "ttc",
+      "ico",
+      "flv",
+      "ps",
+      "xz",
+      "sqlite",
+      "nes",
+      "crx",
+      "xpi",
+      "cab",
+      "deb",
+      "ar",
+      "rpm",
+      "Z",
+      "lz",
+      "cfb",
+      "mxf",
+      "mts",
+      "blend",
+      "bpg",
+      "docx",
+      "pptx",
+      "xlsx",
+      "3gp",
+      "3g2",
+      "j2c",
+      "jp2",
+      "jpm",
+      "jpx",
+      "mj2",
+      "aif",
+      "qcp",
+      "odt",
+      "ods",
+      "odp",
+      "xml",
+      "mobi",
+      "heic",
+      "cur",
+      "ktx",
+      "ape",
+      "wv",
+      "dcm",
+      "ics",
+      "glb",
+      "pcap",
+      "dsf",
+      "lnk",
+      "alias",
+      "voc",
+      "ac3",
+      "m4v",
+      "m4p",
+      "m4b",
+      "f4v",
+      "f4p",
+      "f4b",
+      "f4a",
+      "mie",
+      "asf",
+      "ogm",
+      "ogx",
+      "mpc",
+      "arrow",
+      "shp",
+      "aac",
+      "mp1",
+      "it",
+      "s3m",
+      "xm",
+      "skp",
+      "avif",
+      "eps",
+      "lzh",
+      "pgp",
+      "asar",
+      "stl",
+      "chm",
+      "3mf",
+      "zst",
+      "jxl",
+      "vcf",
+      "jls",
+      "pst",
+      "dwg",
+      "parquet",
+      "class",
+      "arj",
+      "cpio",
+      "ace",
+      "avro",
+      "icc",
+      "fbx",
+      "vsdx",
+      "vtt",
+      "apk",
+      "drc",
+      "lz4",
+      "potx",
+      "xltx",
+      "dotx",
+      "xltm",
+      "ott",
+      "ots",
+      "otp",
+      "odg",
+      "otg",
+      "xlsm",
+      "docm",
+      "dotm",
+      "potm",
+      "pptm",
+      "jar",
+      "jmp",
+      "rm",
+      "sav",
+      "ppsm",
+      "ppsx",
+      "tar.gz",
+      "reg",
+      "dat"
+    ];
+    const mimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/flif",
+      "image/x-xcf",
+      "image/x-canon-cr2",
+      "image/x-canon-cr3",
+      "image/tiff",
+      "image/bmp",
+      "image/vnd.ms-photo",
+      "image/vnd.adobe.photoshop",
+      "application/x-indesign",
+      "application/epub+zip",
+      "application/x-xpinstall",
+      "application/vnd.ms-powerpoint.slideshow.macroenabled.12",
+      "application/vnd.oasis.opendocument.text",
+      "application/vnd.oasis.opendocument.spreadsheet",
+      "application/vnd.oasis.opendocument.presentation",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+      "application/zip",
+      "application/x-tar",
+      "application/x-rar-compressed",
+      "application/gzip",
+      "application/x-bzip2",
+      "application/x-7z-compressed",
+      "application/x-apple-diskimage",
+      "application/vnd.apache.arrow.file",
+      "video/mp4",
+      "audio/midi",
+      "video/matroska",
+      "video/webm",
+      "video/quicktime",
+      "video/vnd.avi",
+      "audio/wav",
+      "audio/qcelp",
+      "audio/x-ms-asf",
+      "video/x-ms-asf",
+      "application/vnd.ms-asf",
+      "video/mpeg",
+      "video/3gpp",
+      "audio/mpeg",
+      "audio/mp4",
+      // RFC 4337
+      "video/ogg",
+      "audio/ogg",
+      "audio/ogg; codecs=opus",
+      "application/ogg",
+      "audio/flac",
+      "audio/ape",
+      "audio/wavpack",
+      "audio/amr",
+      "application/pdf",
+      "application/x-elf",
+      "application/x-mach-binary",
+      "application/x-msdownload",
+      "application/x-shockwave-flash",
+      "application/rtf",
+      "application/wasm",
+      "font/woff",
+      "font/woff2",
+      "application/vnd.ms-fontobject",
+      "font/ttf",
+      "font/otf",
+      "font/collection",
+      "image/x-icon",
+      "video/x-flv",
+      "application/postscript",
+      "application/eps",
+      "application/x-xz",
+      "application/x-sqlite3",
+      "application/x-nintendo-nes-rom",
+      "application/x-google-chrome-extension",
+      "application/vnd.ms-cab-compressed",
+      "application/x-deb",
+      "application/x-unix-archive",
+      "application/x-rpm",
+      "application/x-compress",
+      "application/x-lzip",
+      "application/x-cfb",
+      "application/x-mie",
+      "application/mxf",
+      "video/mp2t",
+      "application/x-blender",
+      "image/bpg",
+      "image/j2c",
+      "image/jp2",
+      "image/jpx",
+      "image/jpm",
+      "image/mj2",
+      "audio/aiff",
+      "application/xml",
+      "application/x-mobipocket-ebook",
+      "image/heif",
+      "image/heif-sequence",
+      "image/heic",
+      "image/heic-sequence",
+      "image/icns",
+      "image/ktx",
+      "application/dicom",
+      "audio/x-musepack",
+      "text/calendar",
+      "text/vcard",
+      "text/vtt",
+      "model/gltf-binary",
+      "application/vnd.tcpdump.pcap",
+      "audio/x-dsf",
+      // Non-standard
+      "application/x.ms.shortcut",
+      // Invented by us
+      "application/x.apple.alias",
+      // Invented by us
+      "audio/x-voc",
+      "audio/vnd.dolby.dd-raw",
+      "audio/x-m4a",
+      "image/apng",
+      "image/x-olympus-orf",
+      "image/x-sony-arw",
+      "image/x-adobe-dng",
+      "image/x-nikon-nef",
+      "image/x-panasonic-rw2",
+      "image/x-fujifilm-raf",
+      "video/x-m4v",
+      "video/3gpp2",
+      "application/x-esri-shape",
+      "audio/aac",
+      "audio/x-it",
+      "audio/x-s3m",
+      "audio/x-xm",
+      "video/MP1S",
+      "video/MP2P",
+      "application/vnd.sketchup.skp",
+      "image/avif",
+      "application/x-lzh-compressed",
+      "application/pgp-encrypted",
+      "application/x-asar",
+      "model/stl",
+      "application/vnd.ms-htmlhelp",
+      "model/3mf",
+      "image/jxl",
+      "application/zstd",
+      "image/jls",
+      "application/vnd.ms-outlook",
+      "image/vnd.dwg",
+      "application/vnd.apache.parquet",
+      "application/java-vm",
+      "application/x-arj",
+      "application/x-cpio",
+      "application/x-ace-compressed",
+      "application/avro",
+      "application/vnd.iccprofile",
+      "application/x.autodesk.fbx",
+      // Invented by us
+      "application/vnd.visio",
+      "application/vnd.android.package-archive",
+      "application/vnd.google.draco",
+      // Invented by us
+      "application/x-lz4",
+      // Invented by us
+      "application/vnd.openxmlformats-officedocument.presentationml.template",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+      "application/vnd.ms-excel.template.macroenabled.12",
+      "application/vnd.oasis.opendocument.text-template",
+      "application/vnd.oasis.opendocument.spreadsheet-template",
+      "application/vnd.oasis.opendocument.presentation-template",
+      "application/vnd.oasis.opendocument.graphics",
+      "application/vnd.oasis.opendocument.graphics-template",
+      "application/vnd.ms-excel.sheet.macroenabled.12",
+      "application/vnd.ms-word.document.macroenabled.12",
+      "application/vnd.ms-word.template.macroenabled.12",
+      "application/vnd.ms-powerpoint.template.macroenabled.12",
+      "application/vnd.ms-powerpoint.presentation.macroenabled.12",
+      "application/java-archive",
+      "application/vnd.rn-realmedia",
+      "application/x-spss-sav",
+      "application/x-ms-regedit",
+      "application/x-ft-windows-registry-hive",
+      "application/x-jmp-data"
+    ];
+    const reasonableDetectionSizeInBytes = 4100;
+    const maximumMpegOffsetTolerance = reasonableDetectionSizeInBytes - 2;
+    const maximumZipEntrySizeInBytes = 1024 * 1024;
+    const maximumZipEntryCount = 1024;
+    const maximumZipBufferedReadSizeInBytes = 2 ** 31 - 1;
+    const maximumUntrustedSkipSizeInBytes = 16 * 1024 * 1024;
+    const maximumUnknownSizePayloadProbeSizeInBytes = maximumZipEntrySizeInBytes;
+    const maximumZipTextEntrySizeInBytes = maximumZipEntrySizeInBytes;
+    const maximumNestedGzipDetectionSizeInBytes = maximumUntrustedSkipSizeInBytes;
+    const maximumNestedGzipProbeDepth = 1;
+    const unknownSizeGzipProbeTimeoutInMilliseconds = 100;
+    const maximumId3HeaderSizeInBytes = maximumUntrustedSkipSizeInBytes;
+    const maximumEbmlDocumentTypeSizeInBytes = 64;
+    const maximumEbmlElementPayloadSizeInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
+    const maximumEbmlElementCount = 256;
+    const maximumPngChunkCount = 512;
+    const maximumPngStreamScanBudgetInBytes = maximumUntrustedSkipSizeInBytes;
+    const maximumAsfHeaderObjectCount = 512;
+    const maximumTiffTagCount = 512;
+    const maximumDetectionReentryCount = 256;
+    const maximumPngChunkSizeInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
+    const maximumAsfHeaderPayloadSizeInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
+    const maximumTiffStreamIfdOffsetInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
+    const maximumTiffIfdOffsetInBytes = maximumUntrustedSkipSizeInBytes;
+    const recoverableZipErrorMessages = /* @__PURE__ */ new Set([
+      "Unexpected signature",
+      "Encrypted ZIP",
+      "Expected Central-File-Header signature"
+    ]);
+    const recoverableZipErrorMessagePrefixes = [
+      "ZIP entry count exceeds ",
+      "Unsupported ZIP compression method:",
+      "ZIP entry compressed data exceeds ",
+      "ZIP entry decompressed data exceeds ",
+      "Expected data-descriptor-signature at position "
+    ];
+    const recoverableZipErrorCodes = /* @__PURE__ */ new Set([
+      "Z_BUF_ERROR",
+      "Z_DATA_ERROR",
+      "ERR_INVALID_STATE"
+    ]);
+    class ParserHardLimitError extends Error {
+    }
+    function patchWebByobTokenizerClose(tokenizer) {
+      var _a2;
+      const streamReader = tokenizer == null ? void 0 : tokenizer.streamReader;
+      if (((_a2 = streamReader == null ? void 0 : streamReader.constructor) == null ? void 0 : _a2.name) !== "WebStreamByobReader") {
+        return tokenizer;
+      }
+      const { reader } = streamReader;
+      const cancelAndRelease = async () => {
+        await reader.cancel();
+        reader.releaseLock();
+      };
+      streamReader.close = cancelAndRelease;
+      streamReader.abort = async () => {
+        streamReader.interrupted = true;
+        await cancelAndRelease();
+      };
+      return tokenizer;
+    }
+    function getSafeBound(value, maximum, reason) {
+      if (!Number.isFinite(value) || value < 0 || value > maximum) {
+        throw new ParserHardLimitError(`${reason} has invalid size ${value} (maximum ${maximum} bytes)`);
+      }
+      return value;
+    }
+    async function safeIgnore(tokenizer, length, { maximumLength = maximumUntrustedSkipSizeInBytes, reason = "skip" } = {}) {
+      const safeLength = getSafeBound(length, maximumLength, reason);
+      await tokenizer.ignore(safeLength);
+    }
+    async function safeReadBuffer(tokenizer, buffer, options2, { maximumLength = buffer.length, reason = "read" } = {}) {
+      const length = buffer.length;
+      const safeLength = getSafeBound(length, maximumLength, reason);
+      return tokenizer.readBuffer(buffer, {
+        ...options2,
+        length: safeLength
+      });
+    }
+    async function decompressDeflateRawWithLimit(data, { maximumLength = maximumZipEntrySizeInBytes } = {}) {
+      const input = new ReadableStream({
+        start(controller) {
+          controller.enqueue(data);
+          controller.close();
+        }
+      });
+      const output = input.pipeThrough(new DecompressionStream("deflate-raw"));
+      const reader = output.getReader();
+      const chunks = [];
+      let totalLength = 0;
+      try {
+        for (; ; ) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          totalLength += value.length;
+          if (totalLength > maximumLength) {
+            await reader.cancel();
+            throw new Error(`ZIP entry decompressed data exceeds ${maximumLength} bytes`);
+          }
+          chunks.push(value);
+        }
+      } finally {
+        reader.releaseLock();
+      }
+      const uncompressedData = new Uint8Array(totalLength);
+      let offset2 = 0;
+      for (const chunk of chunks) {
+        uncompressedData.set(chunk, offset2);
+        offset2 += chunk.length;
+      }
+      return uncompressedData;
+    }
+    const zipDataDescriptorSignature = 134695760;
+    const zipDataDescriptorLengthInBytes = 16;
+    const zipDataDescriptorOverlapLengthInBytes = zipDataDescriptorLengthInBytes - 1;
+    function findZipDataDescriptorOffset(buffer, bytesConsumed) {
+      if (buffer.length < zipDataDescriptorLengthInBytes) {
+        return -1;
+      }
+      const lastPossibleDescriptorOffset = buffer.length - zipDataDescriptorLengthInBytes;
+      for (let index2 = 0; index2 <= lastPossibleDescriptorOffset; index2++) {
+        if (UINT32_LE.get(buffer, index2) === zipDataDescriptorSignature && UINT32_LE.get(buffer, index2 + 8) === bytesConsumed + index2) {
+          return index2;
+        }
+      }
+      return -1;
+    }
+    function isPngAncillaryChunk(type) {
+      return (type.codePointAt(0) & 32) !== 0;
+    }
+    function mergeByteChunks(chunks, totalLength) {
+      const merged = new Uint8Array(totalLength);
+      let offset2 = 0;
+      for (const chunk of chunks) {
+        merged.set(chunk, offset2);
+        offset2 += chunk.length;
+      }
+      return merged;
+    }
+    async function readZipDataDescriptorEntryWithLimit(zipHandler, { shouldBuffer, maximumLength = maximumZipEntrySizeInBytes } = {}) {
+      const { syncBuffer } = zipHandler;
+      const { length: syncBufferLength } = syncBuffer;
+      const chunks = [];
+      let bytesConsumed = 0;
+      for (; ; ) {
+        const length = await zipHandler.tokenizer.peekBuffer(syncBuffer, { mayBeLess: true });
+        const dataDescriptorOffset = findZipDataDescriptorOffset(syncBuffer.subarray(0, length), bytesConsumed);
+        const retainedLength = dataDescriptorOffset >= 0 ? 0 : length === syncBufferLength ? Math.min(zipDataDescriptorOverlapLengthInBytes, length - 1) : 0;
+        const chunkLength = dataDescriptorOffset >= 0 ? dataDescriptorOffset : length - retainedLength;
+        if (chunkLength === 0) {
+          break;
+        }
+        bytesConsumed += chunkLength;
+        if (bytesConsumed > maximumLength) {
+          throw new Error(`ZIP entry compressed data exceeds ${maximumLength} bytes`);
+        }
+        if (shouldBuffer) {
+          const data = new Uint8Array(chunkLength);
+          await zipHandler.tokenizer.readBuffer(data);
+          chunks.push(data);
+        } else {
+          await zipHandler.tokenizer.ignore(chunkLength);
+        }
+        if (dataDescriptorOffset >= 0) {
+          break;
+        }
+      }
+      if (!hasUnknownFileSize(zipHandler.tokenizer)) {
+        zipHandler.knownSizeDescriptorScannedBytes += bytesConsumed;
+      }
+      if (!shouldBuffer) {
+        return;
+      }
+      return mergeByteChunks(chunks, bytesConsumed);
+    }
+    function getRemainingZipScanBudget(zipHandler, startOffset) {
+      if (hasUnknownFileSize(zipHandler.tokenizer)) {
+        return Math.max(0, maximumUntrustedSkipSizeInBytes - (zipHandler.tokenizer.position - startOffset));
+      }
+      return Math.max(0, maximumZipEntrySizeInBytes - zipHandler.knownSizeDescriptorScannedBytes);
+    }
+    async function readZipEntryData(zipHandler, zipHeader, { shouldBuffer, maximumDescriptorLength = maximumZipEntrySizeInBytes } = {}) {
+      if (zipHeader.dataDescriptor && zipHeader.compressedSize === 0) {
+        return readZipDataDescriptorEntryWithLimit(zipHandler, {
+          shouldBuffer,
+          maximumLength: maximumDescriptorLength
+        });
+      }
+      if (!shouldBuffer) {
+        await safeIgnore(zipHandler.tokenizer, zipHeader.compressedSize, {
+          maximumLength: hasUnknownFileSize(zipHandler.tokenizer) ? maximumZipEntrySizeInBytes : zipHandler.tokenizer.fileInfo.size,
+          reason: "ZIP entry compressed data"
+        });
+        return;
+      }
+      const maximumLength = getMaximumZipBufferedReadLength(zipHandler.tokenizer);
+      if (!Number.isFinite(zipHeader.compressedSize) || zipHeader.compressedSize < 0 || zipHeader.compressedSize > maximumLength) {
+        throw new Error(`ZIP entry compressed data exceeds ${maximumLength} bytes`);
+      }
+      const fileData = new Uint8Array(zipHeader.compressedSize);
+      await zipHandler.tokenizer.readBuffer(fileData);
+      return fileData;
+    }
+    ZipHandler.prototype.inflate = async function(zipHeader, fileData, callback) {
+      if (zipHeader.compressedMethod === 0) {
+        return callback(fileData);
+      }
+      if (zipHeader.compressedMethod !== 8) {
+        throw new Error(`Unsupported ZIP compression method: ${zipHeader.compressedMethod}`);
+      }
+      const uncompressedData = await decompressDeflateRawWithLimit(fileData, { maximumLength: maximumZipEntrySizeInBytes });
+      return callback(uncompressedData);
+    };
+    ZipHandler.prototype.unzip = async function(fileCallback) {
+      let stop = false;
+      let zipEntryCount = 0;
+      const zipScanStart = this.tokenizer.position;
+      this.knownSizeDescriptorScannedBytes = 0;
+      do {
+        if (hasExceededUnknownSizeScanBudget(this.tokenizer, zipScanStart, maximumUntrustedSkipSizeInBytes)) {
+          throw new ParserHardLimitError(`ZIP stream probing exceeds ${maximumUntrustedSkipSizeInBytes} bytes`);
+        }
+        const zipHeader = await this.readLocalFileHeader();
+        if (!zipHeader) {
+          break;
+        }
+        zipEntryCount++;
+        if (zipEntryCount > maximumZipEntryCount) {
+          throw new Error(`ZIP entry count exceeds ${maximumZipEntryCount}`);
+        }
+        const next = fileCallback(zipHeader);
+        stop = Boolean(next.stop);
+        await this.tokenizer.ignore(zipHeader.extraFieldLength);
+        const fileData = await readZipEntryData(this, zipHeader, {
+          shouldBuffer: Boolean(next.handler),
+          maximumDescriptorLength: Math.min(maximumZipEntrySizeInBytes, getRemainingZipScanBudget(this, zipScanStart))
+        });
+        if (next.handler) {
+          await this.inflate(zipHeader, fileData, next.handler);
+        }
+        if (zipHeader.dataDescriptor) {
+          const dataDescriptor = new Uint8Array(zipDataDescriptorLengthInBytes);
+          await this.tokenizer.readBuffer(dataDescriptor);
+          if (UINT32_LE.get(dataDescriptor, 0) !== zipDataDescriptorSignature) {
+            throw new Error(`Expected data-descriptor-signature at position ${this.tokenizer.position - dataDescriptor.length}`);
+          }
+        }
+        if (hasExceededUnknownSizeScanBudget(this.tokenizer, zipScanStart, maximumUntrustedSkipSizeInBytes)) {
+          throw new ParserHardLimitError(`ZIP stream probing exceeds ${maximumUntrustedSkipSizeInBytes} bytes`);
+        }
+      } while (!stop);
+    };
+    function createByteLimitedReadableStream(stream, maximumBytes) {
+      const reader = stream.getReader();
+      let emittedBytes = 0;
+      let sourceDone = false;
+      let sourceCanceled = false;
+      const cancelSource = async (reason) => {
+        if (sourceDone || sourceCanceled) {
+          return;
+        }
+        sourceCanceled = true;
+        await reader.cancel(reason);
+      };
+      return new ReadableStream({
+        async pull(controller) {
+          if (emittedBytes >= maximumBytes) {
+            controller.close();
+            await cancelSource();
+            return;
+          }
+          const { done, value } = await reader.read();
+          if (done || !value) {
+            sourceDone = true;
+            controller.close();
+            return;
+          }
+          const remainingBytes = maximumBytes - emittedBytes;
+          if (value.length > remainingBytes) {
+            controller.enqueue(value.subarray(0, remainingBytes));
+            emittedBytes += remainingBytes;
+            controller.close();
+            await cancelSource();
+            return;
+          }
+          controller.enqueue(value);
+          emittedBytes += value.length;
+        },
+        async cancel(reason) {
+          await cancelSource(reason);
+        }
+      });
+    }
+    async function fileTypeFromBuffer(input, options2) {
+      return new FileTypeParser(options2).fromBuffer(input);
+    }
+    function getFileTypeFromMimeType(mimeType) {
+      mimeType = mimeType.toLowerCase();
+      switch (mimeType) {
+        case "application/epub+zip":
+          return {
+            ext: "epub",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.text":
+          return {
+            ext: "odt",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.text-template":
+          return {
+            ext: "ott",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.spreadsheet":
+          return {
+            ext: "ods",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.spreadsheet-template":
+          return {
+            ext: "ots",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.presentation":
+          return {
+            ext: "odp",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.presentation-template":
+          return {
+            ext: "otp",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.graphics":
+          return {
+            ext: "odg",
+            mime: mimeType
+          };
+        case "application/vnd.oasis.opendocument.graphics-template":
+          return {
+            ext: "otg",
+            mime: mimeType
+          };
+        case "application/vnd.openxmlformats-officedocument.presentationml.slideshow":
+          return {
+            ext: "ppsx",
+            mime: mimeType
+          };
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          return {
+            ext: "xlsx",
+            mime: mimeType
+          };
+        case "application/vnd.ms-excel.sheet.macroenabled":
+          return {
+            ext: "xlsm",
+            mime: "application/vnd.ms-excel.sheet.macroenabled.12"
+          };
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
+          return {
+            ext: "xltx",
+            mime: mimeType
+          };
+        case "application/vnd.ms-excel.template.macroenabled":
+          return {
+            ext: "xltm",
+            mime: "application/vnd.ms-excel.template.macroenabled.12"
+          };
+        case "application/vnd.ms-powerpoint.slideshow.macroenabled":
+          return {
+            ext: "ppsm",
+            mime: "application/vnd.ms-powerpoint.slideshow.macroenabled.12"
+          };
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          return {
+            ext: "docx",
+            mime: mimeType
+          };
+        case "application/vnd.ms-word.document.macroenabled":
+          return {
+            ext: "docm",
+            mime: "application/vnd.ms-word.document.macroenabled.12"
+          };
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
+          return {
+            ext: "dotx",
+            mime: mimeType
+          };
+        case "application/vnd.ms-word.template.macroenabledtemplate":
+          return {
+            ext: "dotm",
+            mime: "application/vnd.ms-word.template.macroenabled.12"
+          };
+        case "application/vnd.openxmlformats-officedocument.presentationml.template":
+          return {
+            ext: "potx",
+            mime: mimeType
+          };
+        case "application/vnd.ms-powerpoint.template.macroenabled":
+          return {
+            ext: "potm",
+            mime: "application/vnd.ms-powerpoint.template.macroenabled.12"
+          };
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+          return {
+            ext: "pptx",
+            mime: mimeType
+          };
+        case "application/vnd.ms-powerpoint.presentation.macroenabled":
+          return {
+            ext: "pptm",
+            mime: "application/vnd.ms-powerpoint.presentation.macroenabled.12"
+          };
+        case "application/vnd.ms-visio.drawing":
+          return {
+            ext: "vsdx",
+            mime: "application/vnd.visio"
+          };
+        case "application/vnd.ms-package.3dmanufacturing-3dmodel+xml":
+          return {
+            ext: "3mf",
+            mime: "model/3mf"
+          };
+      }
+    }
+    function _check(buffer, headers, options2) {
+      options2 = {
+        offset: 0,
+        ...options2
+      };
+      for (const [index2, header] of headers.entries()) {
+        if (options2.mask) {
+          if (header !== (options2.mask[index2] & buffer[index2 + options2.offset])) {
+            return false;
+          }
+        } else if (header !== buffer[index2 + options2.offset]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    function normalizeSampleSize(sampleSize) {
+      if (!Number.isFinite(sampleSize)) {
+        return reasonableDetectionSizeInBytes;
+      }
+      return Math.max(1, Math.trunc(sampleSize));
+    }
+    function readByobReaderWithSignal(reader, buffer, signal) {
+      if (signal === void 0) {
+        return reader.read(buffer);
+      }
+      signal.throwIfAborted();
+      return new Promise((resolve, reject) => {
+        const cleanup = () => {
+          signal.removeEventListener("abort", onAbort);
+        };
+        const onAbort = () => {
+          const abortReason = signal.reason;
+          cleanup();
+          (async () => {
+            try {
+              await reader.cancel(abortReason);
+            } catch {
+            }
+          })();
+          reject(abortReason);
+        };
+        signal.addEventListener("abort", onAbort, { once: true });
+        (async () => {
+          try {
+            const result = await reader.read(buffer);
+            cleanup();
+            resolve(result);
+          } catch (error) {
+            cleanup();
+            reject(error);
+          }
+        })();
+      });
+    }
+    function normalizeMpegOffsetTolerance(mpegOffsetTolerance) {
+      if (!Number.isFinite(mpegOffsetTolerance)) {
+        return 0;
+      }
+      return Math.max(0, Math.min(maximumMpegOffsetTolerance, Math.trunc(mpegOffsetTolerance)));
+    }
+    function getKnownFileSizeOrMaximum(fileSize) {
+      if (!Number.isFinite(fileSize)) {
+        return Number.MAX_SAFE_INTEGER;
+      }
+      return Math.max(0, fileSize);
+    }
+    function hasUnknownFileSize(tokenizer) {
+      const fileSize = tokenizer.fileInfo.size;
+      return !Number.isFinite(fileSize) || fileSize === Number.MAX_SAFE_INTEGER;
+    }
+    function hasExceededUnknownSizeScanBudget(tokenizer, startOffset, maximumBytes) {
+      return hasUnknownFileSize(tokenizer) && tokenizer.position - startOffset > maximumBytes;
+    }
+    function getMaximumZipBufferedReadLength(tokenizer) {
+      const fileSize = tokenizer.fileInfo.size;
+      const remainingBytes = Number.isFinite(fileSize) ? Math.max(0, fileSize - tokenizer.position) : Number.MAX_SAFE_INTEGER;
+      return Math.min(remainingBytes, maximumZipBufferedReadSizeInBytes);
+    }
+    function isRecoverableZipError(error) {
+      if (error instanceof EndOfStreamError) {
+        return true;
+      }
+      if (error instanceof ParserHardLimitError) {
+        return true;
+      }
+      if (!(error instanceof Error)) {
+        return false;
+      }
+      if (recoverableZipErrorMessages.has(error.message)) {
+        return true;
+      }
+      if (recoverableZipErrorCodes.has(error.code)) {
+        return true;
+      }
+      for (const prefix2 of recoverableZipErrorMessagePrefixes) {
+        if (error.message.startsWith(prefix2)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    function canReadZipEntryForDetection(zipHeader, maximumSize = maximumZipEntrySizeInBytes) {
+      const sizes = [zipHeader.compressedSize, zipHeader.uncompressedSize];
+      for (const size2 of sizes) {
+        if (!Number.isFinite(size2) || size2 < 0 || size2 > maximumSize) {
+          return false;
+        }
+      }
+      return true;
+    }
+    function createOpenXmlZipDetectionState() {
+      return {
+        hasContentTypesEntry: false,
+        hasParsedContentTypesEntry: false,
+        isParsingContentTypes: false,
+        hasUnparseableContentTypes: false,
+        hasWordDirectory: false,
+        hasPresentationDirectory: false,
+        hasSpreadsheetDirectory: false,
+        hasThreeDimensionalModelEntry: false
+      };
+    }
+    function updateOpenXmlZipDetectionStateFromFilename(openXmlState, filename) {
+      if (filename.startsWith("word/")) {
+        openXmlState.hasWordDirectory = true;
+      }
+      if (filename.startsWith("ppt/")) {
+        openXmlState.hasPresentationDirectory = true;
+      }
+      if (filename.startsWith("xl/")) {
+        openXmlState.hasSpreadsheetDirectory = true;
+      }
+      if (filename.startsWith("3D/") && filename.endsWith(".model")) {
+        openXmlState.hasThreeDimensionalModelEntry = true;
+      }
+    }
+    function getOpenXmlFileTypeFromZipEntries(openXmlState) {
+      if (!openXmlState.hasContentTypesEntry || openXmlState.hasUnparseableContentTypes || openXmlState.isParsingContentTypes || openXmlState.hasParsedContentTypesEntry) {
+        return;
+      }
+      if (openXmlState.hasWordDirectory) {
+        return {
+          ext: "docx",
+          mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        };
+      }
+      if (openXmlState.hasPresentationDirectory) {
+        return {
+          ext: "pptx",
+          mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        };
+      }
+      if (openXmlState.hasSpreadsheetDirectory) {
+        return {
+          ext: "xlsx",
+          mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        };
+      }
+      if (openXmlState.hasThreeDimensionalModelEntry) {
+        return {
+          ext: "3mf",
+          mime: "model/3mf"
+        };
+      }
+    }
+    function getOpenXmlMimeTypeFromContentTypesXml(xmlContent) {
+      const endPosition = xmlContent.indexOf('.main+xml"');
+      if (endPosition === -1) {
+        const mimeType = "application/vnd.ms-package.3dmanufacturing-3dmodel+xml";
+        if (xmlContent.includes(`ContentType="${mimeType}"`)) {
+          return mimeType;
+        }
+        return;
+      }
+      const truncatedContent = xmlContent.slice(0, endPosition);
+      const firstQuotePosition = truncatedContent.lastIndexOf('"');
+      return truncatedContent.slice(firstQuotePosition + 1);
+    }
+    class FileTypeParser {
+      constructor(options2) {
+        // Detections with a high degree of certainty in identifying the correct file type
+        __publicField(this, "detectConfident", async (tokenizer) => {
+          this.buffer = new Uint8Array(reasonableDetectionSizeInBytes);
+          if (tokenizer.fileInfo.size === void 0) {
+            tokenizer.fileInfo.size = Number.MAX_SAFE_INTEGER;
+          }
+          this.tokenizer = tokenizer;
+          if (hasUnknownFileSize(tokenizer)) {
+            await tokenizer.peekBuffer(this.buffer, { length: 3, mayBeLess: true });
+            if (this.check([31, 139, 8])) {
+              return this.detectGzip(tokenizer);
+            }
+          }
+          await tokenizer.peekBuffer(this.buffer, { length: 32, mayBeLess: true });
+          if (this.check([66, 77])) {
+            return {
+              ext: "bmp",
+              mime: "image/bmp"
+            };
+          }
+          if (this.check([11, 119])) {
+            return {
+              ext: "ac3",
+              mime: "audio/vnd.dolby.dd-raw"
+            };
+          }
+          if (this.check([120, 1])) {
+            return {
+              ext: "dmg",
+              mime: "application/x-apple-diskimage"
+            };
+          }
+          if (this.check([77, 90])) {
+            return {
+              ext: "exe",
+              mime: "application/x-msdownload"
+            };
+          }
+          if (this.check([37, 33])) {
+            await tokenizer.peekBuffer(this.buffer, { length: 24, mayBeLess: true });
+            if (this.checkString("PS-Adobe-", { offset: 2 }) && this.checkString(" EPSF-", { offset: 14 })) {
+              return {
+                ext: "eps",
+                mime: "application/eps"
+              };
+            }
+            return {
+              ext: "ps",
+              mime: "application/postscript"
+            };
+          }
+          if (this.check([31, 160]) || this.check([31, 157])) {
+            return {
+              ext: "Z",
+              mime: "application/x-compress"
+            };
+          }
+          if (this.check([199, 113])) {
+            return {
+              ext: "cpio",
+              mime: "application/x-cpio"
+            };
+          }
+          if (this.check([96, 234])) {
+            return {
+              ext: "arj",
+              mime: "application/x-arj"
+            };
+          }
+          if (this.check([239, 187, 191])) {
+            if (this.detectionReentryCount >= maximumDetectionReentryCount) {
+              return;
+            }
+            this.detectionReentryCount++;
+            await this.tokenizer.ignore(3);
+            return this.detectConfident(tokenizer);
+          }
+          if (this.check([71, 73, 70])) {
+            return {
+              ext: "gif",
+              mime: "image/gif"
+            };
+          }
+          if (this.check([73, 73, 188])) {
+            return {
+              ext: "jxr",
+              mime: "image/vnd.ms-photo"
+            };
+          }
+          if (this.check([31, 139, 8])) {
+            return this.detectGzip(tokenizer);
+          }
+          if (this.check([66, 90, 104])) {
+            return {
+              ext: "bz2",
+              mime: "application/x-bzip2"
+            };
+          }
+          if (this.checkString("ID3")) {
+            await safeIgnore(tokenizer, 6, {
+              maximumLength: 6,
+              reason: "ID3 header prefix"
+            });
+            const id3HeaderLength = await tokenizer.readToken(uint32SyncSafeToken);
+            const isUnknownFileSize = hasUnknownFileSize(tokenizer);
+            if (!Number.isFinite(id3HeaderLength) || id3HeaderLength < 0 || isUnknownFileSize && (id3HeaderLength > maximumId3HeaderSizeInBytes || tokenizer.position + id3HeaderLength > maximumId3HeaderSizeInBytes)) {
+              return;
+            }
+            if (tokenizer.position + id3HeaderLength > tokenizer.fileInfo.size) {
+              if (isUnknownFileSize) {
+                return;
+              }
+              return {
+                ext: "mp3",
+                mime: "audio/mpeg"
+              };
+            }
+            try {
+              await safeIgnore(tokenizer, id3HeaderLength, {
+                maximumLength: isUnknownFileSize ? maximumId3HeaderSizeInBytes : tokenizer.fileInfo.size,
+                reason: "ID3 payload"
+              });
+            } catch (error) {
+              if (error instanceof EndOfStreamError) {
+                return;
+              }
+              throw error;
+            }
+            if (this.detectionReentryCount >= maximumDetectionReentryCount) {
+              return;
+            }
+            this.detectionReentryCount++;
+            return this.parseTokenizer(tokenizer, this.detectionReentryCount);
+          }
+          if (this.checkString("MP+")) {
+            return {
+              ext: "mpc",
+              mime: "audio/x-musepack"
+            };
+          }
+          if ((this.buffer[0] === 67 || this.buffer[0] === 70) && this.check([87, 83], { offset: 1 })) {
+            return {
+              ext: "swf",
+              mime: "application/x-shockwave-flash"
+            };
+          }
+          if (this.check([255, 216, 255])) {
+            if (this.check([247], { offset: 3 })) {
+              return {
+                ext: "jls",
+                mime: "image/jls"
+              };
+            }
+            return {
+              ext: "jpg",
+              mime: "image/jpeg"
+            };
+          }
+          if (this.check([79, 98, 106, 1])) {
+            return {
+              ext: "avro",
+              mime: "application/avro"
+            };
+          }
+          if (this.checkString("FLIF")) {
+            return {
+              ext: "flif",
+              mime: "image/flif"
+            };
+          }
+          if (this.checkString("8BPS")) {
+            return {
+              ext: "psd",
+              mime: "image/vnd.adobe.photoshop"
+            };
+          }
+          if (this.checkString("MPCK")) {
+            return {
+              ext: "mpc",
+              mime: "audio/x-musepack"
+            };
+          }
+          if (this.checkString("FORM")) {
+            return {
+              ext: "aif",
+              mime: "audio/aiff"
+            };
+          }
+          if (this.checkString("icns", { offset: 0 })) {
+            return {
+              ext: "icns",
+              mime: "image/icns"
+            };
+          }
+          if (this.check([80, 75, 3, 4])) {
+            let fileType;
+            const openXmlState = createOpenXmlZipDetectionState();
+            try {
+              await new ZipHandler(tokenizer).unzip((zipHeader) => {
+                updateOpenXmlZipDetectionStateFromFilename(openXmlState, zipHeader.filename);
+                const isOpenXmlContentTypesEntry = zipHeader.filename === "[Content_Types].xml";
+                const openXmlFileTypeFromEntries = getOpenXmlFileTypeFromZipEntries(openXmlState);
+                if (!isOpenXmlContentTypesEntry && openXmlFileTypeFromEntries) {
+                  fileType = openXmlFileTypeFromEntries;
+                  return {
+                    stop: true
+                  };
+                }
+                switch (zipHeader.filename) {
+                  case "META-INF/mozilla.rsa":
+                    fileType = {
+                      ext: "xpi",
+                      mime: "application/x-xpinstall"
+                    };
+                    return {
+                      stop: true
+                    };
+                  case "META-INF/MANIFEST.MF":
+                    fileType = {
+                      ext: "jar",
+                      mime: "application/java-archive"
+                    };
+                    return {
+                      stop: true
+                    };
+                  case "mimetype":
+                    if (!canReadZipEntryForDetection(zipHeader, maximumZipTextEntrySizeInBytes)) {
+                      return {};
+                    }
+                    return {
+                      async handler(fileData) {
+                        const mimeType = new TextDecoder("utf-8").decode(fileData).trim();
+                        fileType = getFileTypeFromMimeType(mimeType);
+                      },
+                      stop: true
+                    };
+                  case "[Content_Types].xml": {
+                    openXmlState.hasContentTypesEntry = true;
+                    if (!canReadZipEntryForDetection(zipHeader, maximumZipTextEntrySizeInBytes)) {
+                      openXmlState.hasUnparseableContentTypes = true;
+                      return {};
+                    }
+                    openXmlState.isParsingContentTypes = true;
+                    return {
+                      async handler(fileData) {
+                        const xmlContent = new TextDecoder("utf-8").decode(fileData);
+                        const mimeType = getOpenXmlMimeTypeFromContentTypesXml(xmlContent);
+                        if (mimeType) {
+                          fileType = getFileTypeFromMimeType(mimeType);
+                        }
+                        openXmlState.hasParsedContentTypesEntry = true;
+                        openXmlState.isParsingContentTypes = false;
+                      },
+                      stop: true
+                    };
+                  }
+                  default:
+                    if (/classes\d*\.dex/.test(zipHeader.filename)) {
+                      fileType = {
+                        ext: "apk",
+                        mime: "application/vnd.android.package-archive"
+                      };
+                      return { stop: true };
+                    }
+                    return {};
+                }
+              });
+            } catch (error) {
+              if (!isRecoverableZipError(error)) {
+                throw error;
+              }
+              if (openXmlState.isParsingContentTypes) {
+                openXmlState.isParsingContentTypes = false;
+                openXmlState.hasUnparseableContentTypes = true;
+              }
+            }
+            return fileType ?? getOpenXmlFileTypeFromZipEntries(openXmlState) ?? {
+              ext: "zip",
+              mime: "application/zip"
+            };
+          }
+          if (this.checkString("OggS")) {
+            await tokenizer.ignore(28);
+            const type = new Uint8Array(8);
+            await tokenizer.readBuffer(type);
+            if (_check(type, [79, 112, 117, 115, 72, 101, 97, 100])) {
+              return {
+                ext: "opus",
+                mime: "audio/ogg; codecs=opus"
+              };
+            }
+            if (_check(type, [128, 116, 104, 101, 111, 114, 97])) {
+              return {
+                ext: "ogv",
+                mime: "video/ogg"
+              };
+            }
+            if (_check(type, [1, 118, 105, 100, 101, 111, 0])) {
+              return {
+                ext: "ogm",
+                mime: "video/ogg"
+              };
+            }
+            if (_check(type, [127, 70, 76, 65, 67])) {
+              return {
+                ext: "oga",
+                mime: "audio/ogg"
+              };
+            }
+            if (_check(type, [83, 112, 101, 101, 120, 32, 32])) {
+              return {
+                ext: "spx",
+                mime: "audio/ogg"
+              };
+            }
+            if (_check(type, [1, 118, 111, 114, 98, 105, 115])) {
+              return {
+                ext: "ogg",
+                mime: "audio/ogg"
+              };
+            }
+            return {
+              ext: "ogx",
+              mime: "application/ogg"
+            };
+          }
+          if (this.check([80, 75]) && (this.buffer[2] === 3 || this.buffer[2] === 5 || this.buffer[2] === 7) && (this.buffer[3] === 4 || this.buffer[3] === 6 || this.buffer[3] === 8)) {
+            return {
+              ext: "zip",
+              mime: "application/zip"
+            };
+          }
+          if (this.checkString("MThd")) {
+            return {
+              ext: "mid",
+              mime: "audio/midi"
+            };
+          }
+          if (this.checkString("wOFF") && (this.check([0, 1, 0, 0], { offset: 4 }) || this.checkString("OTTO", { offset: 4 }))) {
+            return {
+              ext: "woff",
+              mime: "font/woff"
+            };
+          }
+          if (this.checkString("wOF2") && (this.check([0, 1, 0, 0], { offset: 4 }) || this.checkString("OTTO", { offset: 4 }))) {
+            return {
+              ext: "woff2",
+              mime: "font/woff2"
+            };
+          }
+          if (this.check([212, 195, 178, 161]) || this.check([161, 178, 195, 212])) {
+            return {
+              ext: "pcap",
+              mime: "application/vnd.tcpdump.pcap"
+            };
+          }
+          if (this.checkString("DSD ")) {
+            return {
+              ext: "dsf",
+              mime: "audio/x-dsf"
+              // Non-standard
+            };
+          }
+          if (this.checkString("LZIP")) {
+            return {
+              ext: "lz",
+              mime: "application/x-lzip"
+            };
+          }
+          if (this.checkString("fLaC")) {
+            return {
+              ext: "flac",
+              mime: "audio/flac"
+            };
+          }
+          if (this.check([66, 80, 71, 251])) {
+            return {
+              ext: "bpg",
+              mime: "image/bpg"
+            };
+          }
+          if (this.checkString("wvpk")) {
+            return {
+              ext: "wv",
+              mime: "audio/wavpack"
+            };
+          }
+          if (this.checkString("%PDF")) {
+            return {
+              ext: "pdf",
+              mime: "application/pdf"
+            };
+          }
+          if (this.check([0, 97, 115, 109])) {
+            return {
+              ext: "wasm",
+              mime: "application/wasm"
+            };
+          }
+          if (this.check([73, 73])) {
+            const fileType = await this.readTiffHeader(false);
+            if (fileType) {
+              return fileType;
+            }
+          }
+          if (this.check([77, 77])) {
+            const fileType = await this.readTiffHeader(true);
+            if (fileType) {
+              return fileType;
+            }
+          }
+          if (this.checkString("MAC ")) {
+            return {
+              ext: "ape",
+              mime: "audio/ape"
+            };
+          }
+          if (this.check([26, 69, 223, 163])) {
+            async function readField() {
+              const msb = await tokenizer.peekNumber(UINT8);
+              let mask = 128;
+              let ic = 0;
+              while ((msb & mask) === 0 && mask !== 0) {
+                ++ic;
+                mask >>= 1;
+              }
+              const id = new Uint8Array(ic + 1);
+              await safeReadBuffer(tokenizer, id, void 0, {
+                maximumLength: id.length,
+                reason: "EBML field"
+              });
+              return id;
+            }
+            async function readElement() {
+              const idField = await readField();
+              const lengthField = await readField();
+              lengthField[0] ^= 128 >> lengthField.length - 1;
+              const nrLength = Math.min(6, lengthField.length);
+              const idView = new DataView(idField.buffer);
+              const lengthView = new DataView(lengthField.buffer, lengthField.length - nrLength, nrLength);
+              return {
+                id: getUintBE(idView),
+                len: getUintBE(lengthView)
+              };
+            }
+            async function readChildren(children) {
+              let ebmlElementCount = 0;
+              while (children > 0) {
+                ebmlElementCount++;
+                if (ebmlElementCount > maximumEbmlElementCount) {
+                  return;
+                }
+                if (hasExceededUnknownSizeScanBudget(tokenizer, ebmlScanStart, maximumUntrustedSkipSizeInBytes)) {
+                  return;
+                }
+                const previousPosition = tokenizer.position;
+                const element = await readElement();
+                if (element.id === 17026) {
+                  if (element.len > maximumEbmlDocumentTypeSizeInBytes) {
+                    return;
+                  }
+                  const documentTypeLength = getSafeBound(element.len, maximumEbmlDocumentTypeSizeInBytes, "EBML DocType");
+                  const rawValue = await tokenizer.readToken(new StringType(documentTypeLength));
+                  return rawValue.replaceAll(/\00.*$/g, "");
+                }
+                if (hasUnknownFileSize(tokenizer) && (!Number.isFinite(element.len) || element.len < 0 || element.len > maximumEbmlElementPayloadSizeInBytes)) {
+                  return;
+                }
+                await safeIgnore(tokenizer, element.len, {
+                  maximumLength: hasUnknownFileSize(tokenizer) ? maximumEbmlElementPayloadSizeInBytes : tokenizer.fileInfo.size,
+                  reason: "EBML payload"
+                });
+                --children;
+                if (tokenizer.position <= previousPosition) {
+                  return;
+                }
+              }
+            }
+            const rootElement = await readElement();
+            const ebmlScanStart = tokenizer.position;
+            const documentType = await readChildren(rootElement.len);
+            switch (documentType) {
+              case "webm":
+                return {
+                  ext: "webm",
+                  mime: "video/webm"
+                };
+              case "matroska":
+                return {
+                  ext: "mkv",
+                  mime: "video/matroska"
+                };
+              default:
+                return;
+            }
+          }
+          if (this.checkString("SQLi")) {
+            return {
+              ext: "sqlite",
+              mime: "application/x-sqlite3"
+            };
+          }
+          if (this.check([78, 69, 83, 26])) {
+            return {
+              ext: "nes",
+              mime: "application/x-nintendo-nes-rom"
+            };
+          }
+          if (this.checkString("Cr24")) {
+            return {
+              ext: "crx",
+              mime: "application/x-google-chrome-extension"
+            };
+          }
+          if (this.checkString("MSCF") || this.checkString("ISc(")) {
+            return {
+              ext: "cab",
+              mime: "application/vnd.ms-cab-compressed"
+            };
+          }
+          if (this.check([237, 171, 238, 219])) {
+            return {
+              ext: "rpm",
+              mime: "application/x-rpm"
+            };
+          }
+          if (this.check([197, 208, 211, 198])) {
+            return {
+              ext: "eps",
+              mime: "application/eps"
+            };
+          }
+          if (this.check([40, 181, 47, 253])) {
+            return {
+              ext: "zst",
+              mime: "application/zstd"
+            };
+          }
+          if (this.check([127, 69, 76, 70])) {
+            return {
+              ext: "elf",
+              mime: "application/x-elf"
+            };
+          }
+          if (this.check([33, 66, 68, 78])) {
+            return {
+              ext: "pst",
+              mime: "application/vnd.ms-outlook"
+            };
+          }
+          if (this.checkString("PAR1") || this.checkString("PARE")) {
+            return {
+              ext: "parquet",
+              mime: "application/vnd.apache.parquet"
+            };
+          }
+          if (this.checkString("ttcf")) {
+            return {
+              ext: "ttc",
+              mime: "font/collection"
+            };
+          }
+          if (this.check([254, 237, 250, 206]) || this.check([254, 237, 250, 207]) || this.check([206, 250, 237, 254]) || this.check([207, 250, 237, 254])) {
+            return {
+              ext: "macho",
+              mime: "application/x-mach-binary"
+            };
+          }
+          if (this.check([4, 34, 77, 24])) {
+            return {
+              ext: "lz4",
+              mime: "application/x-lz4"
+              // Invented by us
+            };
+          }
+          if (this.checkString("regf")) {
+            return {
+              ext: "dat",
+              mime: "application/x-ft-windows-registry-hive"
+            };
+          }
+          if (this.checkString("$FL2") || this.checkString("$FL3")) {
+            return {
+              ext: "sav",
+              mime: "application/x-spss-sav"
+            };
+          }
+          if (this.check([79, 84, 84, 79, 0])) {
+            return {
+              ext: "otf",
+              mime: "font/otf"
+            };
+          }
+          if (this.checkString("#!AMR")) {
+            return {
+              ext: "amr",
+              mime: "audio/amr"
+            };
+          }
+          if (this.checkString("{\\rtf")) {
+            return {
+              ext: "rtf",
+              mime: "application/rtf"
+            };
+          }
+          if (this.check([70, 76, 86, 1])) {
+            return {
+              ext: "flv",
+              mime: "video/x-flv"
+            };
+          }
+          if (this.checkString("IMPM")) {
+            return {
+              ext: "it",
+              mime: "audio/x-it"
+            };
+          }
+          if (this.checkString("-lh0-", { offset: 2 }) || this.checkString("-lh1-", { offset: 2 }) || this.checkString("-lh2-", { offset: 2 }) || this.checkString("-lh3-", { offset: 2 }) || this.checkString("-lh4-", { offset: 2 }) || this.checkString("-lh5-", { offset: 2 }) || this.checkString("-lh6-", { offset: 2 }) || this.checkString("-lh7-", { offset: 2 }) || this.checkString("-lzs-", { offset: 2 }) || this.checkString("-lz4-", { offset: 2 }) || this.checkString("-lz5-", { offset: 2 }) || this.checkString("-lhd-", { offset: 2 })) {
+            return {
+              ext: "lzh",
+              mime: "application/x-lzh-compressed"
+            };
+          }
+          if (this.check([0, 0, 1, 186])) {
+            if (this.check([33], { offset: 4, mask: [241] })) {
+              return {
+                ext: "mpg",
+                // May also be .ps, .mpeg
+                mime: "video/MP1S"
+              };
+            }
+            if (this.check([68], { offset: 4, mask: [196] })) {
+              return {
+                ext: "mpg",
+                // May also be .mpg, .m2p, .vob or .sub
+                mime: "video/MP2P"
+              };
+            }
+          }
+          if (this.checkString("ITSF")) {
+            return {
+              ext: "chm",
+              mime: "application/vnd.ms-htmlhelp"
+            };
+          }
+          if (this.check([202, 254, 186, 190])) {
+            const machOArchitectureCount = UINT32_BE.get(this.buffer, 4);
+            const javaClassFileMajorVersion = UINT16_BE.get(this.buffer, 6);
+            if (machOArchitectureCount > 0 && machOArchitectureCount <= 30) {
+              return {
+                ext: "macho",
+                mime: "application/x-mach-binary"
+              };
+            }
+            if (javaClassFileMajorVersion > 30) {
+              return {
+                ext: "class",
+                mime: "application/java-vm"
+              };
+            }
+          }
+          if (this.checkString(".RMF")) {
+            return {
+              ext: "rm",
+              mime: "application/vnd.rn-realmedia"
+            };
+          }
+          if (this.checkString("DRACO")) {
+            return {
+              ext: "drc",
+              mime: "application/vnd.google.draco"
+              // Invented by us
+            };
+          }
+          if (this.check([253, 55, 122, 88, 90, 0])) {
+            return {
+              ext: "xz",
+              mime: "application/x-xz"
+            };
+          }
+          if (this.checkString("<?xml ")) {
+            return {
+              ext: "xml",
+              mime: "application/xml"
+            };
+          }
+          if (this.check([55, 122, 188, 175, 39, 28])) {
+            return {
+              ext: "7z",
+              mime: "application/x-7z-compressed"
+            };
+          }
+          if (this.check([82, 97, 114, 33, 26, 7]) && (this.buffer[6] === 0 || this.buffer[6] === 1)) {
+            return {
+              ext: "rar",
+              mime: "application/x-rar-compressed"
+            };
+          }
+          if (this.checkString("solid ")) {
+            return {
+              ext: "stl",
+              mime: "model/stl"
+            };
+          }
+          if (this.checkString("AC")) {
+            const version = new StringType(4, "latin1").get(this.buffer, 2);
+            if (version.match("^d*") && version >= 1e3 && version <= 1050) {
+              return {
+                ext: "dwg",
+                mime: "image/vnd.dwg"
+              };
+            }
+          }
+          if (this.checkString("070707")) {
+            return {
+              ext: "cpio",
+              mime: "application/x-cpio"
+            };
+          }
+          if (this.checkString("BLENDER")) {
+            return {
+              ext: "blend",
+              mime: "application/x-blender"
+            };
+          }
+          if (this.checkString("!<arch>")) {
+            await tokenizer.ignore(8);
+            const string = await tokenizer.readToken(new StringType(13, "ascii"));
+            if (string === "debian-binary") {
+              return {
+                ext: "deb",
+                mime: "application/x-deb"
+              };
+            }
+            return {
+              ext: "ar",
+              mime: "application/x-unix-archive"
+            };
+          }
+          if (this.checkString("WEBVTT") && // One of LF, CR, tab, space, or end of file must follow "WEBVTT" per the spec (see `fixture/fixture-vtt-*.vtt` for examples). Note that `\0` is technically the null character (there is no such thing as an EOF character). However, checking for `\0` gives us the same result as checking for the end of the stream.
+          ["\n", "\r", "	", " ", "\0"].some((char7) => this.checkString(char7, { offset: 6 }))) {
+            return {
+              ext: "vtt",
+              mime: "text/vtt"
+            };
+          }
+          if (this.check([137, 80, 78, 71, 13, 10, 26, 10])) {
+            const pngFileType = {
+              ext: "png",
+              mime: "image/png"
+            };
+            const apngFileType = {
+              ext: "apng",
+              mime: "image/apng"
+            };
+            await tokenizer.ignore(8);
+            async function readChunkHeader() {
+              return {
+                length: await tokenizer.readToken(INT32_BE),
+                type: await tokenizer.readToken(new StringType(4, "latin1"))
+              };
+            }
+            const isUnknownPngStream = hasUnknownFileSize(tokenizer);
+            const pngScanStart = tokenizer.position;
+            let pngChunkCount = 0;
+            let hasSeenImageHeader = false;
+            do {
+              pngChunkCount++;
+              if (pngChunkCount > maximumPngChunkCount) {
+                break;
+              }
+              if (hasExceededUnknownSizeScanBudget(tokenizer, pngScanStart, maximumPngStreamScanBudgetInBytes)) {
+                break;
+              }
+              const previousPosition = tokenizer.position;
+              const chunk = await readChunkHeader();
+              if (chunk.length < 0) {
+                return;
+              }
+              if (chunk.type === "IHDR") {
+                if (chunk.length !== 13) {
+                  return;
+                }
+                hasSeenImageHeader = true;
+              }
+              switch (chunk.type) {
+                case "IDAT":
+                  return pngFileType;
+                case "acTL":
+                  return apngFileType;
+                default:
+                  if (!hasSeenImageHeader && chunk.type !== "CgBI") {
+                    return;
+                  }
+                  if (isUnknownPngStream && chunk.length > maximumPngChunkSizeInBytes) {
+                    return hasSeenImageHeader && isPngAncillaryChunk(chunk.type) ? pngFileType : void 0;
+                  }
+                  try {
+                    await safeIgnore(tokenizer, chunk.length + 4, {
+                      maximumLength: isUnknownPngStream ? maximumPngChunkSizeInBytes + 4 : tokenizer.fileInfo.size,
+                      reason: "PNG chunk payload"
+                    });
+                  } catch (error) {
+                    if (!isUnknownPngStream && (error instanceof ParserHardLimitError || error instanceof EndOfStreamError)) {
+                      return pngFileType;
+                    }
+                    throw error;
+                  }
+              }
+              if (tokenizer.position <= previousPosition) {
+                break;
+              }
+            } while (tokenizer.position + 8 < tokenizer.fileInfo.size);
+            return pngFileType;
+          }
+          if (this.check([65, 82, 82, 79, 87, 49, 0, 0])) {
+            return {
+              ext: "arrow",
+              mime: "application/vnd.apache.arrow.file"
+            };
+          }
+          if (this.check([103, 108, 84, 70, 2, 0, 0, 0])) {
+            return {
+              ext: "glb",
+              mime: "model/gltf-binary"
+            };
+          }
+          if (this.check([102, 114, 101, 101], { offset: 4 }) || this.check([109, 100, 97, 116], { offset: 4 }) || this.check([109, 111, 111, 118], { offset: 4 }) || this.check([119, 105, 100, 101], { offset: 4 })) {
+            return {
+              ext: "mov",
+              mime: "video/quicktime"
+            };
+          }
+          if (this.check([73, 73, 82, 79, 8, 0, 0, 0, 24])) {
+            return {
+              ext: "orf",
+              mime: "image/x-olympus-orf"
+            };
+          }
+          if (this.checkString("gimp xcf ")) {
+            return {
+              ext: "xcf",
+              mime: "image/x-xcf"
+            };
+          }
+          if (this.checkString("ftyp", { offset: 4 }) && (this.buffer[8] & 96) !== 0) {
+            const brandMajor = new StringType(4, "latin1").get(this.buffer, 8).replace("\0", " ").trim();
+            switch (brandMajor) {
+              case "avif":
+              case "avis":
+                return { ext: "avif", mime: "image/avif" };
+              case "mif1":
+                return { ext: "heic", mime: "image/heif" };
+              case "msf1":
+                return { ext: "heic", mime: "image/heif-sequence" };
+              case "heic":
+              case "heix":
+                return { ext: "heic", mime: "image/heic" };
+              case "hevc":
+              case "hevx":
+                return { ext: "heic", mime: "image/heic-sequence" };
+              case "qt":
+                return { ext: "mov", mime: "video/quicktime" };
+              case "M4V":
+              case "M4VH":
+              case "M4VP":
+                return { ext: "m4v", mime: "video/x-m4v" };
+              case "M4P":
+                return { ext: "m4p", mime: "video/mp4" };
+              case "M4B":
+                return { ext: "m4b", mime: "audio/mp4" };
+              case "M4A":
+                return { ext: "m4a", mime: "audio/x-m4a" };
+              case "F4V":
+                return { ext: "f4v", mime: "video/mp4" };
+              case "F4P":
+                return { ext: "f4p", mime: "video/mp4" };
+              case "F4A":
+                return { ext: "f4a", mime: "audio/mp4" };
+              case "F4B":
+                return { ext: "f4b", mime: "audio/mp4" };
+              case "crx":
+                return { ext: "cr3", mime: "image/x-canon-cr3" };
+              default:
+                if (brandMajor.startsWith("3g")) {
+                  if (brandMajor.startsWith("3g2")) {
+                    return { ext: "3g2", mime: "video/3gpp2" };
+                  }
+                  return { ext: "3gp", mime: "video/3gpp" };
+                }
+                return { ext: "mp4", mime: "video/mp4" };
+            }
+          }
+          if (this.checkString("REGEDIT4\r\n")) {
+            return {
+              ext: "reg",
+              mime: "application/x-ms-regedit"
+            };
+          }
+          if (this.check([82, 73, 70, 70])) {
+            if (this.checkString("WEBP", { offset: 8 })) {
+              return {
+                ext: "webp",
+                mime: "image/webp"
+              };
+            }
+            if (this.check([65, 86, 73], { offset: 8 })) {
+              return {
+                ext: "avi",
+                mime: "video/vnd.avi"
+              };
+            }
+            if (this.check([87, 65, 86, 69], { offset: 8 })) {
+              return {
+                ext: "wav",
+                mime: "audio/wav"
+              };
+            }
+            if (this.check([81, 76, 67, 77], { offset: 8 })) {
+              return {
+                ext: "qcp",
+                mime: "audio/qcelp"
+              };
+            }
+          }
+          if (this.check([73, 73, 85, 0, 24, 0, 0, 0, 136, 231, 116, 216])) {
+            return {
+              ext: "rw2",
+              mime: "image/x-panasonic-rw2"
+            };
+          }
+          if (this.check([48, 38, 178, 117, 142, 102, 207, 17, 166, 217])) {
+            let isMalformedAsf = false;
+            try {
+              async function readHeader() {
+                const guid = new Uint8Array(16);
+                await safeReadBuffer(tokenizer, guid, void 0, {
+                  maximumLength: guid.length,
+                  reason: "ASF header GUID"
+                });
+                return {
+                  id: guid,
+                  size: Number(await tokenizer.readToken(UINT64_LE))
+                };
+              }
+              await safeIgnore(tokenizer, 30, {
+                maximumLength: 30,
+                reason: "ASF header prelude"
+              });
+              const isUnknownFileSize = hasUnknownFileSize(tokenizer);
+              const asfHeaderScanStart = tokenizer.position;
+              let asfHeaderObjectCount = 0;
+              while (tokenizer.position + 24 < tokenizer.fileInfo.size) {
+                asfHeaderObjectCount++;
+                if (asfHeaderObjectCount > maximumAsfHeaderObjectCount) {
+                  break;
+                }
+                if (hasExceededUnknownSizeScanBudget(tokenizer, asfHeaderScanStart, maximumUntrustedSkipSizeInBytes)) {
+                  break;
+                }
+                const previousPosition = tokenizer.position;
+                const header = await readHeader();
+                let payload = header.size - 24;
+                if (!Number.isFinite(payload) || payload < 0) {
+                  isMalformedAsf = true;
+                  break;
+                }
+                if (_check(header.id, [145, 7, 220, 183, 183, 169, 207, 17, 142, 230, 0, 192, 12, 32, 83, 101])) {
+                  const typeId = new Uint8Array(16);
+                  payload -= await safeReadBuffer(tokenizer, typeId, void 0, {
+                    maximumLength: typeId.length,
+                    reason: "ASF stream type GUID"
+                  });
+                  if (_check(typeId, [64, 158, 105, 248, 77, 91, 207, 17, 168, 253, 0, 128, 95, 92, 68, 43])) {
+                    return {
+                      ext: "asf",
+                      mime: "audio/x-ms-asf"
+                    };
+                  }
+                  if (_check(typeId, [192, 239, 25, 188, 77, 91, 207, 17, 168, 253, 0, 128, 95, 92, 68, 43])) {
+                    return {
+                      ext: "asf",
+                      mime: "video/x-ms-asf"
+                    };
+                  }
+                  break;
+                }
+                if (isUnknownFileSize && payload > maximumAsfHeaderPayloadSizeInBytes) {
+                  isMalformedAsf = true;
+                  break;
+                }
+                await safeIgnore(tokenizer, payload, {
+                  maximumLength: isUnknownFileSize ? maximumAsfHeaderPayloadSizeInBytes : tokenizer.fileInfo.size,
+                  reason: "ASF header payload"
+                });
+                if (tokenizer.position <= previousPosition) {
+                  isMalformedAsf = true;
+                  break;
+                }
+              }
+            } catch (error) {
+              if (error instanceof EndOfStreamError || error instanceof ParserHardLimitError) {
+                if (hasUnknownFileSize(tokenizer)) {
+                  isMalformedAsf = true;
+                }
+              } else {
+                throw error;
+              }
+            }
+            if (isMalformedAsf) {
+              return;
+            }
+            return {
+              ext: "asf",
+              mime: "application/vnd.ms-asf"
+            };
+          }
+          if (this.check([171, 75, 84, 88, 32, 49, 49, 187, 13, 10, 26, 10])) {
+            return {
+              ext: "ktx",
+              mime: "image/ktx"
+            };
+          }
+          if ((this.check([126, 16, 4]) || this.check([126, 24, 4])) && this.check([48, 77, 73, 69], { offset: 4 })) {
+            return {
+              ext: "mie",
+              mime: "application/x-mie"
+            };
+          }
+          if (this.check([39, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], { offset: 2 })) {
+            return {
+              ext: "shp",
+              mime: "application/x-esri-shape"
+            };
+          }
+          if (this.check([255, 79, 255, 81])) {
+            return {
+              ext: "j2c",
+              mime: "image/j2c"
+            };
+          }
+          if (this.check([0, 0, 0, 12, 106, 80, 32, 32, 13, 10, 135, 10])) {
+            await tokenizer.ignore(20);
+            const type = await tokenizer.readToken(new StringType(4, "ascii"));
+            switch (type) {
+              case "jp2 ":
+                return {
+                  ext: "jp2",
+                  mime: "image/jp2"
+                };
+              case "jpx ":
+                return {
+                  ext: "jpx",
+                  mime: "image/jpx"
+                };
+              case "jpm ":
+                return {
+                  ext: "jpm",
+                  mime: "image/jpm"
+                };
+              case "mjp2":
+                return {
+                  ext: "mj2",
+                  mime: "image/mj2"
+                };
+              default:
+                return;
+            }
+          }
+          if (this.check([255, 10]) || this.check([0, 0, 0, 12, 74, 88, 76, 32, 13, 10, 135, 10])) {
+            return {
+              ext: "jxl",
+              mime: "image/jxl"
+            };
+          }
+          if (this.check([254, 255])) {
+            if (this.checkString("<?xml ", { offset: 2, encoding: "utf-16be" })) {
+              return {
+                ext: "xml",
+                mime: "application/xml"
+              };
+            }
+            return void 0;
+          }
+          if (this.check([208, 207, 17, 224, 161, 177, 26, 225])) {
+            return {
+              ext: "cfb",
+              mime: "application/x-cfb"
+            };
+          }
+          await tokenizer.peekBuffer(this.buffer, { length: Math.min(256, tokenizer.fileInfo.size), mayBeLess: true });
+          if (this.check([97, 99, 115, 112], { offset: 36 })) {
+            return {
+              ext: "icc",
+              mime: "application/vnd.iccprofile"
+            };
+          }
+          if (this.checkString("**ACE", { offset: 7 }) && this.checkString("**", { offset: 12 })) {
+            return {
+              ext: "ace",
+              mime: "application/x-ace-compressed"
+            };
+          }
+          if (this.checkString("BEGIN:")) {
+            if (this.checkString("VCARD", { offset: 6 })) {
+              return {
+                ext: "vcf",
+                mime: "text/vcard"
+              };
+            }
+            if (this.checkString("VCALENDAR", { offset: 6 })) {
+              return {
+                ext: "ics",
+                mime: "text/calendar"
+              };
+            }
+          }
+          if (this.checkString("FUJIFILMCCD-RAW")) {
+            return {
+              ext: "raf",
+              mime: "image/x-fujifilm-raf"
+            };
+          }
+          if (this.checkString("Extended Module:")) {
+            return {
+              ext: "xm",
+              mime: "audio/x-xm"
+            };
+          }
+          if (this.checkString("Creative Voice File")) {
+            return {
+              ext: "voc",
+              mime: "audio/x-voc"
+            };
+          }
+          if (this.check([4, 0, 0, 0]) && this.buffer.length >= 16) {
+            const jsonSize = new DataView(this.buffer.buffer).getUint32(12, true);
+            if (jsonSize > 12 && this.buffer.length >= jsonSize + 16) {
+              try {
+                const header = new TextDecoder().decode(this.buffer.subarray(16, jsonSize + 16));
+                const json = JSON.parse(header);
+                if (json.files) {
+                  return {
+                    ext: "asar",
+                    mime: "application/x-asar"
+                  };
+                }
+              } catch {
+              }
+            }
+          }
+          if (this.check([6, 14, 43, 52, 2, 5, 1, 1, 13, 1, 2, 1, 1, 2])) {
+            return {
+              ext: "mxf",
+              mime: "application/mxf"
+            };
+          }
+          if (this.checkString("SCRM", { offset: 44 })) {
+            return {
+              ext: "s3m",
+              mime: "audio/x-s3m"
+            };
+          }
+          if (this.check([71]) && this.check([71], { offset: 188 })) {
+            return {
+              ext: "mts",
+              mime: "video/mp2t"
+            };
+          }
+          if (this.check([71], { offset: 4 }) && this.check([71], { offset: 196 })) {
+            return {
+              ext: "mts",
+              mime: "video/mp2t"
+            };
+          }
+          if (this.check([66, 79, 79, 75, 77, 79, 66, 73], { offset: 60 })) {
+            return {
+              ext: "mobi",
+              mime: "application/x-mobipocket-ebook"
+            };
+          }
+          if (this.check([68, 73, 67, 77], { offset: 128 })) {
+            return {
+              ext: "dcm",
+              mime: "application/dicom"
+            };
+          }
+          if (this.check([76, 0, 0, 0, 1, 20, 2, 0, 0, 0, 0, 0, 192, 0, 0, 0, 0, 0, 0, 70])) {
+            return {
+              ext: "lnk",
+              mime: "application/x.ms.shortcut"
+              // Invented by us
+            };
+          }
+          if (this.check([98, 111, 111, 107, 0, 0, 0, 0, 109, 97, 114, 107, 0, 0, 0, 0])) {
+            return {
+              ext: "alias",
+              mime: "application/x.apple.alias"
+              // Invented by us
+            };
+          }
+          if (this.checkString("Kaydara FBX Binary  \0")) {
+            return {
+              ext: "fbx",
+              mime: "application/x.autodesk.fbx"
+              // Invented by us
+            };
+          }
+          if (this.check([76, 80], { offset: 34 }) && (this.check([0, 0, 1], { offset: 8 }) || this.check([1, 0, 2], { offset: 8 }) || this.check([2, 0, 2], { offset: 8 }))) {
+            return {
+              ext: "eot",
+              mime: "application/vnd.ms-fontobject"
+            };
+          }
+          if (this.check([6, 6, 237, 245, 216, 29, 70, 229, 189, 49, 239, 231, 254, 116, 183, 29])) {
+            return {
+              ext: "indd",
+              mime: "application/x-indesign"
+            };
+          }
+          if (this.check([255, 255, 0, 0, 7, 0, 0, 0, 4, 0, 0, 0, 1, 0, 1, 0]) || this.check([0, 0, 255, 255, 0, 0, 0, 7, 0, 0, 0, 4, 0, 1, 0, 1])) {
+            return {
+              ext: "jmp",
+              mime: "application/x-jmp-data"
+            };
+          }
+          await tokenizer.peekBuffer(this.buffer, { length: Math.min(512, tokenizer.fileInfo.size), mayBeLess: true });
+          if (this.checkString("ustar", { offset: 257 }) && (this.checkString("\0", { offset: 262 }) || this.checkString(" ", { offset: 262 })) || this.check([0, 0, 0, 0, 0, 0], { offset: 257 }) && tarHeaderChecksumMatches(this.buffer)) {
+            return {
+              ext: "tar",
+              mime: "application/x-tar"
+            };
+          }
+          if (this.check([255, 254])) {
+            const encoding = "utf-16le";
+            if (this.checkString("<?xml ", { offset: 2, encoding })) {
+              return {
+                ext: "xml",
+                mime: "application/xml"
+              };
+            }
+            if (this.check([255, 14], { offset: 2 }) && this.checkString("SketchUp Model", { offset: 4, encoding })) {
+              return {
+                ext: "skp",
+                mime: "application/vnd.sketchup.skp"
+              };
+            }
+            if (this.checkString("Windows Registry Editor Version 5.00\r\n", { offset: 2, encoding })) {
+              return {
+                ext: "reg",
+                mime: "application/x-ms-regedit"
+              };
+            }
+            return void 0;
+          }
+          if (this.checkString("-----BEGIN PGP MESSAGE-----")) {
+            return {
+              ext: "pgp",
+              mime: "application/pgp-encrypted"
+            };
+          }
+        });
+        // Detections with limited supporting data, resulting in a higher likelihood of false positives
+        __publicField(this, "detectImprecise", async (tokenizer) => {
+          this.buffer = new Uint8Array(reasonableDetectionSizeInBytes);
+          const fileSize = getKnownFileSizeOrMaximum(tokenizer.fileInfo.size);
+          await tokenizer.peekBuffer(this.buffer, { length: Math.min(8, fileSize), mayBeLess: true });
+          if (this.check([0, 0, 1, 186]) || this.check([0, 0, 1, 179])) {
+            return {
+              ext: "mpg",
+              mime: "video/mpeg"
+            };
+          }
+          if (this.check([0, 1, 0, 0, 0])) {
+            return {
+              ext: "ttf",
+              mime: "font/ttf"
+            };
+          }
+          if (this.check([0, 0, 1, 0])) {
+            return {
+              ext: "ico",
+              mime: "image/x-icon"
+            };
+          }
+          if (this.check([0, 0, 2, 0])) {
+            return {
+              ext: "cur",
+              mime: "image/x-icon"
+            };
+          }
+          await tokenizer.peekBuffer(this.buffer, { length: Math.min(2 + this.options.mpegOffsetTolerance, fileSize), mayBeLess: true });
+          if (this.buffer.length >= 2 + this.options.mpegOffsetTolerance) {
+            for (let depth = 0; depth <= this.options.mpegOffsetTolerance; ++depth) {
+              const type = this.scanMpeg(depth);
+              if (type) {
+                return type;
+              }
+            }
+          }
+        });
+        const normalizedMpegOffsetTolerance = normalizeMpegOffsetTolerance(options2 == null ? void 0 : options2.mpegOffsetTolerance);
+        this.options = {
+          ...options2,
+          mpegOffsetTolerance: normalizedMpegOffsetTolerance
+        };
+        this.detectors = [
+          ...this.options.customDetectors ?? [],
+          { id: "core", detect: this.detectConfident },
+          { id: "core.imprecise", detect: this.detectImprecise }
+        ];
+        this.tokenizerOptions = {
+          abortSignal: this.options.signal
+        };
+        this.gzipProbeDepth = 0;
+      }
+      getTokenizerOptions() {
+        return {
+          ...this.tokenizerOptions
+        };
+      }
+      createTokenizerFromWebStream(stream) {
+        return patchWebByobTokenizerClose(fromWebStream(stream, this.getTokenizerOptions()));
+      }
+      async parseTokenizer(tokenizer, detectionReentryCount = 0) {
+        this.detectionReentryCount = detectionReentryCount;
+        const initialPosition = tokenizer.position;
+        for (const detector of this.detectors) {
+          let fileType;
+          try {
+            fileType = await detector.detect(tokenizer);
+          } catch (error) {
+            if (error instanceof EndOfStreamError) {
+              return;
+            }
+            if (error instanceof ParserHardLimitError) {
+              return;
+            }
+            throw error;
+          }
+          if (fileType) {
+            return fileType;
+          }
+          if (initialPosition !== tokenizer.position) {
+            return void 0;
+          }
+        }
+      }
+      async fromTokenizer(tokenizer) {
+        try {
+          return await this.parseTokenizer(tokenizer);
+        } finally {
+          await tokenizer.close();
+        }
+      }
+      async fromBuffer(input) {
+        if (!(input instanceof Uint8Array || input instanceof ArrayBuffer)) {
+          throw new TypeError(`Expected the \`input\` argument to be of type \`Uint8Array\` or \`ArrayBuffer\`, got \`${typeof input}\``);
+        }
+        const buffer = input instanceof Uint8Array ? input : new Uint8Array(input);
+        if (!((buffer == null ? void 0 : buffer.length) > 1)) {
+          return;
+        }
+        return this.fromTokenizer(fromBuffer(buffer, this.getTokenizerOptions()));
+      }
+      async fromBlob(blob) {
+        var _a2;
+        (_a2 = this.options.signal) == null ? void 0 : _a2.throwIfAborted();
+        const tokenizer = fromBlob(blob, this.getTokenizerOptions());
+        return this.fromTokenizer(tokenizer);
+      }
+      async fromStream(stream) {
+        var _a2;
+        (_a2 = this.options.signal) == null ? void 0 : _a2.throwIfAborted();
+        const tokenizer = this.createTokenizerFromWebStream(stream);
+        return this.fromTokenizer(tokenizer);
+      }
+      async toDetectionStream(stream, options2) {
+        const sampleSize = normalizeSampleSize((options2 == null ? void 0 : options2.sampleSize) ?? reasonableDetectionSizeInBytes);
+        let detectedFileType;
+        let firstChunk;
+        const reader = stream.getReader({ mode: "byob" });
+        try {
+          const { value: chunk, done } = await readByobReaderWithSignal(reader, new Uint8Array(sampleSize), this.options.signal);
+          firstChunk = chunk;
+          if (!done && chunk) {
+            try {
+              detectedFileType = await this.fromBuffer(chunk.subarray(0, sampleSize));
+            } catch (error) {
+              if (!(error instanceof EndOfStreamError)) {
+                throw error;
+              }
+              detectedFileType = void 0;
+            }
+          }
+          firstChunk = chunk;
+        } finally {
+          reader.releaseLock();
+        }
+        const transformStream = new TransformStream({
+          async start(controller) {
+            controller.enqueue(firstChunk);
+          },
+          transform(chunk, controller) {
+            controller.enqueue(chunk);
+          }
+        });
+        const newStream = stream.pipeThrough(transformStream);
+        newStream.fileType = detectedFileType;
+        return newStream;
+      }
+      async detectGzip(tokenizer) {
+        var _a2;
+        if (this.gzipProbeDepth >= maximumNestedGzipProbeDepth) {
+          return {
+            ext: "gz",
+            mime: "application/gzip"
+          };
+        }
+        const gzipHandler = new GzipHandler(tokenizer);
+        const limitedInflatedStream = createByteLimitedReadableStream(gzipHandler.inflate(), maximumNestedGzipDetectionSizeInBytes);
+        const hasUnknownSize = hasUnknownFileSize(tokenizer);
+        let timeout2;
+        let probeSignal;
+        let probeParser;
+        let compressedFileType;
+        if (hasUnknownSize) {
+          const timeoutController = new AbortController();
+          timeout2 = setTimeout(() => {
+            timeoutController.abort(new DOMException(`Operation timed out after ${unknownSizeGzipProbeTimeoutInMilliseconds} ms`, "TimeoutError"));
+          }, unknownSizeGzipProbeTimeoutInMilliseconds);
+          probeSignal = this.options.signal === void 0 ? timeoutController.signal : AbortSignal.any([this.options.signal, timeoutController.signal]);
+          probeParser = new FileTypeParser({
+            ...this.options,
+            signal: probeSignal
+          });
+          probeParser.gzipProbeDepth = this.gzipProbeDepth + 1;
+        } else {
+          this.gzipProbeDepth++;
+        }
+        try {
+          compressedFileType = await (probeParser ?? this).fromStream(limitedInflatedStream);
+        } catch (error) {
+          if ((error == null ? void 0 : error.name) === "AbortError" && ((_a2 = probeSignal == null ? void 0 : probeSignal.reason) == null ? void 0 : _a2.name) !== "TimeoutError") {
+            throw error;
+          }
+        } finally {
+          clearTimeout(timeout2);
+          if (!hasUnknownSize) {
+            this.gzipProbeDepth--;
+          }
+        }
+        if ((compressedFileType == null ? void 0 : compressedFileType.ext) === "tar") {
+          return {
+            ext: "tar.gz",
+            mime: "application/gzip"
+          };
+        }
+        return {
+          ext: "gz",
+          mime: "application/gzip"
+        };
+      }
+      check(header, options2) {
+        return _check(this.buffer, header, options2);
+      }
+      checkString(header, options2) {
+        return this.check(stringToBytes(header, options2 == null ? void 0 : options2.encoding), options2);
+      }
+      async readTiffTag(bigEndian) {
+        const tagId = await this.tokenizer.readToken(bigEndian ? UINT16_BE : UINT16_LE);
+        await this.tokenizer.ignore(10);
+        switch (tagId) {
+          case 50341:
+            return {
+              ext: "arw",
+              mime: "image/x-sony-arw"
+            };
+          case 50706:
+            return {
+              ext: "dng",
+              mime: "image/x-adobe-dng"
+            };
+        }
+      }
+      async readTiffIFD(bigEndian) {
+        const numberOfTags = await this.tokenizer.readToken(bigEndian ? UINT16_BE : UINT16_LE);
+        if (numberOfTags > maximumTiffTagCount) {
+          return;
+        }
+        if (hasUnknownFileSize(this.tokenizer) && 2 + numberOfTags * 12 > maximumTiffIfdOffsetInBytes) {
+          return;
+        }
+        for (let n = 0; n < numberOfTags; ++n) {
+          const fileType = await this.readTiffTag(bigEndian);
+          if (fileType) {
+            return fileType;
+          }
+        }
+      }
+      async readTiffHeader(bigEndian) {
+        const tiffFileType = {
+          ext: "tif",
+          mime: "image/tiff"
+        };
+        const version = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 2);
+        const ifdOffset = (bigEndian ? UINT32_BE : UINT32_LE).get(this.buffer, 4);
+        if (version === 42) {
+          if (ifdOffset >= 6) {
+            if (this.checkString("CR", { offset: 8 })) {
+              return {
+                ext: "cr2",
+                mime: "image/x-canon-cr2"
+              };
+            }
+            if (ifdOffset >= 8) {
+              const someId1 = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 8);
+              const someId2 = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 10);
+              if (someId1 === 28 && someId2 === 254 || someId1 === 31 && someId2 === 11) {
+                return {
+                  ext: "nef",
+                  mime: "image/x-nikon-nef"
+                };
+              }
+            }
+          }
+          if (hasUnknownFileSize(this.tokenizer) && ifdOffset > maximumTiffStreamIfdOffsetInBytes) {
+            return tiffFileType;
+          }
+          const maximumTiffOffset = hasUnknownFileSize(this.tokenizer) ? maximumTiffIfdOffsetInBytes : this.tokenizer.fileInfo.size;
+          try {
+            await safeIgnore(this.tokenizer, ifdOffset, {
+              maximumLength: maximumTiffOffset,
+              reason: "TIFF IFD offset"
+            });
+          } catch (error) {
+            if (error instanceof EndOfStreamError) {
+              return;
+            }
+            throw error;
+          }
+          let fileType;
+          try {
+            fileType = await this.readTiffIFD(bigEndian);
+          } catch (error) {
+            if (error instanceof EndOfStreamError) {
+              return;
+            }
+            throw error;
+          }
+          return fileType ?? tiffFileType;
+        }
+        if (version === 43) {
+          return tiffFileType;
+        }
+      }
+      /**
+      	Scan check MPEG 1 or 2 Layer 3 header, or 'layer 0' for ADTS (MPEG sync-word 0xFFE).
+      
+      	@param offset - Offset to scan for sync-preamble.
+      	@returns {{ext: string, mime: string}}
+      	*/
+      scanMpeg(offset2) {
+        if (this.check([255, 224], { offset: offset2, mask: [255, 224] })) {
+          if (this.check([16], { offset: offset2 + 1, mask: [22] })) {
+            if (this.check([8], { offset: offset2 + 1, mask: [8] })) {
+              return {
+                ext: "aac",
+                mime: "audio/aac"
+              };
+            }
+            return {
+              ext: "aac",
+              mime: "audio/aac"
+            };
+          }
+          if (this.check([2], { offset: offset2 + 1, mask: [6] })) {
+            return {
+              ext: "mp3",
+              mime: "audio/mpeg"
+            };
+          }
+          if (this.check([4], { offset: offset2 + 1, mask: [6] })) {
+            return {
+              ext: "mp2",
+              mime: "audio/mpeg"
+            };
+          }
+          if (this.check([6], { offset: offset2 + 1, mask: [6] })) {
+            return {
+              ext: "mp1",
+              mime: "audio/mpeg"
+            };
+          }
+        }
+      }
+    }
+    new Set(extensions);
+    new Set(mimeTypes);
+    const DEFAULT_CONTENT_TYPE = "application/octet-stream";
+    function isUsableContentType(contentType) {
+      if (!contentType) {
+        return false;
+      }
+      const trimmed = contentType.trim();
+      return trimmed.length > 0 && trimmed !== DEFAULT_CONTENT_TYPE;
+    }
+    async function resolveBlobContentType(bytes, hint) {
+      if (isUsableContentType(hint)) {
+        return hint.trim();
+      }
+      const detected = await fileTypeFromBuffer(bytes);
+      return (detected == null ? void 0 : detected.mime) ?? DEFAULT_CONTENT_TYPE;
+    }
+    const MAXIMUM_CONCURRENT_UPLOADS = 10;
+    const MAX_RETRIES = 3;
+    const BASE_DELAY_MS = 1e3;
+    const MAX_DELAY_MS = 3e4;
+    const GATEWAY_VERSION = "v1";
+    const HASH_ALGORITHM = "SHA-256";
+    const SHA256_PREFIX = "sha256:";
+    const DOMAIN_SEPARATOR_FOR_CHUNKS = new TextEncoder().encode("icfs-chunk/");
+    const DOMAIN_SEPARATOR_FOR_METADATA = new TextEncoder().encode("icfs-metadata/");
+    const DOMAIN_SEPARATOR_FOR_NODES = new TextEncoder().encode("ynode/");
+    async function withRetry(operation) {
       let lastError;
-      for (let attempt = 0; attempt <= MAX_RETRIES$1; attempt++) {
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
           return await operation();
         } catch (error) {
           lastError = error instanceof Error ? error : new Error(String(error));
-          const shouldRetry = isRetriableError$1(error);
-          if (attempt === MAX_RETRIES$1 || !shouldRetry) {
-            if (!shouldRetry && attempt < MAX_RETRIES$1) {
+          const shouldRetry = isRetriableError(error);
+          if (attempt === MAX_RETRIES || !shouldRetry) {
+            if (!shouldRetry && attempt < MAX_RETRIES) {
               console.warn(`Non-retriable error encountered: ${lastError.message}. Not retrying.`);
             }
             throw error;
           }
-          const delay = Math.min(BASE_DELAY_MS$1 * 2 ** attempt + Math.random() * 1e3, MAX_DELAY_MS$1);
-          console.warn(`Request failed (attempt ${attempt + 1}/${MAX_RETRIES$1 + 1}): ${lastError.message}. Retrying in ${Math.round(delay)}ms...`);
+          const delay = Math.min(BASE_DELAY_MS * 2 ** attempt + Math.random() * 1e3, MAX_DELAY_MS);
+          console.warn(`Request failed (attempt ${attempt + 1}/${MAX_RETRIES + 1}): ${lastError.message}. Retrying in ${Math.round(delay)}ms...`);
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
       throw lastError || new Error("Unknown error occurred during retry attempts");
     }
-    function isRetriableError$1(error) {
+    function isRetriableError(error) {
       var _a2, _b2;
       const errorMessage = ((_a2 = error == null ? void 0 : error.message) == null ? void 0 : _a2.toLowerCase()) || "";
       if ((_b2 = error == null ? void 0 : error.response) == null ? void 0 : _b2.status) {
@@ -11355,22 +15605,22 @@ variant ${k2} -> ${e.message}`, {
       }
       return true;
     }
-    function validateHashFormat$1(hash, context) {
+    function validateHashFormat(hash, context) {
       if (!hash) {
         throw new Error(`${context}: Hash cannot be empty`);
       }
-      if (!hash.startsWith(SHA256_PREFIX$1)) {
-        throw new Error(`${context}: Invalid hash format. Expected format: ${SHA256_PREFIX$1}<64-char-hex>, got: ${hash}`);
+      if (!hash.startsWith(SHA256_PREFIX)) {
+        throw new Error(`${context}: Invalid hash format. Expected format: ${SHA256_PREFIX}<64-char-hex>, got: ${hash}`);
       }
-      const hexPart = hash.substring(SHA256_PREFIX$1.length);
+      const hexPart = hash.substring(SHA256_PREFIX.length);
       if (hexPart.length !== 64) {
-        throw new Error(`${context}: Invalid hash format. Expected 64 hex characters after ${SHA256_PREFIX$1}, got ${hexPart.length} characters: ${hash}`);
+        throw new Error(`${context}: Invalid hash format. Expected 64 hex characters after ${SHA256_PREFIX}, got ${hexPart.length} characters: ${hash}`);
       }
       if (!/^[0-9a-f]{64}$/i.test(hexPart)) {
         throw new Error(`${context}: Invalid hash format. Hash must contain only hex characters (0-9, a-f), got: ${hash}`);
       }
     }
-    let YHash$1 = class YHash2 {
+    class YHash {
       constructor(bytes) {
         __publicField(this, "bytes");
         if (bytes.length !== 32) {
@@ -11379,20 +15629,20 @@ variant ${k2} -> ${e.message}`, {
         this.bytes = new Uint8Array(bytes);
       }
       static async fromNodes(left, right) {
-        const leftBytes = left instanceof YHash2 ? left.bytes : new TextEncoder().encode("UNBALANCED");
-        const rightBytes = right instanceof YHash2 ? right.bytes : new TextEncoder().encode("UNBALANCED");
-        const combined = new Uint8Array(DOMAIN_SEPARATOR_FOR_NODES$1.length + leftBytes.length + rightBytes.length);
-        const arrays = [DOMAIN_SEPARATOR_FOR_NODES$1, leftBytes, rightBytes];
+        const leftBytes = left instanceof YHash ? left.bytes : new TextEncoder().encode("UNBALANCED");
+        const rightBytes = right instanceof YHash ? right.bytes : new TextEncoder().encode("UNBALANCED");
+        const combined = new Uint8Array(DOMAIN_SEPARATOR_FOR_NODES.length + leftBytes.length + rightBytes.length);
+        const arrays = [DOMAIN_SEPARATOR_FOR_NODES, leftBytes, rightBytes];
         let offset2 = 0;
         for (const data of arrays) {
           combined.set(data, offset2);
           offset2 += data.length;
         }
-        const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM$1, combined);
-        return new YHash2(new Uint8Array(hashBuffer));
+        const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM, combined);
+        return new YHash(new Uint8Array(hashBuffer));
       }
       static async fromChunk(data) {
-        return YHash2.fromBytes(DOMAIN_SEPARATOR_FOR_CHUNKS$1, data);
+        return YHash.fromBytes(DOMAIN_SEPARATOR_FOR_CHUNKS, data);
       }
       static async fromHeaders(headers) {
         const headerLines = [];
@@ -11401,22 +15651,22 @@ variant ${k2} -> ${e.message}`, {
 `);
         }
         headerLines.sort();
-        const hash = await YHash2.fromBytes(DOMAIN_SEPARATOR_FOR_METADATA$1, new TextEncoder().encode(headerLines.join("")));
+        const hash = await YHash.fromBytes(DOMAIN_SEPARATOR_FOR_METADATA, new TextEncoder().encode(headerLines.join("")));
         return hash;
       }
       static async fromBytes(domainSeparator, data) {
         const combined = new Uint8Array(domainSeparator.length + data.length);
         combined.set(domainSeparator);
         combined.set(data, domainSeparator.length);
-        const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM$1, combined);
-        return new YHash2(new Uint8Array(hashBuffer));
+        const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM, combined);
+        return new YHash(new Uint8Array(hashBuffer));
       }
       static fromHex(hexString) {
         const bytes = new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => Number.parseInt(byte, 16)));
-        return new YHash2(bytes);
+        return new YHash(bytes);
       }
       toShaString() {
-        return `${SHA256_PREFIX$1}${this.toHex()}`;
+        return `${SHA256_PREFIX}${this.toHex()}`;
       }
       toString() {
         throw new Error("toString is not supported for YHash");
@@ -11424,15 +15674,15 @@ variant ${k2} -> ${e.message}`, {
       toHex() {
         return Array.from(this.bytes).map((b2) => b2.toString(16).padStart(2, "0")).join("");
       }
-    };
-    function nodeToJSON$1(node) {
+    }
+    function nodeToJSON(node) {
       return {
         hash: node.hash.toShaString(),
-        left: node.left ? nodeToJSON$1(node.left) : null,
-        right: node.right ? nodeToJSON$1(node.right) : null
+        left: node.left ? nodeToJSON(node.left) : null,
+        right: node.right ? nodeToJSON(node.right) : null
       };
     }
-    let BlobHashTree$1 = class BlobHashTree2 {
+    class BlobHashTree {
       constructor(chunk_hashes, tree, headers = null) {
         __publicField(this, "tree_type");
         __publicField(this, "chunk_hashes");
@@ -11454,7 +15704,7 @@ variant ${k2} -> ${e.message}`, {
         if (chunkHashes.length === 0) {
           const hex = "8b8e620f084e48da0be2287fd12c5aaa4dbe14b468fd2e360f48d741fe7628a0";
           const bytes = new TextEncoder().encode(hex);
-          chunkHashes.push(new YHash$1(bytes));
+          chunkHashes.push(new YHash(bytes));
         }
         let level2 = chunkHashes.map((hash) => ({
           hash,
@@ -11466,7 +15716,7 @@ variant ${k2} -> ${e.message}`, {
           for (let i = 0; i < level2.length; i += 2) {
             const left = level2[i];
             const right = level2[i + 1] || null;
-            const parentHash = await YHash$1.fromNodes(left.hash, right ? right.hash : null);
+            const parentHash = await YHash.fromNodes(left.hash, right ? right.hash : null);
             nextLevel.push({
               hash: parentHash,
               left,
@@ -11477,32 +15727,32 @@ variant ${k2} -> ${e.message}`, {
         }
         const chunksRoot = level2[0];
         if (headers && Object.keys(headers).length > 0) {
-          const metadataRootHash = await YHash$1.fromHeaders(headers);
+          const metadataRootHash = await YHash.fromHeaders(headers);
           const metadataRoot = {
             hash: metadataRootHash,
             left: null,
             right: null
           };
-          const combinedRootHash = await YHash$1.fromNodes(chunksRoot.hash, metadataRoot.hash);
+          const combinedRootHash = await YHash.fromNodes(chunksRoot.hash, metadataRoot.hash);
           const combinedRoot = {
             hash: combinedRootHash,
             left: chunksRoot,
             right: metadataRoot
           };
-          return new BlobHashTree2(chunkHashes, combinedRoot, headers);
+          return new BlobHashTree(chunkHashes, combinedRoot, headers);
         }
-        return new BlobHashTree2(chunkHashes, chunksRoot, headers);
+        return new BlobHashTree(chunkHashes, chunksRoot, headers);
       }
       toJSON() {
         return {
           tree_type: this.tree_type,
           chunk_hashes: this.chunk_hashes.map((h2) => h2.toShaString()),
-          tree: nodeToJSON$1(this.tree),
+          tree: nodeToJSON(this.tree),
           headers: this.headers
         };
       }
-    };
-    let StorageGatewayClient$1 = class StorageGatewayClient {
+    }
+    class StorageGatewayClient {
       constructor(storageGatewayUrl) {
         __publicField(this, "storageGatewayUrl");
         this.storageGatewayUrl = storageGatewayUrl;
@@ -11513,9 +15763,9 @@ variant ${k2} -> ${e.message}`, {
       async uploadChunk(params) {
         const blobHashString = params.blobRootHash.toShaString();
         const chunkHashString = params.chunkHash.toShaString();
-        validateHashFormat$1(blobHashString, `uploadChunk[${params.chunkIndex}] blob_hash`);
-        validateHashFormat$1(chunkHashString, `uploadChunk[${params.chunkIndex}] chunk_hash`);
-        return await withRetry$1(async () => {
+        validateHashFormat(blobHashString, `uploadChunk[${params.chunkIndex}] blob_hash`);
+        validateHashFormat(chunkHashString, `uploadChunk[${params.chunkIndex}] chunk_hash`);
+        return await withRetry(async () => {
           const queryParams = new URLSearchParams({
             owner_id: params.owner,
             blob_hash: blobHashString,
@@ -11524,7 +15774,7 @@ variant ${k2} -> ${e.message}`, {
             bucket_name: params.bucketName,
             project_id: params.projectId
           });
-          const url = `${this.storageGatewayUrl}/${GATEWAY_VERSION$1}/chunk/?${queryParams.toString()}`;
+          const url = `${this.storageGatewayUrl}/${GATEWAY_VERSION}/chunk/?${queryParams.toString()}`;
           const response = await fetch(url, {
             method: "PUT",
             headers: {
@@ -11547,12 +15797,12 @@ variant ${k2} -> ${e.message}`, {
       }
       async uploadBlobTree(blobHashTree, bucketName, numBlobBytes, owner, projectId, certificateBytes) {
         const treeJSON = blobHashTree.toJSON();
-        validateHashFormat$1(treeJSON.tree.hash, "uploadBlobTree root hash");
+        validateHashFormat(treeJSON.tree.hash, "uploadBlobTree root hash");
         treeJSON.chunk_hashes.forEach((hash, index2) => {
-          validateHashFormat$1(hash, `uploadBlobTree chunk_hash[${index2}]`);
+          validateHashFormat(hash, `uploadBlobTree chunk_hash[${index2}]`);
         });
-        return await withRetry$1(async () => {
-          const url = `${this.storageGatewayUrl}/${GATEWAY_VERSION$1}/blob-tree/`;
+        return await withRetry(async () => {
+          const url = `${this.storageGatewayUrl}/${GATEWAY_VERSION}/blob-tree/`;
           const requestBody = {
             blob_tree: treeJSON,
             bucket_name: bucketName,
@@ -11580,8 +15830,8 @@ variant ${k2} -> ${e.message}`, {
           }
         });
       }
-    };
-    let StorageClient$1 = class StorageClient {
+    }
+    class StorageClient {
       constructor(bucket, storageGatewayUrl, backendCanisterId, projectId, agent) {
         __publicField(this, "bucket");
         __publicField(this, "backendCanisterId");
@@ -11592,7 +15842,7 @@ variant ${k2} -> ${e.message}`, {
         this.backendCanisterId = backendCanisterId;
         this.projectId = projectId;
         this.agent = agent;
-        this.storageGatewayClient = new StorageGatewayClient$1(storageGatewayUrl);
+        this.storageGatewayClient = new StorageGatewayClient(storageGatewayUrl);
       }
       async getCertificate(hash) {
         const args = encode$2([Text$2], [hash]);
@@ -11608,17 +15858,22 @@ variant ${k2} -> ${e.message}`, {
         }
         throw new Error("Expected v4 response body");
       }
-      async putFile(blobBytes, onProgress) {
+      async putFile(blobBytes, onProgress, contentTypeHint, filenameHint) {
         const httpHeaders = {
           "Content-Type": "application/json"
         };
+        const contentType = await resolveBlobContentType(blobBytes, contentTypeHint);
         const file = new Blob([new Uint8Array(blobBytes)], {
-          type: "application/octet-stream"
+          type: contentType
         });
         const fileHeaders = {
-          "Content-Type": "application/octet-stream",
+          "Content-Type": contentType,
           "Content-Length": file.size.toString()
         };
+        const contentDisposition = formatBlobContentDisposition(filenameHint);
+        if (contentDisposition) {
+          fileHeaders["Content-Disposition"] = contentDisposition;
+        }
         const { chunks, chunkHashes, blobHashTree } = await this.processFileForUpload(file, fileHeaders);
         const blobRootHash = blobHashTree.tree.hash;
         const hashString2 = blobRootHash.toShaString();
@@ -11631,18 +15886,18 @@ variant ${k2} -> ${e.message}`, {
         if (!hash) {
           throw new Error("Hash must not be empty");
         }
-        validateHashFormat$1(hash, `getDirectURL for path '${hash}'`);
-        return `${this.storageGatewayClient.getStorageGatewayUrl()}/${GATEWAY_VERSION$1}/blob/?blob_hash=${encodeURIComponent(hash)}&owner_id=${encodeURIComponent(this.backendCanisterId)}&project_id=${encodeURIComponent(this.projectId)}`;
+        validateHashFormat(hash, `getDirectURL for path '${hash}'`);
+        return `${this.storageGatewayClient.getStorageGatewayUrl()}/${GATEWAY_VERSION}/blob/?blob_hash=${encodeURIComponent(hash)}&owner_id=${encodeURIComponent(this.backendCanisterId)}&project_id=${encodeURIComponent(this.projectId)}`;
       }
       async processFileForUpload(file, headers) {
         const chunks = this.createFileChunks(file);
         const chunkHashes = [];
         for (let i = 0; i < chunks.length; i++) {
           const chunkData = new Uint8Array(await chunks[i].arrayBuffer());
-          const hash = await YHash$1.fromChunk(chunkData);
+          const hash = await YHash.fromChunk(chunkData);
           chunkHashes.push(hash);
         }
-        const blobHashTree = await BlobHashTree$1.build(chunkHashes, headers);
+        const blobHashTree = await BlobHashTree.build(chunkHashes, headers);
         return { chunks, chunkHashes, blobHashTree };
       }
       async parallelUpload(chunks, chunkHashes, blobRootHash, httpHeaders, onProgress) {
@@ -11666,8 +15921,8 @@ variant ${k2} -> ${e.message}`, {
             onProgress(percentage);
           }
         };
-        await Promise.all(Array.from({ length: MAXIMUM_CONCURRENT_UPLOADS$1 }, async (_2, workerId) => {
-          for (let i = workerId; i < chunks.length; i += MAXIMUM_CONCURRENT_UPLOADS$1) {
+        await Promise.all(Array.from({ length: MAXIMUM_CONCURRENT_UPLOADS }, async (_2, workerId) => {
+          for (let i = workerId; i < chunks.length; i += MAXIMUM_CONCURRENT_UPLOADS) {
             await uploadSingleChunk(i);
           }
         }));
@@ -11683,7 +15938,7 @@ variant ${k2} -> ${e.message}`, {
         }
         return chunks;
       }
-    };
+    }
     var define_process_env_default$1 = {};
     const DEFAULT_STORAGE_GATEWAY_URL = "https://blob.caffeine.ai";
     const DEFAULT_BUCKET_NAME = "default-bucket";
@@ -11769,10 +16024,10 @@ variant ${k2} -> ${e.message}`, {
         agent,
         processError
       };
-      const storageClient = new StorageClient$1(config2.bucket_name, config2.storage_gateway_url, config2.backend_canister_id, config2.project_id, agent);
+      const storageClient = new StorageClient(config2.bucket_name, config2.storage_gateway_url, config2.backend_canister_id, config2.project_id, agent);
       const MOTOKO_DEDUPLICATION_SENTINEL = "!caf!";
       const uploadFile = async (file) => {
-        const { hash } = await storageClient.putFile(await file.getBytes(), file.onProgress);
+        const { hash } = await storageClient.putFile(await file.getBytes(), file.onProgress, file.contentType, file.filename);
         return new TextEncoder().encode(MOTOKO_DEDUPLICATION_SENTINEL + hash);
       };
       const downloadFile = async (bytes) => {
@@ -28919,6 +33174,47 @@ variant ${k2} -> ${e.message}`, {
       "photo": Opt(Text$2),
       "subtitle": Opt(Text$2)
     });
+    const ActivityType$1 = Variant({
+      "quiz": Null,
+      "flashcards": Null
+    });
+    const Question = Variant({
+      "multipleChoice": Record({
+        "correctIndex": Nat,
+        "prompt": Text$2,
+        "choices": Vec(Text$2)
+      }),
+      "matching": Record({
+        "pairs": Vec(
+          Record({ "itemTitle": Text$2, "fieldValue": Text$2 })
+        ),
+        "shuffledOptions": Vec(Text$2)
+      }),
+      "trueFalse": Record({ "statement": Text$2, "isTrue": Bool })
+    });
+    const QuizContent = Vec(Question);
+    const Flashcard$1 = Record({
+      "itemTitle": Text$2,
+      "detailFields": Vec(
+        Record({ "value": Text$2, "fieldLabel": Text$2 })
+      ),
+      "itemPhoto": Opt(Text$2)
+    });
+    const FlashcardContent = Vec(Flashcard$1);
+    const ActivityContent = Variant({
+      "quizContent": QuizContent,
+      "flashcardContent": FlashcardContent
+    });
+    const Activity = Record({
+      "id": Nat,
+      "activityType": ActivityType$1,
+      "content": ActivityContent,
+      "name": Text$2,
+      "createdAt": Nat,
+      "createdBy": Principal,
+      "positionId": Nat,
+      "sourceCategoryIds": Vec(Nat)
+    });
     const Phase = Record({
       "id": Nat,
       "sortOrder": Nat,
@@ -28992,6 +33288,12 @@ variant ${k2} -> ${e.message}`, {
       "user": Null,
       "guest": Null
     });
+    const BuildActivityInput = Record({
+      "activityType": ActivityType$1,
+      "name": Text$2,
+      "positionId": Nat,
+      "sourceCategoryIds": Vec(Nat)
+    });
     const Value = Variant({
       "int": Int,
       "nat": Nat,
@@ -29028,6 +33330,11 @@ variant ${k2} -> ${e.message}`, {
       "phasesReused": Nat,
       "tasksAdded": Nat
     });
+    const UpdateActivityInput = Record({
+      "id": Nat,
+      "name": Text$2,
+      "sourceCategoryIds": Vec(Nat)
+    });
     Service({
       "__accessControlState": Func([], [Reserved], ["query"]),
       "__assignments": Func(
@@ -29045,8 +33352,14 @@ variant ${k2} -> ${e.message}`, {
         [Vec(LibraryItem)],
         ["query"]
       ),
+      "__legendaryActivities": Func(
+        [Opt(Nat), Opt(Nat)],
+        [Vec(Activity)],
+        ["query"]
+      ),
       "__nextCategoryId": Func([], [Reserved], ["query"]),
       "__nextItemId": Func([], [Reserved], ["query"]),
+      "__nextLegendaryActivityId": Func([], [Reserved], ["query"]),
       "__nextPhaseId": Func([], [Reserved], ["query"]),
       "__nextPositionId": Func([], [Reserved], ["query"]),
       "__nextTaskId": Func([], [Reserved], ["query"]),
@@ -29105,6 +33418,7 @@ variant ${k2} -> ${e.message}`, {
         [PositionAssignment],
         []
       ),
+      "buildLegendaryActivity": Func([BuildActivityInput], [Activity], []),
       "createCategory": Func(
         [Nat, Text$2, Opt(Text$2)],
         [Category],
@@ -29138,6 +33452,7 @@ variant ${k2} -> ${e.message}`, {
       ),
       "deleteCategory": Func([Nat], [], []),
       "deleteItem": Func([Nat], [], []),
+      "deleteLegendaryActivity": Func([Nat], [], []),
       "deleteNsoPhase": Func([Nat], [], []),
       "deleteNsoTask": Func([Nat], [], []),
       "deletePosition": Func([Nat], [], []),
@@ -29153,6 +33468,12 @@ variant ${k2} -> ${e.message}`, {
       "getCategory": Func([Nat], [Opt(Category)], ["query"]),
       "getItem": Func([Nat], [Opt(LibraryItem)], ["query"]),
       "getItemsByCategory": Func([Nat], [Vec(LibraryItem)], ["query"]),
+      "getLegendaryActivitiesByPosition": Func(
+        [Nat],
+        [Vec(Activity)],
+        ["query"]
+      ),
+      "getLegendaryActivity": Func([Nat], [Opt(Activity)], ["query"]),
       "getMyAssignments": Func([], [Vec(PositionAssignment)], ["query"]),
       "getMyProfile": Func([], [Opt(UserProfile)], []),
       "getNsoAssignableUsers": Func([], [Vec(UserProfile)], ["query"]),
@@ -29179,6 +33500,7 @@ variant ${k2} -> ${e.message}`, {
       "getUserRole": Func([Principal], [Opt(Role)], []),
       "importNsoTasks": Func([NsoImportInput], [NsoImportSummary], []),
       "isCallerAdmin": Func([], [Bool], ["query"]),
+      "rebuildLegendaryActivity": Func([Nat], [Activity], []),
       "reorderCategories": Func(
         [Nat, Vec(Nat)],
         [Vec(Category)],
@@ -29235,6 +33557,7 @@ variant ${k2} -> ${e.message}`, {
         [LibraryItem],
         []
       ),
+      "updateLegendaryActivity": Func([UpdateActivityInput], [Activity], []),
       "updateMyProfile": Func([Text$2, Text$2], [UserProfile], []),
       "updateNsoPhase": Func([Nat, Text$2], [], []),
       "updateNsoTask": Func(
@@ -29288,6 +33611,47 @@ variant ${k2} -> ${e.message}`, {
         "details": IDL2.Vec(DetailField2),
         "photo": IDL2.Opt(IDL2.Text),
         "subtitle": IDL2.Opt(IDL2.Text)
+      });
+      const ActivityType2 = IDL2.Variant({
+        "quiz": IDL2.Null,
+        "flashcards": IDL2.Null
+      });
+      const Question2 = IDL2.Variant({
+        "multipleChoice": IDL2.Record({
+          "correctIndex": IDL2.Nat,
+          "prompt": IDL2.Text,
+          "choices": IDL2.Vec(IDL2.Text)
+        }),
+        "matching": IDL2.Record({
+          "pairs": IDL2.Vec(
+            IDL2.Record({ "itemTitle": IDL2.Text, "fieldValue": IDL2.Text })
+          ),
+          "shuffledOptions": IDL2.Vec(IDL2.Text)
+        }),
+        "trueFalse": IDL2.Record({ "statement": IDL2.Text, "isTrue": IDL2.Bool })
+      });
+      const QuizContent2 = IDL2.Vec(Question2);
+      const Flashcard2 = IDL2.Record({
+        "itemTitle": IDL2.Text,
+        "detailFields": IDL2.Vec(
+          IDL2.Record({ "value": IDL2.Text, "fieldLabel": IDL2.Text })
+        ),
+        "itemPhoto": IDL2.Opt(IDL2.Text)
+      });
+      const FlashcardContent2 = IDL2.Vec(Flashcard2);
+      const ActivityContent2 = IDL2.Variant({
+        "quizContent": QuizContent2,
+        "flashcardContent": FlashcardContent2
+      });
+      const Activity2 = IDL2.Record({
+        "id": IDL2.Nat,
+        "activityType": ActivityType2,
+        "content": ActivityContent2,
+        "name": IDL2.Text,
+        "createdAt": IDL2.Nat,
+        "createdBy": IDL2.Principal,
+        "positionId": IDL2.Nat,
+        "sourceCategoryIds": IDL2.Vec(IDL2.Nat)
       });
       const Phase2 = IDL2.Record({
         "id": IDL2.Nat,
@@ -29362,6 +33726,12 @@ variant ${k2} -> ${e.message}`, {
         "user": IDL2.Null,
         "guest": IDL2.Null
       });
+      const BuildActivityInput2 = IDL2.Record({
+        "activityType": ActivityType2,
+        "name": IDL2.Text,
+        "positionId": IDL2.Nat,
+        "sourceCategoryIds": IDL2.Vec(IDL2.Nat)
+      });
       const Value2 = IDL2.Variant({
         "int": IDL2.Int,
         "nat": IDL2.Nat,
@@ -29398,6 +33768,11 @@ variant ${k2} -> ${e.message}`, {
         "phasesReused": IDL2.Nat,
         "tasksAdded": IDL2.Nat
       });
+      const UpdateActivityInput2 = IDL2.Record({
+        "id": IDL2.Nat,
+        "name": IDL2.Text,
+        "sourceCategoryIds": IDL2.Vec(IDL2.Nat)
+      });
       return IDL2.Service({
         "__accessControlState": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__assignments": IDL2.Func(
@@ -29415,8 +33790,14 @@ variant ${k2} -> ${e.message}`, {
           [IDL2.Vec(LibraryItem2)],
           ["query"]
         ),
+        "__legendaryActivities": IDL2.Func(
+          [IDL2.Opt(IDL2.Nat), IDL2.Opt(IDL2.Nat)],
+          [IDL2.Vec(Activity2)],
+          ["query"]
+        ),
         "__nextCategoryId": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__nextItemId": IDL2.Func([], [IDL2.Reserved], ["query"]),
+        "__nextLegendaryActivityId": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__nextPhaseId": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__nextPositionId": IDL2.Func([], [IDL2.Reserved], ["query"]),
         "__nextTaskId": IDL2.Func([], [IDL2.Reserved], ["query"]),
@@ -29475,6 +33856,7 @@ variant ${k2} -> ${e.message}`, {
           [PositionAssignment2],
           []
         ),
+        "buildLegendaryActivity": IDL2.Func([BuildActivityInput2], [Activity2], []),
         "createCategory": IDL2.Func(
           [IDL2.Nat, IDL2.Text, IDL2.Opt(IDL2.Text)],
           [Category2],
@@ -29508,6 +33890,7 @@ variant ${k2} -> ${e.message}`, {
         ),
         "deleteCategory": IDL2.Func([IDL2.Nat], [], []),
         "deleteItem": IDL2.Func([IDL2.Nat], [], []),
+        "deleteLegendaryActivity": IDL2.Func([IDL2.Nat], [], []),
         "deleteNsoPhase": IDL2.Func([IDL2.Nat], [], []),
         "deleteNsoTask": IDL2.Func([IDL2.Nat], [], []),
         "deletePosition": IDL2.Func([IDL2.Nat], [], []),
@@ -29525,6 +33908,16 @@ variant ${k2} -> ${e.message}`, {
         "getItemsByCategory": IDL2.Func(
           [IDL2.Nat],
           [IDL2.Vec(LibraryItem2)],
+          ["query"]
+        ),
+        "getLegendaryActivitiesByPosition": IDL2.Func(
+          [IDL2.Nat],
+          [IDL2.Vec(Activity2)],
+          ["query"]
+        ),
+        "getLegendaryActivity": IDL2.Func(
+          [IDL2.Nat],
+          [IDL2.Opt(Activity2)],
           ["query"]
         ),
         "getMyAssignments": IDL2.Func([], [IDL2.Vec(PositionAssignment2)], ["query"]),
@@ -29553,6 +33946,7 @@ variant ${k2} -> ${e.message}`, {
         "getUserRole": IDL2.Func([IDL2.Principal], [IDL2.Opt(Role2)], []),
         "importNsoTasks": IDL2.Func([NsoImportInput2], [NsoImportSummary2], []),
         "isCallerAdmin": IDL2.Func([], [IDL2.Bool], ["query"]),
+        "rebuildLegendaryActivity": IDL2.Func([IDL2.Nat], [Activity2], []),
         "reorderCategories": IDL2.Func(
           [IDL2.Nat, IDL2.Vec(IDL2.Nat)],
           [IDL2.Vec(Category2)],
@@ -29613,6 +34007,7 @@ variant ${k2} -> ${e.message}`, {
           [LibraryItem2],
           []
         ),
+        "updateLegendaryActivity": IDL2.Func([UpdateActivityInput2], [Activity2], []),
         "updateMyProfile": IDL2.Func([IDL2.Text, IDL2.Text], [UserProfile2], []),
         "updateNsoPhase": IDL2.Func([IDL2.Nat, IDL2.Text], [], []),
         "updateNsoTask": IDL2.Func(
@@ -29635,4632 +34030,6 @@ variant ${k2} -> ${e.message}`, {
         )
       });
     };
-    function formatBlobContentDisposition(filename) {
-      const trimmed = filename == null ? void 0 : filename.trim();
-      if (!trimmed) {
-        return void 0;
-      }
-      if (/^[A-Za-z0-9._-]+$/.test(trimmed)) {
-        return `attachment; filename=${trimmed}`;
-      }
-      if (/[^\x20-\x7E]/.test(trimmed)) {
-        return `attachment; filename*=UTF-8''${encodeURIComponent(trimmed)}`;
-      }
-      const escaped = trimmed.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-      return `attachment; filename="${escaped}"`;
-    }
-    const WINDOWS_1252_EXTRA = {
-      128: "€",
-      130: "‚",
-      131: "ƒ",
-      132: "„",
-      133: "…",
-      134: "†",
-      135: "‡",
-      136: "ˆ",
-      137: "‰",
-      138: "Š",
-      139: "‹",
-      140: "Œ",
-      142: "Ž",
-      145: "‘",
-      146: "’",
-      147: "“",
-      148: "”",
-      149: "•",
-      150: "–",
-      151: "—",
-      152: "˜",
-      153: "™",
-      154: "š",
-      155: "›",
-      156: "œ",
-      158: "ž",
-      159: "Ÿ"
-    };
-    for (const [code, char] of Object.entries(WINDOWS_1252_EXTRA)) {
-    }
-    let _utf8Decoder;
-    function utf8Decoder() {
-      if (typeof globalThis.TextDecoder === "undefined")
-        return void 0;
-      return _utf8Decoder !== null && _utf8Decoder !== void 0 ? _utf8Decoder : _utf8Decoder = new globalThis.TextDecoder("utf-8");
-    }
-    const CHUNK = 32 * 1024;
-    const REPLACEMENT = 65533;
-    function textDecode(bytes, encoding = "utf-8") {
-      switch (encoding.toLowerCase()) {
-        case "utf-8":
-        case "utf8": {
-          const dec = utf8Decoder();
-          return dec ? dec.decode(bytes) : decodeUTF8(bytes);
-        }
-        case "utf-16le":
-          return decodeUTF16LE(bytes);
-        case "us-ascii":
-        case "ascii":
-          return decodeASCII(bytes);
-        case "latin1":
-        case "iso-8859-1":
-          return decodeLatin1(bytes);
-        case "windows-1252":
-          return decodeWindows1252(bytes);
-        default:
-          throw new RangeError(`Encoding '${encoding}' not supported`);
-      }
-    }
-    function flushChunk(parts, chunk) {
-      if (chunk.length === 0)
-        return;
-      parts.push(String.fromCharCode.apply(null, chunk));
-      chunk.length = 0;
-    }
-    function pushCodeUnit(parts, chunk, codeUnit) {
-      chunk.push(codeUnit);
-      if (chunk.length >= CHUNK)
-        flushChunk(parts, chunk);
-    }
-    function pushCodePoint(parts, chunk, cp) {
-      if (cp <= 65535) {
-        pushCodeUnit(parts, chunk, cp);
-        return;
-      }
-      cp -= 65536;
-      pushCodeUnit(parts, chunk, 55296 + (cp >> 10));
-      pushCodeUnit(parts, chunk, 56320 + (cp & 1023));
-    }
-    function decodeUTF8(bytes) {
-      const parts = [];
-      const chunk = [];
-      let i = 0;
-      if (bytes.length >= 3 && bytes[0] === 239 && bytes[1] === 187 && bytes[2] === 191) {
-        i = 3;
-      }
-      while (i < bytes.length) {
-        const b1 = bytes[i];
-        if (b1 <= 127) {
-          pushCodeUnit(parts, chunk, b1);
-          i++;
-          continue;
-        }
-        if (b1 < 194 || b1 > 244) {
-          pushCodeUnit(parts, chunk, REPLACEMENT);
-          i++;
-          continue;
-        }
-        if (b1 <= 223) {
-          if (i + 1 >= bytes.length) {
-            pushCodeUnit(parts, chunk, REPLACEMENT);
-            i++;
-            continue;
-          }
-          const b22 = bytes[i + 1];
-          if ((b22 & 192) !== 128) {
-            pushCodeUnit(parts, chunk, REPLACEMENT);
-            i++;
-            continue;
-          }
-          const cp2 = (b1 & 31) << 6 | b22 & 63;
-          pushCodeUnit(parts, chunk, cp2);
-          i += 2;
-          continue;
-        }
-        if (b1 <= 239) {
-          if (i + 2 >= bytes.length) {
-            pushCodeUnit(parts, chunk, REPLACEMENT);
-            i++;
-            continue;
-          }
-          const b22 = bytes[i + 1];
-          const b32 = bytes[i + 2];
-          const valid2 = (b22 & 192) === 128 && (b32 & 192) === 128 && !(b1 === 224 && b22 < 160) && // overlong
-          !(b1 === 237 && b22 >= 160);
-          if (!valid2) {
-            pushCodeUnit(parts, chunk, REPLACEMENT);
-            i++;
-            continue;
-          }
-          const cp2 = (b1 & 15) << 12 | (b22 & 63) << 6 | b32 & 63;
-          pushCodeUnit(parts, chunk, cp2);
-          i += 3;
-          continue;
-        }
-        if (i + 3 >= bytes.length) {
-          pushCodeUnit(parts, chunk, REPLACEMENT);
-          i++;
-          continue;
-        }
-        const b2 = bytes[i + 1];
-        const b3 = bytes[i + 2];
-        const b4 = bytes[i + 3];
-        const valid = (b2 & 192) === 128 && (b3 & 192) === 128 && (b4 & 192) === 128 && !(b1 === 240 && b2 < 144) && // overlong
-        !(b1 === 244 && b2 > 143);
-        if (!valid) {
-          pushCodeUnit(parts, chunk, REPLACEMENT);
-          i++;
-          continue;
-        }
-        const cp = (b1 & 7) << 18 | (b2 & 63) << 12 | (b3 & 63) << 6 | b4 & 63;
-        pushCodePoint(parts, chunk, cp);
-        i += 4;
-      }
-      flushChunk(parts, chunk);
-      return parts.join("");
-    }
-    function decodeUTF16LE(bytes) {
-      const parts = [];
-      const chunk = [];
-      const len = bytes.length;
-      let i = 0;
-      while (i + 1 < len) {
-        const u1 = bytes[i] | bytes[i + 1] << 8;
-        i += 2;
-        if (u1 >= 55296 && u1 <= 56319) {
-          if (i + 1 < len) {
-            const u2 = bytes[i] | bytes[i + 1] << 8;
-            if (u2 >= 56320 && u2 <= 57343) {
-              pushCodeUnit(parts, chunk, u1);
-              pushCodeUnit(parts, chunk, u2);
-              i += 2;
-            } else {
-              pushCodeUnit(parts, chunk, REPLACEMENT);
-            }
-          } else {
-            pushCodeUnit(parts, chunk, REPLACEMENT);
-          }
-          continue;
-        }
-        if (u1 >= 56320 && u1 <= 57343) {
-          pushCodeUnit(parts, chunk, REPLACEMENT);
-          continue;
-        }
-        pushCodeUnit(parts, chunk, u1);
-      }
-      if (i < len) {
-        pushCodeUnit(parts, chunk, REPLACEMENT);
-      }
-      flushChunk(parts, chunk);
-      return parts.join("");
-    }
-    function decodeASCII(bytes) {
-      const parts = [];
-      for (let i = 0; i < bytes.length; i += CHUNK) {
-        const end = Math.min(bytes.length, i + CHUNK);
-        const codes = new Array(end - i);
-        for (let j2 = i, k2 = 0; j2 < end; j2++, k2++) {
-          codes[k2] = bytes[j2] & 127;
-        }
-        parts.push(String.fromCharCode.apply(null, codes));
-      }
-      return parts.join("");
-    }
-    function decodeLatin1(bytes) {
-      const parts = [];
-      for (let i = 0; i < bytes.length; i += CHUNK) {
-        const end = Math.min(bytes.length, i + CHUNK);
-        const codes = new Array(end - i);
-        for (let j2 = i, k2 = 0; j2 < end; j2++, k2++) {
-          codes[k2] = bytes[j2];
-        }
-        parts.push(String.fromCharCode.apply(null, codes));
-      }
-      return parts.join("");
-    }
-    function decodeWindows1252(bytes) {
-      const parts = [];
-      let out = "";
-      for (let i = 0; i < bytes.length; i++) {
-        const b2 = bytes[i];
-        const extra = b2 >= 128 && b2 <= 159 ? WINDOWS_1252_EXTRA[b2] : void 0;
-        out += extra !== null && extra !== void 0 ? extra : String.fromCharCode(b2);
-        if (out.length >= CHUNK) {
-          parts.push(out);
-          out = "";
-        }
-      }
-      if (out)
-        parts.push(out);
-      return parts.join("");
-    }
-    function dv(array) {
-      return new DataView(array.buffer, array.byteOffset);
-    }
-    const UINT8 = {
-      len: 1,
-      get(array, offset2) {
-        return dv(array).getUint8(offset2);
-      },
-      put(array, offset2, value) {
-        dv(array).setUint8(offset2, value);
-        return offset2 + 1;
-      }
-    };
-    const UINT16_LE = {
-      len: 2,
-      get(array, offset2) {
-        return dv(array).getUint16(offset2, true);
-      },
-      put(array, offset2, value) {
-        dv(array).setUint16(offset2, value, true);
-        return offset2 + 2;
-      }
-    };
-    const UINT16_BE = {
-      len: 2,
-      get(array, offset2) {
-        return dv(array).getUint16(offset2);
-      },
-      put(array, offset2, value) {
-        dv(array).setUint16(offset2, value);
-        return offset2 + 2;
-      }
-    };
-    const UINT32_LE = {
-      len: 4,
-      get(array, offset2) {
-        return dv(array).getUint32(offset2, true);
-      },
-      put(array, offset2, value) {
-        dv(array).setUint32(offset2, value, true);
-        return offset2 + 4;
-      }
-    };
-    const UINT32_BE = {
-      len: 4,
-      get(array, offset2) {
-        return dv(array).getUint32(offset2);
-      },
-      put(array, offset2, value) {
-        dv(array).setUint32(offset2, value);
-        return offset2 + 4;
-      }
-    };
-    const INT32_BE = {
-      len: 4,
-      get(array, offset2) {
-        return dv(array).getInt32(offset2);
-      },
-      put(array, offset2, value) {
-        dv(array).setInt32(offset2, value);
-        return offset2 + 4;
-      }
-    };
-    const UINT64_LE = {
-      len: 8,
-      get(array, offset2) {
-        return dv(array).getBigUint64(offset2, true);
-      },
-      put(array, offset2, value) {
-        dv(array).setBigUint64(offset2, value, true);
-        return offset2 + 8;
-      }
-    };
-    class StringType {
-      constructor(len, encoding) {
-        this.len = len;
-        this.encoding = encoding;
-      }
-      get(data, offset2 = 0) {
-        const bytes = data.subarray(offset2, offset2 + this.len);
-        return textDecode(bytes, this.encoding);
-      }
-    }
-    const defaultMessages = "End-Of-Stream";
-    class EndOfStreamError extends Error {
-      constructor() {
-        super(defaultMessages);
-        this.name = "EndOfStreamError";
-      }
-    }
-    class AbortError extends Error {
-      constructor(message = "The operation was aborted") {
-        super(message);
-        this.name = "AbortError";
-      }
-    }
-    class AbstractStreamReader {
-      constructor() {
-        this.endOfStream = false;
-        this.interrupted = false;
-        this.peekQueue = [];
-      }
-      async peek(uint8Array, mayBeLess = false) {
-        const bytesRead = await this.read(uint8Array, mayBeLess);
-        this.peekQueue.push(uint8Array.subarray(0, bytesRead));
-        return bytesRead;
-      }
-      async read(buffer, mayBeLess = false) {
-        if (buffer.length === 0) {
-          return 0;
-        }
-        let bytesRead = this.readFromPeekBuffer(buffer);
-        if (!this.endOfStream) {
-          bytesRead += await this.readRemainderFromStream(buffer.subarray(bytesRead), mayBeLess);
-        }
-        if (bytesRead === 0 && !mayBeLess) {
-          throw new EndOfStreamError();
-        }
-        return bytesRead;
-      }
-      /**
-       * Read chunk from stream
-       * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
-       * @returns Number of bytes read
-       */
-      readFromPeekBuffer(buffer) {
-        let remaining = buffer.length;
-        let bytesRead = 0;
-        while (this.peekQueue.length > 0 && remaining > 0) {
-          const peekData = this.peekQueue.pop();
-          if (!peekData)
-            throw new Error("peekData should be defined");
-          const lenCopy = Math.min(peekData.length, remaining);
-          buffer.set(peekData.subarray(0, lenCopy), bytesRead);
-          bytesRead += lenCopy;
-          remaining -= lenCopy;
-          if (lenCopy < peekData.length) {
-            this.peekQueue.push(peekData.subarray(lenCopy));
-          }
-        }
-        return bytesRead;
-      }
-      async readRemainderFromStream(buffer, mayBeLess) {
-        let bytesRead = 0;
-        while (bytesRead < buffer.length && !this.endOfStream) {
-          if (this.interrupted) {
-            throw new AbortError();
-          }
-          const chunkLen = await this.readFromStream(buffer.subarray(bytesRead), mayBeLess);
-          if (chunkLen === 0)
-            break;
-          bytesRead += chunkLen;
-        }
-        if (!mayBeLess && bytesRead < buffer.length) {
-          throw new EndOfStreamError();
-        }
-        return bytesRead;
-      }
-    }
-    class WebStreamReader extends AbstractStreamReader {
-      constructor(reader) {
-        super();
-        this.reader = reader;
-      }
-      async abort() {
-        return this.close();
-      }
-      async close() {
-        this.reader.releaseLock();
-      }
-    }
-    class WebStreamByobReader extends WebStreamReader {
-      /**
-       * Read from stream
-       * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
-       * @param mayBeLess - If true, may fill the buffer partially
-       * @protected Bytes read
-       */
-      async readFromStream(buffer, mayBeLess) {
-        if (buffer.length === 0)
-          return 0;
-        const result = await this.reader.read(new Uint8Array(buffer.length), { min: mayBeLess ? void 0 : buffer.length });
-        if (result.done) {
-          this.endOfStream = result.done;
-        }
-        if (result.value) {
-          buffer.set(result.value);
-          return result.value.length;
-        }
-        return 0;
-      }
-    }
-    class WebStreamDefaultReader extends AbstractStreamReader {
-      constructor(reader) {
-        super();
-        this.reader = reader;
-        this.buffer = null;
-      }
-      /**
-       * Copy chunk to target, and store the remainder in this.buffer
-       */
-      writeChunk(target, chunk) {
-        const written = Math.min(chunk.length, target.length);
-        target.set(chunk.subarray(0, written));
-        if (written < chunk.length) {
-          this.buffer = chunk.subarray(written);
-        } else {
-          this.buffer = null;
-        }
-        return written;
-      }
-      /**
-       * Read from stream
-       * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
-       * @param mayBeLess - If true, may fill the buffer partially
-       * @protected Bytes read
-       */
-      async readFromStream(buffer, mayBeLess) {
-        if (buffer.length === 0)
-          return 0;
-        let totalBytesRead = 0;
-        if (this.buffer) {
-          totalBytesRead += this.writeChunk(buffer, this.buffer);
-        }
-        while (totalBytesRead < buffer.length && !this.endOfStream) {
-          const result = await this.reader.read();
-          if (result.done) {
-            this.endOfStream = true;
-            break;
-          }
-          if (result.value) {
-            totalBytesRead += this.writeChunk(buffer.subarray(totalBytesRead), result.value);
-          }
-        }
-        if (!mayBeLess && totalBytesRead === 0 && this.endOfStream) {
-          throw new EndOfStreamError();
-        }
-        return totalBytesRead;
-      }
-      abort() {
-        this.interrupted = true;
-        return this.reader.cancel();
-      }
-      async close() {
-        await this.abort();
-        this.reader.releaseLock();
-      }
-    }
-    function makeWebStreamReader(stream) {
-      try {
-        const reader = stream.getReader({ mode: "byob" });
-        if (reader instanceof ReadableStreamDefaultReader) {
-          return new WebStreamDefaultReader(reader);
-        }
-        return new WebStreamByobReader(reader);
-      } catch (error) {
-        if (error instanceof TypeError) {
-          return new WebStreamDefaultReader(stream.getReader());
-        }
-        throw error;
-      }
-    }
-    class AbstractTokenizer {
-      /**
-       * Constructor
-       * @param options Tokenizer options
-       * @protected
-       */
-      constructor(options2) {
-        this.numBuffer = new Uint8Array(8);
-        this.position = 0;
-        this.onClose = options2 == null ? void 0 : options2.onClose;
-        if (options2 == null ? void 0 : options2.abortSignal) {
-          options2.abortSignal.addEventListener("abort", () => {
-            this.abort();
-          });
-        }
-      }
-      /**
-       * Read a token from the tokenizer-stream
-       * @param token - The token to read
-       * @param position - If provided, the desired position in the tokenizer-stream
-       * @returns Promise with token data
-       */
-      async readToken(token, position = this.position) {
-        const uint8Array = new Uint8Array(token.len);
-        const len = await this.readBuffer(uint8Array, { position });
-        if (len < token.len)
-          throw new EndOfStreamError();
-        return token.get(uint8Array, 0);
-      }
-      /**
-       * Peek a token from the tokenizer-stream.
-       * @param token - Token to peek from the tokenizer-stream.
-       * @param position - Offset where to begin reading within the file. If position is null, data will be read from the current file position.
-       * @returns Promise with token data
-       */
-      async peekToken(token, position = this.position) {
-        const uint8Array = new Uint8Array(token.len);
-        const len = await this.peekBuffer(uint8Array, { position });
-        if (len < token.len)
-          throw new EndOfStreamError();
-        return token.get(uint8Array, 0);
-      }
-      /**
-       * Read a numeric token from the stream
-       * @param token - Numeric token
-       * @returns Promise with number
-       */
-      async readNumber(token) {
-        const len = await this.readBuffer(this.numBuffer, { length: token.len });
-        if (len < token.len)
-          throw new EndOfStreamError();
-        return token.get(this.numBuffer, 0);
-      }
-      /**
-       * Read a numeric token from the stream
-       * @param token - Numeric token
-       * @returns Promise with number
-       */
-      async peekNumber(token) {
-        const len = await this.peekBuffer(this.numBuffer, { length: token.len });
-        if (len < token.len)
-          throw new EndOfStreamError();
-        return token.get(this.numBuffer, 0);
-      }
-      /**
-       * Ignore number of bytes, advances the pointer in under tokenizer-stream.
-       * @param length - Number of bytes to ignore.  Must be ≥ 0.
-       * @return resolves the number of bytes ignored, equals length if this available, otherwise the number of bytes available
-       */
-      async ignore(length) {
-        if (length < 0) {
-          throw new RangeError("ignore length must be ≥ 0 bytes");
-        }
-        if (this.fileInfo.size !== void 0) {
-          const bytesLeft = this.fileInfo.size - this.position;
-          if (length > bytesLeft) {
-            this.position += bytesLeft;
-            return bytesLeft;
-          }
-        }
-        this.position += length;
-        return length;
-      }
-      async close() {
-        var _a2;
-        await this.abort();
-        await ((_a2 = this.onClose) == null ? void 0 : _a2.call(this));
-      }
-      normalizeOptions(uint8Array, options2) {
-        if (!this.supportsRandomAccess() && options2 && options2.position !== void 0 && options2.position < this.position) {
-          throw new Error("`options.position` must be equal or greater than `tokenizer.position`");
-        }
-        return {
-          ...{
-            mayBeLess: false,
-            offset: 0,
-            length: uint8Array.length,
-            position: this.position
-          },
-          ...options2
-        };
-      }
-      abort() {
-        return Promise.resolve();
-      }
-    }
-    const maxBufferSize = 256e3;
-    class ReadStreamTokenizer extends AbstractTokenizer {
-      /**
-       * Constructor
-       * @param streamReader stream-reader to read from
-       * @param options Tokenizer options
-       */
-      constructor(streamReader, options2) {
-        super(options2);
-        this.streamReader = streamReader;
-        this.fileInfo = (options2 == null ? void 0 : options2.fileInfo) ?? {};
-      }
-      /**
-       * Read buffer from tokenizer
-       * @param uint8Array - Target Uint8Array to fill with data read from the tokenizer-stream
-       * @param options - Read behaviour options
-       * @returns Promise with number of bytes read
-       */
-      async readBuffer(uint8Array, options2) {
-        const normOptions = this.normalizeOptions(uint8Array, options2);
-        const skipBytes = normOptions.position - this.position;
-        if (skipBytes > 0) {
-          await this.ignore(skipBytes);
-          return this.readBuffer(uint8Array, options2);
-        }
-        if (skipBytes < 0) {
-          throw new Error("`options.position` must be equal or greater than `tokenizer.position`");
-        }
-        if (normOptions.length === 0) {
-          return 0;
-        }
-        const bytesRead = await this.streamReader.read(uint8Array.subarray(0, normOptions.length), normOptions.mayBeLess);
-        this.position += bytesRead;
-        if ((!options2 || !options2.mayBeLess) && bytesRead < normOptions.length) {
-          throw new EndOfStreamError();
-        }
-        return bytesRead;
-      }
-      /**
-       * Peek (read ahead) buffer from tokenizer
-       * @param uint8Array - Uint8Array (or Buffer) to write data to
-       * @param options - Read behaviour options
-       * @returns Promise with number of bytes peeked
-       */
-      async peekBuffer(uint8Array, options2) {
-        const normOptions = this.normalizeOptions(uint8Array, options2);
-        let bytesRead = 0;
-        if (normOptions.position) {
-          const skipBytes = normOptions.position - this.position;
-          if (skipBytes > 0) {
-            const skipBuffer = new Uint8Array(normOptions.length + skipBytes);
-            bytesRead = await this.peekBuffer(skipBuffer, { mayBeLess: normOptions.mayBeLess });
-            uint8Array.set(skipBuffer.subarray(skipBytes));
-            return bytesRead - skipBytes;
-          }
-          if (skipBytes < 0) {
-            throw new Error("Cannot peek from a negative offset in a stream");
-          }
-        }
-        if (normOptions.length > 0) {
-          try {
-            bytesRead = await this.streamReader.peek(uint8Array.subarray(0, normOptions.length), normOptions.mayBeLess);
-          } catch (err) {
-            if ((options2 == null ? void 0 : options2.mayBeLess) && err instanceof EndOfStreamError) {
-              return 0;
-            }
-            throw err;
-          }
-          if (!normOptions.mayBeLess && bytesRead < normOptions.length) {
-            throw new EndOfStreamError();
-          }
-        }
-        return bytesRead;
-      }
-      /**
-       * @param length Number of bytes to ignore. Must be ≥ 0.
-       */
-      async ignore(length) {
-        if (length < 0) {
-          throw new RangeError("ignore length must be ≥ 0 bytes");
-        }
-        const bufSize = Math.min(maxBufferSize, length);
-        const buf = new Uint8Array(bufSize);
-        let totBytesRead = 0;
-        while (totBytesRead < length) {
-          const remaining = length - totBytesRead;
-          const bytesRead = await this.readBuffer(buf, { length: Math.min(bufSize, remaining) });
-          if (bytesRead < 0) {
-            return bytesRead;
-          }
-          totBytesRead += bytesRead;
-        }
-        return totBytesRead;
-      }
-      abort() {
-        return this.streamReader.abort();
-      }
-      async close() {
-        return this.streamReader.close();
-      }
-      supportsRandomAccess() {
-        return false;
-      }
-    }
-    class BufferTokenizer extends AbstractTokenizer {
-      /**
-       * Construct BufferTokenizer
-       * @param uint8Array - Uint8Array to tokenize
-       * @param options Tokenizer options
-       */
-      constructor(uint8Array, options2) {
-        super(options2);
-        this.uint8Array = uint8Array;
-        this.fileInfo = { ...(options2 == null ? void 0 : options2.fileInfo) ?? {}, ...{ size: uint8Array.length } };
-      }
-      /**
-       * Read buffer from tokenizer
-       * @param uint8Array - Uint8Array to tokenize
-       * @param options - Read behaviour options
-       * @returns {Promise<number>}
-       */
-      async readBuffer(uint8Array, options2) {
-        if (options2 == null ? void 0 : options2.position) {
-          this.position = options2.position;
-        }
-        const bytesRead = await this.peekBuffer(uint8Array, options2);
-        this.position += bytesRead;
-        return bytesRead;
-      }
-      /**
-       * Peek (read ahead) buffer from tokenizer
-       * @param uint8Array
-       * @param options - Read behaviour options
-       * @returns {Promise<number>}
-       */
-      async peekBuffer(uint8Array, options2) {
-        const normOptions = this.normalizeOptions(uint8Array, options2);
-        const bytes2read = Math.min(this.uint8Array.length - normOptions.position, normOptions.length);
-        if (!normOptions.mayBeLess && bytes2read < normOptions.length) {
-          throw new EndOfStreamError();
-        }
-        uint8Array.set(this.uint8Array.subarray(normOptions.position, normOptions.position + bytes2read));
-        return bytes2read;
-      }
-      close() {
-        return super.close();
-      }
-      supportsRandomAccess() {
-        return true;
-      }
-      setPosition(position) {
-        this.position = position;
-      }
-    }
-    class BlobTokenizer extends AbstractTokenizer {
-      /**
-       * Construct BufferTokenizer
-       * @param blob - Uint8Array to tokenize
-       * @param options Tokenizer options
-       */
-      constructor(blob, options2) {
-        super(options2);
-        this.blob = blob;
-        this.fileInfo = { ...(options2 == null ? void 0 : options2.fileInfo) ?? {}, ...{ size: blob.size, mimeType: blob.type } };
-      }
-      /**
-       * Read buffer from tokenizer
-       * @param uint8Array - Uint8Array to tokenize
-       * @param options - Read behaviour options
-       * @returns {Promise<number>}
-       */
-      async readBuffer(uint8Array, options2) {
-        if (options2 == null ? void 0 : options2.position) {
-          this.position = options2.position;
-        }
-        const bytesRead = await this.peekBuffer(uint8Array, options2);
-        this.position += bytesRead;
-        return bytesRead;
-      }
-      /**
-       * Peek (read ahead) buffer from tokenizer
-       * @param buffer
-       * @param options - Read behaviour options
-       * @returns {Promise<number>}
-       */
-      async peekBuffer(buffer, options2) {
-        const normOptions = this.normalizeOptions(buffer, options2);
-        const bytes2read = Math.min(this.blob.size - normOptions.position, normOptions.length);
-        if (!normOptions.mayBeLess && bytes2read < normOptions.length) {
-          throw new EndOfStreamError();
-        }
-        const arrayBuffer = await this.blob.slice(normOptions.position, normOptions.position + bytes2read).arrayBuffer();
-        buffer.set(new Uint8Array(arrayBuffer));
-        return bytes2read;
-      }
-      close() {
-        return super.close();
-      }
-      supportsRandomAccess() {
-        return true;
-      }
-      setPosition(position) {
-        this.position = position;
-      }
-    }
-    function fromWebStream(webStream, options2) {
-      const webStreamReader = makeWebStreamReader(webStream);
-      const _options7 = options2 ?? {};
-      const chainedClose = _options7.onClose;
-      _options7.onClose = async () => {
-        await webStreamReader.close();
-        if (chainedClose) {
-          return chainedClose();
-        }
-      };
-      return new ReadStreamTokenizer(webStreamReader, _options7);
-    }
-    function fromBuffer(uint8Array, options2) {
-      return new BufferTokenizer(uint8Array, options2);
-    }
-    function fromBlob(blob, options2) {
-      return new BlobTokenizer(blob, options2);
-    }
-    var browser = { exports: {} };
-    var ms;
-    var hasRequiredMs;
-    function requireMs() {
-      if (hasRequiredMs) return ms;
-      hasRequiredMs = 1;
-      var s = 1e3;
-      var m2 = s * 60;
-      var h2 = m2 * 60;
-      var d2 = h2 * 24;
-      var w2 = d2 * 7;
-      var y2 = d2 * 365.25;
-      ms = function(val, options2) {
-        options2 = options2 || {};
-        var type = typeof val;
-        if (type === "string" && val.length > 0) {
-          return parse2(val);
-        } else if (type === "number" && isFinite(val)) {
-          return options2.long ? fmtLong(val) : fmtShort(val);
-        }
-        throw new Error(
-          "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
-        );
-      };
-      function parse2(str) {
-        str = String(str);
-        if (str.length > 100) {
-          return;
-        }
-        var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
-          str
-        );
-        if (!match2) {
-          return;
-        }
-        var n = parseFloat(match2[1]);
-        var type = (match2[2] || "ms").toLowerCase();
-        switch (type) {
-          case "years":
-          case "year":
-          case "yrs":
-          case "yr":
-          case "y":
-            return n * y2;
-          case "weeks":
-          case "week":
-          case "w":
-            return n * w2;
-          case "days":
-          case "day":
-          case "d":
-            return n * d2;
-          case "hours":
-          case "hour":
-          case "hrs":
-          case "hr":
-          case "h":
-            return n * h2;
-          case "minutes":
-          case "minute":
-          case "mins":
-          case "min":
-          case "m":
-            return n * m2;
-          case "seconds":
-          case "second":
-          case "secs":
-          case "sec":
-          case "s":
-            return n * s;
-          case "milliseconds":
-          case "millisecond":
-          case "msecs":
-          case "msec":
-          case "ms":
-            return n;
-          default:
-            return void 0;
-        }
-      }
-      function fmtShort(ms2) {
-        var msAbs = Math.abs(ms2);
-        if (msAbs >= d2) {
-          return Math.round(ms2 / d2) + "d";
-        }
-        if (msAbs >= h2) {
-          return Math.round(ms2 / h2) + "h";
-        }
-        if (msAbs >= m2) {
-          return Math.round(ms2 / m2) + "m";
-        }
-        if (msAbs >= s) {
-          return Math.round(ms2 / s) + "s";
-        }
-        return ms2 + "ms";
-      }
-      function fmtLong(ms2) {
-        var msAbs = Math.abs(ms2);
-        if (msAbs >= d2) {
-          return plural(ms2, msAbs, d2, "day");
-        }
-        if (msAbs >= h2) {
-          return plural(ms2, msAbs, h2, "hour");
-        }
-        if (msAbs >= m2) {
-          return plural(ms2, msAbs, m2, "minute");
-        }
-        if (msAbs >= s) {
-          return plural(ms2, msAbs, s, "second");
-        }
-        return ms2 + " ms";
-      }
-      function plural(ms2, msAbs, n, name) {
-        var isPlural = msAbs >= n * 1.5;
-        return Math.round(ms2 / n) + " " + name + (isPlural ? "s" : "");
-      }
-      return ms;
-    }
-    function setup(env) {
-      createDebug.debug = createDebug;
-      createDebug.default = createDebug;
-      createDebug.coerce = coerce;
-      createDebug.disable = disable;
-      createDebug.enable = enable;
-      createDebug.enabled = enabled;
-      createDebug.humanize = requireMs();
-      createDebug.destroy = destroy;
-      Object.keys(env).forEach((key) => {
-        createDebug[key] = env[key];
-      });
-      createDebug.names = [];
-      createDebug.skips = [];
-      createDebug.formatters = {};
-      function selectColor(namespace2) {
-        let hash = 0;
-        for (let i = 0; i < namespace2.length; i++) {
-          hash = (hash << 5) - hash + namespace2.charCodeAt(i);
-          hash |= 0;
-        }
-        return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
-      }
-      createDebug.selectColor = selectColor;
-      function createDebug(namespace2) {
-        let prevTime;
-        let enableOverride = null;
-        let namespacesCache;
-        let enabledCache;
-        function debug2(...args) {
-          if (!debug2.enabled) {
-            return;
-          }
-          const self2 = debug2;
-          const curr = Number(/* @__PURE__ */ new Date());
-          const ms2 = curr - (prevTime || curr);
-          self2.diff = ms2;
-          self2.prev = prevTime;
-          self2.curr = curr;
-          prevTime = curr;
-          args[0] = createDebug.coerce(args[0]);
-          if (typeof args[0] !== "string") {
-            args.unshift("%O");
-          }
-          let index2 = 0;
-          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
-            if (match2 === "%%") {
-              return "%";
-            }
-            index2++;
-            const formatter = createDebug.formatters[format];
-            if (typeof formatter === "function") {
-              const val = args[index2];
-              match2 = formatter.call(self2, val);
-              args.splice(index2, 1);
-              index2--;
-            }
-            return match2;
-          });
-          createDebug.formatArgs.call(self2, args);
-          const logFn = self2.log || createDebug.log;
-          logFn.apply(self2, args);
-        }
-        debug2.namespace = namespace2;
-        debug2.useColors = createDebug.useColors();
-        debug2.color = createDebug.selectColor(namespace2);
-        debug2.extend = extend;
-        debug2.destroy = createDebug.destroy;
-        Object.defineProperty(debug2, "enabled", {
-          enumerable: true,
-          configurable: false,
-          get: () => {
-            if (enableOverride !== null) {
-              return enableOverride;
-            }
-            if (namespacesCache !== createDebug.namespaces) {
-              namespacesCache = createDebug.namespaces;
-              enabledCache = createDebug.enabled(namespace2);
-            }
-            return enabledCache;
-          },
-          set: (v2) => {
-            enableOverride = v2;
-          }
-        });
-        if (typeof createDebug.init === "function") {
-          createDebug.init(debug2);
-        }
-        return debug2;
-      }
-      function extend(namespace2, delimiter) {
-        const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace2);
-        newDebug.log = this.log;
-        return newDebug;
-      }
-      function enable(namespaces) {
-        createDebug.save(namespaces);
-        createDebug.namespaces = namespaces;
-        createDebug.names = [];
-        createDebug.skips = [];
-        const split2 = (typeof namespaces === "string" ? namespaces : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
-        for (const ns of split2) {
-          if (ns[0] === "-") {
-            createDebug.skips.push(ns.slice(1));
-          } else {
-            createDebug.names.push(ns);
-          }
-        }
-      }
-      function matchesTemplate(search, template) {
-        let searchIndex = 0;
-        let templateIndex = 0;
-        let starIndex = -1;
-        let matchIndex = 0;
-        while (searchIndex < search.length) {
-          if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
-            if (template[templateIndex] === "*") {
-              starIndex = templateIndex;
-              matchIndex = searchIndex;
-              templateIndex++;
-            } else {
-              searchIndex++;
-              templateIndex++;
-            }
-          } else if (starIndex !== -1) {
-            templateIndex = starIndex + 1;
-            matchIndex++;
-            searchIndex = matchIndex;
-          } else {
-            return false;
-          }
-        }
-        while (templateIndex < template.length && template[templateIndex] === "*") {
-          templateIndex++;
-        }
-        return templateIndex === template.length;
-      }
-      function disable() {
-        const namespaces = [
-          ...createDebug.names,
-          ...createDebug.skips.map((namespace2) => "-" + namespace2)
-        ].join(",");
-        createDebug.enable("");
-        return namespaces;
-      }
-      function enabled(name) {
-        for (const skip of createDebug.skips) {
-          if (matchesTemplate(name, skip)) {
-            return false;
-          }
-        }
-        for (const ns of createDebug.names) {
-          if (matchesTemplate(name, ns)) {
-            return true;
-          }
-        }
-        return false;
-      }
-      function coerce(val) {
-        if (val instanceof Error) {
-          return val.stack || val.message;
-        }
-        return val;
-      }
-      function destroy() {
-        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-      }
-      createDebug.enable(createDebug.load());
-      return createDebug;
-    }
-    var common = setup;
-    (function(module2, exports2) {
-      var define_process_env_default2 = {};
-      exports2.formatArgs = formatArgs;
-      exports2.save = save;
-      exports2.load = load;
-      exports2.useColors = useColors;
-      exports2.storage = localstorage();
-      exports2.destroy = /* @__PURE__ */ (() => {
-        let warned = false;
-        return () => {
-          if (!warned) {
-            warned = true;
-            console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-          }
-        };
-      })();
-      exports2.colors = [
-        "#0000CC",
-        "#0000FF",
-        "#0033CC",
-        "#0033FF",
-        "#0066CC",
-        "#0066FF",
-        "#0099CC",
-        "#0099FF",
-        "#00CC00",
-        "#00CC33",
-        "#00CC66",
-        "#00CC99",
-        "#00CCCC",
-        "#00CCFF",
-        "#3300CC",
-        "#3300FF",
-        "#3333CC",
-        "#3333FF",
-        "#3366CC",
-        "#3366FF",
-        "#3399CC",
-        "#3399FF",
-        "#33CC00",
-        "#33CC33",
-        "#33CC66",
-        "#33CC99",
-        "#33CCCC",
-        "#33CCFF",
-        "#6600CC",
-        "#6600FF",
-        "#6633CC",
-        "#6633FF",
-        "#66CC00",
-        "#66CC33",
-        "#9900CC",
-        "#9900FF",
-        "#9933CC",
-        "#9933FF",
-        "#99CC00",
-        "#99CC33",
-        "#CC0000",
-        "#CC0033",
-        "#CC0066",
-        "#CC0099",
-        "#CC00CC",
-        "#CC00FF",
-        "#CC3300",
-        "#CC3333",
-        "#CC3366",
-        "#CC3399",
-        "#CC33CC",
-        "#CC33FF",
-        "#CC6600",
-        "#CC6633",
-        "#CC9900",
-        "#CC9933",
-        "#CCCC00",
-        "#CCCC33",
-        "#FF0000",
-        "#FF0033",
-        "#FF0066",
-        "#FF0099",
-        "#FF00CC",
-        "#FF00FF",
-        "#FF3300",
-        "#FF3333",
-        "#FF3366",
-        "#FF3399",
-        "#FF33CC",
-        "#FF33FF",
-        "#FF6600",
-        "#FF6633",
-        "#FF9900",
-        "#FF9933",
-        "#FFCC00",
-        "#FFCC33"
-      ];
-      function useColors() {
-        if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
-          return true;
-        }
-        if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-          return false;
-        }
-        let m2;
-        return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
-        typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
-        // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-        typeof navigator !== "undefined" && navigator.userAgent && (m2 = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m2[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
-        typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
-      }
-      function formatArgs(args) {
-        args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
-        if (!this.useColors) {
-          return;
-        }
-        const c2 = "color: " + this.color;
-        args.splice(1, 0, c2, "color: inherit");
-        let index2 = 0;
-        let lastC = 0;
-        args[0].replace(/%[a-zA-Z%]/g, (match2) => {
-          if (match2 === "%%") {
-            return;
-          }
-          index2++;
-          if (match2 === "%c") {
-            lastC = index2;
-          }
-        });
-        args.splice(lastC, 0, c2);
-      }
-      exports2.log = console.debug || console.log || (() => {
-      });
-      function save(namespaces) {
-        try {
-          if (namespaces) {
-            exports2.storage.setItem("debug", namespaces);
-          } else {
-            exports2.storage.removeItem("debug");
-          }
-        } catch (error) {
-        }
-      }
-      function load() {
-        let r2;
-        try {
-          r2 = exports2.storage.getItem("debug") || exports2.storage.getItem("DEBUG");
-        } catch (error) {
-        }
-        if (!r2 && typeof process !== "undefined" && "env" in process) {
-          r2 = define_process_env_default2.DEBUG;
-        }
-        return r2;
-      }
-      function localstorage() {
-        try {
-          return localStorage;
-        } catch (error) {
-        }
-      }
-      module2.exports = common(exports2);
-      const { formatters } = module2.exports;
-      formatters.j = function(v2) {
-        try {
-          return JSON.stringify(v2);
-        } catch (error) {
-          return "[UnexpectedJSONParseError]: " + error.message;
-        }
-      };
-    })(browser, browser.exports);
-    var browserExports = browser.exports;
-    const initDebug = /* @__PURE__ */ getDefaultExportFromCjs(browserExports);
-    const Signature = {
-      LocalFileHeader: 67324752,
-      DataDescriptor: 134695760,
-      CentralFileHeader: 33639248,
-      EndOfCentralDirectory: 101010256
-    };
-    const DataDescriptor = {
-      get(array) {
-        return {
-          signature: UINT32_LE.get(array, 0),
-          compressedSize: UINT32_LE.get(array, 8),
-          uncompressedSize: UINT32_LE.get(array, 12)
-        };
-      },
-      len: 16
-    };
-    const LocalFileHeaderToken = {
-      get(array) {
-        const flags = UINT16_LE.get(array, 6);
-        return {
-          signature: UINT32_LE.get(array, 0),
-          minVersion: UINT16_LE.get(array, 4),
-          dataDescriptor: !!(flags & 8),
-          compressedMethod: UINT16_LE.get(array, 8),
-          compressedSize: UINT32_LE.get(array, 18),
-          uncompressedSize: UINT32_LE.get(array, 22),
-          filenameLength: UINT16_LE.get(array, 26),
-          extraFieldLength: UINT16_LE.get(array, 28),
-          filename: null
-        };
-      },
-      len: 30
-    };
-    const EndOfCentralDirectoryRecordToken = {
-      get(array) {
-        return {
-          signature: UINT32_LE.get(array, 0),
-          nrOfThisDisk: UINT16_LE.get(array, 4),
-          nrOfThisDiskWithTheStart: UINT16_LE.get(array, 6),
-          nrOfEntriesOnThisDisk: UINT16_LE.get(array, 8),
-          nrOfEntriesOfSize: UINT16_LE.get(array, 10),
-          sizeOfCd: UINT32_LE.get(array, 12),
-          offsetOfStartOfCd: UINT32_LE.get(array, 16),
-          zipFileCommentLength: UINT16_LE.get(array, 20)
-        };
-      },
-      len: 22
-    };
-    const FileHeader = {
-      get(array) {
-        const flags = UINT16_LE.get(array, 8);
-        return {
-          signature: UINT32_LE.get(array, 0),
-          minVersion: UINT16_LE.get(array, 6),
-          dataDescriptor: !!(flags & 8),
-          compressedMethod: UINT16_LE.get(array, 10),
-          compressedSize: UINT32_LE.get(array, 20),
-          uncompressedSize: UINT32_LE.get(array, 24),
-          filenameLength: UINT16_LE.get(array, 28),
-          extraFieldLength: UINT16_LE.get(array, 30),
-          fileCommentLength: UINT16_LE.get(array, 32),
-          relativeOffsetOfLocalHeader: UINT32_LE.get(array, 42),
-          filename: null
-        };
-      },
-      len: 46
-    };
-    function signatureToArray(signature) {
-      const signatureBytes = new Uint8Array(UINT32_LE.len);
-      UINT32_LE.put(signatureBytes, 0, signature);
-      return signatureBytes;
-    }
-    const debug$7 = initDebug("tokenizer:inflate");
-    const syncBufferSize = 256 * 1024;
-    const ddSignatureArray = signatureToArray(Signature.DataDescriptor);
-    const eocdSignatureBytes = signatureToArray(Signature.EndOfCentralDirectory);
-    class ZipHandler {
-      constructor(tokenizer) {
-        this.tokenizer = tokenizer;
-        this.syncBuffer = new Uint8Array(syncBufferSize);
-      }
-      async isZip() {
-        return await this.peekSignature() === Signature.LocalFileHeader;
-      }
-      peekSignature() {
-        return this.tokenizer.peekToken(UINT32_LE);
-      }
-      async findEndOfCentralDirectoryLocator() {
-        const randomReadTokenizer = this.tokenizer;
-        const chunkLength = Math.min(16 * 1024, randomReadTokenizer.fileInfo.size);
-        const buffer = this.syncBuffer.subarray(0, chunkLength);
-        await this.tokenizer.readBuffer(buffer, { position: randomReadTokenizer.fileInfo.size - chunkLength });
-        for (let i = buffer.length - 4; i >= 0; i--) {
-          if (buffer[i] === eocdSignatureBytes[0] && buffer[i + 1] === eocdSignatureBytes[1] && buffer[i + 2] === eocdSignatureBytes[2] && buffer[i + 3] === eocdSignatureBytes[3]) {
-            return randomReadTokenizer.fileInfo.size - chunkLength + i;
-          }
-        }
-        return -1;
-      }
-      async readCentralDirectory() {
-        if (!this.tokenizer.supportsRandomAccess()) {
-          debug$7("Cannot reading central-directory without random-read support");
-          return;
-        }
-        debug$7("Reading central-directory...");
-        const pos = this.tokenizer.position;
-        const offset2 = await this.findEndOfCentralDirectoryLocator();
-        if (offset2 > 0) {
-          debug$7("Central-directory 32-bit signature found");
-          const eocdHeader = await this.tokenizer.readToken(EndOfCentralDirectoryRecordToken, offset2);
-          const files = [];
-          this.tokenizer.setPosition(eocdHeader.offsetOfStartOfCd);
-          for (let n = 0; n < eocdHeader.nrOfEntriesOfSize; ++n) {
-            const entry = await this.tokenizer.readToken(FileHeader);
-            if (entry.signature !== Signature.CentralFileHeader) {
-              throw new Error("Expected Central-File-Header signature");
-            }
-            entry.filename = await this.tokenizer.readToken(new StringType(entry.filenameLength, "utf-8"));
-            await this.tokenizer.ignore(entry.extraFieldLength);
-            await this.tokenizer.ignore(entry.fileCommentLength);
-            files.push(entry);
-            debug$7(`Add central-directory file-entry: n=${n + 1}/${files.length}: filename=${files[n].filename}`);
-          }
-          this.tokenizer.setPosition(pos);
-          return files;
-        }
-        this.tokenizer.setPosition(pos);
-      }
-      async unzip(fileCb) {
-        const entries = await this.readCentralDirectory();
-        if (entries) {
-          return this.iterateOverCentralDirectory(entries, fileCb);
-        }
-        let stop = false;
-        do {
-          const zipHeader = await this.readLocalFileHeader();
-          if (!zipHeader)
-            break;
-          const next = fileCb(zipHeader);
-          stop = !!next.stop;
-          let fileData;
-          await this.tokenizer.ignore(zipHeader.extraFieldLength);
-          if (zipHeader.dataDescriptor && zipHeader.compressedSize === 0) {
-            const chunks = [];
-            let len = syncBufferSize;
-            debug$7("Compressed-file-size unknown, scanning for next data-descriptor-signature....");
-            let nextHeaderIndex = -1;
-            while (nextHeaderIndex < 0 && len === syncBufferSize) {
-              len = await this.tokenizer.peekBuffer(this.syncBuffer, { mayBeLess: true });
-              nextHeaderIndex = indexOf(this.syncBuffer.subarray(0, len), ddSignatureArray);
-              const size2 = nextHeaderIndex >= 0 ? nextHeaderIndex : len;
-              if (next.handler) {
-                const data = new Uint8Array(size2);
-                await this.tokenizer.readBuffer(data);
-                chunks.push(data);
-              } else {
-                await this.tokenizer.ignore(size2);
-              }
-            }
-            debug$7(`Found data-descriptor-signature at pos=${this.tokenizer.position}`);
-            if (next.handler) {
-              await this.inflate(zipHeader, mergeArrays(chunks), next.handler);
-            }
-          } else {
-            if (next.handler) {
-              debug$7(`Reading compressed-file-data: ${zipHeader.compressedSize} bytes`);
-              fileData = new Uint8Array(zipHeader.compressedSize);
-              await this.tokenizer.readBuffer(fileData);
-              await this.inflate(zipHeader, fileData, next.handler);
-            } else {
-              debug$7(`Ignoring compressed-file-data: ${zipHeader.compressedSize} bytes`);
-              await this.tokenizer.ignore(zipHeader.compressedSize);
-            }
-          }
-          debug$7(`Reading data-descriptor at pos=${this.tokenizer.position}`);
-          if (zipHeader.dataDescriptor) {
-            const dataDescriptor = await this.tokenizer.readToken(DataDescriptor);
-            if (dataDescriptor.signature !== 134695760) {
-              throw new Error(`Expected data-descriptor-signature at position ${this.tokenizer.position - DataDescriptor.len}`);
-            }
-          }
-        } while (!stop);
-      }
-      async iterateOverCentralDirectory(entries, fileCb) {
-        for (const fileHeader of entries) {
-          const next = fileCb(fileHeader);
-          if (next.handler) {
-            this.tokenizer.setPosition(fileHeader.relativeOffsetOfLocalHeader);
-            const zipHeader = await this.readLocalFileHeader();
-            if (zipHeader) {
-              await this.tokenizer.ignore(zipHeader.extraFieldLength);
-              const fileData = new Uint8Array(fileHeader.compressedSize);
-              await this.tokenizer.readBuffer(fileData);
-              await this.inflate(zipHeader, fileData, next.handler);
-            }
-          }
-          if (next.stop)
-            break;
-        }
-      }
-      async inflate(zipHeader, fileData, cb) {
-        if (zipHeader.compressedMethod === 0) {
-          return cb(fileData);
-        }
-        if (zipHeader.compressedMethod !== 8) {
-          throw new Error(`Unsupported ZIP compression method: ${zipHeader.compressedMethod}`);
-        }
-        debug$7(`Decompress filename=${zipHeader.filename}, compressed-size=${fileData.length}`);
-        const uncompressedData = await ZipHandler.decompressDeflateRaw(fileData);
-        return cb(uncompressedData);
-      }
-      static async decompressDeflateRaw(data) {
-        const input = new ReadableStream({
-          start(controller) {
-            controller.enqueue(data);
-            controller.close();
-          }
-        });
-        const ds = new DecompressionStream("deflate-raw");
-        const output = input.pipeThrough(ds);
-        try {
-          const response = new Response(output);
-          const buffer = await response.arrayBuffer();
-          return new Uint8Array(buffer);
-        } catch (err) {
-          const message = err instanceof Error ? `Failed to deflate ZIP entry: ${err.message}` : "Unknown decompression error in ZIP entry";
-          throw new TypeError(message);
-        }
-      }
-      async readLocalFileHeader() {
-        const signature = await this.tokenizer.peekToken(UINT32_LE);
-        if (signature === Signature.LocalFileHeader) {
-          const header = await this.tokenizer.readToken(LocalFileHeaderToken);
-          header.filename = await this.tokenizer.readToken(new StringType(header.filenameLength, "utf-8"));
-          return header;
-        }
-        if (signature === Signature.CentralFileHeader) {
-          return false;
-        }
-        if (signature === 3759263696) {
-          throw new Error("Encrypted ZIP");
-        }
-        throw new Error("Unexpected signature");
-      }
-    }
-    function indexOf(buffer, portion) {
-      const bufferLength = buffer.length;
-      const portionLength = portion.length;
-      if (portionLength > bufferLength)
-        return -1;
-      for (let i = 0; i <= bufferLength - portionLength; i++) {
-        let found = true;
-        for (let j2 = 0; j2 < portionLength; j2++) {
-          if (buffer[i + j2] !== portion[j2]) {
-            found = false;
-            break;
-          }
-        }
-        if (found) {
-          return i;
-        }
-      }
-      return -1;
-    }
-    function mergeArrays(chunks) {
-      const totalLength = chunks.reduce((acc, curr) => acc + curr.length, 0);
-      const mergedArray = new Uint8Array(totalLength);
-      let offset2 = 0;
-      for (const chunk of chunks) {
-        mergedArray.set(chunk, offset2);
-        offset2 += chunk.length;
-      }
-      return mergedArray;
-    }
-    class GzipHandler {
-      constructor(tokenizer) {
-        this.tokenizer = tokenizer;
-      }
-      inflate() {
-        const tokenizer = this.tokenizer;
-        return new ReadableStream({
-          async pull(controller) {
-            const buffer = new Uint8Array(1024);
-            const size2 = await tokenizer.readBuffer(buffer, { mayBeLess: true });
-            if (size2 === 0) {
-              controller.close();
-              return;
-            }
-            controller.enqueue(buffer.subarray(0, size2));
-          }
-        }).pipeThrough(new DecompressionStream("gzip"));
-      }
-    }
-    ({
-      utf8: new globalThis.TextDecoder("utf8")
-    });
-    new globalThis.TextEncoder();
-    Array.from({ length: 256 }, (_2, index2) => index2.toString(16).padStart(2, "0"));
-    function getUintBE(view) {
-      const { byteLength } = view;
-      if (byteLength === 6) {
-        return view.getUint16(0) * 2 ** 32 + view.getUint32(2);
-      }
-      if (byteLength === 5) {
-        return view.getUint8(0) * 2 ** 32 + view.getUint32(1);
-      }
-      if (byteLength === 4) {
-        return view.getUint32(0);
-      }
-      if (byteLength === 3) {
-        return view.getUint8(0) * 2 ** 16 + view.getUint16(1);
-      }
-      if (byteLength === 2) {
-        return view.getUint16(0);
-      }
-      if (byteLength === 1) {
-        return view.getUint8(0);
-      }
-    }
-    function stringToBytes(string, encoding) {
-      if (encoding === "utf-16le") {
-        const bytes = [];
-        for (let index2 = 0; index2 < string.length; index2++) {
-          const code = string.charCodeAt(index2);
-          bytes.push(code & 255, code >> 8 & 255);
-        }
-        return bytes;
-      }
-      if (encoding === "utf-16be") {
-        const bytes = [];
-        for (let index2 = 0; index2 < string.length; index2++) {
-          const code = string.charCodeAt(index2);
-          bytes.push(code >> 8 & 255, code & 255);
-        }
-        return bytes;
-      }
-      return [...string].map((character) => character.charCodeAt(0));
-    }
-    function tarHeaderChecksumMatches(arrayBuffer, offset2 = 0) {
-      const readSum = Number.parseInt(new StringType(6).get(arrayBuffer, 148).replace(/\0.*$/, "").trim(), 8);
-      if (Number.isNaN(readSum)) {
-        return false;
-      }
-      let sum = 8 * 32;
-      for (let index2 = offset2; index2 < offset2 + 148; index2++) {
-        sum += arrayBuffer[index2];
-      }
-      for (let index2 = offset2 + 156; index2 < offset2 + 512; index2++) {
-        sum += arrayBuffer[index2];
-      }
-      return readSum === sum;
-    }
-    const uint32SyncSafeToken = {
-      get: (buffer, offset2) => buffer[offset2 + 3] & 127 | buffer[offset2 + 2] << 7 | buffer[offset2 + 1] << 14 | buffer[offset2] << 21,
-      len: 4
-    };
-    const extensions = [
-      "jpg",
-      "png",
-      "apng",
-      "gif",
-      "webp",
-      "flif",
-      "xcf",
-      "cr2",
-      "cr3",
-      "orf",
-      "arw",
-      "dng",
-      "nef",
-      "rw2",
-      "raf",
-      "tif",
-      "bmp",
-      "icns",
-      "jxr",
-      "psd",
-      "indd",
-      "zip",
-      "tar",
-      "rar",
-      "gz",
-      "bz2",
-      "7z",
-      "dmg",
-      "mp4",
-      "mid",
-      "mkv",
-      "webm",
-      "mov",
-      "avi",
-      "mpg",
-      "mp2",
-      "mp3",
-      "m4a",
-      "oga",
-      "ogg",
-      "ogv",
-      "opus",
-      "flac",
-      "wav",
-      "spx",
-      "amr",
-      "pdf",
-      "epub",
-      "elf",
-      "macho",
-      "exe",
-      "swf",
-      "rtf",
-      "wasm",
-      "woff",
-      "woff2",
-      "eot",
-      "ttf",
-      "otf",
-      "ttc",
-      "ico",
-      "flv",
-      "ps",
-      "xz",
-      "sqlite",
-      "nes",
-      "crx",
-      "xpi",
-      "cab",
-      "deb",
-      "ar",
-      "rpm",
-      "Z",
-      "lz",
-      "cfb",
-      "mxf",
-      "mts",
-      "blend",
-      "bpg",
-      "docx",
-      "pptx",
-      "xlsx",
-      "3gp",
-      "3g2",
-      "j2c",
-      "jp2",
-      "jpm",
-      "jpx",
-      "mj2",
-      "aif",
-      "qcp",
-      "odt",
-      "ods",
-      "odp",
-      "xml",
-      "mobi",
-      "heic",
-      "cur",
-      "ktx",
-      "ape",
-      "wv",
-      "dcm",
-      "ics",
-      "glb",
-      "pcap",
-      "dsf",
-      "lnk",
-      "alias",
-      "voc",
-      "ac3",
-      "m4v",
-      "m4p",
-      "m4b",
-      "f4v",
-      "f4p",
-      "f4b",
-      "f4a",
-      "mie",
-      "asf",
-      "ogm",
-      "ogx",
-      "mpc",
-      "arrow",
-      "shp",
-      "aac",
-      "mp1",
-      "it",
-      "s3m",
-      "xm",
-      "skp",
-      "avif",
-      "eps",
-      "lzh",
-      "pgp",
-      "asar",
-      "stl",
-      "chm",
-      "3mf",
-      "zst",
-      "jxl",
-      "vcf",
-      "jls",
-      "pst",
-      "dwg",
-      "parquet",
-      "class",
-      "arj",
-      "cpio",
-      "ace",
-      "avro",
-      "icc",
-      "fbx",
-      "vsdx",
-      "vtt",
-      "apk",
-      "drc",
-      "lz4",
-      "potx",
-      "xltx",
-      "dotx",
-      "xltm",
-      "ott",
-      "ots",
-      "otp",
-      "odg",
-      "otg",
-      "xlsm",
-      "docm",
-      "dotm",
-      "potm",
-      "pptm",
-      "jar",
-      "jmp",
-      "rm",
-      "sav",
-      "ppsm",
-      "ppsx",
-      "tar.gz",
-      "reg",
-      "dat"
-    ];
-    const mimeTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "image/flif",
-      "image/x-xcf",
-      "image/x-canon-cr2",
-      "image/x-canon-cr3",
-      "image/tiff",
-      "image/bmp",
-      "image/vnd.ms-photo",
-      "image/vnd.adobe.photoshop",
-      "application/x-indesign",
-      "application/epub+zip",
-      "application/x-xpinstall",
-      "application/vnd.ms-powerpoint.slideshow.macroenabled.12",
-      "application/vnd.oasis.opendocument.text",
-      "application/vnd.oasis.opendocument.spreadsheet",
-      "application/vnd.oasis.opendocument.presentation",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-      "application/zip",
-      "application/x-tar",
-      "application/x-rar-compressed",
-      "application/gzip",
-      "application/x-bzip2",
-      "application/x-7z-compressed",
-      "application/x-apple-diskimage",
-      "application/vnd.apache.arrow.file",
-      "video/mp4",
-      "audio/midi",
-      "video/matroska",
-      "video/webm",
-      "video/quicktime",
-      "video/vnd.avi",
-      "audio/wav",
-      "audio/qcelp",
-      "audio/x-ms-asf",
-      "video/x-ms-asf",
-      "application/vnd.ms-asf",
-      "video/mpeg",
-      "video/3gpp",
-      "audio/mpeg",
-      "audio/mp4",
-      // RFC 4337
-      "video/ogg",
-      "audio/ogg",
-      "audio/ogg; codecs=opus",
-      "application/ogg",
-      "audio/flac",
-      "audio/ape",
-      "audio/wavpack",
-      "audio/amr",
-      "application/pdf",
-      "application/x-elf",
-      "application/x-mach-binary",
-      "application/x-msdownload",
-      "application/x-shockwave-flash",
-      "application/rtf",
-      "application/wasm",
-      "font/woff",
-      "font/woff2",
-      "application/vnd.ms-fontobject",
-      "font/ttf",
-      "font/otf",
-      "font/collection",
-      "image/x-icon",
-      "video/x-flv",
-      "application/postscript",
-      "application/eps",
-      "application/x-xz",
-      "application/x-sqlite3",
-      "application/x-nintendo-nes-rom",
-      "application/x-google-chrome-extension",
-      "application/vnd.ms-cab-compressed",
-      "application/x-deb",
-      "application/x-unix-archive",
-      "application/x-rpm",
-      "application/x-compress",
-      "application/x-lzip",
-      "application/x-cfb",
-      "application/x-mie",
-      "application/mxf",
-      "video/mp2t",
-      "application/x-blender",
-      "image/bpg",
-      "image/j2c",
-      "image/jp2",
-      "image/jpx",
-      "image/jpm",
-      "image/mj2",
-      "audio/aiff",
-      "application/xml",
-      "application/x-mobipocket-ebook",
-      "image/heif",
-      "image/heif-sequence",
-      "image/heic",
-      "image/heic-sequence",
-      "image/icns",
-      "image/ktx",
-      "application/dicom",
-      "audio/x-musepack",
-      "text/calendar",
-      "text/vcard",
-      "text/vtt",
-      "model/gltf-binary",
-      "application/vnd.tcpdump.pcap",
-      "audio/x-dsf",
-      // Non-standard
-      "application/x.ms.shortcut",
-      // Invented by us
-      "application/x.apple.alias",
-      // Invented by us
-      "audio/x-voc",
-      "audio/vnd.dolby.dd-raw",
-      "audio/x-m4a",
-      "image/apng",
-      "image/x-olympus-orf",
-      "image/x-sony-arw",
-      "image/x-adobe-dng",
-      "image/x-nikon-nef",
-      "image/x-panasonic-rw2",
-      "image/x-fujifilm-raf",
-      "video/x-m4v",
-      "video/3gpp2",
-      "application/x-esri-shape",
-      "audio/aac",
-      "audio/x-it",
-      "audio/x-s3m",
-      "audio/x-xm",
-      "video/MP1S",
-      "video/MP2P",
-      "application/vnd.sketchup.skp",
-      "image/avif",
-      "application/x-lzh-compressed",
-      "application/pgp-encrypted",
-      "application/x-asar",
-      "model/stl",
-      "application/vnd.ms-htmlhelp",
-      "model/3mf",
-      "image/jxl",
-      "application/zstd",
-      "image/jls",
-      "application/vnd.ms-outlook",
-      "image/vnd.dwg",
-      "application/vnd.apache.parquet",
-      "application/java-vm",
-      "application/x-arj",
-      "application/x-cpio",
-      "application/x-ace-compressed",
-      "application/avro",
-      "application/vnd.iccprofile",
-      "application/x.autodesk.fbx",
-      // Invented by us
-      "application/vnd.visio",
-      "application/vnd.android.package-archive",
-      "application/vnd.google.draco",
-      // Invented by us
-      "application/x-lz4",
-      // Invented by us
-      "application/vnd.openxmlformats-officedocument.presentationml.template",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-      "application/vnd.ms-excel.template.macroenabled.12",
-      "application/vnd.oasis.opendocument.text-template",
-      "application/vnd.oasis.opendocument.spreadsheet-template",
-      "application/vnd.oasis.opendocument.presentation-template",
-      "application/vnd.oasis.opendocument.graphics",
-      "application/vnd.oasis.opendocument.graphics-template",
-      "application/vnd.ms-excel.sheet.macroenabled.12",
-      "application/vnd.ms-word.document.macroenabled.12",
-      "application/vnd.ms-word.template.macroenabled.12",
-      "application/vnd.ms-powerpoint.template.macroenabled.12",
-      "application/vnd.ms-powerpoint.presentation.macroenabled.12",
-      "application/java-archive",
-      "application/vnd.rn-realmedia",
-      "application/x-spss-sav",
-      "application/x-ms-regedit",
-      "application/x-ft-windows-registry-hive",
-      "application/x-jmp-data"
-    ];
-    const reasonableDetectionSizeInBytes = 4100;
-    const maximumMpegOffsetTolerance = reasonableDetectionSizeInBytes - 2;
-    const maximumZipEntrySizeInBytes = 1024 * 1024;
-    const maximumZipEntryCount = 1024;
-    const maximumZipBufferedReadSizeInBytes = 2 ** 31 - 1;
-    const maximumUntrustedSkipSizeInBytes = 16 * 1024 * 1024;
-    const maximumUnknownSizePayloadProbeSizeInBytes = maximumZipEntrySizeInBytes;
-    const maximumZipTextEntrySizeInBytes = maximumZipEntrySizeInBytes;
-    const maximumNestedGzipDetectionSizeInBytes = maximumUntrustedSkipSizeInBytes;
-    const maximumNestedGzipProbeDepth = 1;
-    const unknownSizeGzipProbeTimeoutInMilliseconds = 100;
-    const maximumId3HeaderSizeInBytes = maximumUntrustedSkipSizeInBytes;
-    const maximumEbmlDocumentTypeSizeInBytes = 64;
-    const maximumEbmlElementPayloadSizeInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
-    const maximumEbmlElementCount = 256;
-    const maximumPngChunkCount = 512;
-    const maximumPngStreamScanBudgetInBytes = maximumUntrustedSkipSizeInBytes;
-    const maximumAsfHeaderObjectCount = 512;
-    const maximumTiffTagCount = 512;
-    const maximumDetectionReentryCount = 256;
-    const maximumPngChunkSizeInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
-    const maximumAsfHeaderPayloadSizeInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
-    const maximumTiffStreamIfdOffsetInBytes = maximumUnknownSizePayloadProbeSizeInBytes;
-    const maximumTiffIfdOffsetInBytes = maximumUntrustedSkipSizeInBytes;
-    const recoverableZipErrorMessages = /* @__PURE__ */ new Set([
-      "Unexpected signature",
-      "Encrypted ZIP",
-      "Expected Central-File-Header signature"
-    ]);
-    const recoverableZipErrorMessagePrefixes = [
-      "ZIP entry count exceeds ",
-      "Unsupported ZIP compression method:",
-      "ZIP entry compressed data exceeds ",
-      "ZIP entry decompressed data exceeds ",
-      "Expected data-descriptor-signature at position "
-    ];
-    const recoverableZipErrorCodes = /* @__PURE__ */ new Set([
-      "Z_BUF_ERROR",
-      "Z_DATA_ERROR",
-      "ERR_INVALID_STATE"
-    ]);
-    class ParserHardLimitError extends Error {
-    }
-    function patchWebByobTokenizerClose(tokenizer) {
-      var _a2;
-      const streamReader = tokenizer == null ? void 0 : tokenizer.streamReader;
-      if (((_a2 = streamReader == null ? void 0 : streamReader.constructor) == null ? void 0 : _a2.name) !== "WebStreamByobReader") {
-        return tokenizer;
-      }
-      const { reader } = streamReader;
-      const cancelAndRelease = async () => {
-        await reader.cancel();
-        reader.releaseLock();
-      };
-      streamReader.close = cancelAndRelease;
-      streamReader.abort = async () => {
-        streamReader.interrupted = true;
-        await cancelAndRelease();
-      };
-      return tokenizer;
-    }
-    function getSafeBound(value, maximum, reason) {
-      if (!Number.isFinite(value) || value < 0 || value > maximum) {
-        throw new ParserHardLimitError(`${reason} has invalid size ${value} (maximum ${maximum} bytes)`);
-      }
-      return value;
-    }
-    async function safeIgnore(tokenizer, length, { maximumLength = maximumUntrustedSkipSizeInBytes, reason = "skip" } = {}) {
-      const safeLength = getSafeBound(length, maximumLength, reason);
-      await tokenizer.ignore(safeLength);
-    }
-    async function safeReadBuffer(tokenizer, buffer, options2, { maximumLength = buffer.length, reason = "read" } = {}) {
-      const length = buffer.length;
-      const safeLength = getSafeBound(length, maximumLength, reason);
-      return tokenizer.readBuffer(buffer, {
-        ...options2,
-        length: safeLength
-      });
-    }
-    async function decompressDeflateRawWithLimit(data, { maximumLength = maximumZipEntrySizeInBytes } = {}) {
-      const input = new ReadableStream({
-        start(controller) {
-          controller.enqueue(data);
-          controller.close();
-        }
-      });
-      const output = input.pipeThrough(new DecompressionStream("deflate-raw"));
-      const reader = output.getReader();
-      const chunks = [];
-      let totalLength = 0;
-      try {
-        for (; ; ) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          totalLength += value.length;
-          if (totalLength > maximumLength) {
-            await reader.cancel();
-            throw new Error(`ZIP entry decompressed data exceeds ${maximumLength} bytes`);
-          }
-          chunks.push(value);
-        }
-      } finally {
-        reader.releaseLock();
-      }
-      const uncompressedData = new Uint8Array(totalLength);
-      let offset2 = 0;
-      for (const chunk of chunks) {
-        uncompressedData.set(chunk, offset2);
-        offset2 += chunk.length;
-      }
-      return uncompressedData;
-    }
-    const zipDataDescriptorSignature = 134695760;
-    const zipDataDescriptorLengthInBytes = 16;
-    const zipDataDescriptorOverlapLengthInBytes = zipDataDescriptorLengthInBytes - 1;
-    function findZipDataDescriptorOffset(buffer, bytesConsumed) {
-      if (buffer.length < zipDataDescriptorLengthInBytes) {
-        return -1;
-      }
-      const lastPossibleDescriptorOffset = buffer.length - zipDataDescriptorLengthInBytes;
-      for (let index2 = 0; index2 <= lastPossibleDescriptorOffset; index2++) {
-        if (UINT32_LE.get(buffer, index2) === zipDataDescriptorSignature && UINT32_LE.get(buffer, index2 + 8) === bytesConsumed + index2) {
-          return index2;
-        }
-      }
-      return -1;
-    }
-    function isPngAncillaryChunk(type) {
-      return (type.codePointAt(0) & 32) !== 0;
-    }
-    function mergeByteChunks(chunks, totalLength) {
-      const merged = new Uint8Array(totalLength);
-      let offset2 = 0;
-      for (const chunk of chunks) {
-        merged.set(chunk, offset2);
-        offset2 += chunk.length;
-      }
-      return merged;
-    }
-    async function readZipDataDescriptorEntryWithLimit(zipHandler, { shouldBuffer, maximumLength = maximumZipEntrySizeInBytes } = {}) {
-      const { syncBuffer } = zipHandler;
-      const { length: syncBufferLength } = syncBuffer;
-      const chunks = [];
-      let bytesConsumed = 0;
-      for (; ; ) {
-        const length = await zipHandler.tokenizer.peekBuffer(syncBuffer, { mayBeLess: true });
-        const dataDescriptorOffset = findZipDataDescriptorOffset(syncBuffer.subarray(0, length), bytesConsumed);
-        const retainedLength = dataDescriptorOffset >= 0 ? 0 : length === syncBufferLength ? Math.min(zipDataDescriptorOverlapLengthInBytes, length - 1) : 0;
-        const chunkLength = dataDescriptorOffset >= 0 ? dataDescriptorOffset : length - retainedLength;
-        if (chunkLength === 0) {
-          break;
-        }
-        bytesConsumed += chunkLength;
-        if (bytesConsumed > maximumLength) {
-          throw new Error(`ZIP entry compressed data exceeds ${maximumLength} bytes`);
-        }
-        if (shouldBuffer) {
-          const data = new Uint8Array(chunkLength);
-          await zipHandler.tokenizer.readBuffer(data);
-          chunks.push(data);
-        } else {
-          await zipHandler.tokenizer.ignore(chunkLength);
-        }
-        if (dataDescriptorOffset >= 0) {
-          break;
-        }
-      }
-      if (!hasUnknownFileSize(zipHandler.tokenizer)) {
-        zipHandler.knownSizeDescriptorScannedBytes += bytesConsumed;
-      }
-      if (!shouldBuffer) {
-        return;
-      }
-      return mergeByteChunks(chunks, bytesConsumed);
-    }
-    function getRemainingZipScanBudget(zipHandler, startOffset) {
-      if (hasUnknownFileSize(zipHandler.tokenizer)) {
-        return Math.max(0, maximumUntrustedSkipSizeInBytes - (zipHandler.tokenizer.position - startOffset));
-      }
-      return Math.max(0, maximumZipEntrySizeInBytes - zipHandler.knownSizeDescriptorScannedBytes);
-    }
-    async function readZipEntryData(zipHandler, zipHeader, { shouldBuffer, maximumDescriptorLength = maximumZipEntrySizeInBytes } = {}) {
-      if (zipHeader.dataDescriptor && zipHeader.compressedSize === 0) {
-        return readZipDataDescriptorEntryWithLimit(zipHandler, {
-          shouldBuffer,
-          maximumLength: maximumDescriptorLength
-        });
-      }
-      if (!shouldBuffer) {
-        await safeIgnore(zipHandler.tokenizer, zipHeader.compressedSize, {
-          maximumLength: hasUnknownFileSize(zipHandler.tokenizer) ? maximumZipEntrySizeInBytes : zipHandler.tokenizer.fileInfo.size,
-          reason: "ZIP entry compressed data"
-        });
-        return;
-      }
-      const maximumLength = getMaximumZipBufferedReadLength(zipHandler.tokenizer);
-      if (!Number.isFinite(zipHeader.compressedSize) || zipHeader.compressedSize < 0 || zipHeader.compressedSize > maximumLength) {
-        throw new Error(`ZIP entry compressed data exceeds ${maximumLength} bytes`);
-      }
-      const fileData = new Uint8Array(zipHeader.compressedSize);
-      await zipHandler.tokenizer.readBuffer(fileData);
-      return fileData;
-    }
-    ZipHandler.prototype.inflate = async function(zipHeader, fileData, callback) {
-      if (zipHeader.compressedMethod === 0) {
-        return callback(fileData);
-      }
-      if (zipHeader.compressedMethod !== 8) {
-        throw new Error(`Unsupported ZIP compression method: ${zipHeader.compressedMethod}`);
-      }
-      const uncompressedData = await decompressDeflateRawWithLimit(fileData, { maximumLength: maximumZipEntrySizeInBytes });
-      return callback(uncompressedData);
-    };
-    ZipHandler.prototype.unzip = async function(fileCallback) {
-      let stop = false;
-      let zipEntryCount = 0;
-      const zipScanStart = this.tokenizer.position;
-      this.knownSizeDescriptorScannedBytes = 0;
-      do {
-        if (hasExceededUnknownSizeScanBudget(this.tokenizer, zipScanStart, maximumUntrustedSkipSizeInBytes)) {
-          throw new ParserHardLimitError(`ZIP stream probing exceeds ${maximumUntrustedSkipSizeInBytes} bytes`);
-        }
-        const zipHeader = await this.readLocalFileHeader();
-        if (!zipHeader) {
-          break;
-        }
-        zipEntryCount++;
-        if (zipEntryCount > maximumZipEntryCount) {
-          throw new Error(`ZIP entry count exceeds ${maximumZipEntryCount}`);
-        }
-        const next = fileCallback(zipHeader);
-        stop = Boolean(next.stop);
-        await this.tokenizer.ignore(zipHeader.extraFieldLength);
-        const fileData = await readZipEntryData(this, zipHeader, {
-          shouldBuffer: Boolean(next.handler),
-          maximumDescriptorLength: Math.min(maximumZipEntrySizeInBytes, getRemainingZipScanBudget(this, zipScanStart))
-        });
-        if (next.handler) {
-          await this.inflate(zipHeader, fileData, next.handler);
-        }
-        if (zipHeader.dataDescriptor) {
-          const dataDescriptor = new Uint8Array(zipDataDescriptorLengthInBytes);
-          await this.tokenizer.readBuffer(dataDescriptor);
-          if (UINT32_LE.get(dataDescriptor, 0) !== zipDataDescriptorSignature) {
-            throw new Error(`Expected data-descriptor-signature at position ${this.tokenizer.position - dataDescriptor.length}`);
-          }
-        }
-        if (hasExceededUnknownSizeScanBudget(this.tokenizer, zipScanStart, maximumUntrustedSkipSizeInBytes)) {
-          throw new ParserHardLimitError(`ZIP stream probing exceeds ${maximumUntrustedSkipSizeInBytes} bytes`);
-        }
-      } while (!stop);
-    };
-    function createByteLimitedReadableStream(stream, maximumBytes) {
-      const reader = stream.getReader();
-      let emittedBytes = 0;
-      let sourceDone = false;
-      let sourceCanceled = false;
-      const cancelSource = async (reason) => {
-        if (sourceDone || sourceCanceled) {
-          return;
-        }
-        sourceCanceled = true;
-        await reader.cancel(reason);
-      };
-      return new ReadableStream({
-        async pull(controller) {
-          if (emittedBytes >= maximumBytes) {
-            controller.close();
-            await cancelSource();
-            return;
-          }
-          const { done, value } = await reader.read();
-          if (done || !value) {
-            sourceDone = true;
-            controller.close();
-            return;
-          }
-          const remainingBytes = maximumBytes - emittedBytes;
-          if (value.length > remainingBytes) {
-            controller.enqueue(value.subarray(0, remainingBytes));
-            emittedBytes += remainingBytes;
-            controller.close();
-            await cancelSource();
-            return;
-          }
-          controller.enqueue(value);
-          emittedBytes += value.length;
-        },
-        async cancel(reason) {
-          await cancelSource(reason);
-        }
-      });
-    }
-    async function fileTypeFromBuffer(input, options2) {
-      return new FileTypeParser(options2).fromBuffer(input);
-    }
-    function getFileTypeFromMimeType(mimeType) {
-      mimeType = mimeType.toLowerCase();
-      switch (mimeType) {
-        case "application/epub+zip":
-          return {
-            ext: "epub",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.text":
-          return {
-            ext: "odt",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.text-template":
-          return {
-            ext: "ott",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.spreadsheet":
-          return {
-            ext: "ods",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.spreadsheet-template":
-          return {
-            ext: "ots",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.presentation":
-          return {
-            ext: "odp",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.presentation-template":
-          return {
-            ext: "otp",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.graphics":
-          return {
-            ext: "odg",
-            mime: mimeType
-          };
-        case "application/vnd.oasis.opendocument.graphics-template":
-          return {
-            ext: "otg",
-            mime: mimeType
-          };
-        case "application/vnd.openxmlformats-officedocument.presentationml.slideshow":
-          return {
-            ext: "ppsx",
-            mime: mimeType
-          };
-        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-          return {
-            ext: "xlsx",
-            mime: mimeType
-          };
-        case "application/vnd.ms-excel.sheet.macroenabled":
-          return {
-            ext: "xlsm",
-            mime: "application/vnd.ms-excel.sheet.macroenabled.12"
-          };
-        case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
-          return {
-            ext: "xltx",
-            mime: mimeType
-          };
-        case "application/vnd.ms-excel.template.macroenabled":
-          return {
-            ext: "xltm",
-            mime: "application/vnd.ms-excel.template.macroenabled.12"
-          };
-        case "application/vnd.ms-powerpoint.slideshow.macroenabled":
-          return {
-            ext: "ppsm",
-            mime: "application/vnd.ms-powerpoint.slideshow.macroenabled.12"
-          };
-        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          return {
-            ext: "docx",
-            mime: mimeType
-          };
-        case "application/vnd.ms-word.document.macroenabled":
-          return {
-            ext: "docm",
-            mime: "application/vnd.ms-word.document.macroenabled.12"
-          };
-        case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
-          return {
-            ext: "dotx",
-            mime: mimeType
-          };
-        case "application/vnd.ms-word.template.macroenabledtemplate":
-          return {
-            ext: "dotm",
-            mime: "application/vnd.ms-word.template.macroenabled.12"
-          };
-        case "application/vnd.openxmlformats-officedocument.presentationml.template":
-          return {
-            ext: "potx",
-            mime: mimeType
-          };
-        case "application/vnd.ms-powerpoint.template.macroenabled":
-          return {
-            ext: "potm",
-            mime: "application/vnd.ms-powerpoint.template.macroenabled.12"
-          };
-        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-          return {
-            ext: "pptx",
-            mime: mimeType
-          };
-        case "application/vnd.ms-powerpoint.presentation.macroenabled":
-          return {
-            ext: "pptm",
-            mime: "application/vnd.ms-powerpoint.presentation.macroenabled.12"
-          };
-        case "application/vnd.ms-visio.drawing":
-          return {
-            ext: "vsdx",
-            mime: "application/vnd.visio"
-          };
-        case "application/vnd.ms-package.3dmanufacturing-3dmodel+xml":
-          return {
-            ext: "3mf",
-            mime: "model/3mf"
-          };
-      }
-    }
-    function _check(buffer, headers, options2) {
-      options2 = {
-        offset: 0,
-        ...options2
-      };
-      for (const [index2, header] of headers.entries()) {
-        if (options2.mask) {
-          if (header !== (options2.mask[index2] & buffer[index2 + options2.offset])) {
-            return false;
-          }
-        } else if (header !== buffer[index2 + options2.offset]) {
-          return false;
-        }
-      }
-      return true;
-    }
-    function normalizeSampleSize(sampleSize) {
-      if (!Number.isFinite(sampleSize)) {
-        return reasonableDetectionSizeInBytes;
-      }
-      return Math.max(1, Math.trunc(sampleSize));
-    }
-    function readByobReaderWithSignal(reader, buffer, signal) {
-      if (signal === void 0) {
-        return reader.read(buffer);
-      }
-      signal.throwIfAborted();
-      return new Promise((resolve, reject) => {
-        const cleanup = () => {
-          signal.removeEventListener("abort", onAbort);
-        };
-        const onAbort = () => {
-          const abortReason = signal.reason;
-          cleanup();
-          (async () => {
-            try {
-              await reader.cancel(abortReason);
-            } catch {
-            }
-          })();
-          reject(abortReason);
-        };
-        signal.addEventListener("abort", onAbort, { once: true });
-        (async () => {
-          try {
-            const result = await reader.read(buffer);
-            cleanup();
-            resolve(result);
-          } catch (error) {
-            cleanup();
-            reject(error);
-          }
-        })();
-      });
-    }
-    function normalizeMpegOffsetTolerance(mpegOffsetTolerance) {
-      if (!Number.isFinite(mpegOffsetTolerance)) {
-        return 0;
-      }
-      return Math.max(0, Math.min(maximumMpegOffsetTolerance, Math.trunc(mpegOffsetTolerance)));
-    }
-    function getKnownFileSizeOrMaximum(fileSize) {
-      if (!Number.isFinite(fileSize)) {
-        return Number.MAX_SAFE_INTEGER;
-      }
-      return Math.max(0, fileSize);
-    }
-    function hasUnknownFileSize(tokenizer) {
-      const fileSize = tokenizer.fileInfo.size;
-      return !Number.isFinite(fileSize) || fileSize === Number.MAX_SAFE_INTEGER;
-    }
-    function hasExceededUnknownSizeScanBudget(tokenizer, startOffset, maximumBytes) {
-      return hasUnknownFileSize(tokenizer) && tokenizer.position - startOffset > maximumBytes;
-    }
-    function getMaximumZipBufferedReadLength(tokenizer) {
-      const fileSize = tokenizer.fileInfo.size;
-      const remainingBytes = Number.isFinite(fileSize) ? Math.max(0, fileSize - tokenizer.position) : Number.MAX_SAFE_INTEGER;
-      return Math.min(remainingBytes, maximumZipBufferedReadSizeInBytes);
-    }
-    function isRecoverableZipError(error) {
-      if (error instanceof EndOfStreamError) {
-        return true;
-      }
-      if (error instanceof ParserHardLimitError) {
-        return true;
-      }
-      if (!(error instanceof Error)) {
-        return false;
-      }
-      if (recoverableZipErrorMessages.has(error.message)) {
-        return true;
-      }
-      if (recoverableZipErrorCodes.has(error.code)) {
-        return true;
-      }
-      for (const prefix2 of recoverableZipErrorMessagePrefixes) {
-        if (error.message.startsWith(prefix2)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    function canReadZipEntryForDetection(zipHeader, maximumSize = maximumZipEntrySizeInBytes) {
-      const sizes = [zipHeader.compressedSize, zipHeader.uncompressedSize];
-      for (const size2 of sizes) {
-        if (!Number.isFinite(size2) || size2 < 0 || size2 > maximumSize) {
-          return false;
-        }
-      }
-      return true;
-    }
-    function createOpenXmlZipDetectionState() {
-      return {
-        hasContentTypesEntry: false,
-        hasParsedContentTypesEntry: false,
-        isParsingContentTypes: false,
-        hasUnparseableContentTypes: false,
-        hasWordDirectory: false,
-        hasPresentationDirectory: false,
-        hasSpreadsheetDirectory: false,
-        hasThreeDimensionalModelEntry: false
-      };
-    }
-    function updateOpenXmlZipDetectionStateFromFilename(openXmlState, filename) {
-      if (filename.startsWith("word/")) {
-        openXmlState.hasWordDirectory = true;
-      }
-      if (filename.startsWith("ppt/")) {
-        openXmlState.hasPresentationDirectory = true;
-      }
-      if (filename.startsWith("xl/")) {
-        openXmlState.hasSpreadsheetDirectory = true;
-      }
-      if (filename.startsWith("3D/") && filename.endsWith(".model")) {
-        openXmlState.hasThreeDimensionalModelEntry = true;
-      }
-    }
-    function getOpenXmlFileTypeFromZipEntries(openXmlState) {
-      if (!openXmlState.hasContentTypesEntry || openXmlState.hasUnparseableContentTypes || openXmlState.isParsingContentTypes || openXmlState.hasParsedContentTypesEntry) {
-        return;
-      }
-      if (openXmlState.hasWordDirectory) {
-        return {
-          ext: "docx",
-          mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        };
-      }
-      if (openXmlState.hasPresentationDirectory) {
-        return {
-          ext: "pptx",
-          mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        };
-      }
-      if (openXmlState.hasSpreadsheetDirectory) {
-        return {
-          ext: "xlsx",
-          mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        };
-      }
-      if (openXmlState.hasThreeDimensionalModelEntry) {
-        return {
-          ext: "3mf",
-          mime: "model/3mf"
-        };
-      }
-    }
-    function getOpenXmlMimeTypeFromContentTypesXml(xmlContent) {
-      const endPosition = xmlContent.indexOf('.main+xml"');
-      if (endPosition === -1) {
-        const mimeType = "application/vnd.ms-package.3dmanufacturing-3dmodel+xml";
-        if (xmlContent.includes(`ContentType="${mimeType}"`)) {
-          return mimeType;
-        }
-        return;
-      }
-      const truncatedContent = xmlContent.slice(0, endPosition);
-      const firstQuotePosition = truncatedContent.lastIndexOf('"');
-      return truncatedContent.slice(firstQuotePosition + 1);
-    }
-    class FileTypeParser {
-      constructor(options2) {
-        // Detections with a high degree of certainty in identifying the correct file type
-        __publicField(this, "detectConfident", async (tokenizer) => {
-          this.buffer = new Uint8Array(reasonableDetectionSizeInBytes);
-          if (tokenizer.fileInfo.size === void 0) {
-            tokenizer.fileInfo.size = Number.MAX_SAFE_INTEGER;
-          }
-          this.tokenizer = tokenizer;
-          if (hasUnknownFileSize(tokenizer)) {
-            await tokenizer.peekBuffer(this.buffer, { length: 3, mayBeLess: true });
-            if (this.check([31, 139, 8])) {
-              return this.detectGzip(tokenizer);
-            }
-          }
-          await tokenizer.peekBuffer(this.buffer, { length: 32, mayBeLess: true });
-          if (this.check([66, 77])) {
-            return {
-              ext: "bmp",
-              mime: "image/bmp"
-            };
-          }
-          if (this.check([11, 119])) {
-            return {
-              ext: "ac3",
-              mime: "audio/vnd.dolby.dd-raw"
-            };
-          }
-          if (this.check([120, 1])) {
-            return {
-              ext: "dmg",
-              mime: "application/x-apple-diskimage"
-            };
-          }
-          if (this.check([77, 90])) {
-            return {
-              ext: "exe",
-              mime: "application/x-msdownload"
-            };
-          }
-          if (this.check([37, 33])) {
-            await tokenizer.peekBuffer(this.buffer, { length: 24, mayBeLess: true });
-            if (this.checkString("PS-Adobe-", { offset: 2 }) && this.checkString(" EPSF-", { offset: 14 })) {
-              return {
-                ext: "eps",
-                mime: "application/eps"
-              };
-            }
-            return {
-              ext: "ps",
-              mime: "application/postscript"
-            };
-          }
-          if (this.check([31, 160]) || this.check([31, 157])) {
-            return {
-              ext: "Z",
-              mime: "application/x-compress"
-            };
-          }
-          if (this.check([199, 113])) {
-            return {
-              ext: "cpio",
-              mime: "application/x-cpio"
-            };
-          }
-          if (this.check([96, 234])) {
-            return {
-              ext: "arj",
-              mime: "application/x-arj"
-            };
-          }
-          if (this.check([239, 187, 191])) {
-            if (this.detectionReentryCount >= maximumDetectionReentryCount) {
-              return;
-            }
-            this.detectionReentryCount++;
-            await this.tokenizer.ignore(3);
-            return this.detectConfident(tokenizer);
-          }
-          if (this.check([71, 73, 70])) {
-            return {
-              ext: "gif",
-              mime: "image/gif"
-            };
-          }
-          if (this.check([73, 73, 188])) {
-            return {
-              ext: "jxr",
-              mime: "image/vnd.ms-photo"
-            };
-          }
-          if (this.check([31, 139, 8])) {
-            return this.detectGzip(tokenizer);
-          }
-          if (this.check([66, 90, 104])) {
-            return {
-              ext: "bz2",
-              mime: "application/x-bzip2"
-            };
-          }
-          if (this.checkString("ID3")) {
-            await safeIgnore(tokenizer, 6, {
-              maximumLength: 6,
-              reason: "ID3 header prefix"
-            });
-            const id3HeaderLength = await tokenizer.readToken(uint32SyncSafeToken);
-            const isUnknownFileSize = hasUnknownFileSize(tokenizer);
-            if (!Number.isFinite(id3HeaderLength) || id3HeaderLength < 0 || isUnknownFileSize && (id3HeaderLength > maximumId3HeaderSizeInBytes || tokenizer.position + id3HeaderLength > maximumId3HeaderSizeInBytes)) {
-              return;
-            }
-            if (tokenizer.position + id3HeaderLength > tokenizer.fileInfo.size) {
-              if (isUnknownFileSize) {
-                return;
-              }
-              return {
-                ext: "mp3",
-                mime: "audio/mpeg"
-              };
-            }
-            try {
-              await safeIgnore(tokenizer, id3HeaderLength, {
-                maximumLength: isUnknownFileSize ? maximumId3HeaderSizeInBytes : tokenizer.fileInfo.size,
-                reason: "ID3 payload"
-              });
-            } catch (error) {
-              if (error instanceof EndOfStreamError) {
-                return;
-              }
-              throw error;
-            }
-            if (this.detectionReentryCount >= maximumDetectionReentryCount) {
-              return;
-            }
-            this.detectionReentryCount++;
-            return this.parseTokenizer(tokenizer, this.detectionReentryCount);
-          }
-          if (this.checkString("MP+")) {
-            return {
-              ext: "mpc",
-              mime: "audio/x-musepack"
-            };
-          }
-          if ((this.buffer[0] === 67 || this.buffer[0] === 70) && this.check([87, 83], { offset: 1 })) {
-            return {
-              ext: "swf",
-              mime: "application/x-shockwave-flash"
-            };
-          }
-          if (this.check([255, 216, 255])) {
-            if (this.check([247], { offset: 3 })) {
-              return {
-                ext: "jls",
-                mime: "image/jls"
-              };
-            }
-            return {
-              ext: "jpg",
-              mime: "image/jpeg"
-            };
-          }
-          if (this.check([79, 98, 106, 1])) {
-            return {
-              ext: "avro",
-              mime: "application/avro"
-            };
-          }
-          if (this.checkString("FLIF")) {
-            return {
-              ext: "flif",
-              mime: "image/flif"
-            };
-          }
-          if (this.checkString("8BPS")) {
-            return {
-              ext: "psd",
-              mime: "image/vnd.adobe.photoshop"
-            };
-          }
-          if (this.checkString("MPCK")) {
-            return {
-              ext: "mpc",
-              mime: "audio/x-musepack"
-            };
-          }
-          if (this.checkString("FORM")) {
-            return {
-              ext: "aif",
-              mime: "audio/aiff"
-            };
-          }
-          if (this.checkString("icns", { offset: 0 })) {
-            return {
-              ext: "icns",
-              mime: "image/icns"
-            };
-          }
-          if (this.check([80, 75, 3, 4])) {
-            let fileType;
-            const openXmlState = createOpenXmlZipDetectionState();
-            try {
-              await new ZipHandler(tokenizer).unzip((zipHeader) => {
-                updateOpenXmlZipDetectionStateFromFilename(openXmlState, zipHeader.filename);
-                const isOpenXmlContentTypesEntry = zipHeader.filename === "[Content_Types].xml";
-                const openXmlFileTypeFromEntries = getOpenXmlFileTypeFromZipEntries(openXmlState);
-                if (!isOpenXmlContentTypesEntry && openXmlFileTypeFromEntries) {
-                  fileType = openXmlFileTypeFromEntries;
-                  return {
-                    stop: true
-                  };
-                }
-                switch (zipHeader.filename) {
-                  case "META-INF/mozilla.rsa":
-                    fileType = {
-                      ext: "xpi",
-                      mime: "application/x-xpinstall"
-                    };
-                    return {
-                      stop: true
-                    };
-                  case "META-INF/MANIFEST.MF":
-                    fileType = {
-                      ext: "jar",
-                      mime: "application/java-archive"
-                    };
-                    return {
-                      stop: true
-                    };
-                  case "mimetype":
-                    if (!canReadZipEntryForDetection(zipHeader, maximumZipTextEntrySizeInBytes)) {
-                      return {};
-                    }
-                    return {
-                      async handler(fileData) {
-                        const mimeType = new TextDecoder("utf-8").decode(fileData).trim();
-                        fileType = getFileTypeFromMimeType(mimeType);
-                      },
-                      stop: true
-                    };
-                  case "[Content_Types].xml": {
-                    openXmlState.hasContentTypesEntry = true;
-                    if (!canReadZipEntryForDetection(zipHeader, maximumZipTextEntrySizeInBytes)) {
-                      openXmlState.hasUnparseableContentTypes = true;
-                      return {};
-                    }
-                    openXmlState.isParsingContentTypes = true;
-                    return {
-                      async handler(fileData) {
-                        const xmlContent = new TextDecoder("utf-8").decode(fileData);
-                        const mimeType = getOpenXmlMimeTypeFromContentTypesXml(xmlContent);
-                        if (mimeType) {
-                          fileType = getFileTypeFromMimeType(mimeType);
-                        }
-                        openXmlState.hasParsedContentTypesEntry = true;
-                        openXmlState.isParsingContentTypes = false;
-                      },
-                      stop: true
-                    };
-                  }
-                  default:
-                    if (/classes\d*\.dex/.test(zipHeader.filename)) {
-                      fileType = {
-                        ext: "apk",
-                        mime: "application/vnd.android.package-archive"
-                      };
-                      return { stop: true };
-                    }
-                    return {};
-                }
-              });
-            } catch (error) {
-              if (!isRecoverableZipError(error)) {
-                throw error;
-              }
-              if (openXmlState.isParsingContentTypes) {
-                openXmlState.isParsingContentTypes = false;
-                openXmlState.hasUnparseableContentTypes = true;
-              }
-            }
-            return fileType ?? getOpenXmlFileTypeFromZipEntries(openXmlState) ?? {
-              ext: "zip",
-              mime: "application/zip"
-            };
-          }
-          if (this.checkString("OggS")) {
-            await tokenizer.ignore(28);
-            const type = new Uint8Array(8);
-            await tokenizer.readBuffer(type);
-            if (_check(type, [79, 112, 117, 115, 72, 101, 97, 100])) {
-              return {
-                ext: "opus",
-                mime: "audio/ogg; codecs=opus"
-              };
-            }
-            if (_check(type, [128, 116, 104, 101, 111, 114, 97])) {
-              return {
-                ext: "ogv",
-                mime: "video/ogg"
-              };
-            }
-            if (_check(type, [1, 118, 105, 100, 101, 111, 0])) {
-              return {
-                ext: "ogm",
-                mime: "video/ogg"
-              };
-            }
-            if (_check(type, [127, 70, 76, 65, 67])) {
-              return {
-                ext: "oga",
-                mime: "audio/ogg"
-              };
-            }
-            if (_check(type, [83, 112, 101, 101, 120, 32, 32])) {
-              return {
-                ext: "spx",
-                mime: "audio/ogg"
-              };
-            }
-            if (_check(type, [1, 118, 111, 114, 98, 105, 115])) {
-              return {
-                ext: "ogg",
-                mime: "audio/ogg"
-              };
-            }
-            return {
-              ext: "ogx",
-              mime: "application/ogg"
-            };
-          }
-          if (this.check([80, 75]) && (this.buffer[2] === 3 || this.buffer[2] === 5 || this.buffer[2] === 7) && (this.buffer[3] === 4 || this.buffer[3] === 6 || this.buffer[3] === 8)) {
-            return {
-              ext: "zip",
-              mime: "application/zip"
-            };
-          }
-          if (this.checkString("MThd")) {
-            return {
-              ext: "mid",
-              mime: "audio/midi"
-            };
-          }
-          if (this.checkString("wOFF") && (this.check([0, 1, 0, 0], { offset: 4 }) || this.checkString("OTTO", { offset: 4 }))) {
-            return {
-              ext: "woff",
-              mime: "font/woff"
-            };
-          }
-          if (this.checkString("wOF2") && (this.check([0, 1, 0, 0], { offset: 4 }) || this.checkString("OTTO", { offset: 4 }))) {
-            return {
-              ext: "woff2",
-              mime: "font/woff2"
-            };
-          }
-          if (this.check([212, 195, 178, 161]) || this.check([161, 178, 195, 212])) {
-            return {
-              ext: "pcap",
-              mime: "application/vnd.tcpdump.pcap"
-            };
-          }
-          if (this.checkString("DSD ")) {
-            return {
-              ext: "dsf",
-              mime: "audio/x-dsf"
-              // Non-standard
-            };
-          }
-          if (this.checkString("LZIP")) {
-            return {
-              ext: "lz",
-              mime: "application/x-lzip"
-            };
-          }
-          if (this.checkString("fLaC")) {
-            return {
-              ext: "flac",
-              mime: "audio/flac"
-            };
-          }
-          if (this.check([66, 80, 71, 251])) {
-            return {
-              ext: "bpg",
-              mime: "image/bpg"
-            };
-          }
-          if (this.checkString("wvpk")) {
-            return {
-              ext: "wv",
-              mime: "audio/wavpack"
-            };
-          }
-          if (this.checkString("%PDF")) {
-            return {
-              ext: "pdf",
-              mime: "application/pdf"
-            };
-          }
-          if (this.check([0, 97, 115, 109])) {
-            return {
-              ext: "wasm",
-              mime: "application/wasm"
-            };
-          }
-          if (this.check([73, 73])) {
-            const fileType = await this.readTiffHeader(false);
-            if (fileType) {
-              return fileType;
-            }
-          }
-          if (this.check([77, 77])) {
-            const fileType = await this.readTiffHeader(true);
-            if (fileType) {
-              return fileType;
-            }
-          }
-          if (this.checkString("MAC ")) {
-            return {
-              ext: "ape",
-              mime: "audio/ape"
-            };
-          }
-          if (this.check([26, 69, 223, 163])) {
-            async function readField() {
-              const msb = await tokenizer.peekNumber(UINT8);
-              let mask = 128;
-              let ic = 0;
-              while ((msb & mask) === 0 && mask !== 0) {
-                ++ic;
-                mask >>= 1;
-              }
-              const id = new Uint8Array(ic + 1);
-              await safeReadBuffer(tokenizer, id, void 0, {
-                maximumLength: id.length,
-                reason: "EBML field"
-              });
-              return id;
-            }
-            async function readElement() {
-              const idField = await readField();
-              const lengthField = await readField();
-              lengthField[0] ^= 128 >> lengthField.length - 1;
-              const nrLength = Math.min(6, lengthField.length);
-              const idView = new DataView(idField.buffer);
-              const lengthView = new DataView(lengthField.buffer, lengthField.length - nrLength, nrLength);
-              return {
-                id: getUintBE(idView),
-                len: getUintBE(lengthView)
-              };
-            }
-            async function readChildren(children) {
-              let ebmlElementCount = 0;
-              while (children > 0) {
-                ebmlElementCount++;
-                if (ebmlElementCount > maximumEbmlElementCount) {
-                  return;
-                }
-                if (hasExceededUnknownSizeScanBudget(tokenizer, ebmlScanStart, maximumUntrustedSkipSizeInBytes)) {
-                  return;
-                }
-                const previousPosition = tokenizer.position;
-                const element = await readElement();
-                if (element.id === 17026) {
-                  if (element.len > maximumEbmlDocumentTypeSizeInBytes) {
-                    return;
-                  }
-                  const documentTypeLength = getSafeBound(element.len, maximumEbmlDocumentTypeSizeInBytes, "EBML DocType");
-                  const rawValue = await tokenizer.readToken(new StringType(documentTypeLength));
-                  return rawValue.replaceAll(/\00.*$/g, "");
-                }
-                if (hasUnknownFileSize(tokenizer) && (!Number.isFinite(element.len) || element.len < 0 || element.len > maximumEbmlElementPayloadSizeInBytes)) {
-                  return;
-                }
-                await safeIgnore(tokenizer, element.len, {
-                  maximumLength: hasUnknownFileSize(tokenizer) ? maximumEbmlElementPayloadSizeInBytes : tokenizer.fileInfo.size,
-                  reason: "EBML payload"
-                });
-                --children;
-                if (tokenizer.position <= previousPosition) {
-                  return;
-                }
-              }
-            }
-            const rootElement = await readElement();
-            const ebmlScanStart = tokenizer.position;
-            const documentType = await readChildren(rootElement.len);
-            switch (documentType) {
-              case "webm":
-                return {
-                  ext: "webm",
-                  mime: "video/webm"
-                };
-              case "matroska":
-                return {
-                  ext: "mkv",
-                  mime: "video/matroska"
-                };
-              default:
-                return;
-            }
-          }
-          if (this.checkString("SQLi")) {
-            return {
-              ext: "sqlite",
-              mime: "application/x-sqlite3"
-            };
-          }
-          if (this.check([78, 69, 83, 26])) {
-            return {
-              ext: "nes",
-              mime: "application/x-nintendo-nes-rom"
-            };
-          }
-          if (this.checkString("Cr24")) {
-            return {
-              ext: "crx",
-              mime: "application/x-google-chrome-extension"
-            };
-          }
-          if (this.checkString("MSCF") || this.checkString("ISc(")) {
-            return {
-              ext: "cab",
-              mime: "application/vnd.ms-cab-compressed"
-            };
-          }
-          if (this.check([237, 171, 238, 219])) {
-            return {
-              ext: "rpm",
-              mime: "application/x-rpm"
-            };
-          }
-          if (this.check([197, 208, 211, 198])) {
-            return {
-              ext: "eps",
-              mime: "application/eps"
-            };
-          }
-          if (this.check([40, 181, 47, 253])) {
-            return {
-              ext: "zst",
-              mime: "application/zstd"
-            };
-          }
-          if (this.check([127, 69, 76, 70])) {
-            return {
-              ext: "elf",
-              mime: "application/x-elf"
-            };
-          }
-          if (this.check([33, 66, 68, 78])) {
-            return {
-              ext: "pst",
-              mime: "application/vnd.ms-outlook"
-            };
-          }
-          if (this.checkString("PAR1") || this.checkString("PARE")) {
-            return {
-              ext: "parquet",
-              mime: "application/vnd.apache.parquet"
-            };
-          }
-          if (this.checkString("ttcf")) {
-            return {
-              ext: "ttc",
-              mime: "font/collection"
-            };
-          }
-          if (this.check([254, 237, 250, 206]) || this.check([254, 237, 250, 207]) || this.check([206, 250, 237, 254]) || this.check([207, 250, 237, 254])) {
-            return {
-              ext: "macho",
-              mime: "application/x-mach-binary"
-            };
-          }
-          if (this.check([4, 34, 77, 24])) {
-            return {
-              ext: "lz4",
-              mime: "application/x-lz4"
-              // Invented by us
-            };
-          }
-          if (this.checkString("regf")) {
-            return {
-              ext: "dat",
-              mime: "application/x-ft-windows-registry-hive"
-            };
-          }
-          if (this.checkString("$FL2") || this.checkString("$FL3")) {
-            return {
-              ext: "sav",
-              mime: "application/x-spss-sav"
-            };
-          }
-          if (this.check([79, 84, 84, 79, 0])) {
-            return {
-              ext: "otf",
-              mime: "font/otf"
-            };
-          }
-          if (this.checkString("#!AMR")) {
-            return {
-              ext: "amr",
-              mime: "audio/amr"
-            };
-          }
-          if (this.checkString("{\\rtf")) {
-            return {
-              ext: "rtf",
-              mime: "application/rtf"
-            };
-          }
-          if (this.check([70, 76, 86, 1])) {
-            return {
-              ext: "flv",
-              mime: "video/x-flv"
-            };
-          }
-          if (this.checkString("IMPM")) {
-            return {
-              ext: "it",
-              mime: "audio/x-it"
-            };
-          }
-          if (this.checkString("-lh0-", { offset: 2 }) || this.checkString("-lh1-", { offset: 2 }) || this.checkString("-lh2-", { offset: 2 }) || this.checkString("-lh3-", { offset: 2 }) || this.checkString("-lh4-", { offset: 2 }) || this.checkString("-lh5-", { offset: 2 }) || this.checkString("-lh6-", { offset: 2 }) || this.checkString("-lh7-", { offset: 2 }) || this.checkString("-lzs-", { offset: 2 }) || this.checkString("-lz4-", { offset: 2 }) || this.checkString("-lz5-", { offset: 2 }) || this.checkString("-lhd-", { offset: 2 })) {
-            return {
-              ext: "lzh",
-              mime: "application/x-lzh-compressed"
-            };
-          }
-          if (this.check([0, 0, 1, 186])) {
-            if (this.check([33], { offset: 4, mask: [241] })) {
-              return {
-                ext: "mpg",
-                // May also be .ps, .mpeg
-                mime: "video/MP1S"
-              };
-            }
-            if (this.check([68], { offset: 4, mask: [196] })) {
-              return {
-                ext: "mpg",
-                // May also be .mpg, .m2p, .vob or .sub
-                mime: "video/MP2P"
-              };
-            }
-          }
-          if (this.checkString("ITSF")) {
-            return {
-              ext: "chm",
-              mime: "application/vnd.ms-htmlhelp"
-            };
-          }
-          if (this.check([202, 254, 186, 190])) {
-            const machOArchitectureCount = UINT32_BE.get(this.buffer, 4);
-            const javaClassFileMajorVersion = UINT16_BE.get(this.buffer, 6);
-            if (machOArchitectureCount > 0 && machOArchitectureCount <= 30) {
-              return {
-                ext: "macho",
-                mime: "application/x-mach-binary"
-              };
-            }
-            if (javaClassFileMajorVersion > 30) {
-              return {
-                ext: "class",
-                mime: "application/java-vm"
-              };
-            }
-          }
-          if (this.checkString(".RMF")) {
-            return {
-              ext: "rm",
-              mime: "application/vnd.rn-realmedia"
-            };
-          }
-          if (this.checkString("DRACO")) {
-            return {
-              ext: "drc",
-              mime: "application/vnd.google.draco"
-              // Invented by us
-            };
-          }
-          if (this.check([253, 55, 122, 88, 90, 0])) {
-            return {
-              ext: "xz",
-              mime: "application/x-xz"
-            };
-          }
-          if (this.checkString("<?xml ")) {
-            return {
-              ext: "xml",
-              mime: "application/xml"
-            };
-          }
-          if (this.check([55, 122, 188, 175, 39, 28])) {
-            return {
-              ext: "7z",
-              mime: "application/x-7z-compressed"
-            };
-          }
-          if (this.check([82, 97, 114, 33, 26, 7]) && (this.buffer[6] === 0 || this.buffer[6] === 1)) {
-            return {
-              ext: "rar",
-              mime: "application/x-rar-compressed"
-            };
-          }
-          if (this.checkString("solid ")) {
-            return {
-              ext: "stl",
-              mime: "model/stl"
-            };
-          }
-          if (this.checkString("AC")) {
-            const version = new StringType(4, "latin1").get(this.buffer, 2);
-            if (version.match("^d*") && version >= 1e3 && version <= 1050) {
-              return {
-                ext: "dwg",
-                mime: "image/vnd.dwg"
-              };
-            }
-          }
-          if (this.checkString("070707")) {
-            return {
-              ext: "cpio",
-              mime: "application/x-cpio"
-            };
-          }
-          if (this.checkString("BLENDER")) {
-            return {
-              ext: "blend",
-              mime: "application/x-blender"
-            };
-          }
-          if (this.checkString("!<arch>")) {
-            await tokenizer.ignore(8);
-            const string = await tokenizer.readToken(new StringType(13, "ascii"));
-            if (string === "debian-binary") {
-              return {
-                ext: "deb",
-                mime: "application/x-deb"
-              };
-            }
-            return {
-              ext: "ar",
-              mime: "application/x-unix-archive"
-            };
-          }
-          if (this.checkString("WEBVTT") && // One of LF, CR, tab, space, or end of file must follow "WEBVTT" per the spec (see `fixture/fixture-vtt-*.vtt` for examples). Note that `\0` is technically the null character (there is no such thing as an EOF character). However, checking for `\0` gives us the same result as checking for the end of the stream.
-          ["\n", "\r", "	", " ", "\0"].some((char7) => this.checkString(char7, { offset: 6 }))) {
-            return {
-              ext: "vtt",
-              mime: "text/vtt"
-            };
-          }
-          if (this.check([137, 80, 78, 71, 13, 10, 26, 10])) {
-            const pngFileType = {
-              ext: "png",
-              mime: "image/png"
-            };
-            const apngFileType = {
-              ext: "apng",
-              mime: "image/apng"
-            };
-            await tokenizer.ignore(8);
-            async function readChunkHeader() {
-              return {
-                length: await tokenizer.readToken(INT32_BE),
-                type: await tokenizer.readToken(new StringType(4, "latin1"))
-              };
-            }
-            const isUnknownPngStream = hasUnknownFileSize(tokenizer);
-            const pngScanStart = tokenizer.position;
-            let pngChunkCount = 0;
-            let hasSeenImageHeader = false;
-            do {
-              pngChunkCount++;
-              if (pngChunkCount > maximumPngChunkCount) {
-                break;
-              }
-              if (hasExceededUnknownSizeScanBudget(tokenizer, pngScanStart, maximumPngStreamScanBudgetInBytes)) {
-                break;
-              }
-              const previousPosition = tokenizer.position;
-              const chunk = await readChunkHeader();
-              if (chunk.length < 0) {
-                return;
-              }
-              if (chunk.type === "IHDR") {
-                if (chunk.length !== 13) {
-                  return;
-                }
-                hasSeenImageHeader = true;
-              }
-              switch (chunk.type) {
-                case "IDAT":
-                  return pngFileType;
-                case "acTL":
-                  return apngFileType;
-                default:
-                  if (!hasSeenImageHeader && chunk.type !== "CgBI") {
-                    return;
-                  }
-                  if (isUnknownPngStream && chunk.length > maximumPngChunkSizeInBytes) {
-                    return hasSeenImageHeader && isPngAncillaryChunk(chunk.type) ? pngFileType : void 0;
-                  }
-                  try {
-                    await safeIgnore(tokenizer, chunk.length + 4, {
-                      maximumLength: isUnknownPngStream ? maximumPngChunkSizeInBytes + 4 : tokenizer.fileInfo.size,
-                      reason: "PNG chunk payload"
-                    });
-                  } catch (error) {
-                    if (!isUnknownPngStream && (error instanceof ParserHardLimitError || error instanceof EndOfStreamError)) {
-                      return pngFileType;
-                    }
-                    throw error;
-                  }
-              }
-              if (tokenizer.position <= previousPosition) {
-                break;
-              }
-            } while (tokenizer.position + 8 < tokenizer.fileInfo.size);
-            return pngFileType;
-          }
-          if (this.check([65, 82, 82, 79, 87, 49, 0, 0])) {
-            return {
-              ext: "arrow",
-              mime: "application/vnd.apache.arrow.file"
-            };
-          }
-          if (this.check([103, 108, 84, 70, 2, 0, 0, 0])) {
-            return {
-              ext: "glb",
-              mime: "model/gltf-binary"
-            };
-          }
-          if (this.check([102, 114, 101, 101], { offset: 4 }) || this.check([109, 100, 97, 116], { offset: 4 }) || this.check([109, 111, 111, 118], { offset: 4 }) || this.check([119, 105, 100, 101], { offset: 4 })) {
-            return {
-              ext: "mov",
-              mime: "video/quicktime"
-            };
-          }
-          if (this.check([73, 73, 82, 79, 8, 0, 0, 0, 24])) {
-            return {
-              ext: "orf",
-              mime: "image/x-olympus-orf"
-            };
-          }
-          if (this.checkString("gimp xcf ")) {
-            return {
-              ext: "xcf",
-              mime: "image/x-xcf"
-            };
-          }
-          if (this.checkString("ftyp", { offset: 4 }) && (this.buffer[8] & 96) !== 0) {
-            const brandMajor = new StringType(4, "latin1").get(this.buffer, 8).replace("\0", " ").trim();
-            switch (brandMajor) {
-              case "avif":
-              case "avis":
-                return { ext: "avif", mime: "image/avif" };
-              case "mif1":
-                return { ext: "heic", mime: "image/heif" };
-              case "msf1":
-                return { ext: "heic", mime: "image/heif-sequence" };
-              case "heic":
-              case "heix":
-                return { ext: "heic", mime: "image/heic" };
-              case "hevc":
-              case "hevx":
-                return { ext: "heic", mime: "image/heic-sequence" };
-              case "qt":
-                return { ext: "mov", mime: "video/quicktime" };
-              case "M4V":
-              case "M4VH":
-              case "M4VP":
-                return { ext: "m4v", mime: "video/x-m4v" };
-              case "M4P":
-                return { ext: "m4p", mime: "video/mp4" };
-              case "M4B":
-                return { ext: "m4b", mime: "audio/mp4" };
-              case "M4A":
-                return { ext: "m4a", mime: "audio/x-m4a" };
-              case "F4V":
-                return { ext: "f4v", mime: "video/mp4" };
-              case "F4P":
-                return { ext: "f4p", mime: "video/mp4" };
-              case "F4A":
-                return { ext: "f4a", mime: "audio/mp4" };
-              case "F4B":
-                return { ext: "f4b", mime: "audio/mp4" };
-              case "crx":
-                return { ext: "cr3", mime: "image/x-canon-cr3" };
-              default:
-                if (brandMajor.startsWith("3g")) {
-                  if (brandMajor.startsWith("3g2")) {
-                    return { ext: "3g2", mime: "video/3gpp2" };
-                  }
-                  return { ext: "3gp", mime: "video/3gpp" };
-                }
-                return { ext: "mp4", mime: "video/mp4" };
-            }
-          }
-          if (this.checkString("REGEDIT4\r\n")) {
-            return {
-              ext: "reg",
-              mime: "application/x-ms-regedit"
-            };
-          }
-          if (this.check([82, 73, 70, 70])) {
-            if (this.checkString("WEBP", { offset: 8 })) {
-              return {
-                ext: "webp",
-                mime: "image/webp"
-              };
-            }
-            if (this.check([65, 86, 73], { offset: 8 })) {
-              return {
-                ext: "avi",
-                mime: "video/vnd.avi"
-              };
-            }
-            if (this.check([87, 65, 86, 69], { offset: 8 })) {
-              return {
-                ext: "wav",
-                mime: "audio/wav"
-              };
-            }
-            if (this.check([81, 76, 67, 77], { offset: 8 })) {
-              return {
-                ext: "qcp",
-                mime: "audio/qcelp"
-              };
-            }
-          }
-          if (this.check([73, 73, 85, 0, 24, 0, 0, 0, 136, 231, 116, 216])) {
-            return {
-              ext: "rw2",
-              mime: "image/x-panasonic-rw2"
-            };
-          }
-          if (this.check([48, 38, 178, 117, 142, 102, 207, 17, 166, 217])) {
-            let isMalformedAsf = false;
-            try {
-              async function readHeader() {
-                const guid = new Uint8Array(16);
-                await safeReadBuffer(tokenizer, guid, void 0, {
-                  maximumLength: guid.length,
-                  reason: "ASF header GUID"
-                });
-                return {
-                  id: guid,
-                  size: Number(await tokenizer.readToken(UINT64_LE))
-                };
-              }
-              await safeIgnore(tokenizer, 30, {
-                maximumLength: 30,
-                reason: "ASF header prelude"
-              });
-              const isUnknownFileSize = hasUnknownFileSize(tokenizer);
-              const asfHeaderScanStart = tokenizer.position;
-              let asfHeaderObjectCount = 0;
-              while (tokenizer.position + 24 < tokenizer.fileInfo.size) {
-                asfHeaderObjectCount++;
-                if (asfHeaderObjectCount > maximumAsfHeaderObjectCount) {
-                  break;
-                }
-                if (hasExceededUnknownSizeScanBudget(tokenizer, asfHeaderScanStart, maximumUntrustedSkipSizeInBytes)) {
-                  break;
-                }
-                const previousPosition = tokenizer.position;
-                const header = await readHeader();
-                let payload = header.size - 24;
-                if (!Number.isFinite(payload) || payload < 0) {
-                  isMalformedAsf = true;
-                  break;
-                }
-                if (_check(header.id, [145, 7, 220, 183, 183, 169, 207, 17, 142, 230, 0, 192, 12, 32, 83, 101])) {
-                  const typeId = new Uint8Array(16);
-                  payload -= await safeReadBuffer(tokenizer, typeId, void 0, {
-                    maximumLength: typeId.length,
-                    reason: "ASF stream type GUID"
-                  });
-                  if (_check(typeId, [64, 158, 105, 248, 77, 91, 207, 17, 168, 253, 0, 128, 95, 92, 68, 43])) {
-                    return {
-                      ext: "asf",
-                      mime: "audio/x-ms-asf"
-                    };
-                  }
-                  if (_check(typeId, [192, 239, 25, 188, 77, 91, 207, 17, 168, 253, 0, 128, 95, 92, 68, 43])) {
-                    return {
-                      ext: "asf",
-                      mime: "video/x-ms-asf"
-                    };
-                  }
-                  break;
-                }
-                if (isUnknownFileSize && payload > maximumAsfHeaderPayloadSizeInBytes) {
-                  isMalformedAsf = true;
-                  break;
-                }
-                await safeIgnore(tokenizer, payload, {
-                  maximumLength: isUnknownFileSize ? maximumAsfHeaderPayloadSizeInBytes : tokenizer.fileInfo.size,
-                  reason: "ASF header payload"
-                });
-                if (tokenizer.position <= previousPosition) {
-                  isMalformedAsf = true;
-                  break;
-                }
-              }
-            } catch (error) {
-              if (error instanceof EndOfStreamError || error instanceof ParserHardLimitError) {
-                if (hasUnknownFileSize(tokenizer)) {
-                  isMalformedAsf = true;
-                }
-              } else {
-                throw error;
-              }
-            }
-            if (isMalformedAsf) {
-              return;
-            }
-            return {
-              ext: "asf",
-              mime: "application/vnd.ms-asf"
-            };
-          }
-          if (this.check([171, 75, 84, 88, 32, 49, 49, 187, 13, 10, 26, 10])) {
-            return {
-              ext: "ktx",
-              mime: "image/ktx"
-            };
-          }
-          if ((this.check([126, 16, 4]) || this.check([126, 24, 4])) && this.check([48, 77, 73, 69], { offset: 4 })) {
-            return {
-              ext: "mie",
-              mime: "application/x-mie"
-            };
-          }
-          if (this.check([39, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], { offset: 2 })) {
-            return {
-              ext: "shp",
-              mime: "application/x-esri-shape"
-            };
-          }
-          if (this.check([255, 79, 255, 81])) {
-            return {
-              ext: "j2c",
-              mime: "image/j2c"
-            };
-          }
-          if (this.check([0, 0, 0, 12, 106, 80, 32, 32, 13, 10, 135, 10])) {
-            await tokenizer.ignore(20);
-            const type = await tokenizer.readToken(new StringType(4, "ascii"));
-            switch (type) {
-              case "jp2 ":
-                return {
-                  ext: "jp2",
-                  mime: "image/jp2"
-                };
-              case "jpx ":
-                return {
-                  ext: "jpx",
-                  mime: "image/jpx"
-                };
-              case "jpm ":
-                return {
-                  ext: "jpm",
-                  mime: "image/jpm"
-                };
-              case "mjp2":
-                return {
-                  ext: "mj2",
-                  mime: "image/mj2"
-                };
-              default:
-                return;
-            }
-          }
-          if (this.check([255, 10]) || this.check([0, 0, 0, 12, 74, 88, 76, 32, 13, 10, 135, 10])) {
-            return {
-              ext: "jxl",
-              mime: "image/jxl"
-            };
-          }
-          if (this.check([254, 255])) {
-            if (this.checkString("<?xml ", { offset: 2, encoding: "utf-16be" })) {
-              return {
-                ext: "xml",
-                mime: "application/xml"
-              };
-            }
-            return void 0;
-          }
-          if (this.check([208, 207, 17, 224, 161, 177, 26, 225])) {
-            return {
-              ext: "cfb",
-              mime: "application/x-cfb"
-            };
-          }
-          await tokenizer.peekBuffer(this.buffer, { length: Math.min(256, tokenizer.fileInfo.size), mayBeLess: true });
-          if (this.check([97, 99, 115, 112], { offset: 36 })) {
-            return {
-              ext: "icc",
-              mime: "application/vnd.iccprofile"
-            };
-          }
-          if (this.checkString("**ACE", { offset: 7 }) && this.checkString("**", { offset: 12 })) {
-            return {
-              ext: "ace",
-              mime: "application/x-ace-compressed"
-            };
-          }
-          if (this.checkString("BEGIN:")) {
-            if (this.checkString("VCARD", { offset: 6 })) {
-              return {
-                ext: "vcf",
-                mime: "text/vcard"
-              };
-            }
-            if (this.checkString("VCALENDAR", { offset: 6 })) {
-              return {
-                ext: "ics",
-                mime: "text/calendar"
-              };
-            }
-          }
-          if (this.checkString("FUJIFILMCCD-RAW")) {
-            return {
-              ext: "raf",
-              mime: "image/x-fujifilm-raf"
-            };
-          }
-          if (this.checkString("Extended Module:")) {
-            return {
-              ext: "xm",
-              mime: "audio/x-xm"
-            };
-          }
-          if (this.checkString("Creative Voice File")) {
-            return {
-              ext: "voc",
-              mime: "audio/x-voc"
-            };
-          }
-          if (this.check([4, 0, 0, 0]) && this.buffer.length >= 16) {
-            const jsonSize = new DataView(this.buffer.buffer).getUint32(12, true);
-            if (jsonSize > 12 && this.buffer.length >= jsonSize + 16) {
-              try {
-                const header = new TextDecoder().decode(this.buffer.subarray(16, jsonSize + 16));
-                const json = JSON.parse(header);
-                if (json.files) {
-                  return {
-                    ext: "asar",
-                    mime: "application/x-asar"
-                  };
-                }
-              } catch {
-              }
-            }
-          }
-          if (this.check([6, 14, 43, 52, 2, 5, 1, 1, 13, 1, 2, 1, 1, 2])) {
-            return {
-              ext: "mxf",
-              mime: "application/mxf"
-            };
-          }
-          if (this.checkString("SCRM", { offset: 44 })) {
-            return {
-              ext: "s3m",
-              mime: "audio/x-s3m"
-            };
-          }
-          if (this.check([71]) && this.check([71], { offset: 188 })) {
-            return {
-              ext: "mts",
-              mime: "video/mp2t"
-            };
-          }
-          if (this.check([71], { offset: 4 }) && this.check([71], { offset: 196 })) {
-            return {
-              ext: "mts",
-              mime: "video/mp2t"
-            };
-          }
-          if (this.check([66, 79, 79, 75, 77, 79, 66, 73], { offset: 60 })) {
-            return {
-              ext: "mobi",
-              mime: "application/x-mobipocket-ebook"
-            };
-          }
-          if (this.check([68, 73, 67, 77], { offset: 128 })) {
-            return {
-              ext: "dcm",
-              mime: "application/dicom"
-            };
-          }
-          if (this.check([76, 0, 0, 0, 1, 20, 2, 0, 0, 0, 0, 0, 192, 0, 0, 0, 0, 0, 0, 70])) {
-            return {
-              ext: "lnk",
-              mime: "application/x.ms.shortcut"
-              // Invented by us
-            };
-          }
-          if (this.check([98, 111, 111, 107, 0, 0, 0, 0, 109, 97, 114, 107, 0, 0, 0, 0])) {
-            return {
-              ext: "alias",
-              mime: "application/x.apple.alias"
-              // Invented by us
-            };
-          }
-          if (this.checkString("Kaydara FBX Binary  \0")) {
-            return {
-              ext: "fbx",
-              mime: "application/x.autodesk.fbx"
-              // Invented by us
-            };
-          }
-          if (this.check([76, 80], { offset: 34 }) && (this.check([0, 0, 1], { offset: 8 }) || this.check([1, 0, 2], { offset: 8 }) || this.check([2, 0, 2], { offset: 8 }))) {
-            return {
-              ext: "eot",
-              mime: "application/vnd.ms-fontobject"
-            };
-          }
-          if (this.check([6, 6, 237, 245, 216, 29, 70, 229, 189, 49, 239, 231, 254, 116, 183, 29])) {
-            return {
-              ext: "indd",
-              mime: "application/x-indesign"
-            };
-          }
-          if (this.check([255, 255, 0, 0, 7, 0, 0, 0, 4, 0, 0, 0, 1, 0, 1, 0]) || this.check([0, 0, 255, 255, 0, 0, 0, 7, 0, 0, 0, 4, 0, 1, 0, 1])) {
-            return {
-              ext: "jmp",
-              mime: "application/x-jmp-data"
-            };
-          }
-          await tokenizer.peekBuffer(this.buffer, { length: Math.min(512, tokenizer.fileInfo.size), mayBeLess: true });
-          if (this.checkString("ustar", { offset: 257 }) && (this.checkString("\0", { offset: 262 }) || this.checkString(" ", { offset: 262 })) || this.check([0, 0, 0, 0, 0, 0], { offset: 257 }) && tarHeaderChecksumMatches(this.buffer)) {
-            return {
-              ext: "tar",
-              mime: "application/x-tar"
-            };
-          }
-          if (this.check([255, 254])) {
-            const encoding = "utf-16le";
-            if (this.checkString("<?xml ", { offset: 2, encoding })) {
-              return {
-                ext: "xml",
-                mime: "application/xml"
-              };
-            }
-            if (this.check([255, 14], { offset: 2 }) && this.checkString("SketchUp Model", { offset: 4, encoding })) {
-              return {
-                ext: "skp",
-                mime: "application/vnd.sketchup.skp"
-              };
-            }
-            if (this.checkString("Windows Registry Editor Version 5.00\r\n", { offset: 2, encoding })) {
-              return {
-                ext: "reg",
-                mime: "application/x-ms-regedit"
-              };
-            }
-            return void 0;
-          }
-          if (this.checkString("-----BEGIN PGP MESSAGE-----")) {
-            return {
-              ext: "pgp",
-              mime: "application/pgp-encrypted"
-            };
-          }
-        });
-        // Detections with limited supporting data, resulting in a higher likelihood of false positives
-        __publicField(this, "detectImprecise", async (tokenizer) => {
-          this.buffer = new Uint8Array(reasonableDetectionSizeInBytes);
-          const fileSize = getKnownFileSizeOrMaximum(tokenizer.fileInfo.size);
-          await tokenizer.peekBuffer(this.buffer, { length: Math.min(8, fileSize), mayBeLess: true });
-          if (this.check([0, 0, 1, 186]) || this.check([0, 0, 1, 179])) {
-            return {
-              ext: "mpg",
-              mime: "video/mpeg"
-            };
-          }
-          if (this.check([0, 1, 0, 0, 0])) {
-            return {
-              ext: "ttf",
-              mime: "font/ttf"
-            };
-          }
-          if (this.check([0, 0, 1, 0])) {
-            return {
-              ext: "ico",
-              mime: "image/x-icon"
-            };
-          }
-          if (this.check([0, 0, 2, 0])) {
-            return {
-              ext: "cur",
-              mime: "image/x-icon"
-            };
-          }
-          await tokenizer.peekBuffer(this.buffer, { length: Math.min(2 + this.options.mpegOffsetTolerance, fileSize), mayBeLess: true });
-          if (this.buffer.length >= 2 + this.options.mpegOffsetTolerance) {
-            for (let depth = 0; depth <= this.options.mpegOffsetTolerance; ++depth) {
-              const type = this.scanMpeg(depth);
-              if (type) {
-                return type;
-              }
-            }
-          }
-        });
-        const normalizedMpegOffsetTolerance = normalizeMpegOffsetTolerance(options2 == null ? void 0 : options2.mpegOffsetTolerance);
-        this.options = {
-          ...options2,
-          mpegOffsetTolerance: normalizedMpegOffsetTolerance
-        };
-        this.detectors = [
-          ...this.options.customDetectors ?? [],
-          { id: "core", detect: this.detectConfident },
-          { id: "core.imprecise", detect: this.detectImprecise }
-        ];
-        this.tokenizerOptions = {
-          abortSignal: this.options.signal
-        };
-        this.gzipProbeDepth = 0;
-      }
-      getTokenizerOptions() {
-        return {
-          ...this.tokenizerOptions
-        };
-      }
-      createTokenizerFromWebStream(stream) {
-        return patchWebByobTokenizerClose(fromWebStream(stream, this.getTokenizerOptions()));
-      }
-      async parseTokenizer(tokenizer, detectionReentryCount = 0) {
-        this.detectionReentryCount = detectionReentryCount;
-        const initialPosition = tokenizer.position;
-        for (const detector of this.detectors) {
-          let fileType;
-          try {
-            fileType = await detector.detect(tokenizer);
-          } catch (error) {
-            if (error instanceof EndOfStreamError) {
-              return;
-            }
-            if (error instanceof ParserHardLimitError) {
-              return;
-            }
-            throw error;
-          }
-          if (fileType) {
-            return fileType;
-          }
-          if (initialPosition !== tokenizer.position) {
-            return void 0;
-          }
-        }
-      }
-      async fromTokenizer(tokenizer) {
-        try {
-          return await this.parseTokenizer(tokenizer);
-        } finally {
-          await tokenizer.close();
-        }
-      }
-      async fromBuffer(input) {
-        if (!(input instanceof Uint8Array || input instanceof ArrayBuffer)) {
-          throw new TypeError(`Expected the \`input\` argument to be of type \`Uint8Array\` or \`ArrayBuffer\`, got \`${typeof input}\``);
-        }
-        const buffer = input instanceof Uint8Array ? input : new Uint8Array(input);
-        if (!((buffer == null ? void 0 : buffer.length) > 1)) {
-          return;
-        }
-        return this.fromTokenizer(fromBuffer(buffer, this.getTokenizerOptions()));
-      }
-      async fromBlob(blob) {
-        var _a2;
-        (_a2 = this.options.signal) == null ? void 0 : _a2.throwIfAborted();
-        const tokenizer = fromBlob(blob, this.getTokenizerOptions());
-        return this.fromTokenizer(tokenizer);
-      }
-      async fromStream(stream) {
-        var _a2;
-        (_a2 = this.options.signal) == null ? void 0 : _a2.throwIfAborted();
-        const tokenizer = this.createTokenizerFromWebStream(stream);
-        return this.fromTokenizer(tokenizer);
-      }
-      async toDetectionStream(stream, options2) {
-        const sampleSize = normalizeSampleSize((options2 == null ? void 0 : options2.sampleSize) ?? reasonableDetectionSizeInBytes);
-        let detectedFileType;
-        let firstChunk;
-        const reader = stream.getReader({ mode: "byob" });
-        try {
-          const { value: chunk, done } = await readByobReaderWithSignal(reader, new Uint8Array(sampleSize), this.options.signal);
-          firstChunk = chunk;
-          if (!done && chunk) {
-            try {
-              detectedFileType = await this.fromBuffer(chunk.subarray(0, sampleSize));
-            } catch (error) {
-              if (!(error instanceof EndOfStreamError)) {
-                throw error;
-              }
-              detectedFileType = void 0;
-            }
-          }
-          firstChunk = chunk;
-        } finally {
-          reader.releaseLock();
-        }
-        const transformStream = new TransformStream({
-          async start(controller) {
-            controller.enqueue(firstChunk);
-          },
-          transform(chunk, controller) {
-            controller.enqueue(chunk);
-          }
-        });
-        const newStream = stream.pipeThrough(transformStream);
-        newStream.fileType = detectedFileType;
-        return newStream;
-      }
-      async detectGzip(tokenizer) {
-        var _a2;
-        if (this.gzipProbeDepth >= maximumNestedGzipProbeDepth) {
-          return {
-            ext: "gz",
-            mime: "application/gzip"
-          };
-        }
-        const gzipHandler = new GzipHandler(tokenizer);
-        const limitedInflatedStream = createByteLimitedReadableStream(gzipHandler.inflate(), maximumNestedGzipDetectionSizeInBytes);
-        const hasUnknownSize = hasUnknownFileSize(tokenizer);
-        let timeout2;
-        let probeSignal;
-        let probeParser;
-        let compressedFileType;
-        if (hasUnknownSize) {
-          const timeoutController = new AbortController();
-          timeout2 = setTimeout(() => {
-            timeoutController.abort(new DOMException(`Operation timed out after ${unknownSizeGzipProbeTimeoutInMilliseconds} ms`, "TimeoutError"));
-          }, unknownSizeGzipProbeTimeoutInMilliseconds);
-          probeSignal = this.options.signal === void 0 ? timeoutController.signal : AbortSignal.any([this.options.signal, timeoutController.signal]);
-          probeParser = new FileTypeParser({
-            ...this.options,
-            signal: probeSignal
-          });
-          probeParser.gzipProbeDepth = this.gzipProbeDepth + 1;
-        } else {
-          this.gzipProbeDepth++;
-        }
-        try {
-          compressedFileType = await (probeParser ?? this).fromStream(limitedInflatedStream);
-        } catch (error) {
-          if ((error == null ? void 0 : error.name) === "AbortError" && ((_a2 = probeSignal == null ? void 0 : probeSignal.reason) == null ? void 0 : _a2.name) !== "TimeoutError") {
-            throw error;
-          }
-        } finally {
-          clearTimeout(timeout2);
-          if (!hasUnknownSize) {
-            this.gzipProbeDepth--;
-          }
-        }
-        if ((compressedFileType == null ? void 0 : compressedFileType.ext) === "tar") {
-          return {
-            ext: "tar.gz",
-            mime: "application/gzip"
-          };
-        }
-        return {
-          ext: "gz",
-          mime: "application/gzip"
-        };
-      }
-      check(header, options2) {
-        return _check(this.buffer, header, options2);
-      }
-      checkString(header, options2) {
-        return this.check(stringToBytes(header, options2 == null ? void 0 : options2.encoding), options2);
-      }
-      async readTiffTag(bigEndian) {
-        const tagId = await this.tokenizer.readToken(bigEndian ? UINT16_BE : UINT16_LE);
-        await this.tokenizer.ignore(10);
-        switch (tagId) {
-          case 50341:
-            return {
-              ext: "arw",
-              mime: "image/x-sony-arw"
-            };
-          case 50706:
-            return {
-              ext: "dng",
-              mime: "image/x-adobe-dng"
-            };
-        }
-      }
-      async readTiffIFD(bigEndian) {
-        const numberOfTags = await this.tokenizer.readToken(bigEndian ? UINT16_BE : UINT16_LE);
-        if (numberOfTags > maximumTiffTagCount) {
-          return;
-        }
-        if (hasUnknownFileSize(this.tokenizer) && 2 + numberOfTags * 12 > maximumTiffIfdOffsetInBytes) {
-          return;
-        }
-        for (let n = 0; n < numberOfTags; ++n) {
-          const fileType = await this.readTiffTag(bigEndian);
-          if (fileType) {
-            return fileType;
-          }
-        }
-      }
-      async readTiffHeader(bigEndian) {
-        const tiffFileType = {
-          ext: "tif",
-          mime: "image/tiff"
-        };
-        const version = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 2);
-        const ifdOffset = (bigEndian ? UINT32_BE : UINT32_LE).get(this.buffer, 4);
-        if (version === 42) {
-          if (ifdOffset >= 6) {
-            if (this.checkString("CR", { offset: 8 })) {
-              return {
-                ext: "cr2",
-                mime: "image/x-canon-cr2"
-              };
-            }
-            if (ifdOffset >= 8) {
-              const someId1 = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 8);
-              const someId2 = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 10);
-              if (someId1 === 28 && someId2 === 254 || someId1 === 31 && someId2 === 11) {
-                return {
-                  ext: "nef",
-                  mime: "image/x-nikon-nef"
-                };
-              }
-            }
-          }
-          if (hasUnknownFileSize(this.tokenizer) && ifdOffset > maximumTiffStreamIfdOffsetInBytes) {
-            return tiffFileType;
-          }
-          const maximumTiffOffset = hasUnknownFileSize(this.tokenizer) ? maximumTiffIfdOffsetInBytes : this.tokenizer.fileInfo.size;
-          try {
-            await safeIgnore(this.tokenizer, ifdOffset, {
-              maximumLength: maximumTiffOffset,
-              reason: "TIFF IFD offset"
-            });
-          } catch (error) {
-            if (error instanceof EndOfStreamError) {
-              return;
-            }
-            throw error;
-          }
-          let fileType;
-          try {
-            fileType = await this.readTiffIFD(bigEndian);
-          } catch (error) {
-            if (error instanceof EndOfStreamError) {
-              return;
-            }
-            throw error;
-          }
-          return fileType ?? tiffFileType;
-        }
-        if (version === 43) {
-          return tiffFileType;
-        }
-      }
-      /**
-      	Scan check MPEG 1 or 2 Layer 3 header, or 'layer 0' for ADTS (MPEG sync-word 0xFFE).
-      
-      	@param offset - Offset to scan for sync-preamble.
-      	@returns {{ext: string, mime: string}}
-      	*/
-      scanMpeg(offset2) {
-        if (this.check([255, 224], { offset: offset2, mask: [255, 224] })) {
-          if (this.check([16], { offset: offset2 + 1, mask: [22] })) {
-            if (this.check([8], { offset: offset2 + 1, mask: [8] })) {
-              return {
-                ext: "aac",
-                mime: "audio/aac"
-              };
-            }
-            return {
-              ext: "aac",
-              mime: "audio/aac"
-            };
-          }
-          if (this.check([2], { offset: offset2 + 1, mask: [6] })) {
-            return {
-              ext: "mp3",
-              mime: "audio/mpeg"
-            };
-          }
-          if (this.check([4], { offset: offset2 + 1, mask: [6] })) {
-            return {
-              ext: "mp2",
-              mime: "audio/mpeg"
-            };
-          }
-          if (this.check([6], { offset: offset2 + 1, mask: [6] })) {
-            return {
-              ext: "mp1",
-              mime: "audio/mpeg"
-            };
-          }
-        }
-      }
-    }
-    new Set(extensions);
-    new Set(mimeTypes);
-    const DEFAULT_CONTENT_TYPE = "application/octet-stream";
-    function isUsableContentType(contentType) {
-      if (!contentType) {
-        return false;
-      }
-      const trimmed = contentType.trim();
-      return trimmed.length > 0 && trimmed !== DEFAULT_CONTENT_TYPE;
-    }
-    async function resolveBlobContentType(bytes, hint) {
-      if (isUsableContentType(hint)) {
-        return hint.trim();
-      }
-      const detected = await fileTypeFromBuffer(bytes);
-      return (detected == null ? void 0 : detected.mime) ?? DEFAULT_CONTENT_TYPE;
-    }
-    const MAXIMUM_CONCURRENT_UPLOADS = 10;
-    const MAX_RETRIES = 3;
-    const BASE_DELAY_MS = 1e3;
-    const MAX_DELAY_MS = 3e4;
-    const GATEWAY_VERSION = "v1";
-    const HASH_ALGORITHM = "SHA-256";
-    const SHA256_PREFIX = "sha256:";
-    const DOMAIN_SEPARATOR_FOR_CHUNKS = new TextEncoder().encode("icfs-chunk/");
-    const DOMAIN_SEPARATOR_FOR_METADATA = new TextEncoder().encode("icfs-metadata/");
-    const DOMAIN_SEPARATOR_FOR_NODES = new TextEncoder().encode("ynode/");
-    async function withRetry(operation) {
-      let lastError;
-      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-          return await operation();
-        } catch (error) {
-          lastError = error instanceof Error ? error : new Error(String(error));
-          const shouldRetry = isRetriableError(error);
-          if (attempt === MAX_RETRIES || !shouldRetry) {
-            if (!shouldRetry && attempt < MAX_RETRIES) {
-              console.warn(`Non-retriable error encountered: ${lastError.message}. Not retrying.`);
-            }
-            throw error;
-          }
-          const delay = Math.min(BASE_DELAY_MS * 2 ** attempt + Math.random() * 1e3, MAX_DELAY_MS);
-          console.warn(`Request failed (attempt ${attempt + 1}/${MAX_RETRIES + 1}): ${lastError.message}. Retrying in ${Math.round(delay)}ms...`);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-      }
-      throw lastError || new Error("Unknown error occurred during retry attempts");
-    }
-    function isRetriableError(error) {
-      var _a2, _b2;
-      const errorMessage = ((_a2 = error == null ? void 0 : error.message) == null ? void 0 : _a2.toLowerCase()) || "";
-      if ((_b2 = error == null ? void 0 : error.response) == null ? void 0 : _b2.status) {
-        const status = error.response.status;
-        if (status === 408 || status === 429)
-          return true;
-        if (status >= 400 && status < 500)
-          return false;
-        if (status >= 500)
-          return true;
-      }
-      if (errorMessage.includes("ssl") || errorMessage.includes("tls") || errorMessage.includes("network error") || errorMessage.includes("connection") || errorMessage.includes("timeout") || errorMessage.includes("fetch")) {
-        return true;
-      }
-      if (errorMessage.includes("validation") || errorMessage.includes("invalid") || errorMessage.includes("malformed") || errorMessage.includes("unauthorized") || errorMessage.includes("forbidden") || errorMessage.includes("not found")) {
-        return false;
-      }
-      return true;
-    }
-    function validateHashFormat(hash, context) {
-      if (!hash) {
-        throw new Error(`${context}: Hash cannot be empty`);
-      }
-      if (!hash.startsWith(SHA256_PREFIX)) {
-        throw new Error(`${context}: Invalid hash format. Expected format: ${SHA256_PREFIX}<64-char-hex>, got: ${hash}`);
-      }
-      const hexPart = hash.substring(SHA256_PREFIX.length);
-      if (hexPart.length !== 64) {
-        throw new Error(`${context}: Invalid hash format. Expected 64 hex characters after ${SHA256_PREFIX}, got ${hexPart.length} characters: ${hash}`);
-      }
-      if (!/^[0-9a-f]{64}$/i.test(hexPart)) {
-        throw new Error(`${context}: Invalid hash format. Hash must contain only hex characters (0-9, a-f), got: ${hash}`);
-      }
-    }
-    class YHash {
-      constructor(bytes) {
-        __publicField(this, "bytes");
-        if (bytes.length !== 32) {
-          throw new Error(`YHash must be exactly 32 bytes, got ${bytes.length}`);
-        }
-        this.bytes = new Uint8Array(bytes);
-      }
-      static async fromNodes(left, right) {
-        const leftBytes = left instanceof YHash ? left.bytes : new TextEncoder().encode("UNBALANCED");
-        const rightBytes = right instanceof YHash ? right.bytes : new TextEncoder().encode("UNBALANCED");
-        const combined = new Uint8Array(DOMAIN_SEPARATOR_FOR_NODES.length + leftBytes.length + rightBytes.length);
-        const arrays = [DOMAIN_SEPARATOR_FOR_NODES, leftBytes, rightBytes];
-        let offset2 = 0;
-        for (const data of arrays) {
-          combined.set(data, offset2);
-          offset2 += data.length;
-        }
-        const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM, combined);
-        return new YHash(new Uint8Array(hashBuffer));
-      }
-      static async fromChunk(data) {
-        return YHash.fromBytes(DOMAIN_SEPARATOR_FOR_CHUNKS, data);
-      }
-      static async fromHeaders(headers) {
-        const headerLines = [];
-        for (const [key, value] of Object.entries(headers)) {
-          headerLines.push(`${key.trim()}: ${value.trim()}
-`);
-        }
-        headerLines.sort();
-        const hash = await YHash.fromBytes(DOMAIN_SEPARATOR_FOR_METADATA, new TextEncoder().encode(headerLines.join("")));
-        return hash;
-      }
-      static async fromBytes(domainSeparator, data) {
-        const combined = new Uint8Array(domainSeparator.length + data.length);
-        combined.set(domainSeparator);
-        combined.set(data, domainSeparator.length);
-        const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM, combined);
-        return new YHash(new Uint8Array(hashBuffer));
-      }
-      static fromHex(hexString) {
-        const bytes = new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => Number.parseInt(byte, 16)));
-        return new YHash(bytes);
-      }
-      toShaString() {
-        return `${SHA256_PREFIX}${this.toHex()}`;
-      }
-      toString() {
-        throw new Error("toString is not supported for YHash");
-      }
-      toHex() {
-        return Array.from(this.bytes).map((b2) => b2.toString(16).padStart(2, "0")).join("");
-      }
-    }
-    function nodeToJSON(node) {
-      return {
-        hash: node.hash.toShaString(),
-        left: node.left ? nodeToJSON(node.left) : null,
-        right: node.right ? nodeToJSON(node.right) : null
-      };
-    }
-    class BlobHashTree {
-      constructor(chunk_hashes, tree, headers = null) {
-        __publicField(this, "tree_type");
-        __publicField(this, "chunk_hashes");
-        __publicField(this, "tree");
-        __publicField(this, "headers");
-        this.tree_type = "DSBMTWH";
-        this.chunk_hashes = chunk_hashes;
-        this.tree = tree;
-        if (headers == null) {
-          this.headers = [];
-        } else if (Array.isArray(headers)) {
-          this.headers = headers;
-        } else {
-          this.headers = Object.entries(headers).map(([key, value]) => `${key.trim()}: ${value.trim()}`);
-        }
-        this.headers.sort();
-      }
-      static async build(chunkHashes, headers = {}) {
-        if (chunkHashes.length === 0) {
-          const hex = "8b8e620f084e48da0be2287fd12c5aaa4dbe14b468fd2e360f48d741fe7628a0";
-          const bytes = new TextEncoder().encode(hex);
-          chunkHashes.push(new YHash(bytes));
-        }
-        let level2 = chunkHashes.map((hash) => ({
-          hash,
-          left: null,
-          right: null
-        }));
-        while (level2.length > 1) {
-          const nextLevel = [];
-          for (let i = 0; i < level2.length; i += 2) {
-            const left = level2[i];
-            const right = level2[i + 1] || null;
-            const parentHash = await YHash.fromNodes(left.hash, right ? right.hash : null);
-            nextLevel.push({
-              hash: parentHash,
-              left,
-              right
-            });
-          }
-          level2 = nextLevel;
-        }
-        const chunksRoot = level2[0];
-        if (headers && Object.keys(headers).length > 0) {
-          const metadataRootHash = await YHash.fromHeaders(headers);
-          const metadataRoot = {
-            hash: metadataRootHash,
-            left: null,
-            right: null
-          };
-          const combinedRootHash = await YHash.fromNodes(chunksRoot.hash, metadataRoot.hash);
-          const combinedRoot = {
-            hash: combinedRootHash,
-            left: chunksRoot,
-            right: metadataRoot
-          };
-          return new BlobHashTree(chunkHashes, combinedRoot, headers);
-        }
-        return new BlobHashTree(chunkHashes, chunksRoot, headers);
-      }
-      toJSON() {
-        return {
-          tree_type: this.tree_type,
-          chunk_hashes: this.chunk_hashes.map((h2) => h2.toShaString()),
-          tree: nodeToJSON(this.tree),
-          headers: this.headers
-        };
-      }
-    }
-    class StorageGatewayClient {
-      constructor(storageGatewayUrl) {
-        __publicField(this, "storageGatewayUrl");
-        this.storageGatewayUrl = storageGatewayUrl;
-      }
-      getStorageGatewayUrl() {
-        return this.storageGatewayUrl;
-      }
-      async uploadChunk(params) {
-        const blobHashString = params.blobRootHash.toShaString();
-        const chunkHashString = params.chunkHash.toShaString();
-        validateHashFormat(blobHashString, `uploadChunk[${params.chunkIndex}] blob_hash`);
-        validateHashFormat(chunkHashString, `uploadChunk[${params.chunkIndex}] chunk_hash`);
-        return await withRetry(async () => {
-          const queryParams = new URLSearchParams({
-            owner_id: params.owner,
-            blob_hash: blobHashString,
-            chunk_hash: chunkHashString,
-            chunk_index: params.chunkIndex.toString(),
-            bucket_name: params.bucketName,
-            project_id: params.projectId
-          });
-          const url = `${this.storageGatewayUrl}/${GATEWAY_VERSION}/chunk/?${queryParams.toString()}`;
-          const response = await fetch(url, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/octet-stream",
-              "X-Caffeine-Project-ID": params.projectId
-            },
-            body: params.chunkData
-          });
-          if (!response.ok) {
-            const errorText = await response.text();
-            const error = new Error(`Failed to upload chunk ${params.chunkIndex}: ${response.status} ${response.statusText} - ${errorText}`);
-            error.response = { status: response.status };
-            throw error;
-          }
-          const result = await response.json();
-          return {
-            isComplete: result.status === "blob_complete"
-          };
-        });
-      }
-      async uploadBlobTree(blobHashTree, bucketName, numBlobBytes, owner, projectId, certificateBytes) {
-        const treeJSON = blobHashTree.toJSON();
-        validateHashFormat(treeJSON.tree.hash, "uploadBlobTree root hash");
-        treeJSON.chunk_hashes.forEach((hash, index2) => {
-          validateHashFormat(hash, `uploadBlobTree chunk_hash[${index2}]`);
-        });
-        return await withRetry(async () => {
-          const url = `${this.storageGatewayUrl}/${GATEWAY_VERSION}/blob-tree/`;
-          const requestBody = {
-            blob_tree: treeJSON,
-            bucket_name: bucketName,
-            num_blob_bytes: numBlobBytes,
-            owner,
-            project_id: projectId,
-            headers: blobHashTree.headers,
-            auth: {
-              OwnerEgressSignature: Array.from(certificateBytes)
-            }
-          };
-          const response = await fetch(url, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "X-Caffeine-Project-ID": projectId
-            },
-            body: JSON.stringify(requestBody)
-          });
-          if (!response.ok) {
-            const errorText = await response.text();
-            const error = new Error(`Failed to upload blob tree: ${response.status} ${response.statusText} - ${errorText}`);
-            error.response = { status: response.status };
-            throw error;
-          }
-        });
-      }
-    }
-    class StorageClient {
-      constructor(bucket, storageGatewayUrl, backendCanisterId, projectId, agent) {
-        __publicField(this, "bucket");
-        __publicField(this, "backendCanisterId");
-        __publicField(this, "projectId");
-        __publicField(this, "agent");
-        __publicField(this, "storageGatewayClient");
-        this.bucket = bucket;
-        this.backendCanisterId = backendCanisterId;
-        this.projectId = projectId;
-        this.agent = agent;
-        this.storageGatewayClient = new StorageGatewayClient(storageGatewayUrl);
-      }
-      async getCertificate(hash) {
-        const args = encode$2([Text$2], [hash]);
-        const result = await this.agent.call(this.backendCanisterId, {
-          methodName: "_immutableObjectStorageCreateCertificate",
-          arg: args,
-          effectiveCanisterId: this.backendCanisterId
-        });
-        const respone = result.response.body;
-        if (isV4ResponseBody(respone)) {
-          console.log("Certificate:", respone.certificate);
-          return respone.certificate;
-        }
-        throw new Error("Expected v4 response body");
-      }
-      async putFile(blobBytes, onProgress, contentTypeHint, filenameHint) {
-        const httpHeaders = {
-          "Content-Type": "application/json"
-        };
-        const contentType = await resolveBlobContentType(blobBytes, contentTypeHint);
-        const file = new Blob([new Uint8Array(blobBytes)], {
-          type: contentType
-        });
-        const fileHeaders = {
-          "Content-Type": contentType,
-          "Content-Length": file.size.toString()
-        };
-        const contentDisposition = formatBlobContentDisposition(filenameHint);
-        if (contentDisposition) {
-          fileHeaders["Content-Disposition"] = contentDisposition;
-        }
-        const { chunks, chunkHashes, blobHashTree } = await this.processFileForUpload(file, fileHeaders);
-        const blobRootHash = blobHashTree.tree.hash;
-        const hashString2 = blobRootHash.toShaString();
-        const certificateBytes = await this.getCertificate(hashString2);
-        await this.storageGatewayClient.uploadBlobTree(blobHashTree, this.bucket, file.size, this.backendCanisterId, this.projectId, certificateBytes);
-        await this.parallelUpload(chunks, chunkHashes, blobRootHash, httpHeaders, onProgress);
-        return { hash: hashString2 };
-      }
-      async getDirectURL(hash) {
-        if (!hash) {
-          throw new Error("Hash must not be empty");
-        }
-        validateHashFormat(hash, `getDirectURL for path '${hash}'`);
-        return `${this.storageGatewayClient.getStorageGatewayUrl()}/${GATEWAY_VERSION}/blob/?blob_hash=${encodeURIComponent(hash)}&owner_id=${encodeURIComponent(this.backendCanisterId)}&project_id=${encodeURIComponent(this.projectId)}`;
-      }
-      async processFileForUpload(file, headers) {
-        const chunks = this.createFileChunks(file);
-        const chunkHashes = [];
-        for (let i = 0; i < chunks.length; i++) {
-          const chunkData = new Uint8Array(await chunks[i].arrayBuffer());
-          const hash = await YHash.fromChunk(chunkData);
-          chunkHashes.push(hash);
-        }
-        const blobHashTree = await BlobHashTree.build(chunkHashes, headers);
-        return { chunks, chunkHashes, blobHashTree };
-      }
-      async parallelUpload(chunks, chunkHashes, blobRootHash, httpHeaders, onProgress) {
-        let completedChunks = 0;
-        const uploadSingleChunk = async (index2) => {
-          const chunkData = new Uint8Array(await chunks[index2].arrayBuffer());
-          const chunkHash = chunkHashes[index2];
-          await this.storageGatewayClient.uploadChunk({
-            blobRootHash,
-            chunkHash,
-            chunkIndex: index2,
-            chunkData,
-            bucketName: this.bucket,
-            owner: this.backendCanisterId,
-            projectId: this.projectId,
-            httpHeaders
-          });
-          const currentCompleted = ++completedChunks;
-          if (onProgress != null) {
-            const percentage = chunks.length === 0 ? 100 : Math.round(currentCompleted / chunks.length * 100);
-            onProgress(percentage);
-          }
-        };
-        await Promise.all(Array.from({ length: MAXIMUM_CONCURRENT_UPLOADS }, async (_2, workerId) => {
-          for (let i = workerId; i < chunks.length; i += MAXIMUM_CONCURRENT_UPLOADS) {
-            await uploadSingleChunk(i);
-          }
-        }));
-      }
-      createFileChunks(file, chunkSize = 1024 * 1024) {
-        const chunks = [];
-        const totalChunks = Math.ceil(file.size / chunkSize);
-        for (let index2 = 0; index2 < totalChunks; index2++) {
-          const start = index2 * chunkSize;
-          const end = Math.min(start + chunkSize, file.size);
-          const chunk = file.slice(start, end);
-          chunks.push(chunk);
-        }
-        return chunks;
-      }
-    }
     function candid_some(value) {
       return [
         value
@@ -34272,6 +34041,11 @@ variant ${k2} -> ${e.message}`, {
     function record_opt_to_undefined(arg) {
       return arg == null ? void 0 : arg;
     }
+    var ActivityType = /* @__PURE__ */ ((ActivityType2) => {
+      ActivityType2["quiz"] = "quiz";
+      ActivityType2["flashcards"] = "flashcards";
+      return ActivityType2;
+    })(ActivityType || {});
     var Variant_up_down = /* @__PURE__ */ ((Variant_up_down2) => {
       Variant_up_down2["up"] = "up";
       Variant_up_down2["down"] = "down";
@@ -34340,6 +34114,20 @@ variant ${k2} -> ${e.message}`, {
           return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
         }
       }
+      async __legendaryActivities(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+        }
+      }
       async __nextCategoryId() {
         if (this.processError) {
           try {
@@ -34365,6 +34153,20 @@ variant ${k2} -> ${e.message}`, {
           }
         } else {
           const result = await this.actor.__nextItemId();
+          return result;
+        }
+      }
+      async __nextLegendaryActivityId() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__nextLegendaryActivityId();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__nextLegendaryActivityId();
           return result;
         }
       }
@@ -34428,42 +34230,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
         }
       }
       async __positions(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async __profiles(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n22(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.__profiles(to_candid_opt_n36(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n22(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.__profiles(to_candid_opt_n36(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageBlobsAreLive(arg0) {
@@ -34525,15 +34327,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n28(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n31(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n43(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n46(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n28(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n31(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n43(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n46(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34568,14 +34370,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n35(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n50(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n35(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n50(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34595,14 +34397,14 @@ variant ${k2} -> ${e.message}`, {
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n39(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n54(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n39(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n54(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34620,31 +34422,45 @@ variant ${k2} -> ${e.message}`, {
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
+      async buildLegendaryActivity(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n56(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n56(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+        }
+      }
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34652,14 +34468,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
         }
       }
       async createNsoPhase(arg0) {
@@ -34679,29 +34495,29 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Task_n15(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n36(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Task_n30(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Task_n15(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n36(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Task_n30(this._uploadFile, this._downloadFile, result);
         }
       }
       async createPosition(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
-            return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
-          return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+          return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
         }
       }
       async deleteCategory(arg0) {
@@ -34729,6 +34545,20 @@ variant ${k2} -> ${e.message}`, {
           }
         } else {
           const result = await this.actor.deleteItem(arg0);
+          return result;
+        }
+      }
+      async deleteLegendaryActivity(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.deleteLegendaryActivity(arg0);
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.deleteLegendaryActivity(arg0);
           return result;
         }
       }
@@ -34778,56 +34608,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n42(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n42(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllPositions();
-            return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllPositions();
-          return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n51(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n70(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n51(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n70(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -34848,28 +34678,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n72(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n72(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItem(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n54(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n73(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n54(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n73(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -34884,6 +34714,34 @@ variant ${k2} -> ${e.message}`, {
         } else {
           const result = await this.actor.getItemsByCategory(arg0);
           return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getLegendaryActivitiesByPosition(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
+            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
+          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getLegendaryActivity(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getLegendaryActivity(arg0);
+            return from_candid_opt_n74(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getLegendaryActivity(arg0);
+          return from_candid_opt_n74(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -34904,28 +34762,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n55(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n75(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n55(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n75(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -34946,14 +34804,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n56(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n76(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n56(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n76(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -34988,42 +34846,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n57(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n77(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n57(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n77(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTasksByPhase(arg0);
-            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTasksByPhase(arg0);
-          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
         }
       }
       async getPosition(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n58(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n78(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n58(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n78(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -35044,27 +34902,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n79(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n79(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n60(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n80(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n60(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n80(this._uploadFile, this._downloadFile, arg0));
           return result;
         }
       }
@@ -35080,6 +34938,20 @@ variant ${k2} -> ${e.message}`, {
         } else {
           const result = await this.actor.isCallerAdmin();
           return result;
+        }
+      }
+      async rebuildLegendaryActivity(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.rebuildLegendaryActivity(arg0);
+            return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.rebuildLegendaryActivity(arg0);
+          return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
         }
       }
       async reorderCategories(arg0, arg1) {
@@ -35113,28 +34985,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n68(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35142,14 +35014,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.reorderPositions(arg0);
-            return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.reorderPositions(arg0);
-          return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async schema() {
@@ -35183,70 +35055,70 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n69(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n89(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n69(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n89(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n71(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n91(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n71(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n91(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35267,43 +35139,57 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async updateLegendaryActivity(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.updateLegendaryActivity(arg0);
+            return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.updateLegendaryActivity(arg0);
+          return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfile(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n24(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateNsoPhase(arg0, arg1) {
@@ -35323,31 +35209,40 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n21(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
       async updatePosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n41(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n41(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Position_n19(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
         }
       }
+    }
+    function from_candid_ActivityContent_n19(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n20(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_ActivityType_n17(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n18(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Activity_n15(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n16(_uploadFile, _downloadFile, value);
     }
     function from_candid_AssignmentStatus_n5(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n6(_uploadFile, _downloadFile, value);
@@ -35355,11 +35250,17 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n46(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n47(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n65(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n66(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n37(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n38(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n52(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n53(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_FlashcardContent_n25(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n26(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Flashcard_n27(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n28(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -35367,65 +35268,74 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, value) {
       return from_candid_record_n4(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Position_n19(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n20(_uploadFile, _downloadFile, value);
+    function from_candid_Position_n34(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n35(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n35(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n36(_uploadFile, _downloadFile, value);
+    function from_candid_Question_n23(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n24(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n42(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n43(_uploadFile, _downloadFile, value);
+    function from_candid_QuizContent_n21(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n22(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Role_n26(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n27(_uploadFile, _downloadFile, value);
+    function from_candid_Result__1_n50(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n51(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Task_n15(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n16(_uploadFile, _downloadFile, value);
+    function from_candid_Result_n61(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n62(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserProfile_n24(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n25(_uploadFile, _downloadFile, value);
+    function from_candid_Role_n41(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n42(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserRole_n51(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n52(_uploadFile, _downloadFile, value);
+    function from_candid_Task_n30(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n31(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Value_n48(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n49(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n39(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n40(_uploadFile, _downloadFile, value);
     }
-    function from_candid__ImmutableObjectStorageRefillResult_n31(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n32(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n70(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n71(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Value_n67(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n68(_uploadFile, _downloadFile, value);
+    }
+    function from_candid__ImmutableObjectStorageRefillResult_n46(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n47(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n17(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n32(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n33(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n48(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n34(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n49(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n53(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n72(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n54(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n73(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n55(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n24(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n74(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Activity_n15(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n56(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n75(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_UserProfile_n39(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n76(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n57(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n15(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n77(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n30(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n58(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n19(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n78(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n34(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n59(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n26(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n79(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n41(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
       return {
@@ -35444,8 +35354,27 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_record_n16(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
+        activityType: from_candid_ActivityType_n17(_uploadFile, _downloadFile, value.activityType),
+        content: from_candid_ActivityContent_n19(_uploadFile, _downloadFile, value.content),
+        name: value.name,
+        createdAt: value.createdAt,
+        createdBy: value.createdBy,
+        positionId: value.positionId,
+        sourceCategoryIds: value.sourceCategoryIds
+      };
+    }
+    function from_candid_record_n28(_uploadFile, _downloadFile, value) {
+      return {
+        itemTitle: value.itemTitle,
+        detailFields: value.detailFields,
+        itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto))
+      };
+    }
+    function from_candid_record_n31(_uploadFile, _downloadFile, value) {
+      return {
+        id: value.id,
         completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
-        assignedTo: record_opt_to_undefined(from_candid_opt_n17(_uploadFile, _downloadFile, value.assignedTo)),
+        assignedTo: record_opt_to_undefined(from_candid_opt_n32(_uploadFile, _downloadFile, value.assignedTo)),
         sortOrder: value.sortOrder,
         done: value.done,
         text: value.text,
@@ -35454,27 +35383,13 @@ variant ${k2} -> ${e.message}`, {
         phaseId: value.phaseId
       };
     }
-    function from_candid_record_n20(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n35(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         sortOrder: value.sortOrder,
         name: value.name,
         description: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.description)),
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
-      };
-    }
-    function from_candid_record_n25(_uploadFile, _downloadFile, value) {
-      return {
-        id: value.id,
-        name: value.name,
-        role: from_candid_Role_n26(_uploadFile, _downloadFile, value.role),
-        storeLocation: value.storeLocation
-      };
-    }
-    function from_candid_record_n32(_uploadFile, _downloadFile, value) {
-      return {
-        success: record_opt_to_undefined(from_candid_opt_n33(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n34(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
     function from_candid_record_n4(_uploadFile, _downloadFile, value) {
@@ -35484,15 +35399,29 @@ variant ${k2} -> ${e.message}`, {
         positionId: value.positionId
       };
     }
-    function from_candid_record_n43(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n40(_uploadFile, _downloadFile, value) {
       return {
-        hasMore: value.hasMore,
-        rows: from_candid_vec_n44(_uploadFile, _downloadFile, value.rows)
+        id: value.id,
+        name: value.name,
+        role: from_candid_Role_n41(_uploadFile, _downloadFile, value.role),
+        storeLocation: value.storeLocation
       };
     }
     function from_candid_record_n47(_uploadFile, _downloadFile, value) {
       return {
-        value: from_candid_Value_n48(_uploadFile, _downloadFile, value.value),
+        success: record_opt_to_undefined(from_candid_opt_n48(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.topped_up_amount))
+      };
+    }
+    function from_candid_record_n62(_uploadFile, _downloadFile, value) {
+      return {
+        hasMore: value.hasMore,
+        rows: from_candid_vec_n63(_uploadFile, _downloadFile, value.rows)
+      };
+    }
+    function from_candid_record_n66(_uploadFile, _downloadFile, value) {
+      return {
+        value: from_candid_Value_n67(_uploadFile, _downloadFile, value.value),
         name: value.name
       };
     }
@@ -35505,25 +35434,49 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_tuple_n23(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n38(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n24(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n39(_uploadFile, _downloadFile, value[1])
       ];
     }
-    function from_candid_variant_n27(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n18(_uploadFile, _downloadFile, value) {
+      return "quiz" in value ? "quiz" : "flashcards" in value ? "flashcards" : value;
+    }
+    function from_candid_variant_n20(_uploadFile, _downloadFile, value) {
+      return "quizContent" in value ? {
+        __kind__: "quizContent",
+        quizContent: from_candid_QuizContent_n21(_uploadFile, _downloadFile, value.quizContent)
+      } : "flashcardContent" in value ? {
+        __kind__: "flashcardContent",
+        flashcardContent: from_candid_FlashcardContent_n25(_uploadFile, _downloadFile, value.flashcardContent)
+      } : value;
+    }
+    function from_candid_variant_n24(_uploadFile, _downloadFile, value) {
+      return "multipleChoice" in value ? {
+        __kind__: "multipleChoice",
+        multipleChoice: value.multipleChoice
+      } : "matching" in value ? {
+        __kind__: "matching",
+        matching: value.matching
+      } : "trueFalse" in value ? {
+        __kind__: "trueFalse",
+        trueFalse: value.trueFalse
+      } : value;
+    }
+    function from_candid_variant_n42(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n36(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n51(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n37(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n52(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n38(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n53(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -35556,7 +35509,10 @@ variant ${k2} -> ${e.message}`, {
         FrontendOriginMismatch: value.FrontendOriginMismatch
       } : value;
     }
-    function from_candid_variant_n49(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
+      return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
+    }
+    function from_candid_variant_n68(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -35577,97 +35533,117 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n52(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n71(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
-    }
-    function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
-      return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
     }
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_LibraryItem_n12(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n14(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Task_n15(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n18(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Position_n19(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Activity_n15(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n2(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n22(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n23(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Question_n23(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n44(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n45(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n26(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Flashcard_n27(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n46(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n29(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Task_n30(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n50(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n24(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n33(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Position_n34(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n37(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n38(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n63(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n64(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n64(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n65(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n69(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n39(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_AssignmentStatus_n69(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n70(_uploadFile, _downloadFile, value);
+    function to_candid_ActivityType_n58(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n59(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportInput_n60(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n61(_uploadFile, _downloadFile, value);
+    function to_candid_AssignmentStatus_n89(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n90(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportPhase_n63(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n64(_uploadFile, _downloadFile, value);
+    function to_candid_BuildActivityInput_n56(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n57(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportTask_n66(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n67(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportInput_n80(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n81(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n71(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n72(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportPhase_n83(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n84(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n39(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n40(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportTask_n86(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n87(_uploadFile, _downloadFile, value);
     }
-    function to_candid__ImmutableObjectStorageRefillInformation_n29(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n30(_uploadFile, _downloadFile, value);
+    function to_candid_Role_n91(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n92(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UserRole_n54(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n55(_uploadFile, _downloadFile, value);
+    }
+    function to_candid__ImmutableObjectStorageRefillInformation_n44(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n45(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n21(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n36(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n28(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n29(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n43(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n44(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n41(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n60(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_record_n30(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n45(_uploadFile, _downloadFile, value) {
       return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
       };
     }
-    function to_candid_record_n61(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n57(_uploadFile, _downloadFile, value) {
       return {
-        moduleName: value.moduleName,
-        phases: to_candid_vec_n62(_uploadFile, _downloadFile, value.phases)
+        activityType: to_candid_ActivityType_n58(_uploadFile, _downloadFile, value.activityType),
+        name: value.name,
+        positionId: value.positionId,
+        sourceCategoryIds: value.sourceCategoryIds
       };
     }
-    function to_candid_record_n64(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n81(_uploadFile, _downloadFile, value) {
       return {
-        tasks: to_candid_vec_n65(_uploadFile, _downloadFile, value.tasks),
+        moduleName: value.moduleName,
+        phases: to_candid_vec_n82(_uploadFile, _downloadFile, value.phases)
+      };
+    }
+    function to_candid_record_n84(_uploadFile, _downloadFile, value) {
+      return {
+        tasks: to_candid_vec_n85(_uploadFile, _downloadFile, value.tasks),
         name: value.name
       };
     }
-    function to_candid_record_n67(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n87(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         section: value.section ? candid_some(value.section) : candid_none(),
         notes: value.notes ? candid_some(value.notes) : candid_none()
       };
     }
-    function to_candid_variant_n40(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n55(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -35676,21 +35652,28 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n68(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n59(_uploadFile, _downloadFile, value) {
+      return value == "quiz" ? {
+        quiz: null
+      } : value == "flashcards" ? {
+        flashcards: null
+      } : value;
+    }
+    function to_candid_variant_n88(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n70(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n90(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n72(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n92(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -35701,11 +35684,11 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_vec_n62(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n63(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n82(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n83(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n65(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n66(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n85(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n86(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -38669,40 +38652,40 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$q = [
+    const __iconNode$C = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$q);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$C);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$p = [
+    const __iconNode$B = [
       ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
       ["path", { d: "M19 12H5", key: "x3x0zl" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$p);
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$o = [
+    const __iconNode$A = [
       ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
       ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$o);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$n = [
+    const __iconNode$z = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -38712,46 +38695,103 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$n);
+    const BookOpen = createLucideIcon("book-open", __iconNode$z);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$m = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$m);
+    const __iconNode$y = [
+      [
+        "path",
+        {
+          d: "M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z",
+          key: "l5xja"
+        }
+      ],
+      [
+        "path",
+        {
+          d: "M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z",
+          key: "ep3f8r"
+        }
+      ],
+      ["path", { d: "M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4", key: "1p4c4q" }],
+      ["path", { d: "M17.599 6.5a3 3 0 0 0 .399-1.375", key: "tmeiqw" }],
+      ["path", { d: "M6.003 5.125A3 3 0 0 0 6.401 6.5", key: "105sqy" }],
+      ["path", { d: "M3.477 10.896a4 4 0 0 1 .585-.396", key: "ql3yin" }],
+      ["path", { d: "M19.938 10.5a4 4 0 0 1 .585.396", key: "1qfode" }],
+      ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
+      ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
+    ];
+    const Brain = createLucideIcon("brain", __iconNode$y);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$l = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$l);
+    const __iconNode$x = [
+      ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
+      ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
+    ];
+    const CheckCheck = createLucideIcon("check-check", __iconNode$x);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$k = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$k);
+    const __iconNode$w = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$w);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$j = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$j);
+    const __iconNode$v = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$v);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$i = [
+    const __iconNode$u = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$u);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$t = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$t);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$s = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$s);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$r = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$r);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$q = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -38765,14 +38805,32 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$i);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$h = [
+    const __iconNode$p = [
+      ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
+      ["path", { d: "m18 15 4-4", key: "16gjal" }],
+      [
+        "path",
+        {
+          d: "m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5",
+          key: "b7pghm"
+        }
+      ]
+    ];
+    const Hammer = createLucideIcon("hammer", __iconNode$p);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$o = [
       [
         "path",
         {
@@ -38782,14 +38840,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$h);
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$o);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$g = [
+    const __iconNode$n = [
       [
         "path",
         {
@@ -38798,7 +38856,113 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Heart = createLucideIcon("heart", __iconNode$g);
+    const Heart = createLucideIcon("heart", __iconNode$n);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$m = [
+      ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
+      ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
+      ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
+      ["line", { x1: "18", x2: "21", y1: "12", y2: "15", key: "5mozeu" }],
+      [
+        "path",
+        {
+          d: "M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59",
+          key: "mmje98"
+        }
+      ],
+      ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
+    ];
+    const ImageOff = createLucideIcon("image-off", __iconNode$m);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$l = [
+      [
+        "path",
+        {
+          d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z",
+          key: "zw3jo"
+        }
+      ],
+      [
+        "path",
+        {
+          d: "M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12",
+          key: "1wduqc"
+        }
+      ],
+      [
+        "path",
+        {
+          d: "M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17",
+          key: "kqbvx6"
+        }
+      ]
+    ];
+    const Layers = createLucideIcon("layers", __iconNode$l);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$k = [
+      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
+      ["path", { d: "M12 6v14", key: "1n7gus" }],
+      ["path", { d: "M8 8v12", key: "1gg7y9" }],
+      ["path", { d: "M4 4v16", key: "6qkkli" }]
+    ];
+    const Library = createLucideIcon("library", __iconNode$k);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$j = [
+      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
+      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
+    ];
+    const Link$2 = createLucideIcon("link", __iconNode$j);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$i = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$i);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$h = [
+      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+    ];
+    const Lock = createLucideIcon("lock", __iconNode$h);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$g = [
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+    ];
+    const LogOut = createLucideIcon("log-out", __iconNode$g);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38806,61 +38970,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$f = [
-      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
-      ["path", { d: "M12 6v14", key: "1n7gus" }],
-      ["path", { d: "M8 8v12", key: "1gg7y9" }],
-      ["path", { d: "M4 4v16", key: "6qkkli" }]
-    ];
-    const Library = createLucideIcon("library", __iconNode$f);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$e = [
-      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
-      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
-    ];
-    const Link$2 = createLucideIcon("link", __iconNode$e);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$d = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$d);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$c = [
-      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
-    ];
-    const Lock = createLucideIcon("lock", __iconNode$c);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$b = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-    ];
-    const LogOut = createLucideIcon("log-out", __iconNode$b);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$a = [
       ["path", { d: "M12 22v-9", key: "x3hkom" }],
       [
         "path",
@@ -38884,14 +38993,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const PackageOpen = createLucideIcon("package-open", __iconNode$a);
+    const PackageOpen = createLucideIcon("package-open", __iconNode$f);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$9 = [
+    const __iconNode$e = [
       [
         "path",
         {
@@ -38903,14 +39012,14 @@ variant ${k2} -> ${e.message}`, {
       ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
       ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
     ];
-    const Package = createLucideIcon("package", __iconNode$9);
+    const Package = createLucideIcon("package", __iconNode$e);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$8 = [
+    const __iconNode$d = [
       [
         "path",
         {
@@ -38920,7 +39029,71 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
     ];
-    const Pencil = createLucideIcon("pencil", __iconNode$8);
+    const Pencil = createLucideIcon("pencil", __iconNode$d);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$c = [
+      ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ["path", { d: "M12 5v14", key: "s699le" }]
+    ];
+    const Plus = createLucideIcon("plus", __iconNode$c);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$b = [
+      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+      ["path", { d: "M8 16H3v5", key: "1cv678" }]
+    ];
+    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$b);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$a = [
+      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+    ];
+    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$a);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$9 = [
+      [
+        "path",
+        {
+          d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
+          key: "1c8476"
+        }
+      ],
+      ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
+      ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
+    ];
+    const Save = createLucideIcon("save", __iconNode$9);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$8 = [
+      ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
+      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+    ];
+    const Search = createLucideIcon("search", __iconNode$8);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38928,41 +39101,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$7 = [
-      ["path", { d: "M5 12h14", key: "1ays0h" }],
-      ["path", { d: "M12 5v14", key: "s699le" }]
-    ];
-    const Plus = createLucideIcon("plus", __iconNode$7);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$6 = [
-      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-      ["path", { d: "M8 16H3v5", key: "1cv678" }]
-    ];
-    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$6);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$5 = [
-      ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
-      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
-    ];
-    const Search = createLucideIcon("search", __iconNode$5);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$4 = [
       [
         "path",
         {
@@ -38973,7 +39111,56 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M12 8v4", key: "1got3b" }],
       ["path", { d: "M12 16h.01", key: "1drbdi" }]
     ];
-    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$4);
+    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$7);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$6 = [
+      [
+        "path",
+        {
+          d: "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
+          key: "4pj2yx"
+        }
+      ],
+      ["path", { d: "M20 3v4", key: "1olli1" }],
+      ["path", { d: "M22 5h-4", key: "1gvqau" }],
+      ["path", { d: "M4 17v2", key: "vumght" }],
+      ["path", { d: "M5 18H3", key: "zchphs" }]
+    ];
+    const Sparkles = createLucideIcon("sparkles", __iconNode$6);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$5 = [
+      ["path", { d: "M3 6h18", key: "d0wm0j" }],
+      ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
+      ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
+      ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
+      ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+    ];
+    const Trash2 = createLucideIcon("trash-2", __iconNode$5);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$4 = [
+      ["path", { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6", key: "17hqa7" }],
+      ["path", { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18", key: "lmptdp" }],
+      ["path", { d: "M4 22h16", key: "57wxv0" }],
+      ["path", { d: "M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22", key: "1nw9bq" }],
+      ["path", { d: "M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22", key: "1np0yb" }],
+      ["path", { d: "M18 2H6v7a6 6 0 0 0 12 0V2Z", key: "u46fv3" }]
+    ];
+    const Trophy = createLucideIcon("trophy", __iconNode$4);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38981,13 +39168,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$3 = [
-      ["path", { d: "M3 6h18", key: "d0wm0j" }],
-      ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
-      ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
-      ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
-      ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+      ["path", { d: "M12 3v12", key: "1x0j5s" }],
+      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
+      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
     ];
-    const Trash2 = createLucideIcon("trash-2", __iconNode$3);
+    const Upload = createLucideIcon("upload", __iconNode$3);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38995,11 +39180,12 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$2 = [
-      ["path", { d: "M12 3v12", key: "1x0j5s" }],
-      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
-      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
+      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
+      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
     ];
-    const Upload = createLucideIcon("upload", __iconNode$2);
+    const Users = createLucideIcon("users", __iconNode$2);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39007,12 +39193,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$1 = [
-      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
-      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
-      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+      ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+      ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
     ];
-    const Users = createLucideIcon("users", __iconNode$1);
+    const X = createLucideIcon("x", __iconNode$1);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39020,10 +39204,15 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode = [
-      ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-      ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+      [
+        "path",
+        {
+          d: "M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",
+          key: "1xq2db"
+        }
+      ]
     ];
-    const X = createLucideIcon("x", __iconNode);
+    const Zap = createLucideIcon("zap", __iconNode);
     var jt = (n) => {
       switch (n) {
         case "success":
@@ -39231,7 +39420,7 @@ variant ${k2} -> ${e.message}`, {
         }) : g2(S2);
       }), t;
     }
-    reactExports.forwardRef(function(e, t) {
+    var $e = reactExports.forwardRef(function(e, t) {
       let { invert: a2, position: u2 = "bottom-right", hotkey: f2 = ["altKey", "KeyT"], expand: w2, closeButton: S2, className: g2, offset: i, mobileOffset: D, theme: T2 = "light", richColors: F2, duration: et2, style: ut2, visibleToasts: ft2 = pe, toastOptions: l2, dir: ot2 = _t(), gap: at = be, loadingIcon: X2, icons: st2, containerAriaLabel: pt = "Notifications", pauseWhenPageIsHidden: rt2 } = e, [B2, s] = React$4.useState([]), P2 = React$4.useMemo(() => Array.from(new Set([u2].concat(B2.filter((d2) => d2.position).map((d2) => d2.position)))), [B2, u2]), [nt2, it2] = React$4.useState([]), [Y2, C2] = React$4.useState(false), [lt, J2] = React$4.useState(false), [W2, H2] = React$4.useState(T2 !== "system" ? T2 : typeof window != "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), A = React$4.useRef(null), mt = f2.join("+").replace(/Key/g, "").replace(/Digit/g, ""), L2 = React$4.useRef(null), z2 = React$4.useRef(false), ct2 = React$4.useCallback((d2) => {
         s((h2) => {
           var y2;
@@ -47735,6 +47924,10 @@ variant ${k2} -> ${e.message}`, {
           }
           onOpenChange(false);
         } catch (err) {
+          console.error(
+            isEdit ? "Failed to update position" : "Failed to create position",
+            err
+          );
           ue.error(
             isEdit ? "Could not update position" : "Could not create position",
             {
@@ -50113,7 +50306,7 @@ variant ${k2} -> ${e.message}`, {
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton, {}) : ordered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryEmptyState, { onCreate: openCreate }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton$2, {}) : ordered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryEmptyState, { onCreate: openCreate }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
           "ul",
           {
             className: "flex flex-col gap-2",
@@ -50345,7 +50538,7 @@ variant ${k2} -> ${e.message}`, {
         }
       );
     }
-    function CategoryListSkeleton() {
+    function CategoryListSkeleton$2() {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "ul",
         {
@@ -69356,7 +69549,7 @@ ${escapeText(this.code(index2, length))}
     );
     Progress$1.displayName = PROGRESS_NAME;
     var INDICATOR_NAME = "ProgressIndicator";
-    var ProgressIndicator = reactExports.forwardRef(
+    var ProgressIndicator$2 = reactExports.forwardRef(
       (props, forwardedRef) => {
         const { __scopeProgress, ...indicatorProps } = props;
         const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
@@ -69372,7 +69565,7 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    ProgressIndicator.displayName = INDICATOR_NAME;
+    ProgressIndicator$2.displayName = INDICATOR_NAME;
     function defaultGetValueLabel(value, max2) {
       return `${Math.round(value / max2 * 100)}%`;
     }
@@ -69400,7 +69593,7 @@ ${escapeText(this.code(index2, length))}
 Defaulting to \`null\`.`;
     }
     var Root = Progress$1;
-    var Indicator = ProgressIndicator;
+    var Indicator = ProgressIndicator$2;
     function Progress({
       className,
       value,
@@ -70079,6 +70272,101 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    function BeLegendaryBanner({
+      positionId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Link$1,
+        {
+          to: "/position/$id/legendary",
+          params: { id: positionId },
+          className: cn(
+            "group relative mt-4 flex w-full items-center gap-3 overflow-hidden",
+            "rounded-md px-4 py-5 sm:px-6 sm:py-6",
+            "legendary-hero-backdrop legendary-hero-sweep legendary-hero-flash",
+            "animate-legendary-pulse",
+            "transition-smooth hover:brightness-110 active:brightness-95",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": "legendary.banner",
+          "aria-label": "Open Be Legendary practice area",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: "/assets/generated/bartender-hero.png",
+                alt: "",
+                "aria-hidden": true,
+                className: cn(
+                  "pointer-events-none absolute inset-0 z-0 h-full w-full",
+                  "object-cover object-center select-none"
+                ),
+                loading: "eager"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "legendary-hero-overlay", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "legendary-glow-layer", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: cn(
+                  "relative z-10 flex size-10 shrink-0 items-center justify-center rounded-md",
+                  "bg-in-training/15 ring-1 ring-in-training/45 backdrop-blur-sm"
+                ),
+                "aria-hidden": true,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "size-5 text-in-training" })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "relative z-10 flex min-w-0 flex-1 flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: cn(
+                    "legendary-hero-wordmark",
+                    "text-3xl uppercase leading-none tracking-wide sm:text-4xl md:text-5xl"
+                  ),
+                  "data-ocid": "legendary.banner.wordmark",
+                  children: "Be Legendary"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: cn(
+                    "mt-2 font-heading text-xs font-semibold uppercase tracking-[0.2em] sm:text-sm",
+                    "text-in-training/90"
+                  ),
+                  children: "Prove your mastery"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "span",
+              {
+                className: cn(
+                  "relative z-10 flex shrink-0 items-center gap-1",
+                  "font-heading text-xs font-semibold uppercase tracking-[0.18em]",
+                  "text-in-training/90"
+                ),
+                "aria-hidden": true,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Enter" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    ChevronRight,
+                    {
+                      className: cn(
+                        "size-4 transition-transform duration-200",
+                        "group-hover:translate-x-0.5"
+                      )
+                    }
+                  )
+                ]
+              }
+            )
+          ]
+        }
+      );
+    }
     function PositionDetailRoute() {
       const { id } = useParams({ strict: false });
       return /* @__PURE__ */ jsxRuntimeExports.jsx(PositionDetailPage, { positionId: String(id ?? "") });
@@ -70146,6 +70434,7 @@ Defaulting to \`null\`.`;
               children: position.description
             }
           ) : null,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(BeLegendaryBanner, { positionId }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(LibrarySection, { positionId, positionName: position == null ? void 0 : position.name })
         ] })
       ] });
@@ -70748,7 +71037,7 @@ Defaulting to \`null\`.`;
       }, [items]);
       const [openIndex, setOpenIndex] = reactExports.useState(0);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition$1, { positionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition$2, { positionId }),
         isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(HeartShowcaseSkeleton, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(HeartShowcaseHeader, {}),
           specsItem ? /* @__PURE__ */ jsxRuntimeExports.jsx(ServingSpecsStrip, { item: specsItem }) : null,
@@ -70773,7 +71062,7 @@ Defaulting to \`null\`.`;
         ] })
       ] });
     }
-    function BackToPosition$1({
+    function BackToPosition$2({
       positionId
     }) {
       const to = `/position/${positionId}`;
@@ -70816,6 +71105,2192 @@ Defaulting to \`null\`.`;
           categoryId: String(categoryId ?? "")
         }
       );
+    }
+    function toFrontendQuestion(q2) {
+      if (q2.__kind__ === "multipleChoice") {
+        return {
+          kind: "multipleChoice",
+          prompt: q2.multipleChoice.prompt,
+          choices: q2.multipleChoice.choices,
+          correctIndex: Number(q2.multipleChoice.correctIndex)
+        };
+      }
+      if (q2.__kind__ === "matching") {
+        return {
+          kind: "matching",
+          pairs: q2.matching.pairs,
+          shuffledOptions: q2.matching.shuffledOptions
+        };
+      }
+      return {
+        kind: "trueFalse",
+        statement: q2.trueFalse.statement,
+        isTrue: q2.trueFalse.isTrue
+      };
+    }
+    function toFrontendFlashcard(f2) {
+      return {
+        itemTitle: f2.itemTitle,
+        itemPhoto: f2.itemPhoto ?? null,
+        detailFields: f2.detailFields
+      };
+    }
+    function toFrontendActivityContent(c2) {
+      if (c2.__kind__ === "quizContent") {
+        return {
+          kind: "quizContent",
+          questions: c2.quizContent.map(toFrontendQuestion)
+        };
+      }
+      return {
+        kind: "flashcardContent",
+        flashcards: c2.flashcardContent.map(toFrontendFlashcard)
+      };
+    }
+    function toFrontendActivity(a2) {
+      return {
+        id: a2.id.toString(),
+        positionId: a2.positionId.toString(),
+        activityType: a2.activityType,
+        name: a2.name,
+        sourceCategoryIds: a2.sourceCategoryIds.map((id) => id.toString()),
+        content: toFrontendActivityContent(a2.content),
+        createdAt: a2.createdAt.toString(),
+        createdBy: a2.createdBy.toString()
+      };
+    }
+    function useLegendaryActivitiesByPosition(positionId) {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["legendary-activities", positionId],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getLegendaryActivitiesByPosition(
+            BigInt(positionId)
+          );
+          return result.map(toFrontendActivity);
+        },
+        enabled: !!actor && !isFetching && !!positionId
+      });
+    }
+    function useLegendaryActivity(id) {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: ["legendary-activity", id],
+        queryFn: async () => {
+          if (!actor) return null;
+          const result = await actor.getLegendaryActivity(BigInt(id));
+          return result ? toFrontendActivity(result) : null;
+        },
+        enabled: !!actor && !isFetching && !!id
+      });
+    }
+    function useBuildLegendaryActivity() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.buildLegendaryActivity({
+            positionId: BigInt(input.positionId),
+            activityType: input.activityType === "quiz" ? ActivityType.quiz : ActivityType.flashcards,
+            name: input.name,
+            sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id))
+          });
+          return toFrontendActivity(result);
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["legendary-activities", variables.positionId]
+          });
+        }
+      });
+    }
+    function useDeleteLegendaryActivity() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.deleteLegendaryActivity(BigInt(input.id));
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["legendary-activities", variables.positionId]
+          });
+          queryClient2.removeQueries({
+            queryKey: ["legendary-activity", variables.id]
+          });
+        }
+      });
+    }
+    function useUpdateLegendaryActivity() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.updateLegendaryActivity({
+            id: BigInt(input.id),
+            name: input.name,
+            sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id))
+          });
+          return toFrontendActivity(result);
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["legendary-activities", variables.positionId]
+          });
+          queryClient2.invalidateQueries({
+            queryKey: ["legendary-activity", variables.id]
+          });
+        }
+      });
+    }
+    function useRebuildLegendaryActivity() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.rebuildLegendaryActivity(BigInt(input.id));
+          return toFrontendActivity(result);
+        },
+        onSuccess: (_data, variables) => {
+          queryClient2.invalidateQueries({
+            queryKey: ["legendary-activities", variables.positionId]
+          });
+          queryClient2.invalidateQueries({
+            queryKey: ["legendary-activity", variables.id]
+          });
+        }
+      });
+    }
+    function ActivityBuilderDialog({
+      open,
+      onOpenChange,
+      positionId
+    }) {
+      const categoriesQuery = useCategoriesByPosition(positionId);
+      const buildMutation = useBuildLegendaryActivity();
+      const [name, setName] = reactExports.useState("");
+      const [activityType, setActivityType] = reactExports.useState(null);
+      const [selectedCategoryIds, setSelectedCategoryIds] = reactExports.useState([]);
+      const [error, setError] = reactExports.useState(null);
+      reactExports.useEffect(() => {
+        if (open) {
+          setName("");
+          setActivityType(null);
+          setSelectedCategoryIds([]);
+          setError(null);
+        }
+      }, [open]);
+      const categories = categoriesQuery.data ?? [];
+      const trimmedName = name.trim();
+      const canSubmit = trimmedName.length > 0 && activityType !== null && selectedCategoryIds.length > 0 && !buildMutation.isPending;
+      function toggleCategory(categoryId) {
+        setSelectedCategoryIds(
+          (prev) => prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
+        );
+      }
+      async function handleBuild(e) {
+        e.preventDefault();
+        if (activityType === null) return;
+        setError(null);
+        try {
+          await buildMutation.mutateAsync({
+            positionId,
+            activityType,
+            name: trimmedName,
+            sourceCategoryIds: selectedCategoryIds
+          });
+          ue.success("Activity built", {
+            description: `"${trimmedName}" is now available for all staff.`
+          });
+          onOpenChange(false);
+        } catch (err) {
+          const description = err instanceof Error ? err.message : void 0;
+          setError(description ?? "Could not build the activity.");
+          ue.error("Could not build activity", { description });
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        DialogContent,
+        {
+          className: "bg-card border-border sm:max-w-lg",
+          "data-ocid": "legendary.builder.dialog",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                DialogTitle,
+                {
+                  className: "font-display text-2xl uppercase tracking-wide text-foreground",
+                  "data-ocid": "legendary.builder.dialog.title",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "inline size-6 align-text-bottom text-primary" }),
+                    " ",
+                    "Build Activity"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Pick library categories, choose a format, and generate a practice activity for this position. Available to all staff instantly." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleBuild, className: "grid gap-5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    htmlFor: "legendary-activity-name",
+                    className: "font-heading uppercase text-xs tracking-wider text-foreground",
+                    children: "Activity name"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input$1,
+                  {
+                    id: "legendary-activity-name",
+                    value: name,
+                    onChange: (e) => setName(e.target.value),
+                    placeholder: "e.g. Menu Knowledge Quiz",
+                    autoComplete: "off",
+                    maxLength: 80,
+                    disabled: buildMutation.isPending,
+                    "data-ocid": "legendary.builder.dialog.name_input"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Activity type" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "grid grid-cols-2 gap-2",
+                    role: "radiogroup",
+                    "aria-label": "Activity type",
+                    "data-ocid": "legendary.builder.dialog.type.toggle",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        ActivityTypeOption,
+                        {
+                          value: "quiz",
+                          label: "Quiz",
+                          description: "Multiple choice questions",
+                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }),
+                          selected: activityType === "quiz",
+                          onSelect: () => setActivityType("quiz"),
+                          disabled: buildMutation.isPending
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        ActivityTypeOption,
+                        {
+                          value: "flashcards",
+                          label: "Flashcards",
+                          description: "Flip cards to study",
+                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" }),
+                          selected: activityType === "flashcards",
+                          onSelect: () => setActivityType("flashcards"),
+                          disabled: buildMutation.isPending
+                        }
+                      )
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Source categories" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Items from these categories generate the activity content." }),
+                categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton$1, {}) : categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center",
+                    "data-ocid": "legendary.builder.dialog.categories.empty_state",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No categories exist for this position yet. Add library categories first." })
+                  }
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "ul",
+                  {
+                    className: "max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1",
+                    "data-ocid": "legendary.builder.dialog.categories.list",
+                    children: categories.map((category, index2) => {
+                      const checked = selectedCategoryIds.includes(category.id);
+                      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "label",
+                        {
+                          htmlFor: `legendary-cat-${category.id}`,
+                          className: cn(
+                            "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
+                            checked ? "border-primary/60 bg-primary/10" : "border-border bg-library-card hover:bg-muted/40"
+                          ),
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              Checkbox,
+                              {
+                                id: `legendary-cat-${category.id}`,
+                                checked,
+                                onCheckedChange: () => toggleCategory(category.id),
+                                disabled: buildMutation.isPending,
+                                "data-ocid": `legendary.builder.dialog.categories.item.${index2 + 1}`
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex min-w-0 flex-1 flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name }) })
+                          ]
+                        }
+                      ) }, category.id);
+                    })
+                  }
+                )
+              ] }),
+              error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "text-xs text-primary font-body",
+                  "data-ocid": "legendary.builder.dialog.error_state",
+                  role: "alert",
+                  children: error
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "outline",
+                    onClick: () => onOpenChange(false),
+                    disabled: buildMutation.isPending,
+                    "data-ocid": "legendary.builder.dialog.cancel_button",
+                    children: "Cancel"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "submit",
+                    disabled: !canSubmit,
+                    "data-ocid": "legendary.builder.dialog.submit_button",
+                    children: [
+                      buildMutation.isPending ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "size-4" }),
+                      "Build"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          ]
+        }
+      ) });
+    }
+    function ActivityTypeOption({
+      value,
+      label,
+      description,
+      icon,
+      selected,
+      onSelect,
+      disabled
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          role: "radio",
+          "aria-checked": selected,
+          onClick: onSelect,
+          disabled,
+          "data-ocid": `legendary.builder.dialog.type.${value}.radio`,
+          className: cn(
+            "flex flex-col items-start gap-1 rounded-md border px-3 py-3 text-left transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            selected ? "border-primary bg-primary/10 text-foreground" : "border-border bg-library-card text-foreground hover:bg-muted/40",
+            disabled && "cursor-not-allowed opacity-50"
+          ),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-2 text-primary", children: [
+              icon,
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide", children: label })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: description })
+          ]
+        }
+      );
+    }
+    function CategoryListSkeleton$1() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "grid gap-1.5",
+          "data-ocid": "legendary.builder.dialog.categories.loading_state",
+          "aria-hidden": true,
+          children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-full rounded-md" }, k2))
+        }
+      );
+    }
+    function ActivityEditorDialog({
+      open,
+      onOpenChange,
+      positionId,
+      activity
+    }) {
+      const categoriesQuery = useCategoriesByPosition(positionId);
+      const updateMutation = useUpdateLegendaryActivity();
+      const [name, setName] = reactExports.useState("");
+      const [selectedCategoryIds, setSelectedCategoryIds] = reactExports.useState([]);
+      const [error, setError] = reactExports.useState(null);
+      reactExports.useEffect(() => {
+        if (open && activity) {
+          setName(activity.name);
+          setSelectedCategoryIds([...activity.sourceCategoryIds]);
+          setError(null);
+        }
+      }, [open, activity]);
+      const categories = categoriesQuery.data ?? [];
+      const trimmedName = name.trim();
+      const canSubmit = trimmedName.length > 0 && selectedCategoryIds.length > 0 && !updateMutation.isPending;
+      function toggleCategory(categoryId) {
+        setSelectedCategoryIds(
+          (prev) => prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
+        );
+      }
+      async function handleSave(e) {
+        e.preventDefault();
+        if (!activity) return;
+        setError(null);
+        try {
+          await updateMutation.mutateAsync({
+            id: activity.id,
+            positionId,
+            name: trimmedName,
+            sourceCategoryIds: selectedCategoryIds
+          });
+          ue.success("Activity updated", {
+            description: `"${trimmedName}" was saved.`
+          });
+          onOpenChange(false);
+        } catch (err) {
+          const description = err instanceof Error ? err.message : void 0;
+          setError(description ?? "Could not update the activity.");
+          ue.error("Could not update activity", { description });
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        DialogContent,
+        {
+          className: "bg-card border-border sm:max-w-lg",
+          "data-ocid": "legendary.editor.dialog",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                DialogTitle,
+                {
+                  className: "font-display text-2xl uppercase tracking-wide text-foreground",
+                  "data-ocid": "legendary.editor.dialog.title",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "inline size-6 align-text-bottom text-primary" }),
+                    " ",
+                    "Edit Activity"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Update the name or source categories. The activity type is fixed at build time and cannot change." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSave, className: "grid gap-5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    htmlFor: "legendary-activity-edit-name",
+                    className: "font-heading uppercase text-xs tracking-wider text-foreground",
+                    children: "Activity name"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input$1,
+                  {
+                    id: "legendary-activity-edit-name",
+                    value: name,
+                    onChange: (e) => setName(e.target.value),
+                    placeholder: "e.g. Menu Knowledge Quiz",
+                    autoComplete: "off",
+                    maxLength: 80,
+                    disabled: updateMutation.isPending,
+                    "data-ocid": "legendary.editor.dialog.name_input"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Activity type" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "grid grid-cols-2 gap-2",
+                    role: "radiogroup",
+                    "aria-label": "Activity type (read-only)",
+                    "aria-readonly": "true",
+                    "data-ocid": "legendary.editor.dialog.type.toggle",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        ReadOnlyActivityTypeOption,
+                        {
+                          value: "quiz",
+                          label: "Quiz",
+                          description: "Multiple choice questions",
+                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }),
+                          selected: (activity == null ? void 0 : activity.activityType) === "quiz"
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        ReadOnlyActivityTypeOption,
+                        {
+                          value: "flashcards",
+                          label: "Flashcards",
+                          description: "Flip cards to study",
+                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" }),
+                          selected: (activity == null ? void 0 : activity.activityType) === "flashcards"
+                        }
+                      )
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Source categories" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Items from these categories generate the activity content." }),
+                categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton, {}) : categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center",
+                    "data-ocid": "legendary.editor.dialog.categories.empty_state",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No categories exist for this position yet. Add library categories first." })
+                  }
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "ul",
+                  {
+                    className: "max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1",
+                    "data-ocid": "legendary.editor.dialog.categories.list",
+                    children: categories.map((category, index2) => {
+                      const checked = selectedCategoryIds.includes(category.id);
+                      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "label",
+                        {
+                          htmlFor: `legendary-edit-cat-${category.id}`,
+                          className: cn(
+                            "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
+                            checked ? "border-primary/60 bg-primary/10" : "border-border bg-library-card hover:bg-muted/40"
+                          ),
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              Checkbox,
+                              {
+                                id: `legendary-edit-cat-${category.id}`,
+                                checked,
+                                onCheckedChange: () => toggleCategory(category.id),
+                                disabled: updateMutation.isPending,
+                                "data-ocid": `legendary.editor.dialog.categories.item.${index2 + 1}`
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex min-w-0 flex-1 flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name }) })
+                          ]
+                        }
+                      ) }, category.id);
+                    })
+                  }
+                )
+              ] }),
+              error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "text-xs text-primary font-body",
+                  "data-ocid": "legendary.editor.dialog.error_state",
+                  role: "alert",
+                  children: error
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "outline",
+                    onClick: () => onOpenChange(false),
+                    disabled: updateMutation.isPending,
+                    "data-ocid": "legendary.editor.dialog.cancel_button",
+                    children: "Cancel"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "submit",
+                    disabled: !canSubmit,
+                    "data-ocid": "legendary.editor.dialog.submit_button",
+                    children: [
+                      updateMutation.isPending ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Save, { className: "size-4" }),
+                      "Save"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          ]
+        }
+      ) });
+    }
+    function ReadOnlyActivityTypeOption({
+      value,
+      label,
+      description,
+      icon,
+      selected
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          "aria-label": `${label} — ${description}${selected ? " (selected)" : ""}`,
+          "data-ocid": `legendary.editor.dialog.type.${value}.radio`,
+          className: cn(
+            "flex flex-col items-start gap-1 rounded-md border px-3 py-3 text-left",
+            selected ? "border-primary bg-primary/10 text-foreground" : "border-border bg-library-card text-foreground",
+            "cursor-not-allowed opacity-70"
+          ),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-2 text-primary", children: [
+              icon,
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide", children: label })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: description })
+          ]
+        }
+      );
+    }
+    function CategoryListSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "grid gap-1.5",
+          "data-ocid": "legendary.editor.dialog.categories.loading_state",
+          "aria-hidden": true,
+          children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-full rounded-md" }, k2))
+        }
+      );
+    }
+    const badgeVariants = cva(
+      "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+      {
+        variants: {
+          variant: {
+            default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+            secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+            destructive: "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+            outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground"
+          }
+        },
+        defaultVariants: {
+          variant: "default"
+        }
+      }
+    );
+    function Badge({
+      className,
+      variant,
+      asChild = false,
+      ...props
+    }) {
+      const Comp = asChild ? Slot$2 : "span";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Comp,
+        {
+          "data-slot": "badge",
+          className: cn(badgeVariants({ variant }), className),
+          ...props
+        }
+      );
+    }
+    function BeLegendaryPage({
+      positionId
+    }) {
+      var _a2;
+      const { id } = useParams({ strict: false });
+      const resolvedPositionId = positionId || String(id ?? "");
+      const activitiesQuery = useLegendaryActivitiesByPosition(resolvedPositionId);
+      const categoriesQuery = useCategoriesByPosition(resolvedPositionId);
+      const profileQuery = useMyProfile();
+      const isAdmin = ((_a2 = profileQuery.data) == null ? void 0 : _a2.role) === "admin";
+      const activities = activitiesQuery.data ?? [];
+      const categories = categoriesQuery.data ?? [];
+      const categoryNameById = reactExports.useMemo(() => {
+        const map = /* @__PURE__ */ new Map();
+        for (const c2 of categories) map.set(c2.id, c2.name);
+        return map;
+      }, [categories]);
+      const [builderOpen, setBuilderOpen] = reactExports.useState(false);
+      const [deleteTarget, setDeleteTarget] = reactExports.useState(
+        null
+      );
+      const [editorOpen, setEditorOpen] = reactExports.useState(false);
+      const [editingActivity, setEditingActivity] = reactExports.useState(null);
+      const [rebuildTarget, setRebuildTarget] = reactExports.useState(
+        null
+      );
+      const isLoading = activitiesQuery.isLoading || categoriesQuery.isLoading && !categories.length;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition$1, { positionId: resolvedPositionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendaryBanner, {}),
+        isAdmin ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-5 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            onClick: () => setBuilderOpen(true),
+            "data-ocid": "legendary.build_button",
+            className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Hammer, { className: "size-4" }),
+              "Build Activity"
+            ]
+          }
+        ) }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "section",
+          {
+            className: "mt-6",
+            "data-ocid": "legendary.activities",
+            "aria-label": "Be Legendary activities",
+            children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(ActivityListSkeleton, {}) : activities.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyActivities, { isAdmin }) : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-col gap-3", children: activities.map((activity, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ActivityCard,
+              {
+                activity,
+                positionId: resolvedPositionId,
+                categoryNameById,
+                isAdmin,
+                index: index2,
+                onDelete: () => setDeleteTarget(activity),
+                onEdit: () => {
+                  setEditingActivity(activity);
+                  setEditorOpen(true);
+                },
+                onRebuild: () => setRebuildTarget(activity)
+              },
+              activity.id
+            )) })
+          }
+        ),
+        isAdmin ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ActivityBuilderDialog,
+            {
+              open: builderOpen,
+              onOpenChange: setBuilderOpen,
+              positionId: resolvedPositionId
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ActivityEditorDialog,
+            {
+              open: editorOpen,
+              onOpenChange: setEditorOpen,
+              positionId: resolvedPositionId,
+              activity: editingActivity
+            }
+          )
+        ] }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DeleteActivityDialog,
+          {
+            activity: deleteTarget,
+            onClose: () => setDeleteTarget(null)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          RebuildActivityDialog,
+          {
+            activity: rebuildTarget,
+            positionId: resolvedPositionId,
+            onClose: () => setRebuildTarget(null)
+          }
+        )
+      ] });
+    }
+    function LegendaryBanner() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "header",
+        {
+          className: "legendary-hero-backdrop legendary-hero-sweep legendary-hero-flash relative mt-4 rounded-md",
+          "data-ocid": "legendary.banner",
+          "aria-label": "Be Legendary practice hub",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: "/assets/generated/bartender-hero.png",
+                alt: "",
+                "aria-hidden": true,
+                className: "pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "legendary-hero-overlay", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 flex flex-col items-center gap-2 px-6 py-10 text-center sm:py-12", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Trophy,
+                {
+                  className: "size-7 text-legendary-metallic-bright drop-shadow-[0_0_8px_oklch(var(--legendary-metallic-glow)/0.6)]",
+                  "aria-hidden": true
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h1",
+                {
+                  className: "legendary-hero-wordmark text-4xl uppercase leading-none tracking-wide sm:text-5xl",
+                  "data-ocid": "legendary.banner.title",
+                  children: "Be Legendary"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-xs uppercase tracking-[0.3em] text-legendary-metallic-highlight/80 drop-shadow-[0_1px_2px_oklch(0.12_0.005_75/0.8)]", children: "Practice Hub" })
+            ] })
+          ]
+        }
+      );
+    }
+    function ActivityCard({
+      activity,
+      positionId,
+      categoryNameById,
+      isAdmin,
+      index: index2,
+      onDelete,
+      onEdit,
+      onRebuild
+    }) {
+      const navigate = useNavigate();
+      const isQuiz = activity.activityType === "quiz";
+      const sourceNames = activity.sourceCategoryIds.map((id) => categoryNameById.get(id)).filter((n) => typeof n === "string");
+      function handleOpen() {
+        const to = isQuiz ? `/position/${positionId}/legendary/quiz/${activity.id}` : `/position/${positionId}/legendary/flashcards/${activity.id}`;
+        void navigate({ to });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: cn(
+            "group relative flex items-stretch gap-3 overflow-hidden rounded-md bg-legendary-card text-legendary-card",
+            "transition-smooth hover:border-primary/60",
+            "focus-within:border-primary/60"
+          ),
+          "data-ocid": `legendary.activity.item.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: handleOpen,
+                "aria-label": `Open ${activity.name}`,
+                "data-ocid": `legendary.activity.open_button.${index2 + 1}`,
+                className: cn(
+                  "flex flex-1 items-center gap-3 p-4 text-left",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                ),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: "flex size-11 shrink-0 items-center justify-center rounded-md bg-background/40 text-primary",
+                      "aria-hidden": true,
+                      children: isQuiz ? /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" })
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-1 flex-col gap-1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-lg uppercase leading-tight tracking-wide text-foreground", children: activity.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-wrap items-center gap-1.5", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(ActivityTypeBadge, { type: activity.activityType }),
+                      sourceNames.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words font-body text-xs text-muted-foreground", children: sourceNames.join(" · ") }) : null
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "span",
+                    {
+                      className: "flex shrink-0 items-center gap-1 font-heading text-xs uppercase tracking-wide text-primary",
+                      "aria-hidden": true,
+                      children: [
+                        "Practice",
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-4" })
+                      ]
+                    }
+                  )
+                ]
+              }
+            ),
+            isAdmin ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 items-center gap-0.5 pr-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "ghost",
+                  size: "icon",
+                  onClick: onEdit,
+                  "aria-label": `Edit ${activity.name}`,
+                  "data-ocid": `legendary.activity.edit_button.${index2 + 1}`,
+                  className: "text-muted-foreground hover:text-primary",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "ghost",
+                  size: "icon",
+                  onClick: onRebuild,
+                  "aria-label": `Rebuild ${activity.name} content`,
+                  "data-ocid": `legendary.activity.rebuild_button.${index2 + 1}`,
+                  className: "text-muted-foreground hover:text-primary",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "ghost",
+                  size: "icon",
+                  onClick: onDelete,
+                  "aria-label": `Delete ${activity.name}`,
+                  "data-ocid": `legendary.activity.delete_button.${index2 + 1}`,
+                  className: "text-muted-foreground hover:text-primary",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-4" })
+                }
+              )
+            ] }) : null
+          ]
+        }
+      ) });
+    }
+    function ActivityTypeBadge({
+      type
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Badge,
+        {
+          variant: "outline",
+          className: "border-primary/40 text-primary",
+          "data-ocid": type === "quiz" ? "legendary.activity.type.quiz.badge" : "legendary.activity.type.flashcards.badge",
+          children: type === "quiz" ? "Quiz" : "Flashcards"
+        }
+      );
+    }
+    function EmptyActivities({ isAdmin }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-legendary-card bg-legendary-card/40 px-6 py-14 text-center",
+          "data-ocid": "legendary.activities.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "size-8 text-primary", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-base uppercase tracking-wide text-foreground", children: "No activities yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-xs font-body text-sm text-muted-foreground", children: isAdmin ? "Build the first practice activity for this position using the Build Activity button above." : "Check back after your admin builds one." })
+            ] })
+          ]
+        }
+      );
+    }
+    function DeleteActivityDialog({
+      activity,
+      onClose
+    }) {
+      const deleteMutation = useDeleteLegendaryActivity();
+      async function handleConfirm() {
+        if (!activity) return;
+        try {
+          await deleteMutation.mutateAsync({
+            id: activity.id,
+            positionId: activity.positionId
+          });
+          ue.success("Activity deleted", {
+            description: `"${activity.name}" was removed.`
+          });
+          onClose();
+        } catch (err) {
+          ue.error("Could not delete activity", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AlertDialog,
+        {
+          open: activity !== null,
+          onOpenChange: (open) => {
+            if (!open) onClose();
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            AlertDialogContent,
+            {
+              className: "bg-card border-border",
+              "data-ocid": "legendary.delete.dialog",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: "Delete activity" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogDescription, { children: [
+                    "Delete “",
+                    (activity == null ? void 0 : activity.name) ?? "",
+                    "”? This removes it for all staff. You can build a new one anytime."
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    AlertDialogCancel,
+                    {
+                      disabled: deleteMutation.isPending,
+                      "data-ocid": "legendary.delete.dialog.cancel_button",
+                      children: "Cancel"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    AlertDialogAction,
+                    {
+                      onClick: handleConfirm,
+                      disabled: deleteMutation.isPending,
+                      className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+                      "data-ocid": "legendary.delete.dialog.confirm_button",
+                      children: deleteMutation.isPending ? "Deleting…" : "Delete"
+                    }
+                  )
+                ] })
+              ]
+            }
+          )
+        }
+      );
+    }
+    function RebuildActivityDialog({
+      activity,
+      positionId,
+      onClose
+    }) {
+      const rebuildMutation = useRebuildLegendaryActivity();
+      async function handleConfirm() {
+        if (!activity) return;
+        try {
+          await rebuildMutation.mutateAsync({
+            id: activity.id,
+            positionId
+          });
+          ue.success("Activity rebuilt", {
+            description: `"${activity.name}" content was regenerated.`
+          });
+          onClose();
+        } catch (err) {
+          ue.error("Could not rebuild activity", {
+            description: err instanceof Error ? err.message : void 0
+          });
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AlertDialog,
+        {
+          open: activity !== null,
+          onOpenChange: (open) => {
+            if (!open) onClose();
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            AlertDialogContent,
+            {
+              className: "bg-card border-border",
+              "data-ocid": "legendary.rebuild.dialog",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: "Rebuild activity content" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogDescription, { children: [
+                    "Regenerate the content of “",
+                    (activity == null ? void 0 : activity.name) ?? "",
+                    "” from its current source categories? This overwrites the existing quiz questions or flashcards. The name, type, and source categories stay the same."
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    AlertDialogCancel,
+                    {
+                      disabled: rebuildMutation.isPending,
+                      "data-ocid": "legendary.rebuild.dialog.cancel_button",
+                      children: "Cancel"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    AlertDialogAction,
+                    {
+                      onClick: handleConfirm,
+                      disabled: rebuildMutation.isPending,
+                      className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+                      "data-ocid": "legendary.rebuild.dialog.confirm_button",
+                      children: rebuildMutation.isPending ? "Rebuilding…" : "Rebuild"
+                    }
+                  )
+                ] })
+              ]
+            }
+          )
+        }
+      );
+    }
+    function BackToPosition$1({
+      positionId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", asChild: true, "data-ocid": "legendary.back_button", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id", params: { id: positionId }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+        "Back to position"
+      ] }) });
+    }
+    function ActivityListSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "ul",
+        {
+          className: "flex flex-col gap-3",
+          "data-ocid": "legendary.activities.loading_state",
+          "aria-hidden": true,
+          children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-20 w-full rounded-md" }) }, k2))
+        }
+      );
+    }
+    function BeLegendaryRoute() {
+      const { id } = useParams({ strict: false });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(BeLegendaryPage, { positionId: String(id ?? "") });
+    }
+    function FlashcardActivity({
+      activityId
+    }) {
+      const query = useLegendaryActivity(activityId);
+      const activity = query.data ?? null;
+      if (query.isLoading) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardSkeleton, {});
+      }
+      if (!activity) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardNotFound, { activityId });
+      }
+      if (activity.content.kind !== "flashcardContent") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardWrongKind, { activity });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardFlow, { activity });
+    }
+    function FlashcardFlow({
+      activity
+    }) {
+      const cards = activity.content.kind === "flashcardContent" ? activity.content.flashcards : [];
+      const total = cards.length;
+      const [index2, setIndex] = reactExports.useState(0);
+      const [flipped, setFlipped] = reactExports.useState(false);
+      const goNext = () => {
+        setFlipped(false);
+        setIndex((i) => Math.min(i + 1, total - 1));
+      };
+      const goPrev = () => {
+        setFlipped(false);
+        setIndex((i) => Math.max(i - 1, 0));
+      };
+      const handleRestart = () => {
+        setFlipped(false);
+        setIndex(0);
+      };
+      if (total === 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardHeader, { activity }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyCards, { activity })
+        ] });
+      }
+      const card = cards[index2];
+      const atEnd = index2 >= total - 1;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardHeader, { activity }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressIndicator$1, { current: index2 + 1, total }),
+        atEnd ? /* @__PURE__ */ jsxRuntimeExports.jsx(EndOfDeck, { onRestart: handleRestart }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Flashcard,
+          {
+            card,
+            flipped,
+            onFlip: () => setFlipped((f2) => !f2),
+            onNext: goNext,
+            onPrev: goPrev,
+            canPrev: index2 > 0,
+            canNext: index2 < total - 1
+          },
+          index2
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DeckControls,
+          {
+            onPrev: goPrev,
+            onNext: goNext,
+            canPrev: index2 > 0,
+            canNext: index2 < total - 1,
+            onFlip: () => setFlipped((f2) => !f2),
+            flipped
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-center font-body text-xs text-muted-foreground", children: "Tap the card to flip · swipe left/right to move between cards" })
+      ] });
+    }
+    function Flashcard({
+      card,
+      flipped,
+      onFlip,
+      onNext,
+      onPrev,
+      canPrev,
+      canNext
+    }) {
+      const touchStartX = reactExports.useRef(null);
+      const touchStartY = reactExports.useRef(null);
+      const handleTouchStart = (e) => {
+        var _a2, _b2;
+        touchStartX.current = ((_a2 = e.touches[0]) == null ? void 0 : _a2.clientX) ?? null;
+        touchStartY.current = ((_b2 = e.touches[0]) == null ? void 0 : _b2.clientY) ?? null;
+      };
+      const handleTouchEnd = (e) => {
+        var _a2, _b2;
+        if (touchStartX.current === null || touchStartY.current === null) return;
+        const endX = ((_a2 = e.changedTouches[0]) == null ? void 0 : _a2.clientX) ?? touchStartX.current;
+        const endY = ((_b2 = e.changedTouches[0]) == null ? void 0 : _b2.clientY) ?? touchStartY.current;
+        const dx = endX - touchStartX.current;
+        const dy = endY - touchStartY.current;
+        touchStartX.current = null;
+        touchStartY.current = null;
+        const SWIPE_THRESHOLD = 50;
+        if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+        if (Math.abs(dx) < Math.abs(dy)) return;
+        if (dx < 0) {
+          if (canNext) onNext();
+        } else {
+          if (canPrev) onPrev();
+        }
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "flashcard-scene mt-5 select-none",
+          style: { height: "22rem" },
+          "data-ocid": "flashcard.scene",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              className: cn(
+                "flashcard-flipper h-full w-full cursor-pointer",
+                flipped && "is-flipped"
+              ),
+              onClick: onFlip,
+              onTouchStart: handleTouchStart,
+              onTouchEnd: handleTouchEnd,
+              "data-ocid": "flashcard.flipper",
+              "aria-label": flipped ? "Show front of card" : "Show back of card",
+              onKeyDown: (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onFlip();
+                } else if (e.key === "ArrowRight" && canNext) {
+                  onNext();
+                } else if (e.key === "ArrowLeft" && canPrev) {
+                  onPrev();
+                }
+              },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flashcard-face flashcard-front flex flex-col overflow-y-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(FrontFace, { card }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flashcard-face flashcard-back overflow-y-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(BackFace, { card }) })
+              ]
+            }
+          )
+        }
+      );
+    }
+    function FrontFace({ card }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col items-center justify-center gap-4 text-center", children: [
+        card.itemPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full flex-1 items-center justify-center overflow-hidden rounded-md border border-legendary-card-border bg-background/40", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: card.itemPhoto,
+              alt: card.itemTitle,
+              className: "max-h-full max-w-full object-contain",
+              loading: "lazy",
+              onError: (e) => {
+                const img = e.currentTarget;
+                img.style.display = "none";
+                const sib = img.nextElementSibling;
+                if (sib) sib.style.display = "flex";
+              }
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "hidden flex-col items-center gap-2 text-muted-foreground",
+              style: { display: "none" },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ImageOff, { className: "size-8", "aria-hidden": true }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs", children: "Photo unavailable" })
+              ]
+            }
+          )
+        ] }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-widest text-muted-foreground", children: card.itemPhoto ? "Item" : "Name" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-2xl uppercase leading-tight tracking-wide text-foreground", children: card.itemTitle })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "mt-1 inline-flex items-center gap-1.5 font-body text-xs text-muted-foreground", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "size-3.5 text-primary", "aria-hidden": true }),
+          "Tap to reveal details"
+        ] })
+      ] });
+    }
+    function BackFace({ card }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between border-b border-legendary-card-border pb-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-base uppercase tracking-wide text-foreground", children: card.itemTitle }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-widest text-muted-foreground", children: "Details" })
+        ] }),
+        card.detailFields.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No detail fields recorded for this item." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("dl", { className: "flex flex-col gap-2.5", children: card.detailFields.map((field, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            "data-ocid": `flashcard.detail.${i + 1}`,
+            className: "flex flex-col gap-0.5 border-b border-legendary-card-border/40 pb-2 last:border-b-0 last:pb-0",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("dt", { className: "font-heading text-xs uppercase tracking-wide text-primary", children: field.fieldLabel }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "dd",
+                {
+                  className: "font-body text-sm text-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4",
+                  dangerouslySetInnerHTML: { __html: field.value }
+                }
+              )
+            ]
+          },
+          field.fieldLabel
+        )) })
+      ] });
+    }
+    function DeckControls({
+      onPrev,
+      onNext,
+      canPrev,
+      canNext,
+      onFlip,
+      flipped
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "icon",
+            onClick: onPrev,
+            disabled: !canPrev,
+            "aria-label": "Previous card",
+            "data-ocid": "flashcard.prev_button",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "size-5", "aria-hidden": true })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "secondary",
+            onClick: onFlip,
+            "data-ocid": "flashcard.flip_button",
+            className: "flex-1",
+            children: flipped ? "Show front" : "Show back"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "icon",
+            onClick: onNext,
+            disabled: !canNext,
+            "aria-label": "Next card",
+            "data-ocid": "flashcard.next_button",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-5", "aria-hidden": true })
+          }
+        )
+      ] });
+    }
+    function ProgressIndicator$1({
+      current,
+      total
+    }) {
+      const pct = total > 0 ? current / total * 100 : 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 flex flex-col gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between font-heading text-xs uppercase tracking-wide text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { "data-ocid": "flashcard.progress_label", children: [
+          "Card ",
+          current,
+          " of ",
+          total
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "h-1.5 w-full overflow-hidden rounded-full bg-muted",
+            role: "progressbar",
+            tabIndex: 0,
+            "aria-valuenow": current,
+            "aria-valuemin": 0,
+            "aria-valuemax": total,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "h-full rounded-full bg-primary transition-all duration-300",
+                style: { width: `${pct}%` }
+              }
+            )
+          }
+        )
+      ] });
+    }
+    function EndOfDeck({ onRestart }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "mt-5 flex flex-col items-center justify-center gap-3 rounded-md bg-legendary-card px-6 py-8 text-center",
+          "data-ocid": "flashcard.end_of_deck",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "size-6", "aria-hidden": true }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: "End of deck" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "You’ve reached the last card. Swipe back to review, or start the deck over." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Button,
+              {
+                type: "button",
+                onClick: onRestart,
+                "data-ocid": "flashcard.start_over_button",
+                className: "mt-1",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "size-4", "aria-hidden": true }),
+                  "Start over"
+                ]
+              }
+            )
+          ]
+        }
+      );
+    }
+    function EmptyCards({
+      activity
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "mt-6 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          "data-ocid": "flashcard.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-base uppercase tracking-wide text-foreground", children: "No cards in this deck" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "This flashcard activity doesn’t have any cards yet. An admin can rebuild it from items with detail fields." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", asChild: true, "data-ocid": "flashcard.empty_back_link", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: activity.positionId }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+              "Back to activities"
+            ] }) })
+          ]
+        }
+      );
+    }
+    function FlashcardHeader({
+      activity
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToActivities$1, { positionId: activity.positionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl uppercase tracking-wide text-foreground", children: activity.name })
+      ] });
+    }
+    function BackToActivities$1({
+      positionId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          variant: "ghost",
+          size: "sm",
+          asChild: true,
+          "data-ocid": "flashcard.back_to_activities_button",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: positionId }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+            "Back to activities"
+          ] })
+        }
+      );
+    }
+    function FlashcardSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-8 w-40" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-4 h-6 w-28" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-3 h-1.5 w-full rounded-full" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-5 h-80 w-full rounded-md" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "size-9 rounded-md" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-9 w-32" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "size-9 rounded-md" })
+        ] })
+      ] });
+    }
+    function FlashcardNotFound({
+      activityId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "mt-6 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          "data-ocid": "flashcard.not_found",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: "Activity not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "We couldn’t load this flashcard deck. It may have been removed. Ask an admin to rebuild it, then try again." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-mono text-xs text-muted-foreground", children: [
+              "id: ",
+              activityId
+            ] })
+          ]
+        }
+      ) });
+    }
+    function FlashcardWrongKind({
+      activity
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToActivities$1, { positionId: activity.positionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-6 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+            "data-ocid": "flashcard.wrong_kind",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: "Not a flashcard deck" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "This activity is a quiz, not a flashcard set. Open it from the quiz entry on the Be Legendary page." })
+            ]
+          }
+        )
+      ] });
+    }
+    function LegendaryFlashcardsRoute() {
+      const { activityId } = useParams({ strict: false });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardActivity, { activityId: String(activityId ?? "") });
+    }
+    function mulberry32(seed) {
+      let a2 = seed >>> 0;
+      return () => {
+        a2 |= 0;
+        a2 = a2 + 1831565813 | 0;
+        let t = Math.imul(a2 ^ a2 >>> 15, 1 | a2);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    function seededShuffle(items, seed) {
+      if (items.length <= 1) return [...items];
+      const rand = mulberry32(seed);
+      const out = [...items];
+      for (let i = out.length - 1; i > 0; i--) {
+        const j2 = Math.floor(rand() * (i + 1));
+        [out[i], out[j2]] = [out[j2], out[i]];
+      }
+      return out;
+    }
+    function mixSeed(a2, b2) {
+      let h2 = (a2 ^ 2654435769) >>> 0;
+      h2 = Math.imul(h2 ^ b2 + 2654451611, 2246822507) >>> 0;
+      return h2;
+    }
+    function QuizActivity({ activityId }) {
+      const query = useLegendaryActivity(activityId);
+      const activity = query.data ?? null;
+      if (query.isLoading) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(QuizSkeleton, {});
+      }
+      if (!activity) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(QuizNotFound, { activityId });
+      }
+      if (activity.content.kind !== "quizContent") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(QuizWrongKind, { activity });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(QuizFlow, { activity });
+    }
+    function QuizFlow({ activity }) {
+      const questions = activity.content.kind === "quizContent" ? activity.content.questions : [];
+      const total = questions.length;
+      const [index2, setIndex] = reactExports.useState(0);
+      const [finished, setFinished] = reactExports.useState(false);
+      const handleNext = () => {
+        if (index2 + 1 >= total) {
+          setFinished(true);
+        } else {
+          setIndex((i) => i + 1);
+        }
+      };
+      const handleRestart = () => {
+        setIndex(0);
+        setFinished(false);
+      };
+      if (finished || total === 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(QuizComplete, { activity, onRestart: handleRestart });
+      }
+      const question = questions[index2];
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(QuizHeader, { activity }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressIndicator, { current: index2 + 1, total }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QuestionRouter,
+          {
+            question,
+            questionIndex: index2,
+            onNext: handleNext,
+            isLast: index2 + 1 >= total
+          },
+          index2
+        ) })
+      ] });
+    }
+    function QuestionRouter({
+      question,
+      questionIndex,
+      onNext,
+      isLast
+    }) {
+      switch (question.kind) {
+        case "multipleChoice":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            MultipleChoiceQ,
+            {
+              question,
+              questionIndex,
+              onNext,
+              isLast
+            }
+          );
+        case "trueFalse":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(TrueFalseQ, { question, onNext, isLast });
+        case "matching":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            MatchingQ,
+            {
+              question,
+              questionIndex,
+              onNext,
+              isLast
+            }
+          );
+      }
+    }
+    function MultipleChoiceQ({
+      question,
+      questionIndex,
+      onNext,
+      isLast
+    }) {
+      const [selected, setSelected] = reactExports.useState(null);
+      const answered = selected !== null;
+      const { choices, correctIndex } = reactExports.useMemo(() => {
+        const indexed = question.choices.map((choice, i) => ({
+          choice,
+          original: i
+        }));
+        const shuffled = seededShuffle(indexed, mixSeed(questionIndex, 101));
+        const newCorrect = shuffled.findIndex(
+          (c2) => c2.original === question.correctIndex
+        );
+        return {
+          choices: shuffled.map((c2) => c2.choice),
+          correctIndex: newCorrect
+        };
+      }, [question, questionIndex]);
+      const handleSelect = (i) => {
+        if (answered) return;
+        setSelected(i);
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Prompt, { prompt: question.prompt }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-2.5", children: choices.map((choice, i) => {
+          const isCorrect = i === correctIndex;
+          const isSelected = selected === i;
+          const showCorrect = answered && isCorrect;
+          const showIncorrect = answered && isSelected && !isCorrect;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => handleSelect(i),
+              disabled: answered,
+              "data-ocid": `quiz.choice.${i + 1}`,
+              className: cn(
+                "flex min-h-11 items-center gap-3 rounded-md border px-4 py-3 text-left",
+                "font-body text-sm transition-smooth",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                !answered && "border-border bg-card text-foreground hover:border-primary/60 hover:bg-card/80",
+                showCorrect && "border-legendary-correct bg-legendary-correct/15 text-legendary-correct",
+                showIncorrect && "border-legendary-incorrect bg-legendary-incorrect/15 text-legendary-incorrect",
+                answered && !showCorrect && !showIncorrect && "border-border bg-card/50 text-muted-foreground opacity-70"
+              ),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: cn(
+                      "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold",
+                      !answered && "border-border text-muted-foreground",
+                      showCorrect && "border-legendary-correct bg-legendary-correct text-legendary-correct-foreground",
+                      showIncorrect && "border-legendary-incorrect bg-legendary-incorrect text-legendary-incorrect-foreground",
+                      answered && !showCorrect && !showIncorrect && "border-border text-muted-foreground"
+                    ),
+                    "aria-hidden": true,
+                    children: showCorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5" }) : showIncorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-3.5" }) : String.fromCharCode(65 + i)
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 flex-1 break-words", children: choice })
+              ]
+            },
+            choice
+          );
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FeedbackBar, { answered, isCorrect: selected === correctIndex }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(NextButton, { answered, onNext, isLast })
+      ] });
+    }
+    function TrueFalseQ({
+      question,
+      onNext,
+      isLast
+    }) {
+      const [selected, setSelected] = reactExports.useState(null);
+      const answered = selected !== null;
+      const handleSelect = (value) => {
+        if (answered) return;
+        setSelected(value);
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Prompt, { prompt: question.statement }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 gap-3", children: [
+          { label: "True", value: true },
+          { label: "False", value: false }
+        ].map((opt) => {
+          const isSelected = selected === opt.value;
+          const isCorrect = opt.value === question.isTrue;
+          const showCorrect = answered && isCorrect;
+          const showIncorrect = answered && isSelected && !isCorrect;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => handleSelect(opt.value),
+              disabled: answered,
+              "data-ocid": `quiz.tf.${opt.label.toLowerCase()}`,
+              className: cn(
+                "flex min-h-14 items-center justify-center gap-2 rounded-md border px-4 py-4",
+                "font-heading text-base uppercase tracking-wide transition-smooth",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                !answered && "border-border bg-card text-foreground hover:border-primary/60 hover:bg-card/80",
+                showCorrect && "border-legendary-correct bg-legendary-correct/15 text-legendary-correct",
+                showIncorrect && "border-legendary-incorrect bg-legendary-incorrect/15 text-legendary-incorrect",
+                answered && !showCorrect && !showIncorrect && "border-border bg-card/50 text-muted-foreground opacity-70"
+              ),
+              children: [
+                showCorrect && /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-5", "aria-hidden": true }),
+                showIncorrect && /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-5", "aria-hidden": true }),
+                opt.label
+              ]
+            },
+            opt.label
+          );
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          FeedbackBar,
+          {
+            answered,
+            isCorrect: selected === question.isTrue
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(NextButton, { answered, onNext, isLast })
+      ] });
+    }
+    function MatchingQ({
+      question,
+      questionIndex,
+      onNext,
+      isLast
+    }) {
+      const [state, setState] = reactExports.useState({
+        titleIndex: null,
+        answers: {}
+      });
+      const options2 = reactExports.useMemo(
+        () => seededShuffle(question.shuffledOptions, mixSeed(questionIndex, 202)),
+        [question.shuffledOptions, questionIndex]
+      );
+      const allAnswered = Object.keys(state.answers).length >= question.pairs.length;
+      const handleSelectTitle = (i) => {
+        if (state.answers[i] !== void 0) return;
+        setState((s) => ({ ...s, titleIndex: i }));
+      };
+      const handleSelectOption = (option) => {
+        if (state.titleIndex === null) return;
+        const usedElsewhere = Object.entries(state.answers).some(
+          ([k2, v2]) => Number(k2) !== state.titleIndex && v2 === option
+        );
+        if (usedElsewhere) return;
+        setState((s) => ({
+          titleIndex: null,
+          answers: { ...s.answers, [s.titleIndex]: option }
+        }));
+      };
+      const handleClear = (i) => {
+        setState((s) => {
+          const next = { ...s.answers };
+          delete next[i];
+          return { titleIndex: null, answers: next };
+        });
+      };
+      const isPairCorrect = (i) => allAnswered && state.answers[i] === question.pairs[i].fieldValue;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Prompt,
+          {
+            prompt: "Match each item to its correct value",
+            helper: "Tap an item, then tap its matching value."
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-2.5", children: question.pairs.map((pair, i) => {
+          const answer = state.answers[i];
+          const isSelected = state.titleIndex === i;
+          const correct = isPairCorrect(i);
+          const incorrect = allAnswered && answer !== void 0 && !correct;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              "data-ocid": `quiz.match.row.${i + 1}`,
+              className: cn(
+                "flex items-center gap-3 rounded-md border px-3 py-2.5 transition-smooth",
+                "bg-card",
+                isSelected && "border-primary",
+                !isSelected && !allAnswered && "border-border",
+                correct && "border-legendary-correct bg-legendary-correct/10",
+                incorrect && "border-legendary-incorrect bg-legendary-incorrect/10"
+              ),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => handleSelectTitle(i),
+                    disabled: answer !== void 0 || allAnswered,
+                    "data-ocid": `quiz.match.title.${i + 1}`,
+                    className: cn(
+                      "min-w-0 flex-1 text-left font-body text-sm transition-smooth",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      isSelected && "text-primary",
+                      !isSelected && "text-foreground"
+                    ),
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block truncate", children: pair.itemTitle })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", "aria-hidden": true, children: "→" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-w-0 flex-1", children: answer === void 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: cn(
+                      "block truncate font-body text-sm",
+                      isSelected ? "text-primary" : "text-muted-foreground"
+                    ),
+                    children: isSelected ? "Tap a value…" : "—"
+                  }
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => handleClear(i),
+                    disabled: allAnswered,
+                    "data-ocid": `quiz.match.clear.${i + 1}`,
+                    className: cn(
+                      "inline-flex items-center gap-1.5 rounded border px-2 py-1 font-body text-xs transition-smooth",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      correct && "border-legendary-correct text-legendary-correct",
+                      incorrect && "border-legendary-incorrect text-legendary-incorrect",
+                      !allAnswered && "border-border text-foreground hover:border-primary/60"
+                    ),
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate", children: answer }),
+                      !allAnswered && /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-3 shrink-0", "aria-hidden": true }),
+                      correct && /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3 shrink-0", "aria-hidden": true }),
+                      incorrect && /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-3 shrink-0", "aria-hidden": true })
+                    ]
+                  }
+                ) })
+              ]
+            },
+            pair.itemTitle
+          );
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-2", children: options2.map((option, i) => {
+          const used = Object.values(state.answers).includes(option);
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => handleSelectOption(option),
+              disabled: used || state.titleIndex === null,
+              "data-ocid": `quiz.match.option.${i + 1}`,
+              className: cn(
+                "rounded-md border px-3 py-2 font-body text-sm transition-smooth",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                used && "border-border bg-card/40 text-muted-foreground opacity-50",
+                !used && state.titleIndex !== null && "border-primary/60 bg-card text-foreground hover:border-primary hover:bg-primary/10",
+                !used && state.titleIndex === null && "border-border bg-card text-muted-foreground cursor-not-allowed opacity-60"
+              ),
+              children: option
+            },
+            option
+          );
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          MatchingFeedback,
+          {
+            answered: allAnswered,
+            question,
+            answers: state.answers
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(NextButton, { answered: allAnswered, onNext, isLast })
+      ] });
+    }
+    function MatchingFeedback({
+      answered,
+      question,
+      answers
+    }) {
+      if (!answered) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Match all pairs to see feedback." });
+      }
+      const correctCount = question.pairs.reduce(
+        (acc, pair, i) => answers[i] === pair.fieldValue ? acc + 1 : acc,
+        0
+      );
+      const allCorrect = correctCount === question.pairs.length;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          "data-ocid": "quiz.match.feedback",
+          className: cn(
+            "flex items-center gap-2 rounded-md border px-3 py-2 font-body text-sm",
+            allCorrect ? "border-legendary-correct bg-legendary-correct/10 text-legendary-correct" : "border-legendary-incorrect bg-legendary-incorrect/10 text-legendary-incorrect"
+          ),
+          children: [
+            allCorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(CheckCheck, { className: "size-4 shrink-0", "aria-hidden": true }) : /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4 shrink-0", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: allCorrect ? "All matches correct!" : `${correctCount} of ${question.pairs.length} correct — review the highlighted pairs.` })
+          ]
+        }
+      );
+    }
+    function Prompt({
+      prompt: prompt2,
+      helper
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: prompt2 }),
+        helper ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: helper }) : null
+      ] });
+    }
+    function FeedbackBar({
+      answered,
+      isCorrect
+    }) {
+      if (!answered) return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          "data-ocid": "quiz.feedback",
+          className: cn(
+            "flex items-center gap-2 rounded-md border px-3 py-2 font-body text-sm",
+            isCorrect ? "border-legendary-correct bg-legendary-correct/10 text-legendary-correct" : "border-legendary-incorrect bg-legendary-incorrect/10 text-legendary-incorrect"
+          ),
+          children: [
+            isCorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4 shrink-0", "aria-hidden": true }) : /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4 shrink-0", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: isCorrect ? "Correct!" : "Not quite — see the highlighted answer." })
+          ]
+        }
+      );
+    }
+    function NextButton({
+      answered,
+      onNext,
+      isLast
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Button,
+        {
+          type: "button",
+          onClick: onNext,
+          disabled: !answered,
+          "data-ocid": "quiz.next_button",
+          className: "min-w-32",
+          children: [
+            isLast ? "Finish" : "Next",
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-4", "aria-hidden": true })
+          ]
+        }
+      ) });
+    }
+    function ProgressIndicator({
+      current,
+      total
+    }) {
+      const pct = total > 0 ? current / total * 100 : 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 flex flex-col gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between font-heading text-xs uppercase tracking-wide text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { "data-ocid": "quiz.progress_label", children: [
+          "Question ",
+          current,
+          " of ",
+          total
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "h-1.5 w-full overflow-hidden rounded-full bg-muted",
+            role: "progressbar",
+            tabIndex: 0,
+            "aria-valuenow": current,
+            "aria-valuemin": 0,
+            "aria-valuemax": total,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "h-full rounded-full bg-primary transition-all duration-300",
+                style: { width: `${pct}%` }
+              }
+            )
+          }
+        )
+      ] });
+    }
+    function QuizHeader({
+      activity
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToActivities, { positionId: activity.positionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl uppercase tracking-wide text-foreground", children: activity.name })
+      ] });
+    }
+    function QuizComplete({
+      activity,
+      onRestart
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToActivities, { positionId: activity.positionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-6 flex flex-col items-center justify-center gap-4 rounded-md bg-legendary-card px-6 py-12 text-center",
+            "data-ocid": "quiz.complete",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-16 items-center justify-center rounded-full bg-legendary-correct/15 text-legendary-correct", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CheckCheck, { className: "size-8", "aria-hidden": true }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl uppercase tracking-wide text-foreground", children: "Practice complete" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: [
+                "You worked through every question in “",
+                activity.name,
+                "”. No score, no pass/fail — just reps. Run it again anytime."
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 flex flex-col gap-3 sm:flex-row", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "button",
+                    onClick: onRestart,
+                    "data-ocid": "quiz.start_over_button",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "size-4", "aria-hidden": true }),
+                      "Start over"
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    variant: "outline",
+                    asChild: true,
+                    "data-ocid": "quiz.back_to_activities_link",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      Link$1,
+                      {
+                        to: "/position/$id/legendary",
+                        params: { id: activity.positionId },
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+                          "Back to activities"
+                        ]
+                      }
+                    )
+                  }
+                )
+              ] })
+            ]
+          }
+        )
+      ] });
+    }
+    function BackToActivities({
+      positionId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          variant: "ghost",
+          size: "sm",
+          asChild: true,
+          "data-ocid": "quiz.back_to_activities_button",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: positionId }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+            "Back to activities"
+          ] })
+        }
+      );
+    }
+    function QuizSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-8 w-40" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-4 h-6 w-32" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-3 h-1.5 w-full rounded-full" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-6 h-8 w-3/4" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-5 flex flex-col gap-2.5", children: ["a", "b", "c", "d"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-full" }, k2)) })
+      ] });
+    }
+    function QuizNotFound({ activityId }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "mt-6 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          "data-ocid": "quiz.not_found",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: "Activity not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "We couldn’t load this practice activity. It may have been removed. Ask an admin to rebuild it, then try again." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-mono text-xs text-muted-foreground", children: [
+              "id: ",
+              activityId
+            ] })
+          ]
+        }
+      ) });
+    }
+    function QuizWrongKind({
+      activity
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToActivities, { positionId: activity.positionId }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-6 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+            "data-ocid": "quiz.wrong_kind",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: "Not a quiz" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: "This activity is a flashcard set, not a quiz. Open it from the flashcards entry on the Be Legendary page." })
+            ]
+          }
+        )
+      ] });
+    }
+    function LegendaryQuizRoute() {
+      const { activityId } = useParams({ strict: false });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(QuizActivity, { activityId: String(activityId ?? "") });
     }
     function SeasonalBadge({
       className,
@@ -71275,6 +73750,21 @@ Defaulting to \`null\`.`;
       path: "/position/$id/heart/$categoryId",
       component: HeartShowcaseRoute
     });
+    const beLegendaryRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/position/$id/legendary",
+      component: BeLegendaryRoute
+    });
+    const legendaryQuizRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/position/$id/legendary/quiz/$activityId",
+      component: LegendaryQuizRoute
+    });
+    const legendaryFlashcardsRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/position/$id/legendary/flashcards/$activityId",
+      component: LegendaryFlashcardsRoute
+    });
     const nsoRoute = createRoute({
       getParentRoute: () => Route,
       path: "/new-store-opening",
@@ -71318,6 +73808,9 @@ Defaulting to \`null\`.`;
     const routeTree = Route.addChildren([
       homeRoute,
       positionDetailRoute,
+      beLegendaryRoute,
+      legendaryQuizRoute,
+      legendaryFlashcardsRoute,
       categoryDetailRoute,
       heartShowcaseRoute,
       itemDetailRoute,
@@ -71335,7 +73828,10 @@ Defaulting to \`null\`.`;
       defaultPreload: "intent"
     });
     function App() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(AuthGate, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(RouterProvider, { router }) });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(AuthGate, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(RouterProvider, { router }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx($e, { richColors: true, position: "top-right" })
+      ] });
     }
     class ErrorBoundary extends reactExports.Component {
       constructor() {

@@ -2,6 +2,8 @@ import Map "mo:core/Map";
 import List "mo:core/List";
 import Principal "mo:core/Principal";
 import Text "mo:core/Text";
+import Iter "mo:core/Iter";
+import Nat "mo:core/Nat";
 import MixinViews "mo:caffeineai-data-viewer/MixinViews";
 import AccessControl "mo:caffeineai-authorization/access-control";
 import MixinAuthorization "mo:caffeineai-authorization/MixinAuthorization";
@@ -11,16 +13,17 @@ import MixinObjectStorage "mo:caffeineai-object-storage/Mixin";
 import Foundation "lib/foundation";
 import Library "lib/library";
 import Nso "lib/nso";
+import Legendary "lib/legendary";
 import FoundationApi "mixins/foundation-api";
 import LibraryApi "mixins/library-api";
 import NsoApi "mixins/nso-api";
+import LegendaryApi "mixins/legendary-api";
 
 actor {
   include MixinViews();
   include MixinObjectStorage();
 
   let accessControlState : AccessControl.AccessControlState;
-  include MixinAuthorization(accessControlState, null);
 
   // --- Foundation domain state ---
   // Declared WITHOUT initializers per enhanced-migration mode; initial values
@@ -49,9 +52,28 @@ actor {
   let nextPhaseId : { var value : Nat };
   let nextTaskId : { var value : Nat };
 
+  // --- Legendary (Be Legendary practice activities) domain state ---
+  // Additive to the foundation + library + NSO state. Same enhanced-migration
+  // pattern: types only, no initializers; the new migration supplies the
+  // initial values. Admin-only generation; reads are public query. Practice
+  // only — no scores, no tracking.
+  let legendaryActivities : List.List<Legendary.Activity>;
+  let nextLegendaryActivityId : { var value : Nat };
+
+  // Access-control sign-in mixin. The unsuppressable contract rule from
+  // the caffeineai-authorization package requires this exact include.
+  // The admin-guard repair for the B-tree corruption left by the frozen
+  // migration 20260703_000001 is applied additively inside getMyProfile
+  // (see mixins/foundation-api.mo) via AccessControlAdminGuard.initialize,
+  // which runs before the existing role-sync read and re-grants #admin to
+  // a caller whose stored profile.role == #admin but whose userRoles entry
+  // is missing/corrupted.
+  include MixinAuthorization(accessControlState, null);
+
   include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId);
   include LibraryApi(accessControlState, categories, items, nextCategoryId, nextItemId);
   include NsoApi(accessControlState, profiles, nsoPhases, nsoTasks, nextPhaseId, nextTaskId);
+  include LegendaryApi(accessControlState, categories, items, legendaryActivities, nextLegendaryActivityId);
 
   // --- OQL (Data Intelligence) ---
   // Expose the Library collections to the Caffeine Data Intelligence agent.
@@ -164,6 +186,44 @@ actor {
           completionDate = null;
           notes = null;
           sortOrder = 0;
+        })
+        .build(),
+      // LegendaryActivity: a generated practice activity (quiz or flashcards).
+      // Belongs to a position. sourceCategoryIds is the list of Library
+      // categories the items were drawn from — exposed as a joined text column
+      // so it remains queryable. activityType is the ActivityType variant
+      // exposed as text ("quiz" / "flashcards"). content is the generated
+      // payload — exposed as a count of questions or flashcards so it stays
+      // queryable without a nested-record _toRow. createdBy is the admin
+      // Principal who triggered generation. Authorization is the default
+      // #controllerOnly — the agent reads everything; end users browse via the
+      // explicit getLegendaryActivitiesByPosition query method.
+      OQL.Entity.manual<Legendary.Activity>(
+        "legendaryActivity",
+        func () = legendaryActivities.values(),
+        "Activity",
+        "id",
+      )
+        .payload("id", func (a) = a.id)
+        .payload("positionId", func (a) = a.positionId)
+        .payload("activityType", func (a) = switch (a.activityType) { case (#quiz) "quiz"; case (#flashcards) "flashcards" })
+        .payload("name", func (a) = a.name)
+        .payload("sourceCategoryIds", func (a) = a.sourceCategoryIds.vals().map(Nat.toText).join(", "))
+        .payload("contentCount", func (a) = switch (a.content) {
+          case (#quizContent q) q.size();
+          case (#flashcardContent f) f.size();
+        })
+        .payload("createdAt", func (a) = a.createdAt)
+        .payload("createdBy", func (a) = a.createdBy.toText())
+        .sample({
+          id = 0;
+          positionId = 0;
+          activityType = #quiz;
+          name = "";
+          sourceCategoryIds = [];
+          content = #quizContent([]);
+          createdAt = 0;
+          createdBy = Principal.fromText("aaaaa-aa");
         })
         .build(),
     ];

@@ -95,6 +95,10 @@ export function PositionFormDialog({
       }
       onOpenChange(false);
     } catch (err) {
+      console.error(
+        isEdit ? "Failed to update position" : "Failed to create position",
+        err,
+      );
       toast.error(
         isEdit ? "Could not update position" : "Could not create position",
         {

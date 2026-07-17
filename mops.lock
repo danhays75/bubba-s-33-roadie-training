@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "mopsTomlDepsHash": "52dfd143f7324f2f9ceb8f9b213ed895bdd77a6b6985d9802a97fa20748ff666",
+  "mopsTomlDepsHash": "86257a6a088fee6744ddd44d730088afafd4ff0c90f1791fc6500931361a8f77",
   "deps": {
     "core": "2.6.0",
     "caffeineai-data-viewer": "0.1.0",

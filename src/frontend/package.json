@@ -31,7 +31,7 @@
     "vite-plugin-environment": "^1.1.3"
   },
   "dependencies": {
-    "@caffeineai/core-infrastructure": "^1.0.0",
+    "@caffeineai/core-infrastructure": "^1.1.0",
     "@caffeineai/object-storage": "^1.1.0",
     "@icp-sdk/auth": "^7.1.0",
     "@icp-sdk/core": "^5.4.0",

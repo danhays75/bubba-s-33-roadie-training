@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/StatusBadge";
+import { BeLegendaryBanner } from "@/components/legendary/BeLegendaryBanner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBackend } from "@/hooks/useBackend";
@@ -118,6 +119,12 @@ export function PositionDetailPage({
             {position.description}
           </p>
         ) : null}
+
+        {/* Be Legendary banner — the "prove your mastery" entry point.
+            Additive: rendered ABOVE the Library section (and above the
+            Service with HEART entry button) so it is the first thing staff
+            see after the position header. Distinct gold/red gradient + glow. */}
+        <BeLegendaryBanner positionId={positionId} />
 
         <LibrarySection positionId={positionId} positionName={position?.name} />
       </article>

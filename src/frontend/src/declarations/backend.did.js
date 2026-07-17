@@ -40,6 +40,47 @@ export const LibraryItem = IDL.Record({
   'photo' : IDL.Opt(IDL.Text),
   'subtitle' : IDL.Opt(IDL.Text),
 });
+export const ActivityType = IDL.Variant({
+  'quiz' : IDL.Null,
+  'flashcards' : IDL.Null,
+});
+export const Question = IDL.Variant({
+  'multipleChoice' : IDL.Record({
+    'correctIndex' : IDL.Nat,
+    'prompt' : IDL.Text,
+    'choices' : IDL.Vec(IDL.Text),
+  }),
+  'matching' : IDL.Record({
+    'pairs' : IDL.Vec(
+      IDL.Record({ 'itemTitle' : IDL.Text, 'fieldValue' : IDL.Text })
+    ),
+    'shuffledOptions' : IDL.Vec(IDL.Text),
+  }),
+  'trueFalse' : IDL.Record({ 'statement' : IDL.Text, 'isTrue' : IDL.Bool }),
+});
+export const QuizContent = IDL.Vec(Question);
+export const Flashcard = IDL.Record({
+  'itemTitle' : IDL.Text,
+  'detailFields' : IDL.Vec(
+    IDL.Record({ 'value' : IDL.Text, 'fieldLabel' : IDL.Text })
+  ),
+  'itemPhoto' : IDL.Opt(IDL.Text),
+});
+export const FlashcardContent = IDL.Vec(Flashcard);
+export const ActivityContent = IDL.Variant({
+  'quizContent' : QuizContent,
+  'flashcardContent' : FlashcardContent,
+});
+export const Activity = IDL.Record({
+  'id' : IDL.Nat,
+  'activityType' : ActivityType,
+  'content' : ActivityContent,
+  'name' : IDL.Text,
+  'createdAt' : IDL.Nat,
+  'createdBy' : IDL.Principal,
+  'positionId' : IDL.Nat,
+  'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+});
 export const Phase = IDL.Record({
   'id' : IDL.Nat,
   'sortOrder' : IDL.Nat,
@@ -113,6 +154,12 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const BuildActivityInput = IDL.Record({
+  'activityType' : ActivityType,
+  'name' : IDL.Text,
+  'positionId' : IDL.Nat,
+  'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+});
 export const Value = IDL.Variant({
   'int' : IDL.Int,
   'nat' : IDL.Nat,
@@ -149,6 +196,11 @@ export const NsoImportSummary = IDL.Record({
   'phasesReused' : IDL.Nat,
   'tasksAdded' : IDL.Nat,
 });
+export const UpdateActivityInput = IDL.Record({
+  'id' : IDL.Nat,
+  'name' : IDL.Text,
+  'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+});
 
 export const idlService = IDL.Service({
   '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -167,8 +219,14 @@ export const idlService = IDL.Service({
       [IDL.Vec(LibraryItem)],
       ['query'],
     ),
+  '__legendaryActivities' : IDL.Func(
+      [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
+      [IDL.Vec(Activity)],
+      ['query'],
+    ),
   '__nextCategoryId' : IDL.Func([], [IDL.Reserved], ['query']),
   '__nextItemId' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__nextLegendaryActivityId' : IDL.Func([], [IDL.Reserved], ['query']),
   '__nextPhaseId' : IDL.Func([], [IDL.Reserved], ['query']),
   '__nextPositionId' : IDL.Func([], [IDL.Reserved], ['query']),
   '__nextTaskId' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -227,6 +285,7 @@ export const idlService = IDL.Service({
       [PositionAssignment],
       [],
     ),
+  'buildLegendaryActivity' : IDL.Func([BuildActivityInput], [Activity], []),
   'createCategory' : IDL.Func(
       [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
       [Category],
@@ -260,6 +319,7 @@ export const idlService = IDL.Service({
     ),
   'deleteCategory' : IDL.Func([IDL.Nat], [], []),
   'deleteItem' : IDL.Func([IDL.Nat], [], []),
+  'deleteLegendaryActivity' : IDL.Func([IDL.Nat], [], []),
   'deleteNsoPhase' : IDL.Func([IDL.Nat], [], []),
   'deleteNsoTask' : IDL.Func([IDL.Nat], [], []),
   'deletePosition' : IDL.Func([IDL.Nat], [], []),
@@ -275,6 +335,12 @@ export const idlService = IDL.Service({
   'getCategory' : IDL.Func([IDL.Nat], [IDL.Opt(Category)], ['query']),
   'getItem' : IDL.Func([IDL.Nat], [IDL.Opt(LibraryItem)], ['query']),
   'getItemsByCategory' : IDL.Func([IDL.Nat], [IDL.Vec(LibraryItem)], ['query']),
+  'getLegendaryActivitiesByPosition' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Vec(Activity)],
+      ['query'],
+    ),
+  'getLegendaryActivity' : IDL.Func([IDL.Nat], [IDL.Opt(Activity)], ['query']),
   'getMyAssignments' : IDL.Func([], [IDL.Vec(PositionAssignment)], ['query']),
   'getMyProfile' : IDL.Func([], [IDL.Opt(UserProfile)], []),
   'getNsoAssignableUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
@@ -301,6 +367,7 @@ export const idlService = IDL.Service({
   'getUserRole' : IDL.Func([IDL.Principal], [IDL.Opt(Role)], []),
   'importNsoTasks' : IDL.Func([NsoImportInput], [NsoImportSummary], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'rebuildLegendaryActivity' : IDL.Func([IDL.Nat], [Activity], []),
   'reorderCategories' : IDL.Func(
       [IDL.Nat, IDL.Vec(IDL.Nat)],
       [IDL.Vec(Category)],
@@ -357,6 +424,7 @@ export const idlService = IDL.Service({
       [LibraryItem],
       [],
     ),
+  'updateLegendaryActivity' : IDL.Func([UpdateActivityInput], [Activity], []),
   'updateMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
   'updateNsoPhase' : IDL.Func([IDL.Nat, IDL.Text], [], []),
   'updateNsoTask' : IDL.Func(
@@ -413,6 +481,47 @@ export const idlFactory = ({ IDL }) => {
     'details' : IDL.Vec(DetailField),
     'photo' : IDL.Opt(IDL.Text),
     'subtitle' : IDL.Opt(IDL.Text),
+  });
+  const ActivityType = IDL.Variant({
+    'quiz' : IDL.Null,
+    'flashcards' : IDL.Null,
+  });
+  const Question = IDL.Variant({
+    'multipleChoice' : IDL.Record({
+      'correctIndex' : IDL.Nat,
+      'prompt' : IDL.Text,
+      'choices' : IDL.Vec(IDL.Text),
+    }),
+    'matching' : IDL.Record({
+      'pairs' : IDL.Vec(
+        IDL.Record({ 'itemTitle' : IDL.Text, 'fieldValue' : IDL.Text })
+      ),
+      'shuffledOptions' : IDL.Vec(IDL.Text),
+    }),
+    'trueFalse' : IDL.Record({ 'statement' : IDL.Text, 'isTrue' : IDL.Bool }),
+  });
+  const QuizContent = IDL.Vec(Question);
+  const Flashcard = IDL.Record({
+    'itemTitle' : IDL.Text,
+    'detailFields' : IDL.Vec(
+      IDL.Record({ 'value' : IDL.Text, 'fieldLabel' : IDL.Text })
+    ),
+    'itemPhoto' : IDL.Opt(IDL.Text),
+  });
+  const FlashcardContent = IDL.Vec(Flashcard);
+  const ActivityContent = IDL.Variant({
+    'quizContent' : QuizContent,
+    'flashcardContent' : FlashcardContent,
+  });
+  const Activity = IDL.Record({
+    'id' : IDL.Nat,
+    'activityType' : ActivityType,
+    'content' : ActivityContent,
+    'name' : IDL.Text,
+    'createdAt' : IDL.Nat,
+    'createdBy' : IDL.Principal,
+    'positionId' : IDL.Nat,
+    'sourceCategoryIds' : IDL.Vec(IDL.Nat),
   });
   const Phase = IDL.Record({
     'id' : IDL.Nat,
@@ -487,6 +596,12 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const BuildActivityInput = IDL.Record({
+    'activityType' : ActivityType,
+    'name' : IDL.Text,
+    'positionId' : IDL.Nat,
+    'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+  });
   const Value = IDL.Variant({
     'int' : IDL.Int,
     'nat' : IDL.Nat,
@@ -523,6 +638,11 @@ export const idlFactory = ({ IDL }) => {
     'phasesReused' : IDL.Nat,
     'tasksAdded' : IDL.Nat,
   });
+  const UpdateActivityInput = IDL.Record({
+    'id' : IDL.Nat,
+    'name' : IDL.Text,
+    'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+  });
   
   return IDL.Service({
     '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -541,8 +661,14 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(LibraryItem)],
         ['query'],
       ),
+    '__legendaryActivities' : IDL.Func(
+        [IDL.Opt(IDL.Nat), IDL.Opt(IDL.Nat)],
+        [IDL.Vec(Activity)],
+        ['query'],
+      ),
     '__nextCategoryId' : IDL.Func([], [IDL.Reserved], ['query']),
     '__nextItemId' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__nextLegendaryActivityId' : IDL.Func([], [IDL.Reserved], ['query']),
     '__nextPhaseId' : IDL.Func([], [IDL.Reserved], ['query']),
     '__nextPositionId' : IDL.Func([], [IDL.Reserved], ['query']),
     '__nextTaskId' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -601,6 +727,7 @@ export const idlFactory = ({ IDL }) => {
         [PositionAssignment],
         [],
       ),
+    'buildLegendaryActivity' : IDL.Func([BuildActivityInput], [Activity], []),
     'createCategory' : IDL.Func(
         [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
         [Category],
@@ -634,6 +761,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'deleteCategory' : IDL.Func([IDL.Nat], [], []),
     'deleteItem' : IDL.Func([IDL.Nat], [], []),
+    'deleteLegendaryActivity' : IDL.Func([IDL.Nat], [], []),
     'deleteNsoPhase' : IDL.Func([IDL.Nat], [], []),
     'deleteNsoTask' : IDL.Func([IDL.Nat], [], []),
     'deletePosition' : IDL.Func([IDL.Nat], [], []),
@@ -651,6 +779,16 @@ export const idlFactory = ({ IDL }) => {
     'getItemsByCategory' : IDL.Func(
         [IDL.Nat],
         [IDL.Vec(LibraryItem)],
+        ['query'],
+      ),
+    'getLegendaryActivitiesByPosition' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Vec(Activity)],
+        ['query'],
+      ),
+    'getLegendaryActivity' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Opt(Activity)],
         ['query'],
       ),
     'getMyAssignments' : IDL.Func([], [IDL.Vec(PositionAssignment)], ['query']),
@@ -679,6 +817,7 @@ export const idlFactory = ({ IDL }) => {
     'getUserRole' : IDL.Func([IDL.Principal], [IDL.Opt(Role)], []),
     'importNsoTasks' : IDL.Func([NsoImportInput], [NsoImportSummary], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'rebuildLegendaryActivity' : IDL.Func([IDL.Nat], [Activity], []),
     'reorderCategories' : IDL.Func(
         [IDL.Nat, IDL.Vec(IDL.Nat)],
         [IDL.Vec(Category)],
@@ -739,6 +878,7 @@ export const idlFactory = ({ IDL }) => {
         [LibraryItem],
         [],
       ),
+    'updateLegendaryActivity' : IDL.Func([UpdateActivityInput], [Activity], []),
     'updateMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
     'updateNsoPhase' : IDL.Func([IDL.Nat, IDL.Text], [], []),
     'updateNsoTask' : IDL.Func(

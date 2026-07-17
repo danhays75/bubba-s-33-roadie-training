@@ -7,6 +7,12 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface UpdateActivityInput {
+    id: bigint;
+    name: string;
+    sourceCategoryIds: Array<bigint>;
+}
+export type QuizContent = Array<Question>;
 export interface Task {
     id: bigint;
     completionDate?: string;
@@ -25,6 +31,63 @@ export type Result__1 = {
     __kind__: "err";
     err: Error_;
 };
+export interface Phase {
+    id: bigint;
+    sortOrder: bigint;
+    name: string;
+}
+export interface DetailField {
+    value: string;
+    fieldLabel: string;
+}
+export interface Cell {
+    value: Value;
+    name: string;
+}
+export interface LibraryItem {
+    id: bigint;
+    categoryId: bigint;
+    title: string;
+    sortOrder: bigint;
+    tags: Array<string>;
+    seasonal: boolean;
+    notes?: string;
+    details: Array<DetailField>;
+    photo?: string;
+    subtitle?: string;
+}
+export type Value = {
+    __kind__: "int";
+    int: bigint;
+} | {
+    __kind__: "nat";
+    nat: bigint;
+} | {
+    __kind__: "float";
+    float: number;
+} | {
+    __kind__: "bool";
+    bool: boolean;
+} | {
+    __kind__: "null";
+    null: null;
+} | {
+    __kind__: "text";
+    text: string;
+};
+export interface NsoPhaseProgressCount {
+    doneCount: bigint;
+    totalCount: bigint;
+    phaseId: bigint;
+}
+export interface Category {
+    id: bigint;
+    sortOrder: bigint;
+    name: string;
+    positionId: bigint;
+    coverPhoto?: string;
+}
+export type FlashcardContent = Array<Flashcard>;
 export interface NsoImportInput {
     moduleName: string;
     phases: Array<NsoImportPhase>;
@@ -73,14 +136,28 @@ export type Error_ = {
         expected: Array<string>;
     };
 };
-export interface Phase {
-    id: bigint;
-    sortOrder: bigint;
+export interface BuildActivityInput {
+    activityType: ActivityType;
     name: string;
+    positionId: bigint;
+    sourceCategoryIds: Array<bigint>;
 }
-export interface DetailField {
-    value: string;
-    fieldLabel: string;
+export type ActivityContent = {
+    __kind__: "quizContent";
+    quizContent: QuizContent;
+} | {
+    __kind__: "flashcardContent";
+    flashcardContent: FlashcardContent;
+};
+export interface Activity {
+    id: bigint;
+    activityType: ActivityType;
+    content: ActivityContent;
+    name: string;
+    createdAt: bigint;
+    createdBy: Principal;
+    positionId: bigint;
+    sourceCategoryIds: Array<bigint>;
 }
 export interface Result {
     hasMore: boolean;
@@ -112,58 +189,46 @@ export interface NsoImportPhase {
     tasks: Array<NsoImportTask>;
     name: string;
 }
-export interface Cell {
-    value: Value;
-    name: string;
+export interface Flashcard {
+    itemTitle: string;
+    detailFields: Array<{
+        value: string;
+        fieldLabel: string;
+    }>;
+    itemPhoto?: string;
 }
-export interface LibraryItem {
-    id: bigint;
-    categoryId: bigint;
-    title: string;
-    sortOrder: bigint;
-    tags: Array<string>;
-    seasonal: boolean;
-    notes?: string;
-    details: Array<DetailField>;
-    photo?: string;
-    subtitle?: string;
-}
-export type Value = {
-    __kind__: "int";
-    int: bigint;
+export type Question = {
+    __kind__: "multipleChoice";
+    multipleChoice: {
+        correctIndex: bigint;
+        prompt: string;
+        choices: Array<string>;
+    };
 } | {
-    __kind__: "nat";
-    nat: bigint;
+    __kind__: "matching";
+    matching: {
+        pairs: Array<{
+            itemTitle: string;
+            fieldValue: string;
+        }>;
+        shuffledOptions: Array<string>;
+    };
 } | {
-    __kind__: "float";
-    float: number;
-} | {
-    __kind__: "bool";
-    bool: boolean;
-} | {
-    __kind__: "null";
-    null: null;
-} | {
-    __kind__: "text";
-    text: string;
+    __kind__: "trueFalse";
+    trueFalse: {
+        statement: string;
+        isTrue: boolean;
+    };
 };
-export interface NsoPhaseProgressCount {
-    doneCount: bigint;
-    totalCount: bigint;
-    phaseId: bigint;
-}
 export interface UserProfile {
     id: Principal;
     name: string;
     role: Role;
     storeLocation: string;
 }
-export interface Category {
-    id: bigint;
-    sortOrder: bigint;
-    name: string;
-    positionId: bigint;
-    coverPhoto?: string;
+export enum ActivityType {
+    quiz = "quiz",
+    flashcards = "flashcards"
 }
 export enum AssignmentStatus {
     inTraining = "inTraining",
@@ -187,6 +252,7 @@ export enum Variant_up_down {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignPosition(userId: Principal, positionId: bigint): Promise<PositionAssignment>;
+    buildLegendaryActivity(input: BuildActivityInput): Promise<Activity>;
     createCategory(positionId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
     createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean): Promise<LibraryItem>;
     createMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
@@ -195,6 +261,7 @@ export interface backendInterface {
     createPosition(name: string, description: string | null, coverPhoto: string | null): Promise<Position>;
     deleteCategory(categoryId: bigint): Promise<void>;
     deleteItem(itemId: bigint): Promise<void>;
+    deleteLegendaryActivity(id: bigint): Promise<void>;
     deleteNsoPhase(id: bigint): Promise<void>;
     deleteNsoTask(id: bigint): Promise<void>;
     deletePosition(id: bigint): Promise<void>;
@@ -206,6 +273,8 @@ export interface backendInterface {
     getCategory(categoryId: bigint): Promise<Category | null>;
     getItem(itemId: bigint): Promise<LibraryItem | null>;
     getItemsByCategory(categoryId: bigint): Promise<Array<LibraryItem>>;
+    getLegendaryActivitiesByPosition(positionId: bigint): Promise<Array<Activity>>;
+    getLegendaryActivity(id: bigint): Promise<Activity | null>;
     getMyAssignments(): Promise<Array<PositionAssignment>>;
     getMyProfile(): Promise<UserProfile | null>;
     getNsoAssignableUsers(): Promise<Array<UserProfile>>;
@@ -223,6 +292,7 @@ export interface backendInterface {
     getUserRole(userId: Principal): Promise<Role | null>;
     importNsoTasks(input: NsoImportInput): Promise<NsoImportSummary>;
     isCallerAdmin(): Promise<boolean>;
+    rebuildLegendaryActivity(id: bigint): Promise<Activity>;
     reorderCategories(positionId: bigint, orderedCategoryIds: Array<bigint>): Promise<Array<Category>>;
     reorderItems(categoryId: bigint, orderedItemIds: Array<bigint>): Promise<Array<LibraryItem>>;
     reorderNsoPhases(id: bigint, direction: Variant_up_down): Promise<void>;
@@ -238,6 +308,7 @@ export interface backendInterface {
     unassignPosition(userId: Principal, positionId: bigint): Promise<void>;
     updateCategory(categoryId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
     updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean): Promise<LibraryItem>;
+    updateLegendaryActivity(input: UpdateActivityInput): Promise<Activity>;
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     updateNsoPhase(id: bigint, name: string): Promise<void>;
     updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;

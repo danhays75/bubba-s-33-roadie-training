@@ -10,8 +10,28 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Activity {
+  'id' : bigint,
+  'activityType' : ActivityType,
+  'content' : ActivityContent,
+  'name' : string,
+  'createdAt' : bigint,
+  'createdBy' : Principal,
+  'positionId' : bigint,
+  'sourceCategoryIds' : Array<bigint>,
+}
+export type ActivityContent = { 'quizContent' : QuizContent } |
+  { 'flashcardContent' : FlashcardContent };
+export type ActivityType = { 'quiz' : null } |
+  { 'flashcards' : null };
 export type AssignmentStatus = { 'inTraining' : null } |
   { 'certified' : null };
+export interface BuildActivityInput {
+  'activityType' : ActivityType,
+  'name' : string,
+  'positionId' : bigint,
+  'sourceCategoryIds' : Array<bigint>,
+}
 export interface Category {
   'id' : bigint,
   'sortOrder' : bigint,
@@ -36,6 +56,12 @@ export type Error = { 'FrontendOriginsNotConfigured' : null } |
   { 'UntrustedSsoSource' : { 'domain' : string } } |
   { 'MissingField' : string } |
   { 'FrontendOriginMismatch' : { 'got' : string, 'expected' : Array<string> } };
+export interface Flashcard {
+  'itemTitle' : string,
+  'detailFields' : Array<{ 'value' : string, 'fieldLabel' : string }>,
+  'itemPhoto' : [] | [string],
+}
+export type FlashcardContent = Array<Flashcard>;
 export interface LibraryItem {
   'id' : bigint,
   'categoryId' : bigint,
@@ -84,6 +110,21 @@ export interface PositionAssignment {
   'userId' : Principal,
   'positionId' : bigint,
 }
+export type Question = {
+    'multipleChoice' : {
+      'correctIndex' : bigint,
+      'prompt' : string,
+      'choices' : Array<string>,
+    }
+  } |
+  {
+    'matching' : {
+      'pairs' : Array<{ 'itemTitle' : string, 'fieldValue' : string }>,
+      'shuffledOptions' : Array<string>,
+    }
+  } |
+  { 'trueFalse' : { 'statement' : string, 'isTrue' : boolean } };
+export type QuizContent = Array<Question>;
 export interface Result { 'hasMore' : boolean, 'rows' : Array<Array<Cell>> }
 export type Result__1 = { 'ok' : null } |
   { 'err' : Error };
@@ -101,6 +142,11 @@ export interface Task {
   'section' : [] | [string],
   'notes' : [] | [string],
   'phaseId' : bigint,
+}
+export interface UpdateActivityInput {
+  'id' : bigint,
+  'name' : string,
+  'sourceCategoryIds' : Array<bigint>,
 }
 export interface UserProfile {
   'id' : Principal,
@@ -136,8 +182,13 @@ export interface _SERVICE {
   >,
   '__categories' : ActorMethod<[[] | [bigint], [] | [bigint]], Array<Category>>,
   '__items' : ActorMethod<[[] | [bigint], [] | [bigint]], Array<LibraryItem>>,
+  '__legendaryActivities' : ActorMethod<
+    [[] | [bigint], [] | [bigint]],
+    Array<Activity>
+  >,
   '__nextCategoryId' : ActorMethod<[], any>,
   '__nextItemId' : ActorMethod<[], any>,
+  '__nextLegendaryActivityId' : ActorMethod<[], any>,
   '__nextPhaseId' : ActorMethod<[], any>,
   '__nextPositionId' : ActorMethod<[], any>,
   '__nextTaskId' : ActorMethod<[], any>,
@@ -171,6 +222,7 @@ export interface _SERVICE {
   '_internet_identity_sign_in_start' : ActorMethod<[], Uint8Array>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignPosition' : ActorMethod<[Principal, bigint], PositionAssignment>,
+  'buildLegendaryActivity' : ActorMethod<[BuildActivityInput], Activity>,
   'createCategory' : ActorMethod<[bigint, string, [] | [string]], Category>,
   'createItem' : ActorMethod<
     [
@@ -197,6 +249,7 @@ export interface _SERVICE {
   >,
   'deleteCategory' : ActorMethod<[bigint], undefined>,
   'deleteItem' : ActorMethod<[bigint], undefined>,
+  'deleteLegendaryActivity' : ActorMethod<[bigint], undefined>,
   'deleteNsoPhase' : ActorMethod<[bigint], undefined>,
   'deleteNsoTask' : ActorMethod<[bigint], undefined>,
   'deletePosition' : ActorMethod<[bigint], undefined>,
@@ -208,6 +261,8 @@ export interface _SERVICE {
   'getCategory' : ActorMethod<[bigint], [] | [Category]>,
   'getItem' : ActorMethod<[bigint], [] | [LibraryItem]>,
   'getItemsByCategory' : ActorMethod<[bigint], Array<LibraryItem>>,
+  'getLegendaryActivitiesByPosition' : ActorMethod<[bigint], Array<Activity>>,
+  'getLegendaryActivity' : ActorMethod<[bigint], [] | [Activity]>,
   'getMyAssignments' : ActorMethod<[], Array<PositionAssignment>>,
   'getMyProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getNsoAssignableUsers' : ActorMethod<[], Array<UserProfile>>,
@@ -225,6 +280,7 @@ export interface _SERVICE {
   'getUserRole' : ActorMethod<[Principal], [] | [Role]>,
   'importNsoTasks' : ActorMethod<[NsoImportInput], NsoImportSummary>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'rebuildLegendaryActivity' : ActorMethod<[bigint], Activity>,
   'reorderCategories' : ActorMethod<[bigint, Array<bigint>], Array<Category>>,
   'reorderItems' : ActorMethod<[bigint, Array<bigint>], Array<LibraryItem>>,
   'reorderNsoPhases' : ActorMethod<
@@ -261,6 +317,7 @@ export interface _SERVICE {
     ],
     LibraryItem
   >,
+  'updateLegendaryActivity' : ActorMethod<[UpdateActivityInput], Activity>,
   'updateMyProfile' : ActorMethod<[string, string], UserProfile>,
   'updateNsoPhase' : ActorMethod<[bigint, string], undefined>,
   'updateNsoTask' : ActorMethod<

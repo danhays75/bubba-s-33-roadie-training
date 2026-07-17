@@ -33,6 +33,12 @@ type UserProfile =
    role: Role;
    storeLocation: text;
  };
+type UpdateActivityInput = 
+ record {
+   id: nat;
+   name: text;
+   sourceCategoryIds: vec nat;
+ };
 type Task = 
  record {
    assignedTo: opt principal;
@@ -61,6 +67,27 @@ type Result =
  record {
    hasMore: bool;
    rows: vec vec Cell;
+ };
+type QuizContent = vec Question;
+type Question = 
+ variant {
+   matching:
+    record {
+      pairs: vec record {
+                   fieldValue: text;
+                   itemTitle: text;
+                 };
+      shuffledOptions: vec text;
+    };
+   multipleChoice: record {
+                     choices: vec text;
+                     correctIndex: nat;
+                     prompt: text;
+                   };
+   trueFalse: record {
+                isTrue: bool;
+                statement: text;
+              };
  };
 type PositionAssignment = 
  record {
@@ -123,6 +150,16 @@ type LibraryItem =
    tags: vec text;
    title: text;
  };
+type FlashcardContent = vec Flashcard;
+type Flashcard = 
+ record {
+   detailFields: vec record {
+                       fieldLabel: text;
+                       value: text;
+                     };
+   itemPhoto: opt text;
+   itemTitle: text;
+ };
 type Error = 
  variant {
    AmbiguousAttribute: record {
@@ -163,10 +200,38 @@ type Category =
    positionId: nat;
    sortOrder: nat;
  };
+type BuildActivityInput = 
+ record {
+   activityType: ActivityType;
+   name: text;
+   positionId: nat;
+   sourceCategoryIds: vec nat;
+ };
 type AssignmentStatus = 
  variant {
    certified;
    inTraining;
+ };
+type ActivityType = 
+ variant {
+   flashcards;
+   quiz;
+ };
+type ActivityContent = 
+ variant {
+   flashcardContent: FlashcardContent;
+   quizContent: QuizContent;
+ };
+type Activity = 
+ record {
+   activityType: ActivityType;
+   content: ActivityContent;
+   createdAt: nat;
+   createdBy: principal;
+   id: nat;
+   name: text;
+   positionId: nat;
+   sourceCategoryIds: vec nat;
  };
 service : {
   __accessControlState: () -> (reserved) query;
@@ -174,8 +239,11 @@ service : {
    (vec PositionAssignment) query;
   __categories: (io: opt nat, count: opt nat) -> (vec Category) query;
   __items: (io: opt nat, count: opt nat) -> (vec LibraryItem) query;
+  __legendaryActivities: (io: opt nat, count: opt nat) ->
+   (vec Activity) query;
   __nextCategoryId: () -> (reserved) query;
   __nextItemId: () -> (reserved) query;
+  __nextLegendaryActivityId: () -> (reserved) query;
   __nextPhaseId: () -> (reserved) query;
   __nextPositionId: () -> (reserved) query;
   __nextTaskId: () -> (reserved) query;
@@ -202,6 +270,7 @@ service : {
   assignCallerUserRole: (user: principal, role: UserRole) -> ();
   assignPosition: (userId: principal, positionId: nat) ->
    (PositionAssignment);
+  buildLegendaryActivity: (input: BuildActivityInput) -> (Activity);
   createCategory: (positionId: nat, name: text, coverPhoto: opt text) ->
    (Category);
   createItem: (categoryId: nat, title: text, subtitle: opt text, photo:
@@ -215,6 +284,7 @@ service : {
    opt text) -> (Position);
   deleteCategory: (categoryId: nat) -> ();
   deleteItem: (itemId: nat) -> ();
+  deleteLegendaryActivity: (id: nat) -> ();
   deleteNsoPhase: (id: nat) -> ();
   deleteNsoTask: (id: nat) -> ();
   deletePosition: (id: nat) -> ();
@@ -226,6 +296,8 @@ service : {
   getCategory: (categoryId: nat) -> (opt Category) query;
   getItem: (itemId: nat) -> (opt LibraryItem) query;
   getItemsByCategory: (categoryId: nat) -> (vec LibraryItem) query;
+  getLegendaryActivitiesByPosition: (positionId: nat) -> (vec Activity) query;
+  getLegendaryActivity: (id: nat) -> (opt Activity) query;
   getMyAssignments: () -> (vec PositionAssignment) query;
   getMyProfile: () -> (opt UserProfile);
   getNsoAssignableUsers: () -> (vec UserProfile) query;
@@ -244,6 +316,7 @@ service : {
   getUserRole: (userId: principal) -> (opt Role);
   importNsoTasks: (input: NsoImportInput) -> (NsoImportSummary);
   isCallerAdmin: () -> (bool) query;
+  rebuildLegendaryActivity: (id: nat) -> (Activity);
   reorderCategories: (positionId: nat, orderedCategoryIds: vec nat) ->
    (vec Category);
   reorderItems: (categoryId: nat, orderedItemIds: vec nat) ->
@@ -272,6 +345,7 @@ service : {
   updateItem: (itemId: nat, title: text, subtitle: opt text, photo: opt text,
    details: vec DetailField, notes: opt text, tags: vec text, seasonal:
    bool) -> (LibraryItem);
+  updateLegendaryActivity: (input: UpdateActivityInput) -> (Activity);
   updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   updateNsoPhase: (id: nat, name: text) -> ();
   updateNsoTask: (id: nat, "text": text, section: opt text, done: bool,

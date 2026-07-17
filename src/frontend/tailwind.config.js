@@ -133,6 +133,34 @@ export default {
           "70%": { transform: "scale(1)" },
           "100%": { transform: "scale(1)" },
         },
+        /* ── Be Legendary — ADDITIVE keyframes (do not alter existing) ── */
+        "legendary-glow": {
+          "0%, 100%": { opacity: "0.35" },
+          "50%": { opacity: "0.7" },
+        },
+        "legendary-pulse": {
+          "0%, 100%": { boxShadow: "0 0 0 1px oklch(0.66 0.2 25 / 0.25), 0 0 20px oklch(0.66 0.2 25 / 0.30)" },
+          "50%": { boxShadow: "0 0 0 1px oklch(0.66 0.2 25 / 0.45), 0 0 34px oklch(0.66 0.2 25 / 0.55)" },
+        },
+        /* Cinematic patriotic hero — light-sweep beam + mirror-finish flash.
+           Referenced by name from .legendary-hero-sweep::after and
+           .legendary-hero-flash::before in index.css. Transform-driven
+           (translateX + skewX) so they stay GPU-composited. */
+        "legendary-sweep": {
+          "0%": { transform: "skewX(-18deg) translateX(0%)" },
+          "60%": { transform: "skewX(-18deg) translateX(420%)" },
+          "100%": { transform: "skewX(-18deg) translateX(420%)" },
+        },
+        "legendary-flash": {
+          "0%, 100%": { opacity: "0" },
+          "40%": { opacity: "0" },
+          "55%": { opacity: "1" },
+          "70%": { opacity: "0" },
+        },
+        "flashcard-flip": {
+          "0%": { transform: "rotateY(0deg)" },
+          "100%": { transform: "rotateY(180deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -141,6 +169,17 @@ export default {
         "seasonal-shimmer": "seasonal-shimmer 3s ease-in-out infinite",
         "photo-shimmer": "photo-shimmer 1.1s ease-in-out infinite",
         heartbeat: "heartbeat 1.4s ease-in-out infinite",
+        /* ── Be Legendary — ADDITIVE animations ── */
+        "legendary-glow": "legendary-glow 3s ease-in-out infinite",
+        "legendary-pulse": "legendary-pulse 2.5s ease-in-out infinite",
+        /* Cinematic patriotic hero — BOLD chrome shine. Sweep crosses the
+           banner surface every 2.8s with a rest hold; flash glints the
+           chrome every 3.5s. Both pause under prefers-reduced-motion
+           (handled in index.css). Durations mirror
+           --legendary-sweep/flash-duration. */
+        "legendary-sweep": "legendary-sweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+        "legendary-flash": "legendary-flash 3.5s ease-in-out infinite",
+        "flashcard-flip": "flashcard-flip 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
       },
     },
   },

@@ -3,6 +3,7 @@ import Map "mo:core/Map";
 import List "mo:core/List";
 import Runtime "mo:core/Runtime";
 import AccessControl "mo:caffeineai-authorization/access-control";
+import AccessControlAdminGuard "../lib/access-control-admin-guard";
 import Foundation "../lib/foundation";
 import Types "../types/foundation";
 
@@ -34,6 +35,14 @@ mixin (
   // before _initialize_access_control ran), update the stored role to #admin.
   // Idempotent and safe to run on every sign-in.
   public shared ({ caller }) func getMyProfile() : async ?Foundation.UserProfile {
+    // Admin-guard repair (additive, runs on every sign-in, before the
+    // existing role-sync read below). Repairs a missing/corrupted #admin
+    // grant in userRoles left by the frozen migration 20260703_000001: a
+    // caller whose stored profile.role == #admin but whose userRoles entry
+    // is missing/corrupted gets re-granted #admin instead of being silently
+    // downgraded to #user. The existing role-sync below then sees a correct
+    // isAdmin result. Signature and return shape are unchanged.
+    AccessControlAdminGuard.initialize(accessControlState, profiles, caller);
     switch (Foundation.getProfile(profiles, caller)) {
       case (?profile) {
         // Promote the stored role to #admin if the caller is an admin but the
