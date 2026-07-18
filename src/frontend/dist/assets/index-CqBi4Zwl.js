@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-MVeIr98Q.js"(exports, module) {
+  "assets/index-CqBi4Zwl.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -35722,7 +35722,7 @@ variant ${k2} -> ${e.message}`, {
     }
     function useMyProfile() {
       const { actor, isFetching } = useBackend();
-      return useQuery({
+      const query = useQuery({
         queryKey: QUERY_KEY$3,
         queryFn: async () => {
           if (!actor) return null;
@@ -35731,6 +35731,11 @@ variant ${k2} -> ${e.message}`, {
         },
         enabled: !!actor && !isFetching
       });
+      return {
+        ...query,
+        isError: query.isError,
+        error: query.error
+      };
     }
     function useCreateMyProfile() {
       const queryClient2 = useQueryClient();
@@ -39591,6 +39596,58 @@ variant ${k2} -> ${e.message}`, {
         )
       ] }) });
     }
+    const DEFAULT_TITLE = "Something went wrong";
+    const DEFAULT_DESCRIPTION = "We couldn't load this right now. Please try again.";
+    function QueryErrorState({
+      title = DEFAULT_TITLE,
+      description = DEFAULT_DESCRIPTION,
+      error,
+      onRetry
+    }) {
+      const errorMessage = error instanceof Error && error.message ? error.message : null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          role: "alert",
+          className: "flex flex-col items-center justify-center gap-4 rounded-md border border-dashed border-border bg-card px-6 py-14 text-center",
+          "data-ocid": "query.error_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary",
+                "aria-hidden": true,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "size-6" })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mx-auto max-w-sm font-body text-sm text-muted-foreground", children: description }),
+              errorMessage && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "mx-auto max-w-sm break-words font-mono text-xs text-muted-foreground",
+                  "data-ocid": "query.error_state.message",
+                  children: errorMessage
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Button,
+              {
+                type: "button",
+                onClick: onRetry,
+                "data-ocid": "query.error_state.retry_button",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "size-4", "aria-hidden": true }),
+                  "Retry"
+                ]
+              }
+            )
+          ]
+        }
+      );
+    }
     const EIGHT_HOURS_NS = BigInt(8 * 60 * 60 * 1e3 * 1e3 * 1e3);
     let redirectClient = null;
     async function getRedirectClient() {
@@ -39744,7 +39801,13 @@ variant ${k2} -> ${e.message}`, {
     function AuthGate({ children }) {
       const { isAuthenticated, isInitializing, isLoggingIn, login, loginError } = useAuth();
       const { actor } = useBackend();
-      const { data: profile, isLoading: profileLoading } = useMyProfile();
+      const {
+        data: profile,
+        isLoading: profileLoading,
+        isError: profileIsError,
+        error: profileError,
+        refetch: refetchProfile
+      } = useMyProfile();
       const queryClient2 = useQueryClient();
       const [accessInitStarted, setAccessInitStarted] = reactExports.useState(false);
       const [accessInitDone, setAccessInitDone] = reactExports.useState(false);
@@ -39781,7 +39844,7 @@ variant ${k2} -> ${e.message}`, {
         return () => clearTimeout(timeout2);
       }, [isAuthenticated, accessInitStarted, accessInitDone]);
       if (isInitializing) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-dvh bg-background", "aria-hidden": true });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("output", { className: "min-h-dvh bg-background block", "aria-busy": "true", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Loading…" }) });
       }
       if (!isAuthenticated) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -39794,7 +39857,20 @@ variant ${k2} -> ${e.message}`, {
         );
       }
       if (!accessInitDone || profileLoading && profile === void 0) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-dvh bg-background", "aria-hidden": true });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("output", { className: "min-h-dvh bg-background block", "aria-busy": "true", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Loading…" }) });
+      }
+      if (profileIsError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh items-center justify-center bg-background px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full max-w-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load your profile",
+            description: "We couldn't load your profile right now. Please try again.",
+            error: profileError,
+            onRetry: () => {
+              void refetchProfile();
+            }
+          }
+        ) }) });
       }
       if (!profile) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProfileScreen, {});
@@ -44900,9 +44976,9 @@ variant ${k2} -> ${e.message}`, {
       }
       if (match2.status === "error") {
         if (router2.isServer) {
-          const RouteErrorComponent = (route.options.errorComponent ?? router2.options.defaultErrorComponent) || ErrorComponent;
+          const RouteErrorComponent2 = (route.options.errorComponent ?? router2.options.defaultErrorComponent) || ErrorComponent;
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            RouteErrorComponent,
+            RouteErrorComponent2,
             {
               error: match2.error,
               reset: void 0,
@@ -45374,10 +45450,22 @@ variant ${k2} -> ${e.message}`, {
       return "?";
     }
     const Route = createRootRouteWithContext()({
-      component: RootComponent
+      component: RootComponent,
+      errorComponent: RootRouteError
     });
     function RootComponent() {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, {});
+    }
+    function RootRouteError({ error }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-[60vh] bg-background px-4 py-8", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        QueryErrorState,
+        {
+          title: "Couldn't load this page",
+          description: "An unexpected error occurred while loading this page. Reloading usually fixes it.",
+          error,
+          onRetry: () => window.location.reload()
+        }
+      ) }) });
     }
     function composeEventHandlers(originalEventHandler, ourEventHandler, { checkForDefaultPrevented = true } = {}) {
       return function handleEvent(event) {
@@ -47611,6 +47699,7 @@ variant ${k2} -> ${e.message}`, {
         }, []);
         const focusUrlInput = reactExports.useCallback(() => {
           var _a2, _b2;
+          setMode("url");
           (_a2 = urlInputRef.current) == null ? void 0 : _a2.focus();
           (_b2 = urlInputRef.current) == null ? void 0 : _b2.select();
         }, []);
@@ -47685,7 +47774,7 @@ variant ${k2} -> ${e.message}`, {
               onUrlClick: focusUrlInput
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: mode === "url" && !hasValue ? "block" : "hidden", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: mode === "url" ? "block" : "hidden", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Input$1,
               {
@@ -47696,7 +47785,7 @@ variant ${k2} -> ${e.message}`, {
                 autoComplete: "off",
                 spellCheck: false,
                 placeholder: "https://…",
-                value: mode === "url" && !hasValue ? value ?? "" : "",
+                value: mode === "url" ? value ?? "" : "",
                 onChange: handleUrlChange,
                 disabled: busy,
                 "aria-label": "Paste image URL",
@@ -49362,7 +49451,7 @@ variant ${k2} -> ${e.message}`, {
         sortOrder: Number(c2.sortOrder)
       };
     }
-    function toItem(i) {
+    function toItem$1(i) {
       const details = (i.details ?? []).map((d2) => ({
         // id is frontend-only (not in the backend record). Generated here so each
         // detail-field row has a stable React key for the lifetime of this read.
@@ -49415,7 +49504,7 @@ variant ${k2} -> ${e.message}`, {
         queryFn: async () => {
           if (!actor) return [];
           const result = await actor.getItemsByCategory(BigInt(categoryId));
-          return result.map(toItem);
+          return result.map(toItem$1);
         },
         enabled: !!actor && !isFetching && !!categoryId
       });
@@ -49427,7 +49516,7 @@ variant ${k2} -> ${e.message}`, {
         queryFn: async () => {
           if (!actor) return null;
           const result = await actor.getItem(BigInt(itemId));
-          return result ? toItem(result) : null;
+          return result ? toItem$1(result) : null;
         },
         enabled: !!actor && !isFetching && !!itemId
       });
@@ -49440,7 +49529,7 @@ variant ${k2} -> ${e.message}`, {
         queryFn: async () => {
           if (!actor) return [];
           const result = await actor.searchLibrary(BigInt(positionId), trimmed);
-          return result.map(toItem);
+          return result.map(toItem$1);
         },
         enabled: !!actor && !isFetching && !!positionId && trimmed.length > 0
       });
@@ -49547,7 +49636,7 @@ variant ${k2} -> ${e.message}`, {
             input.tags,
             input.seasonal
           );
-          return toItem(result);
+          return toItem$1(result);
         },
         onSuccess: (_data, variables) => {
           queryClient2.invalidateQueries({
@@ -49562,6 +49651,9 @@ variant ${k2} -> ${e.message}`, {
       return useMutation({
         mutationFn: async (input) => {
           if (!actor) throw new Error("Backend not ready");
+          if (input.itemId == null || input.itemId.trim() === "") {
+            throw new Error("updateItem requires a non-empty item id");
+          }
           const result = await actor.updateItem(
             BigInt(input.itemId),
             input.title,
@@ -49575,7 +49667,7 @@ variant ${k2} -> ${e.message}`, {
             input.tags,
             input.seasonal
           );
-          return toItem(result);
+          return toItem$1(result);
         },
         onSuccess: (_data, variables) => {
           queryClient2.invalidateQueries({
@@ -49615,7 +49707,7 @@ variant ${k2} -> ${e.message}`, {
             BigInt(input.categoryId),
             input.orderedItemIds.map((id) => BigInt(id))
           );
-          return result.map(toItem);
+          return result.map(toItem$1);
         },
         onSuccess: (_data, variables) => {
           queryClient2.invalidateQueries({
@@ -49635,10 +49727,12 @@ variant ${k2} -> ${e.message}`, {
       const [error, setError] = reactExports.useState(null);
       const [summary, setSummary] = reactExports.useState(null);
       const [progress, setProgress] = reactExports.useState(null);
+      const [validationWarnings, setValidationWarnings] = reactExports.useState([]);
       const createCategory = useCreateCategory();
       const createItem = useCreateItem();
       const updateItem = useUpdateItem();
       const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
       reactExports.useEffect(() => {
         if (open) {
           setText("");
@@ -49646,6 +49740,7 @@ variant ${k2} -> ${e.message}`, {
           setError(null);
           setSummary(null);
           setProgress(null);
+          setValidationWarnings([]);
         }
       }, [open]);
       const trimmed = text.trim();
@@ -49669,10 +49764,13 @@ variant ${k2} -> ${e.message}`, {
           return;
         }
         const categories = validation.categories;
+        const warnings = validation.warnings ?? [];
+        setValidationWarnings(warnings);
         let createdCategories = 0;
         let createdItems = 0;
         let updatedItems = 0;
         let skippedItems = 0;
+        let skippedDuplicates = 0;
         const categoryIdByName = /* @__PURE__ */ new Map();
         for (const c2 of existingCategories) {
           categoryIdByName.set(c2.name, c2.id);
@@ -49704,6 +49802,10 @@ variant ${k2} -> ${e.message}`, {
                   skippedItems += 1;
                   continue;
                 }
+                if (existing.id === "") {
+                  skippedDuplicates += 1;
+                  continue;
+                }
                 setProgress(`Updating item: ${item.title} (${cat.name})`);
                 const details2 = item.fields.map((f2) => ({
                   id: makeDetailFieldId(),
@@ -49730,7 +49832,7 @@ variant ${k2} -> ${e.message}`, {
                 fieldLabel: f2.label,
                 value: f2.value
               }));
-              await createItem.mutateAsync({
+              const created = await createItem.mutateAsync({
                 categoryId,
                 title: item.title,
                 subtitle: null,
@@ -49741,16 +49843,16 @@ variant ${k2} -> ${e.message}`, {
                 seasonal: item.seasonal
               });
               existingByTitle.set(item.title, {
-                id: "",
+                id: (created == null ? void 0 : created.id) ?? "",
                 categoryId,
                 title: item.title,
-                subtitle: null,
-                photo: null,
-                details,
+                subtitle: (created == null ? void 0 : created.subtitle) ?? null,
+                photo: (created == null ? void 0 : created.photo) ?? null,
+                details: (created == null ? void 0 : created.details) ?? details,
                 notes: item.notes,
                 tags: item.tags,
                 seasonal: item.seasonal,
-                sortOrder: 0
+                sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0
               });
               createdItems += 1;
             }
@@ -49767,7 +49869,8 @@ variant ${k2} -> ${e.message}`, {
             createdCategories,
             updatedItems,
             createdItems,
-            skippedItems
+            skippedItems,
+            skippedDuplicates
           );
           setSummary(message);
           ue.success("Import complete", { description: message });
@@ -49795,15 +49898,26 @@ variant ${k2} -> ${e.message}`, {
         const queryKey = ["library-items", categoryId];
         const cached = queryClient2.getQueryData(queryKey);
         if (cached) return cached;
-        try {
-          const fetched = await queryClient2.fetchQuery({
-            queryKey,
-            staleTime: 0
+        if (!actor) {
+          ue.error("Could not load existing items", {
+            description: "Import stopped to avoid duplicates. Please retry."
           });
-          return fetched ?? [];
-        } catch {
-          return [];
+          throw new Error("Backend not ready");
         }
+        let result;
+        try {
+          result = await actor.getItemsByCategory(BigInt(categoryId));
+        } catch {
+          ue.error("Could not load existing items", {
+            description: "Import stopped to avoid duplicates. Please retry."
+          });
+          throw new Error(
+            `Failed to load existing items for category ${categoryId}`
+          );
+        }
+        const items = result.map(toItem);
+        queryClient2.setQueryData(queryKey, items);
+        return items;
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         DialogContent,
@@ -49931,6 +50045,17 @@ variant ${k2} -> ${e.message}`, {
                   children: error
                 }
               ),
+              validationWarnings.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "output",
+                {
+                  className: "text-xs text-muted-foreground font-body rounded-md border border-border bg-muted/40 px-3 py-2",
+                  "data-ocid": "library.admin.import.dialog.warning_state",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-foreground mb-1", children: "Warnings — later duplicates will be skipped in update mode:" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "list-disc pl-4 grid gap-0.5", children: validationWarnings.map((w2) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: w2 }, w2)) })
+                  ]
+                }
+              ),
               summary && /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "output",
                 {
@@ -49981,12 +50106,36 @@ variant ${k2} -> ${e.message}`, {
         }
       ) });
     }
-    function formatSummary$1(createdCategories, updatedItems, createdItems, skippedItems) {
+    function toItem(i) {
+      const details = (i.details ?? []).map((d2) => ({
+        id: makeDetailFieldId(),
+        fieldLabel: d2.fieldLabel,
+        value: d2.value
+      }));
+      return {
+        id: i.id.toString(),
+        categoryId: i.categoryId.toString(),
+        title: i.title,
+        subtitle: i.subtitle ?? null,
+        photo: i.photo ?? null,
+        details,
+        notes: i.notes ?? null,
+        tags: i.tags ?? [],
+        seasonal: i.seasonal,
+        sortOrder: Number(i.sortOrder)
+      };
+    }
+    function formatSummary$1(createdCategories, updatedItems, createdItems, skippedItems, skippedDuplicates) {
       const catWord = createdCategories === 1 ? "category" : "categories";
       const updatedWord = updatedItems === 1 ? "item" : "items";
       const createdWord = createdItems === 1 ? "item" : "items";
       const skippedWord = skippedItems === 1 ? "item" : "items";
-      return `Created ${createdCategories} ${catWord}, updated ${updatedItems} ${updatedWord}, created ${createdItems} ${createdWord}, skipped ${skippedItems} ${skippedWord}.`;
+      const dupWord = skippedDuplicates === 1 ? "item" : "items";
+      const base = `Created ${createdCategories} ${catWord}, updated ${updatedItems} ${updatedWord}, created ${createdItems} ${createdWord}, skipped ${skippedItems} ${skippedWord}.`;
+      if (skippedDuplicates > 0) {
+        return `${base} Skipped ${skippedDuplicates} within-blob duplicate ${dupWord} (same title earlier in this import).`;
+      }
+      return base;
     }
     function validateImportBlob$1(parsed) {
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -50000,6 +50149,7 @@ variant ${k2} -> ${e.message}`, {
         return { ok: false, error: "Missing or invalid 'categories' array." };
       }
       const categories = [];
+      const warnings = [];
       for (let i = 0; i < root2.categories.length; i += 1) {
         const rawCat = root2.categories[i];
         if (typeof rawCat !== "object" || rawCat === null || Array.isArray(rawCat)) {
@@ -50016,6 +50166,7 @@ variant ${k2} -> ${e.message}`, {
           return { ok: false, error: `categories[${i}].items must be an array.` };
         }
         const items = [];
+        const seenTitles = /* @__PURE__ */ new Set();
         for (let j2 = 0; j2 < cat.items.length; j2 += 1) {
           const rawItem = cat.items[j2];
           if (typeof rawItem !== "object" || rawItem === null || Array.isArray(rawItem)) {
@@ -50030,6 +50181,13 @@ variant ${k2} -> ${e.message}`, {
               ok: false,
               error: `categories[${i}].items[${j2}].title must be a non-empty string.`
             };
+          }
+          if (seenTitles.has(item.title)) {
+            warnings.push(
+              `categories[${i}] ("${cat.name}"): duplicate title "${item.title}" at items[${j2}] — the later occurrence will be skipped in update mode.`
+            );
+          } else {
+            seenTitles.add(item.title);
           }
           if (!Array.isArray(item.fields)) {
             return {
@@ -50063,7 +50221,7 @@ variant ${k2} -> ${e.message}`, {
         }
         categories.push({ name: cat.name, items });
       }
-      return { ok: true, categories };
+      return { ok: true, categories, warnings };
     }
     const PLACEHOLDER$1 = `{
   "position": "Bartender",
@@ -50229,6 +50387,9 @@ variant ${k2} -> ${e.message}`, {
       positionId,
       categories,
       isLoading,
+      isError,
+      error,
+      onRetry,
       selectedCategoryId,
       onSelect
     }) {
@@ -50306,7 +50467,15 @@ variant ${k2} -> ${e.message}`, {
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton$2, {}) : ordered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryEmptyState, { onCreate: openCreate }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton$2, {}) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load categories",
+            description: "We couldn't load the categories right now. Please try again.",
+            error,
+            onRetry: () => onRetry == null ? void 0 : onRetry()
+          }
+        ) : ordered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryEmptyState, { onCreate: openCreate }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
           "ul",
           {
             className: "flex flex-col gap-2",
@@ -50777,7 +50946,13 @@ variant ${k2} -> ${e.message}`, {
     }) {
       const { data: profile } = useMyProfile();
       const { data: positions } = useAllPositions();
-      const { data: categories, isLoading: categoriesLoading } = useCategoriesByPosition(positionId);
+      const {
+        data: categories,
+        isLoading: categoriesLoading,
+        isError: categoriesError,
+        error: categoriesErrorData,
+        refetch: refetchCategories
+      } = useCategoriesByPosition(positionId);
       const [selectedCategoryId, setSelectedCategoryId] = reactExports.useState(
         null
       );
@@ -50794,7 +50969,14 @@ variant ${k2} -> ${e.message}`, {
         [categories]
       );
       reactExports.useEffect(() => {
-        if (selectedCategoryId === null && orderedCategories.length > 0 && !categoriesLoading) {
+        if (categoriesLoading) {
+          return;
+        }
+        if (selectedCategoryId !== null && !orderedCategories.some((c2) => c2.id === selectedCategoryId)) {
+          setSelectedCategoryId(null);
+          return;
+        }
+        if (selectedCategoryId === null && orderedCategories.length > 0) {
           setSelectedCategoryId(orderedCategories[0].id);
         }
       }, [selectedCategoryId, orderedCategories, categoriesLoading]);
@@ -50855,6 +51037,9 @@ variant ${k2} -> ${e.message}`, {
               positionId,
               categories: orderedCategories,
               isLoading: categoriesLoading,
+              isError: categoriesError,
+              error: categoriesErrorData,
+              onRetry: () => refetchCategories(),
               selectedCategoryId,
               onSelect: setSelectedCategoryId
             }
@@ -50876,7 +51061,13 @@ variant ${k2} -> ${e.message}`, {
       positionId,
       categoryId
     }) {
-      const { data: items, isLoading } = useItemsByCategory(categoryId ?? "");
+      const {
+        data: items,
+        isLoading,
+        isError,
+        error,
+        refetch
+      } = useItemsByCategory(categoryId ?? "");
       const { reorder, isPending: reorderPending } = useItemReorder(
         categoryId ?? ""
       );
@@ -50905,7 +51096,15 @@ variant ${k2} -> ${e.message}`, {
             "Add item"
           ] }) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemsSkeleton, {}) : orderedItems.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemsEmptyState, { newTo }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemsSkeleton, {}) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load items",
+            description: "We couldn't load the items right now. Please try again.",
+            error,
+            onRetry: () => refetch()
+          }
+        ) : orderedItems.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemsEmptyState, { newTo }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
           "ul",
           {
             className: "flex flex-col gap-2",
@@ -66656,7 +66855,8 @@ ${escapeText(this.code(index2, length))}
       value,
       onValueChange,
       disabled,
-      index: index2
+      index: index2,
+      userLabel
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Select,
@@ -66675,7 +66875,7 @@ ${escapeText(this.code(index2, length))}
                   value === "admin" && "border-primary text-primary"
                 ),
                 "data-ocid": `user.role.select.${index2}`,
-                "aria-label": `Set role for user ${index2}`,
+                "aria-label": `Set role for ${userLabel}`,
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {})
               }
             ),
@@ -67331,6 +67531,7 @@ ${escapeText(this.code(index2, length))}
       const setRole = useSetUserRole();
       const { data: assignments } = useUserAssignments(user.principal);
       const { data: positions } = useAllPositions();
+      const userLabel = user.name || (user.principal ? `${user.principal.slice(0, 6)}…${user.principal.slice(-4)}` : "user");
       const handleRoleChange = (role) => {
         setRole.mutate(
           { userPrincipal: user.principal, role },
@@ -67366,7 +67567,8 @@ ${escapeText(this.code(index2, length))}
             value: user.role,
             onValueChange: handleRoleChange,
             disabled: setRole.isPending,
-            index: index2
+            index: index2,
+            userLabel
           }
         ) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67582,13 +67784,27 @@ ${escapeText(this.code(index2, length))}
       }
     }
     function Home() {
-      const { data: positions, isLoading: positionsLoading } = useAllPositions();
+      const {
+        data: positions,
+        isLoading: positionsLoading,
+        isError: positionsError,
+        error: positionsErrorDetail,
+        refetch: refetchPositions
+      } = useAllPositions();
       const { data: assignments, isLoading: assignmentsLoading } = useMyAssignments();
       const loading = positionsLoading || assignmentsLoading;
       const list = positions ?? [];
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(HeroSection, {}),
-        loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(TileSkeleton, {}) : list.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyState$1, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(PositionGrid, { positions: list, assignments: assignments ?? [] })
+        loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(TileSkeleton, {}) : positionsError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load positions",
+            description: "We couldn't load your positions right now. Please try again.",
+            error: positionsErrorDetail,
+            onRetry: () => void refetchPositions()
+          }
+        ) : list.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyState$1, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(PositionGrid, { positions: list, assignments: assignments ?? [] })
       ] });
     }
     function HeroSection() {
@@ -68010,6 +68226,11 @@ ${escapeText(this.code(index2, length))}
               name: p2.name,
               tasks: p2.tasks.map((t) => ({
                 text: t.text,
+                // NsoImportTask declares section?: string and notes?: string as optional
+                // (not string | null). The runtime encoder uses a truthiness check
+                // (value.section ? candid_some(...) : candid_none()), so undefined
+                // maps to candid_none() and round-trips correctly. Keep `undefined`
+                // here — a literal null would be a TS error on a ?: string field.
                 section: t.section && t.section.length > 0 ? t.section : void 0,
                 notes: t.notes && t.notes.length > 0 ? t.notes : void 0
               }))
@@ -69097,6 +69318,8 @@ ${escapeText(this.code(index2, length))}
       const [text, setText] = reactExports.useState("");
       const [section, setSection] = reactExports.useState("");
       const [notes, setNotes] = reactExports.useState("");
+      const [assignedTo, setAssignedTo] = reactExports.useState(null);
+      const [completionDate, setCompletionDate] = reactExports.useState(null);
       const [touched, setTouched] = reactExports.useState(false);
       const [confirmDelete, setConfirmDelete] = reactExports.useState(false);
       const isFirst = index2 === 0;
@@ -69110,20 +69333,23 @@ ${escapeText(this.code(index2, length))}
           setText(task.text);
           setSection(task.section ?? "");
           setNotes(task.notes ?? "");
+          setAssignedTo(task.assignedTo);
+          setCompletionDate(task.completionDate);
           setTouched(false);
           setConfirmDelete(false);
         }
-      }, [open, task]);
+      }, [open, task.id]);
       const textError = touched && text.trim().length === 0 ? "Task text is required" : null;
       const canSubmit = text.trim().length > 0;
       const isSaving = assignMutation.isPending || dateMutation.isPending || updateMutation.isPending;
       async function handleAssign(value) {
-        const assignedTo = value === "__none__" ? null : value;
+        const nextAssignedTo = value === "__none__" ? null : value;
+        setAssignedTo(nextAssignedTo);
         try {
           await assignMutation.mutateAsync({
             id: task.id,
             phaseId: task.phaseId,
-            assignedTo
+            assignedTo: nextAssignedTo
           });
         } catch (err) {
           ue.error("Could not assign task", {
@@ -69133,12 +69359,13 @@ ${escapeText(this.code(index2, length))}
       }
       async function handleDateChange(e) {
         const value = e.target.value;
-        const completionDate = value.length > 0 ? value : null;
+        const nextCompletionDate = value.length > 0 ? value : null;
+        setCompletionDate(nextCompletionDate);
         try {
           await dateMutation.mutateAsync({
             id: task.id,
             phaseId: task.phaseId,
-            completionDate
+            completionDate: nextCompletionDate
           });
         } catch (err) {
           ue.error("Could not set completion date", {
@@ -69188,8 +69415,8 @@ ${escapeText(this.code(index2, length))}
             text: trimmedText,
             section: trimmedSection.length > 0 ? trimmedSection : null,
             done: task.done,
-            assignedTo: task.assignedTo,
-            completionDate: task.completionDate,
+            assignedTo,
+            completionDate,
             notes: trimmedNotes.length > 0 ? trimmedNotes : null
           });
           ue.success("Task updated");
@@ -69308,7 +69535,7 @@ ${escapeText(this.code(index2, length))}
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Select,
                     {
-                      value: task.assignedTo ?? "__none__",
+                      value: assignedTo ?? "__none__",
                       onValueChange: handleAssign,
                       disabled: assignMutation.isPending,
                       children: [
@@ -69359,7 +69586,7 @@ ${escapeText(this.code(index2, length))}
                     {
                       id: "nso-task-edit-date",
                       type: "date",
-                      value: task.completionDate ?? "",
+                      value: completionDate ?? "",
                       onChange: handleDateChange,
                       disabled: dateMutation.isPending,
                       "aria-label": `Completion date for "${task.text}"`,
@@ -70387,9 +70614,31 @@ Defaulting to \`null\`.`;
       });
       const position = positionQuery.data ?? null;
       const isLoading = positionQuery.isLoading || isFetching && !actor;
-      const notFound = !isLoading && !position;
+      const isError = positionQuery.isError;
+      const notFound = !isLoading && !position && !isError;
       if (isLoading) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(PositionDetailSkeleton, {});
+      }
+      if (isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mx-auto flex w-full max-w-3xl flex-col items-start gap-4 px-4 py-16",
+            "data-ocid": "position.error_state",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(BackLink, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                QueryErrorState,
+                {
+                  title: "Couldn't load position",
+                  description: "We couldn't load this position right now. Please try again.",
+                  error: positionQuery.error,
+                  onRetry: () => void positionQuery.refetch()
+                }
+              )
+            ]
+          }
+        );
       }
       if (notFound) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(PositionNotFound, {});
@@ -70492,6 +70741,9 @@ Defaulting to \`null\`.`;
           {
             categories,
             isLoading: categoriesQuery.isLoading,
+            isError: categoriesQuery.isError,
+            error: categoriesQuery.error,
+            onRetry: () => void categoriesQuery.refetch(),
             positionId
           }
         )
@@ -70571,10 +70823,24 @@ Defaulting to \`null\`.`;
     function CategoryGrid({
       categories,
       isLoading,
+      isError,
+      error,
+      onRetry,
       positionId
     }) {
       if (isLoading) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryGridSkeleton, {});
+      }
+      if (isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4", "data-ocid": "library.category.error_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load categories",
+            description: "We couldn't load this position's categories right now. Please try again.",
+            error,
+            onRetry
+          }
+        ) });
       }
       if (categories.length === 0) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyLibrary, {});
@@ -70701,6 +70967,17 @@ Defaulting to \`null\`.`;
             children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-14 w-full rounded-md" }, k2))
           }
         );
+      }
+      if (query.isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4", "data-ocid": "library.search.error_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load search results",
+            description: "We couldn't run that search right now. Please try again.",
+            error: query.error,
+            onRetry: () => void query.refetch()
+          }
+        ) });
       }
       const items = query.data ?? [];
       if (items.length === 0) {
@@ -71815,7 +72092,16 @@ Defaulting to \`null\`.`;
       const categoriesQuery = useCategoriesByPosition(resolvedPositionId);
       const profileQuery = useMyProfile();
       const isAdmin = ((_a2 = profileQuery.data) == null ? void 0 : _a2.role) === "admin";
-      const activities = activitiesQuery.data ?? [];
+      const activities = reactExports.useMemo(() => {
+        const data = activitiesQuery.data ?? [];
+        return [...data].sort((a2, b2) => {
+          const aN = BigInt(a2.createdAt);
+          const bN = BigInt(b2.createdAt);
+          if (aN < bN) return -1;
+          if (aN > bN) return 1;
+          return 0;
+        });
+      }, [activitiesQuery.data]);
       const categories = categoriesQuery.data ?? [];
       const categoryNameById = reactExports.useMemo(() => {
         const map = /* @__PURE__ */ new Map();
@@ -72460,7 +72746,7 @@ Defaulting to \`null\`.`;
               )
             ]
           },
-          field.fieldLabel
+          `field-${i}`
         )) })
       ] });
     }
@@ -72841,7 +73127,7 @@ Defaulting to \`null\`.`;
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 flex-1 break-words", children: choice })
               ]
             },
-            choice
+            i
           );
         }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(FeedbackBar, { answered, isCorrect: selected === correctIndex }),
@@ -72923,15 +73209,15 @@ Defaulting to \`null\`.`;
         if (state.answers[i] !== void 0) return;
         setState((s) => ({ ...s, titleIndex: i }));
       };
-      const handleSelectOption = (option) => {
-        if (state.titleIndex === null) return;
+      const handleSelectOption = (pairIndex, option) => {
+        if (pairIndex < 0) return;
         const usedElsewhere = Object.entries(state.answers).some(
-          ([k2, v2]) => Number(k2) !== state.titleIndex && v2 === option
+          ([k2, v2]) => Number(k2) !== pairIndex && v2 === option
         );
         if (usedElsewhere) return;
         setState((s) => ({
           titleIndex: null,
-          answers: { ...s.answers, [s.titleIndex]: option }
+          answers: { ...s.answers, [pairIndex]: option }
         }));
       };
       const handleClear = (i) => {
@@ -73018,16 +73304,18 @@ Defaulting to \`null\`.`;
                 ) })
               ]
             },
-            pair.itemTitle
+            i
           );
         }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-2", children: options2.map((option, i) => {
-          const used = Object.values(state.answers).includes(option);
+          const used = Object.entries(state.answers).some(
+            ([k2, v2]) => Number(k2) !== state.titleIndex && v2 === option
+          );
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
-              onClick: () => handleSelectOption(option),
+              onClick: () => handleSelectOption(state.titleIndex ?? -1, option),
               disabled: used || state.titleIndex === null,
               "data-ocid": `quiz.match.option.${i + 1}`,
               className: cn(
@@ -73039,7 +73327,7 @@ Defaulting to \`null\`.`;
               ),
               children: option
             },
-            option
+            i
           );
         }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -73677,8 +73965,64 @@ Defaulting to \`null\`.`;
       { to: "/admin/positions", label: "Positions" },
       { to: "/admin/users", label: "Users & Roles" }
     ];
+    function RouteErrorComponent({ error }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-8", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        QueryErrorState,
+        {
+          title: "Couldn't load this page",
+          description: "We couldn't load this page right now. Reloading usually fixes it.",
+          error,
+          onRetry: () => window.location.reload()
+        }
+      ) }) });
+    }
     function AdminShellPage() {
       const pathname = useRouterState({ select: (s) => s.location.pathname });
+      const { data: profile, isError, error, refetch } = useMyProfile();
+      if (isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-8", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-md", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't verify admin access",
+            description: "We couldn't load your profile to check your role. Please try again.",
+            error,
+            onRetry: () => void refetch()
+          }
+        ) }) });
+      }
+      if (profile === void 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-[60vh] bg-background", "aria-hidden": true });
+      }
+      if (!profile || profile.role !== "admin") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center",
+            "data-ocid": "admin.access_denied",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "size-10 text-primary" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl uppercase leading-none tracking-wide text-foreground", children: "Admins only" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-sm text-muted-foreground", children: "You need an Admin role to view this area. Ask an admin to upgrade your account." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Link$1,
+                {
+                  to: "/",
+                  className: cn(
+                    "inline-flex items-center gap-1.5 font-heading text-xs uppercase tracking-wide",
+                    "text-muted-foreground transition-colors duration-200 hover:text-primary",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  ),
+                  "data-ocid": "admin.access_denied.go_home_link",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": "true" }),
+                    "Back to home"
+                  ]
+                }
+              )
+            ]
+          }
+        );
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-8", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4", children: [
@@ -73738,47 +74082,56 @@ Defaulting to \`null\`.`;
     const positionDetailRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id",
-      component: PositionDetailRoute
+      component: PositionDetailRoute,
+      errorComponent: RouteErrorComponent
     });
     const categoryDetailRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/library/$categoryId",
-      component: CategoryDetailRoute
+      component: CategoryDetailRoute,
+      errorComponent: RouteErrorComponent
     });
     const heartShowcaseRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/heart/$categoryId",
-      component: HeartShowcaseRoute
+      component: HeartShowcaseRoute,
+      errorComponent: RouteErrorComponent
     });
     const beLegendaryRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/legendary",
-      component: BeLegendaryRoute
+      component: BeLegendaryRoute,
+      errorComponent: RouteErrorComponent
     });
     const legendaryQuizRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/legendary/quiz/$activityId",
-      component: LegendaryQuizRoute
+      component: LegendaryQuizRoute,
+      errorComponent: RouteErrorComponent
     });
     const legendaryFlashcardsRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/legendary/flashcards/$activityId",
-      component: LegendaryFlashcardsRoute
+      component: LegendaryFlashcardsRoute,
+      errorComponent: RouteErrorComponent
     });
     const nsoRoute = createRoute({
       getParentRoute: () => Route,
       path: "/new-store-opening",
-      component: NsoPage
+      component: NsoPage,
+      errorComponent: RouteErrorComponent
     });
     const itemDetailRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/library/$categoryId/item/$itemId",
-      component: ItemDetailRoute
+      component: ItemDetailRoute,
+      errorComponent: RouteErrorComponent
     });
     const adminRoute = createRoute({
       getParentRoute: () => Route,
       path: "/admin",
-      component: AdminShellPage
+      component: AdminShellPage,
+      errorComponent: RouteErrorComponent
     });
     const adminIndexRoute = createRoute({
       getParentRoute: () => adminRoute,
@@ -73788,22 +74141,26 @@ Defaulting to \`null\`.`;
     const adminPositionsRoute = createRoute({
       getParentRoute: () => adminRoute,
       path: "/positions",
-      component: AdminPositionsPage
+      component: AdminPositionsPage,
+      errorComponent: RouteErrorComponent
     });
     const adminUsersRoute = createRoute({
       getParentRoute: () => adminRoute,
       path: "/users",
-      component: AdminUsersPage
+      component: AdminUsersPage,
+      errorComponent: RouteErrorComponent
     });
     const adminPositionLibraryRoute = createRoute({
       getParentRoute: () => adminRoute,
       path: "/positions/$positionId/library",
-      component: AdminPositionLibraryRoute
+      component: AdminPositionLibraryRoute,
+      errorComponent: RouteErrorComponent
     });
     const adminPositionLibraryItemEditorRoute = createRoute({
       getParentRoute: () => adminRoute,
       path: "/positions/$positionId/library/$categoryId/item/$itemId",
-      component: AdminPositionLibraryItemEditorRoute
+      component: AdminPositionLibraryItemEditorRoute,
+      errorComponent: RouteErrorComponent
     });
     const routeTree = Route.addChildren([
       homeRoute,
@@ -73959,7 +74316,14 @@ Defaulting to \`null\`.`;
     BigInt.prototype.toJSON = function() {
       return this.toString();
     };
-    const queryClient = new QueryClient();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          throwOnError: true,
+          retry: 1
+        }
+      }
+    });
     ReactDOM.createRoot(document.getElementById("root")).render(
       /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(InternetIdentityProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
     );

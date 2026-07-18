@@ -247,8 +247,9 @@ function MultipleChoiceQ({
 
           return (
             <button
+              // biome-ignore lint/suspicious/noArrayIndexKey: duplicate choice strings can collide
+              key={i}
               type="button"
-              key={choice}
               onClick={() => handleSelect(i)}
               disabled={answered}
               data-ocid={`quiz.choice.${i + 1}`}
@@ -421,16 +422,19 @@ function MatchingQ({
     setState((s) => ({ ...s, titleIndex: i }));
   };
 
-  const handleSelectOption = (option: string) => {
-    if (state.titleIndex === null) return;
-    // Prevent using the same option twice.
+  const handleSelectOption = (pairIndex: number, option: string) => {
+    if (pairIndex < 0) return;
+    // An option is "used" if some OTHER pair index already has it assigned.
+    // Two pairs with the same fieldValue can each independently receive that
+    // value because we track assignments per pair index, not by scanning all
+    // pairs for a matching value.
     const usedElsewhere = Object.entries(state.answers).some(
-      ([k, v]) => Number(k) !== state.titleIndex && v === option,
+      ([k, v]) => Number(k) !== pairIndex && v === option,
     );
     if (usedElsewhere) return;
     setState((s) => ({
       titleIndex: null,
-      answers: { ...s.answers, [s.titleIndex as number]: option },
+      answers: { ...s.answers, [pairIndex]: option },
     }));
   };
 
@@ -461,7 +465,8 @@ function MatchingQ({
 
           return (
             <div
-              key={pair.itemTitle}
+              // biome-ignore lint/suspicious/noArrayIndexKey: duplicate pair itemTitles can collide
+              key={i}
               data-ocid={`quiz.match.row.${i + 1}`}
               className={cn(
                 "flex items-center gap-3 rounded-md border px-3 py-2.5 transition-smooth",
@@ -538,12 +543,20 @@ function MatchingQ({
       {/* Option pool */}
       <div className="flex flex-wrap gap-2">
         {options.map((option, i) => {
-          const used = Object.values(state.answers).includes(option);
+          // An option is "used" if some OTHER pair index already has it
+          // assigned. The active titleIndex has no assignment yet (it's
+          // blocked from re-select in handleSelectTitle), so it can never
+          // be the "other" pair here — but we exclude it explicitly to keep
+          // the derivation aligned with handleSelectOption's check.
+          const used = Object.entries(state.answers).some(
+            ([k, v]) => Number(k) !== state.titleIndex && v === option,
+          );
           return (
             <button
+              // biome-ignore lint/suspicious/noArrayIndexKey: duplicate option strings can collide
+              key={i}
               type="button"
-              key={option}
-              onClick={() => handleSelectOption(option)}
+              onClick={() => handleSelectOption(state.titleIndex ?? -1, option)}
               disabled={used || state.titleIndex === null}
               data-ocid={`quiz.match.option.${i + 1}`}
               className={cn(

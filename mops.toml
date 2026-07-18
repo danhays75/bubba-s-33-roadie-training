@@ -17,7 +17,7 @@ chain = "src/backend/migrations"
 check-limit = 1
 
 [toolchain]
-moc = "1.10.1"
+moc = "1.11.1"
 lintoko = "0.10.0"
 
 [lint]
@@ -33,4 +33,4 @@ caffeineai-authorization = "1.0.0"
 caffeineai-lints = "0.1.0"
 caffeineai-oql = "0.2.0"
 caffeineai-object-storage = "1.1.0"
-identity-attributes = "0.4.0"
+identity-attributes = "0.4.1"

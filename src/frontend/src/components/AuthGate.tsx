@@ -4,6 +4,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { CreateProfileScreen } from "./CreateProfileScreen";
+import { QueryErrorState } from "./QueryErrorState";
 import { SignInScreen } from "./SignInScreen";
 
 /**
@@ -24,7 +25,13 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isInitializing, isLoggingIn, login, loginError } =
     useAuth();
   const { actor } = useBackend();
-  const { data: profile, isLoading: profileLoading } = useMyProfile();
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileIsError,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useMyProfile();
   const queryClient = useQueryClient();
 
   // Tracks whether access-control init has been kicked off for the current
@@ -96,7 +103,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   // II is restoring a stored identity — keep the screen dark and quiet
   // without flashing a sign-in screen. This is a brief init, not a splash.
   if (isInitializing) {
-    return <div className="min-h-dvh bg-background" aria-hidden />;
+    return (
+      <output className="min-h-dvh bg-background block" aria-busy="true">
+        <span className="sr-only">Loading…</span>
+      </output>
+    );
   }
 
   if (!isAuthenticated) {
@@ -114,9 +125,35 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   // show. This guarantees the first user is registered as admin before
   // CreateProfileScreen calls createMyProfile.
   if (!accessInitDone || (profileLoading && profile === undefined)) {
-    return <div className="min-h-dvh bg-background" aria-hidden />;
+    return (
+      <output className="min-h-dvh bg-background block" aria-busy="true">
+        <span className="sr-only">Loading…</span>
+      </output>
+    );
   }
 
+  // Profile read failed — show a retryable inline error instead of falling
+  // through to CreateProfileScreen. Without this guard, an errored read leaves
+  // `profile` undefined→null with profileLoading false, which would otherwise
+  // be indistinguishable from a confirmed-empty profile.
+  if (profileIsError) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background px-4">
+        <div className="w-full max-w-md">
+          <QueryErrorState
+            title="Couldn't load your profile"
+            description="We couldn't load your profile right now. Please try again."
+            error={profileError}
+            onRetry={() => {
+              void refetchProfile();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Confirmed empty (query succeeded, no profile) — create one.
   if (!profile) {
     return <CreateProfileScreen />;
   }

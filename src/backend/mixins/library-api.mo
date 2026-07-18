@@ -1,6 +1,7 @@
 import List "mo:core/List";
 import Runtime "mo:core/Runtime";
 import AccessControl "mo:caffeineai-authorization/access-control";
+import Foundation "../lib/foundation";
 import Library "../lib/library";
 import Types "../types/library";
 
@@ -9,6 +10,7 @@ import Types "../types/library";
 //
 // State slices are injected from main.mo:
 //   - accessControlState : the existing authorization state (admin/user/guest)
+//   - positions          : stable List of Foundation positions (parent of categories)
 //   - categories         : stable List of Library categories
 //   - items              : stable List of Library items
 //   - nextCategoryId     : stable counter record for new category ids
@@ -19,6 +21,7 @@ import Types "../types/library";
 // Runtime.trap, mirroring the FoundationApi pattern.
 mixin (
   accessControlState : AccessControl.AccessControlState,
+  positions : List.List<Foundation.Position>,
   categories : List.List<Library.Category>,
   items : List.List<Library.LibraryItem>,
   nextCategoryId : { var value : Nat },
@@ -54,6 +57,12 @@ mixin (
   public shared ({ caller }) func createCategory(positionId : Nat, name : Text, coverPhoto : ?Text) : async Library.Category {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
+    };
+    // Verify the parent position exists before creating a category under it.
+    // Mirrors createItem's category-existence check below.
+    switch (Foundation.getPosition(positions, positionId)) {
+      case (?_) {};
+      case null { Runtime.trap("Parent position not found") };
     };
     Library.createCategory(categories, nextCategoryId, positionId, name, coverPhoto);
   };

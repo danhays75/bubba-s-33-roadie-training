@@ -1639,6 +1639,9 @@ video {
 .-mt-4 {
   margin-top: -1rem;
 }
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
 .mb-6 {
   margin-bottom: 1.5rem;
 }
@@ -1938,6 +1941,9 @@ video {
 }
 .min-h-\[44px\] {
   min-height: 44px;
+}
+.min-h-\[60vh\] {
+  min-height: 60vh;
 }
 .min-h-dvh {
   min-height: 100dvh;
@@ -2311,6 +2317,9 @@ video {
 .scroll-py-1 {
   scroll-padding-top: 0.25rem;
   scroll-padding-bottom: 0.25rem;
+}
+.list-disc {
+  list-style-type: disc;
 }
 .list-none {
   list-style-type: none;

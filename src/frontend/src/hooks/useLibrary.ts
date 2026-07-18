@@ -348,6 +348,11 @@ export function useUpdateItem() {
   return useMutation({
     mutationFn: async (input: UpdateItemInput) => {
       if (!actor) throw new Error("Backend not ready");
+      // Refuse empty/whitespace item ids so a placeholder id never silently
+      // mutates the real item with id 0 (BigInt('') === 0n without throwing).
+      if (input.itemId == null || input.itemId.trim() === "") {
+        throw new Error("updateItem requires a non-empty item id");
+      }
       // Candid: updateItem(itemId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal)
       const result = await actor.updateItem(
         BigInt(input.itemId),

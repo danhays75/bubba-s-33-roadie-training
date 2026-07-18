@@ -10,6 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { useBackend } from "@/hooks/useBackend";
 import {
   makeDetailFieldId,
   useCreateCategory,
@@ -81,11 +82,16 @@ export function BulkImportDialog({
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
+  // Non-blocking validation warnings (e.g. within-blob duplicate titles per
+  // category). Surfaced to the admin before import runs so they know the
+  // later duplicates will be skipped deterministically in update mode.
+  const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
 
   const createCategory = useCreateCategory();
   const createItem = useCreateItem();
   const updateItem = useUpdateItem();
   const queryClient = useQueryClient();
+  const { actor } = useBackend();
 
   // Reset state whenever the dialog opens. Closing discards pasted text and
   // resets the mode selector back to its default ("skip").
@@ -96,6 +102,7 @@ export function BulkImportDialog({
       setError(null);
       setSummary(null);
       setProgress(null);
+      setValidationWarnings([]);
     }
   }, [open]);
 
@@ -130,12 +137,20 @@ export function BulkImportDialog({
       return;
     }
     const categories = validation.categories;
+    const warnings = validation.warnings ?? [];
+    setValidationWarnings(warnings);
 
     // --- Execute -----------------------------------------------------------
     let createdCategories = 0;
     let createdItems = 0;
     let updatedItems = 0;
     let skippedItems = 0;
+    // Within-blob duplicate titles: items whose title was already created
+    // earlier in THIS blob (so existingByTitle already has an entry). In
+    // update mode these are skipped deterministically rather than issued
+    // updateItem with an empty/placeholder id; in skip mode they are folded
+    // into skippedItems. Tracked separately so the summary can call them out.
+    let skippedDuplicates = 0;
 
     // Seed the name → id map from the currently-loaded categories so we
     // reuse existing categories instead of duplicating them.
@@ -178,6 +193,19 @@ export function BulkImportDialog({
               continue;
             }
 
+            // Update mode guard: if existing.id is empty, this entry is a
+            // placeholder pushed earlier in THIS blob (the create branch
+            // pushed it after creating the item). The real id was either
+            // captured into the placeholder (preferred path) or unavailable
+            // (fallback path). Either way we must NOT call updateItem with
+            // an empty id — BigInt('') === 0n would mutate item id 0, which
+            // is an unrelated item. Skip the within-blob duplicate
+            // deterministically and count it so the summary can report it.
+            if (existing.id === "") {
+              skippedDuplicates += 1;
+              continue;
+            }
+
             // Update mode: replace detail fields, notes, tags, and seasonal
             // flag. Pass existing.photo and existing.subtitle through so the
             // backend (which overwrites both) preserves them unchanged.
@@ -214,7 +242,15 @@ export function BulkImportDialog({
             value: f.value,
           }));
 
-          await createItem.mutateAsync({
+          // useCreateItem returns toItem(result) — a LibraryItem with a real
+          // string id assigned by the backend. Capture that id and push it
+          // into existingByTitle so a later same-title item in THIS blob
+          // resolves to the real id (and the update branch can safely issue
+          // updateItem with it). Only fall back to the id: '' placeholder if
+          // the create return is unavailable; in that fallback case the
+          // update-branch guard above still skips the duplicate rather than
+          // calling updateItem with ''.
+          const created = await createItem.mutateAsync({
             categoryId,
             title: item.title,
             subtitle: null,
@@ -225,16 +261,16 @@ export function BulkImportDialog({
             seasonal: item.seasonal,
           });
           existingByTitle.set(item.title, {
-            id: "",
+            id: created?.id ?? "",
             categoryId,
             title: item.title,
-            subtitle: null,
-            photo: null,
-            details,
+            subtitle: created?.subtitle ?? null,
+            photo: created?.photo ?? null,
+            details: created?.details ?? details,
             notes: item.notes,
             tags: item.tags,
             seasonal: item.seasonal,
-            sortOrder: 0,
+            sortOrder: created?.sortOrder ?? 0,
           });
           createdItems += 1;
         }
@@ -255,6 +291,7 @@ export function BulkImportDialog({
         updatedItems,
         createdItems,
         skippedItems,
+        skippedDuplicates,
       );
 
       setSummary(message);
@@ -292,12 +329,19 @@ export function BulkImportDialog({
 
   /**
    * Loads the existing items for a category, preferring the React Query
-   * cache and falling back to a direct fetch via the actor when the cache
-   * is empty. Returns an empty array if nothing is available yet.
+   * cache (fast path) and falling back to a direct fetch via the backend
+   * actor when the cache is empty.
    *
-   * Uses the queryClient's getQueryData / fetchQuery so we don't introduce a
-   * new hook dependency and stay consistent with the existing
-   * ['library-items', categoryId] query key.
+   * Mirrors useItemsByCategory in useLibrary.ts: calls
+   * actor.getItemsByCategory(BigInt(categoryId)) and maps the result with
+   * the same toItem field mapping. The fetched result is written back into
+   * the ['library-items', categoryId] cache via setQueryData so subsequent
+   * reads in the same session stay consistent with useItemsByCategory.
+   *
+   * On a load failure (actor is null or the actor call throws), surfaces an
+   * error toast and rethrows so the import loop's catch treats it as a hard
+   * stop for that category — it does NOT fall through to creating items as
+   * if the category were empty (which would silently create duplicates).
    */
   async function loadItemsForCategory(
     categoryId: string,
@@ -305,15 +349,29 @@ export function BulkImportDialog({
     const queryKey = ["library-items", categoryId];
     const cached = queryClient.getQueryData<LibraryItem[]>(queryKey);
     if (cached) return cached;
-    try {
-      const fetched = await queryClient.fetchQuery<LibraryItem[]>({
-        queryKey,
-        staleTime: 0,
+
+    if (!actor) {
+      toast.error("Could not load existing items", {
+        description: "Import stopped to avoid duplicates. Please retry.",
       });
-      return fetched ?? [];
-    } catch {
-      return [];
+      throw new Error("Backend not ready");
     }
+
+    let result: Awaited<ReturnType<typeof actor.getItemsByCategory>>;
+    try {
+      result = await actor.getItemsByCategory(BigInt(categoryId));
+    } catch {
+      toast.error("Could not load existing items", {
+        description: "Import stopped to avoid duplicates. Please retry.",
+      });
+      throw new Error(
+        `Failed to load existing items for category ${categoryId}`,
+      );
+    }
+
+    const items = result.map(toItem);
+    queryClient.setQueryData(queryKey, items);
+    return items;
   }
 
   return (
@@ -439,6 +497,23 @@ export function BulkImportDialog({
             </p>
           )}
 
+          {/* Inline validation warnings (non-blocking, surfaced before import) */}
+          {validationWarnings.length > 0 && (
+            <output
+              className="text-xs text-muted-foreground font-body rounded-md border border-border bg-muted/40 px-3 py-2"
+              data-ocid="library.admin.import.dialog.warning_state"
+            >
+              <p className="text-foreground mb-1">
+                Warnings — later duplicates will be skipped in update mode:
+              </p>
+              <ul className="list-disc pl-4 grid gap-0.5">
+                {validationWarnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </output>
+          )}
+
           {/* Inline summary (success) */}
           {summary && (
             <output
@@ -489,8 +564,51 @@ export function BulkImportDialog({
 /* ------------------------------- Summary -------------------------------- */
 
 /**
+ * Translates a Candid LibraryItem (bigint ids) to the local string-id shape.
+ *
+ * Replicates the toItem mapper from useLibrary.ts exactly — same backend
+ * record shape, same field mapping, same makeDetailFieldId() call for the
+ * frontend-only detail-field id. Kept local (rather than importing toItem)
+ * because toItem is not exported from useLibrary.ts; the mapping must stay
+ * in sync with that source of truth.
+ */
+function toItem(i: {
+  id: bigint;
+  categoryId: bigint;
+  title: string;
+  subtitle?: string;
+  photo?: string;
+  details: Array<{ fieldLabel: string; value: string }>;
+  notes?: string;
+  tags: Array<string>;
+  seasonal: boolean;
+  sortOrder: bigint;
+}): LibraryItem {
+  const details: DetailField[] = (i.details ?? []).map((d) => ({
+    id: makeDetailFieldId(),
+    fieldLabel: d.fieldLabel,
+    value: d.value,
+  }));
+  return {
+    id: i.id.toString(),
+    categoryId: i.categoryId.toString(),
+    title: i.title,
+    subtitle: i.subtitle ?? null,
+    photo: i.photo ?? null,
+    details,
+    notes: i.notes ?? null,
+    tags: i.tags ?? [],
+    seasonal: i.seasonal,
+    sortOrder: Number(i.sortOrder),
+  };
+}
+
+/**
  * Builds the post-import summary line distinguishing all four outcomes:
- * created categories, updated items, created items, skipped items.
+ * created categories, updated items, created items, skipped items. When
+ * within-blob duplicate titles were skipped in update mode, a fifth clause
+ * calls them out so the admin knows they were dropped deterministically
+ * rather than silently.
  *
  * In Skip mode the updated count is always 0; in Update mode the skipped
  * count is always 0 for matching titles. The summary is rendered the same
@@ -501,12 +619,18 @@ function formatSummary(
   updatedItems: number,
   createdItems: number,
   skippedItems: number,
+  skippedDuplicates: number,
 ): string {
   const catWord = createdCategories === 1 ? "category" : "categories";
   const updatedWord = updatedItems === 1 ? "item" : "items";
   const createdWord = createdItems === 1 ? "item" : "items";
   const skippedWord = skippedItems === 1 ? "item" : "items";
-  return `Created ${createdCategories} ${catWord}, updated ${updatedItems} ${updatedWord}, created ${createdItems} ${createdWord}, skipped ${skippedItems} ${skippedWord}.`;
+  const dupWord = skippedDuplicates === 1 ? "item" : "items";
+  const base = `Created ${createdCategories} ${catWord}, updated ${updatedItems} ${updatedWord}, created ${createdItems} ${createdWord}, skipped ${skippedItems} ${skippedWord}.`;
+  if (skippedDuplicates > 0) {
+    return `${base} Skipped ${skippedDuplicates} within-blob duplicate ${dupWord} (same title earlier in this import).`;
+  }
+  return base;
 }
 
 /* ------------------------------- Validation ------------------------------- */
@@ -533,6 +657,14 @@ interface ValidationResult {
   ok: boolean;
   error?: string;
   categories?: ImportCategory[];
+  /**
+   * Non-blocking warnings surfaced to the admin before import runs. Currently
+   * used to report within-blob duplicate titles per category: in update mode
+   * the later duplicates are skipped deterministically (counted in the
+   * summary), so the admin should know up-front rather than discover it in
+   * the post-import summary.
+   */
+  warnings?: string[];
 }
 
 /**
@@ -560,6 +692,7 @@ function validateImportBlob(parsed: unknown): ValidationResult {
   }
 
   const categories: ImportCategory[] = [];
+  const warnings: string[] = [];
   for (let i = 0; i < root.categories.length; i += 1) {
     const rawCat = root.categories[i];
     if (
@@ -581,6 +714,11 @@ function validateImportBlob(parsed: unknown): ValidationResult {
     }
 
     const items: ImportItem[] = [];
+    // Track titles seen earlier in THIS category's item list so within-blob
+    // duplicates can be reported as warnings. The import loop skips later
+    // duplicates deterministically (counted in the summary), so the admin
+    // should know up-front.
+    const seenTitles = new Set<string>();
     for (let j = 0; j < cat.items.length; j += 1) {
       const rawItem = cat.items[j];
       if (
@@ -599,6 +737,13 @@ function validateImportBlob(parsed: unknown): ValidationResult {
           ok: false,
           error: `categories[${i}].items[${j}].title must be a non-empty string.`,
         };
+      }
+      if (seenTitles.has(item.title)) {
+        warnings.push(
+          `categories[${i}] ("${cat.name}"): duplicate title "${item.title}" at items[${j}] — the later occurrence will be skipped in update mode.`,
+        );
+      } else {
+        seenTitles.add(item.title);
       }
       if (!Array.isArray(item.fields)) {
         return {
@@ -646,7 +791,7 @@ function validateImportBlob(parsed: unknown): ValidationResult {
     categories.push({ name: cat.name, items });
   }
 
-  return { ok: true, categories };
+  return { ok: true, categories, warnings };
 }
 
 const PLACEHOLDER = `{

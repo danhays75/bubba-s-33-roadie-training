@@ -124,14 +124,22 @@ module {
     var reordered : [Category] = [];
     var order = 1;
     for (id in orderedCategoryIds.values()) {
-      switch (inPosition.find(func(c) { c.id == id })) {
-        case (?c) {
-          placed.add(id, true);
-          let renumbered : Category = { c with sortOrder = order };
-          reordered := reordered.concat([renumbered]);
-          order := order + 1;
+      // Dedup guard: skip ids already placed in this same call so a duplicated
+      // id in the input cannot renumber the same record twice and corrupt the
+      // list with duplicate sortOrder values.
+      switch (placed.get(id)) {
+        case (?_) {};
+        case null {
+          switch (inPosition.find(func(c) { c.id == id })) {
+            case (?c) {
+              placed.add(id, true);
+              let renumbered : Category = { c with sortOrder = order };
+              reordered := reordered.concat([renumbered]);
+              order := order + 1;
+            };
+            case null {};
+          };
         };
-        case null {};
       };
     };
     for (c in inPosition.values()) {
@@ -274,14 +282,22 @@ module {
     var reordered : [LibraryItem] = [];
     var order = 1;
     for (id in orderedItemIds.values()) {
-      switch (inCategory.find(func(i) { i.id == id })) {
-        case (?i) {
-          placed.add(id, true);
-          let renumbered : LibraryItem = { i with sortOrder = order };
-          reordered := reordered.concat([renumbered]);
-          order := order + 1;
+      // Dedup guard: skip ids already placed in this same call so a duplicated
+      // id in the input cannot renumber the same record twice and corrupt the
+      // list with duplicate sortOrder values.
+      switch (placed.get(id)) {
+        case (?_) {};
+        case null {
+          switch (inCategory.find(func(i) { i.id == id })) {
+            case (?i) {
+              placed.add(id, true);
+              let renumbered : LibraryItem = { i with sortOrder = order };
+              reordered := reordered.concat([renumbered]);
+              order := order + 1;
+            };
+            case null {};
+          };
         };
-        case null {};
       };
     };
     for (i in inCategory.values()) {

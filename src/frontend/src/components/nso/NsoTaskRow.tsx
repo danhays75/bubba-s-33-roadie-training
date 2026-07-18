@@ -288,6 +288,8 @@ function NsoTaskEditDialog({
   const [text, setText] = useState("");
   const [section, setSection] = useState("");
   const [notes, setNotes] = useState("");
+  const [assignedTo, setAssignedTo] = useState<string | null>(null);
+  const [completionDate, setCompletionDate] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -304,15 +306,21 @@ function NsoTaskEditDialog({
   );
 
   // Reset fields whenever the dialog opens or the target task changes.
+  // Depends on `open` and `task.id` (stable) — NOT the whole `task` object —
+  // so background refetches that produce a new task object with the SAME id
+  // do NOT re-run this effect and clobber in-progress edits.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally seed only on open or task id change — re-running on field changes would clobber in-progress edits during background refetches
   useEffect(() => {
     if (open) {
       setText(task.text);
       setSection(task.section ?? "");
       setNotes(task.notes ?? "");
+      setAssignedTo(task.assignedTo);
+      setCompletionDate(task.completionDate);
       setTouched(false);
       setConfirmDelete(false);
     }
-  }, [open, task]);
+  }, [open, task.id]);
 
   const textError =
     touched && text.trim().length === 0 ? "Task text is required" : null;
@@ -324,12 +332,13 @@ function NsoTaskEditDialog({
 
   async function handleAssign(value: string) {
     // "__none__" sentinel represents the Unassign option.
-    const assignedTo = value === "__none__" ? null : value;
+    const nextAssignedTo = value === "__none__" ? null : value;
+    setAssignedTo(nextAssignedTo);
     try {
       await assignMutation.mutateAsync({
         id: task.id,
         phaseId: task.phaseId,
-        assignedTo,
+        assignedTo: nextAssignedTo,
       });
     } catch (err) {
       toast.error("Could not assign task", {
@@ -340,12 +349,13 @@ function NsoTaskEditDialog({
 
   async function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
-    const completionDate = value.length > 0 ? value : null;
+    const nextCompletionDate = value.length > 0 ? value : null;
+    setCompletionDate(nextCompletionDate);
     try {
       await dateMutation.mutateAsync({
         id: task.id,
         phaseId: task.phaseId,
-        completionDate,
+        completionDate: nextCompletionDate,
       });
     } catch (err) {
       toast.error("Could not set completion date", {
@@ -402,8 +412,8 @@ function NsoTaskEditDialog({
         text: trimmedText,
         section: trimmedSection.length > 0 ? trimmedSection : null,
         done: task.done,
-        assignedTo: task.assignedTo,
-        completionDate: task.completionDate,
+        assignedTo,
+        completionDate,
         notes: trimmedNotes.length > 0 ? trimmedNotes : null,
       });
       toast.success("Task updated");
@@ -514,7 +524,7 @@ function NsoTaskEditDialog({
                 Assign
               </Label>
               <Select
-                value={task.assignedTo ?? "__none__"}
+                value={assignedTo ?? "__none__"}
                 onValueChange={handleAssign}
                 disabled={assignMutation.isPending}
               >
@@ -555,7 +565,7 @@ function NsoTaskEditDialog({
               <input
                 id="nso-task-edit-date"
                 type="date"
-                value={task.completionDate ?? ""}
+                value={completionDate ?? ""}
                 onChange={handleDateChange}
                 disabled={dateMutation.isPending}
                 aria-label={`Completion date for "${task.text}"`}

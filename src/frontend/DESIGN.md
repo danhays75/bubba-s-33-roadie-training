@@ -18,7 +18,7 @@ A redesign layer stacked on top of the existing Be Legendary banner tokens.
 It does **not** alter any prior token, utility, or flashcard class. Dark is
 the only theme; the `:root` and `.dark` blocks mirror the same values. The
 hero treatment is patriotic — a confident woman bartender's face with
-"BUBBA'S 32" written in red under her eyes like football eye black, pouring
+"BUBBA'S 33" written in red under her eyes like football eye black, pouring
 a drink against a red/white/blue American flag background. Patriotic
 roadhouse energy, while the dark Bubba's 33 roadhouse base stays intact.
 
@@ -37,7 +37,7 @@ roadhouse energy, while the dark Bubba's 33 roadhouse base stays intact.
    cleanly. `position: relative` + `isolation: isolate` so the sweep,
    flash, and glow pseudo-layers anchor to it.
 2. **Hero image** — generated cinematic patriotic bartender portrait: a
-   confident woman bartender's face with "BUBBA'S 32" written in red
+   confident woman bartender's face with "BUBBA'S 33" written in red
    under her eyes like football eye black, pouring a drink against a
    red/white/blue American flag background. Added by the frontend
    component.

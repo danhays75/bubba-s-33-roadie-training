@@ -123,6 +123,14 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
   const { data: assignments } = useUserAssignments(user.principal);
   const { data: positions } = useAllPositions();
 
+  // Prefer a human-readable name; fall back to a shortened principal so the
+  // RoleSelect's aria-label always names the actual user being edited.
+  const userLabel =
+    user.name ||
+    (user.principal
+      ? `${user.principal.slice(0, 6)}…${user.principal.slice(-4)}`
+      : "user");
+
   const handleRoleChange = (role: Role) => {
     setRole.mutate(
       { userPrincipal: user.principal, role },
@@ -161,6 +169,7 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
           onValueChange={handleRoleChange}
           disabled={setRole.isPending}
           index={index}
+          userLabel={userLabel}
         />
       </TableCell>
       <TableCell className="align-top">

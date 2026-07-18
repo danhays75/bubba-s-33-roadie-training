@@ -68,6 +68,7 @@ export const PhotoField = forwardRef<PhotoFieldHandle, PhotoFieldProps>(
     }, []);
 
     const focusUrlInput = useCallback(() => {
+      setMode("url");
       urlInputRef.current?.focus();
       urlInputRef.current?.select();
     }, []);
@@ -156,8 +157,8 @@ export const PhotoField = forwardRef<PhotoFieldHandle, PhotoFieldProps>(
           onUrlClick={focusUrlInput}
         />
 
-        {/* URL input — always rendered so focus() works; hidden visually when not URL mode */}
-        <div className={mode === "url" && !hasValue ? "block" : "hidden"}>
+        {/* URL input — always rendered so focus() works; visible while in URL mode */}
+        <div className={mode === "url" ? "block" : "hidden"}>
           <Input
             id={`${fieldId}-url`}
             ref={urlInputRef}
@@ -166,7 +167,7 @@ export const PhotoField = forwardRef<PhotoFieldHandle, PhotoFieldProps>(
             autoComplete="off"
             spellCheck={false}
             placeholder="https://…"
-            value={mode === "url" && !hasValue ? (value ?? "") : ""}
+            value={mode === "url" ? (value ?? "") : ""}
             onChange={handleUrlChange}
             disabled={busy}
             aria-label="Paste image URL"

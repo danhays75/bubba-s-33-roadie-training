@@ -1,10 +1,15 @@
 {
   "version": 1,
   "skills": {
+    "connector-googlecalendar": {
+      "source": "caffeinelabs/skills",
+      "sourceType": "github",
+      "computedHash": "90772c74a8e0a6e9922e21b241a57d606aadcdff08dda3a6c130804a72ebb1f3"
+    },
     "connector-googlemail": {
       "source": "caffeinelabs/skills",
       "sourceType": "github",
-      "computedHash": "875f9c192dacae900b6a97d094240c0501b1127104e5cf52a1df2c375c82fbcf"
+      "computedHash": "ef7244db0543069912176f10d32ac095afefb6f175358e0c260e2bd03c12fed1"
     },
     "extension-authorization": {
       "source": "caffeinelabs/skills",

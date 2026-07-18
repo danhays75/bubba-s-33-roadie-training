@@ -1,4 +1,6 @@
 import { AuthGate } from "@/components/AuthGate";
+import { QueryErrorState } from "@/components/QueryErrorState";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
 import {
   Link,
@@ -9,7 +11,7 @@ import {
   createRouter,
   useRouterState,
 } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 import type { ReactElement } from "react";
 import { Toaster } from "sonner";
 import { Route as RootRoute } from "./routes/__root";
@@ -36,6 +38,12 @@ import { ItemDetailRoute } from "./routes/position.$id.library.$categoryId.item.
  * without a splash/loading screen.
  *
  * The QueryClientProvider is already in main.tsx — do NOT add a second one.
+ *
+ * Read-critical routes (every route whose primary content is a read query)
+ * declare an `errorComponent` so a thrown read query renders a scoped
+ * fallback (RouteErrorComponent → QueryErrorState with Reload) instead of
+ * degrading to an empty/blank state. The root route's errorComponent is the
+ * outermost backstop; per-route errorComponents give a tighter scoped UI.
  */
 
 const ADMIN_SUB_NAV = [
@@ -43,8 +51,90 @@ const ADMIN_SUB_NAV = [
   { to: "/admin/users", label: "Users & Roles" },
 ] as const;
 
+/**
+ * Shared per-route error fallback. Reuses QueryErrorState so the read-error
+ * UI matches the inline read-error pattern (dashed card, ShieldAlert, Retry).
+ * TanStack Router passes the route error and a `reset` callback; onRetry
+ * reloads the page so the read query re-runs fresh.
+ */
+function RouteErrorComponent({ error }: { error: Error; reset: () => void }) {
+  return (
+    <div className="px-4 py-8">
+      <div className="mx-auto w-full max-w-md">
+        <QueryErrorState
+          title="Couldn't load this page"
+          description="We couldn't load this page right now. Reloading usually fixes it."
+          error={error}
+          onRetry={() => window.location.reload()}
+        />
+      </div>
+    </div>
+  );
+}
+
 function AdminShellPage() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: profile, isError, error, refetch } = useMyProfile();
+
+  // Read-error guard — a failed profile read must NOT look like a confirmed
+  // non-admin. Render the shared inline QueryErrorState with a Retry affordance
+  // before any role check or admin chrome.
+  if (isError) {
+    return (
+      <div className="px-4 py-8">
+        <div className="mx-auto w-full max-w-md">
+          <QueryErrorState
+            title="Couldn't verify admin access"
+            description="We couldn't load your profile to check your role. Please try again."
+            error={error}
+            onRetry={() => void refetch()}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Loading / actor-not-ready — profile is undefined while the query is
+  // fetching or the actor isn't ready. Render a dark placeholder so there's
+  // no flash of admin chrome or AccessDenied before the role is known.
+  if (profile === undefined) {
+    return <div className="min-h-[60vh] bg-background" aria-hidden />;
+  }
+
+  // Role gate — a confirmed non-admin (or a profile-less user, which AuthGate
+  // normally intercepts earlier) sees a clean AccessDenied block with NO
+  // admin chrome (header, Exit-admin link, subnav). Returns early so the
+  // chrome below never renders for non-admins.
+  if (!profile || profile.role !== "admin") {
+    return (
+      <div
+        className="mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center"
+        data-ocid="admin.access_denied"
+      >
+        <ShieldAlert className="size-10 text-primary" />
+        <h1 className="font-display text-3xl uppercase leading-none tracking-wide text-foreground">
+          Admins only
+        </h1>
+        <p className="max-w-xs font-body text-sm text-muted-foreground">
+          You need an Admin role to view this area. Ask an admin to upgrade your
+          account.
+        </p>
+        <Link
+          to="/"
+          className={cn(
+            "inline-flex items-center gap-1.5 font-heading text-xs uppercase tracking-wide",
+            "text-muted-foreground transition-colors duration-200 hover:text-primary",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          )}
+          data-ocid="admin.access_denied.go_home_link"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Back to home
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 py-8">
       <div className="mx-auto w-full max-w-3xl">
@@ -117,6 +207,7 @@ const positionDetailRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id",
   component: PositionDetailRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // Library drill-down routes. The full page components ship in the pages wave;
@@ -126,6 +217,7 @@ const categoryDetailRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/library/$categoryId",
   component: CategoryDetailRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // Per-position "Service with HEART" branded showcase. Additive route —
@@ -134,6 +226,7 @@ const heartShowcaseRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/heart/$categoryId",
   component: HeartShowcaseRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // Per-position "Be Legendary" practice area (admin-built quiz / flashcard
@@ -145,6 +238,7 @@ const beLegendaryRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/legendary",
   component: BeLegendaryRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // Be Legendary quiz practice flow. Registered as a flat child of RootRoute
@@ -156,6 +250,7 @@ const legendaryQuizRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/legendary/quiz/$activityId",
   component: LegendaryQuizRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // Be Legendary flashcard practice flow. Registered as a flat child of
@@ -167,6 +262,7 @@ const legendaryFlashcardsRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/legendary/flashcards/$activityId",
   component: LegendaryFlashcardsRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // New Store Opening tracker — additive top-level route (own page under the
@@ -175,18 +271,21 @@ const nsoRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/new-store-opening",
   component: NsoPage,
+  errorComponent: RouteErrorComponent,
 });
 
 const itemDetailRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/library/$categoryId/item/$itemId",
   component: ItemDetailRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 const adminRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/admin",
   component: AdminShellPage,
+  errorComponent: RouteErrorComponent,
 });
 
 const adminIndexRoute = createRoute({
@@ -199,12 +298,14 @@ const adminPositionsRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "/positions",
   component: AdminPositionsPage,
+  errorComponent: RouteErrorComponent,
 });
 
 const adminUsersRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "/users",
   component: AdminUsersPage,
+  errorComponent: RouteErrorComponent,
 });
 
 // Per-position Library manager reached from the Positions manager via the
@@ -214,6 +315,7 @@ const adminPositionLibraryRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "/positions/$positionId/library",
   component: AdminPositionLibraryRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 // Per-category item editor (create + edit). $itemId === 'new' means create.
@@ -223,6 +325,7 @@ const adminPositionLibraryItemEditorRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "/positions/$positionId/library/$categoryId/item/$itemId",
   component: AdminPositionLibraryItemEditorRoute,
+  errorComponent: RouteErrorComponent,
 });
 
 const routeTree = RootRoute.addChildren([

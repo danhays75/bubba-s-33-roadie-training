@@ -228,16 +228,28 @@ module {
     // Matching: for each shared field label (>= 2 items have it), build pairs
     // of (itemTitle, fieldValue). Cap at a reasonable number so the quiz does
     // not become all-matching.
+    //
+    // Dedup guard: every pair in a matching question MUST have a unique
+    // fieldValue. If two pairs share the same fieldValue, the frontend
+    // soft-locks — once one is used, both read as "used" and the learner can
+    // never finish. collectFieldValues already dedupes by value within a
+    // field label, but we re-check here so the matching path stays safe even
+    // if that helper changes, and so duplicate values are dropped rather than
+    // producing an uncompletable question. A field label that yields fewer
+    // than 2 unique values is skipped (a 1-pair matching question is trivial
+    // and not worth emitting).
     var matchBucket : [Types.Question] = [];
     for (fieldLabel in allFieldLabels(items).values()) {
       let pairs = collectFieldValues(items, fieldLabel);
-      if (pairs.size() >= 2) {
-        var matchPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
-        for ((idx, v) in pairs.values()) {
+      var matchPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+      for ((idx, v) in pairs.values()) {
+        if (matchPairs.find(func(p) { p.fieldValue == v }) == null) {
           matchPairs := matchPairs.concat([{ itemTitle = items[idx].title; fieldValue = v }]);
         };
+      };
+      if (matchPairs.size() >= 2) {
         // shuffledOptions: field values in first-seen order (frontend shuffles
-        // at render time).
+        // at render time). Unique by construction thanks to the guard above.
         let shuffledOptions = matchPairs.map(func(p) = p.fieldValue);
         matchBucket := matchBucket.concat([#matching { pairs = matchPairs; shuffledOptions }]);
       };

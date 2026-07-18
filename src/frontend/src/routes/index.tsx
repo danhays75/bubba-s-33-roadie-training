@@ -1,5 +1,6 @@
 import { HeroStripe } from "@/components/HeroStripe";
 import { PositionTile } from "@/components/PositionTile";
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { useAllPositions } from "@/hooks/useAllPositions";
 import { useMyAssignments } from "@/hooks/useMyAssignments";
 import type {
@@ -19,7 +20,13 @@ import type {
  * Mobile-first: single column on small screens, multi-column on larger.
  */
 export function Home() {
-  const { data: positions, isLoading: positionsLoading } = useAllPositions();
+  const {
+    data: positions,
+    isLoading: positionsLoading,
+    isError: positionsError,
+    error: positionsErrorDetail,
+    refetch: refetchPositions,
+  } = useAllPositions();
   const { data: assignments, isLoading: assignmentsLoading } =
     useMyAssignments();
 
@@ -32,6 +39,13 @@ export function Home() {
 
       {loading ? (
         <TileSkeleton />
+      ) : positionsError ? (
+        <QueryErrorState
+          title="Couldn't load positions"
+          description="We couldn't load your positions right now. Please try again."
+          error={positionsErrorDetail}
+          onRetry={() => void refetchPositions()}
+        />
       ) : list.length === 0 ? (
         <EmptyState />
       ) : (

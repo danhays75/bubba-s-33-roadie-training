@@ -289,7 +289,8 @@ function BackFace({ card }: { card: LegendaryFlashcard }): ReactElement {
         <dl className="flex flex-col gap-2.5">
           {card.detailFields.map((field, i) => (
             <div
-              key={field.fieldLabel}
+              // biome-ignore lint/suspicious/noArrayIndexKey: duplicate fieldLabels within a card can collide, index is the stable key
+              key={`field-${i}`}
               data-ocid={`flashcard.detail.${i + 1}`}
               className="flex flex-col gap-0.5 border-b border-legendary-card-border/40 pb-2 last:border-b-0 last:pb-0"
             >

@@ -1,3 +1,4 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { BeLegendaryBanner } from "@/components/legendary/BeLegendaryBanner";
 import { Button } from "@/components/ui/button";
@@ -64,10 +65,28 @@ export function PositionDetailPage({
 
   const position = positionQuery.data ?? null;
   const isLoading = positionQuery.isLoading || (isFetching && !actor);
-  const notFound = !isLoading && !position;
+  const isError = positionQuery.isError;
+  const notFound = !isLoading && !position && !isError;
 
   if (isLoading) {
     return <PositionDetailSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <div
+        className="mx-auto flex w-full max-w-3xl flex-col items-start gap-4 px-4 py-16"
+        data-ocid="position.error_state"
+      >
+        <BackLink />
+        <QueryErrorState
+          title="Couldn't load position"
+          description="We couldn't load this position right now. Please try again."
+          error={positionQuery.error}
+          onRetry={() => void positionQuery.refetch()}
+        />
+      </div>
+    );
   }
 
   if (notFound) {
@@ -195,6 +214,9 @@ function LibrarySection({
         <CategoryGrid
           categories={categories}
           isLoading={categoriesQuery.isLoading}
+          isError={categoriesQuery.isError}
+          error={categoriesQuery.error}
+          onRetry={() => void categoriesQuery.refetch()}
           positionId={positionId}
         />
       )}
@@ -285,14 +307,33 @@ function SearchBox({
 function CategoryGrid({
   categories,
   isLoading,
+  isError,
+  error,
+  onRetry,
   positionId,
 }: {
   categories: Category[];
   isLoading: boolean;
+  isError: boolean;
+  error: unknown;
+  onRetry: () => void;
   positionId: string;
 }): ReactElement {
   if (isLoading) {
     return <CategoryGridSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <div className="mt-4" data-ocid="library.category.error_state">
+        <QueryErrorState
+          title="Couldn't load categories"
+          description="We couldn't load this position's categories right now. Please try again."
+          error={error}
+          onRetry={onRetry}
+        />
+      </div>
+    );
   }
 
   if (categories.length === 0) {
@@ -438,6 +479,19 @@ function SearchResults({
         {["s1", "s2", "s3"].map((k) => (
           <Skeleton key={k} className="h-14 w-full rounded-md" />
         ))}
+      </div>
+    );
+  }
+
+  if (query.isError) {
+    return (
+      <div className="mt-4" data-ocid="library.search.error_state">
+        <QueryErrorState
+          title="Couldn't load search results"
+          description="We couldn't run that search right now. Please try again."
+          error={query.error}
+          onRetry={() => void query.refetch()}
+        />
       </div>
     );
   }

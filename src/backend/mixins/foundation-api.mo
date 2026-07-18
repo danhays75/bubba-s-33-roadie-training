@@ -120,7 +120,19 @@ mixin (
       Runtime.trap("Unauthorized: admin only");
     };
     switch (Foundation.setRole(profiles, userId, role)) {
-      case (?updated) { updated };
+      case (?updated) {
+        // Keep the access-control role in sync with the app-domain profile
+        // role. #admin maps to #admin; any other role (#trainee/#trainer/
+        // #manager) maps to #user so a demoted admin loses the #admin grant.
+        // The caller has already passed the admin guard above, so
+        // AccessControl.assignRole's internal admin check passes too.
+        let mappedRole : AccessControl.UserRole = switch (role) {
+          case (#admin) { #admin };
+          case (_) { #user };
+        };
+        AccessControl.assignRole(accessControlState, caller, userId, mappedRole);
+        updated;
+      };
       case null { Runtime.trap("User not found") };
     };
   };

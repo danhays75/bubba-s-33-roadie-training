@@ -24,17 +24,29 @@ const ROLES: { value: Role; label: string }[] = [
   { value: "admin", label: "Admin" },
 ];
 
+export type RoleSelectProps = {
+  value: Role;
+  onValueChange: (role: Role) => void;
+  disabled?: boolean;
+  /** Row index — used only for the data-ocid test hook. */
+  index: number;
+  /**
+   * Human-readable identifier for the user this control belongs to.
+   * Prefer the user's display name; fall back to a shortened principal
+   * (e.g. `principal abc123…xyz4`) when no name is available. Used to
+   * build an accessible aria-label that names the actual user rather
+   * than a positional row number.
+   */
+  userLabel: string;
+};
+
 export function RoleSelect({
   value,
   onValueChange,
   disabled,
   index,
-}: {
-  value: Role;
-  onValueChange: (role: Role) => void;
-  disabled?: boolean;
-  index: number;
-}) {
+  userLabel,
+}: RoleSelectProps) {
   return (
     <Select
       value={value}
@@ -49,7 +61,7 @@ export function RoleSelect({
           value === "admin" && "border-primary text-primary",
         )}
         data-ocid={`user.role.select.${index}`}
-        aria-label={`Set role for user ${index}`}
+        aria-label={`Set role for ${userLabel}`}
       >
         <SelectValue />
       </SelectTrigger>

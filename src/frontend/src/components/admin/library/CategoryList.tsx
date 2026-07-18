@@ -1,3 +1,4 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { CategoryFormDialog } from "@/components/admin/library/CategoryFormDialog";
 import {
   AlertDialog,
@@ -41,12 +42,18 @@ export function CategoryList({
   positionId,
   categories,
   isLoading,
+  isError,
+  error,
+  onRetry,
   selectedCategoryId,
   onSelect,
 }: {
   positionId: string;
   categories: Category[];
   isLoading: boolean;
+  isError?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
   selectedCategoryId: string | null;
   onSelect: (categoryId: string) => void;
 }) {
@@ -134,6 +141,13 @@ export function CategoryList({
       <div className="mt-3">
         {isLoading ? (
           <CategoryListSkeleton />
+        ) : isError ? (
+          <QueryErrorState
+            title="Couldn't load categories"
+            description="We couldn't load the categories right now. Please try again."
+            error={error}
+            onRetry={() => onRetry?.()}
+          />
         ) : ordered.length === 0 ? (
           <CategoryEmptyState onCreate={openCreate} />
         ) : (

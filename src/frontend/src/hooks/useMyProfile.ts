@@ -26,7 +26,7 @@ function toUserProfile(p: {
  */
 export function useMyProfile() {
   const { actor, isFetching } = useBackend();
-  return useQuery<UserProfile | null>({
+  const query = useQuery<UserProfile | null>({
     queryKey: QUERY_KEY,
     queryFn: async () => {
       if (!actor) return null;
@@ -35,6 +35,15 @@ export function useMyProfile() {
     },
     enabled: !!actor && !isFetching,
   });
+  // Surface the read-error state as first-class so consumers can distinguish
+  // a genuine null profile (no profile yet) from a failed read. The underlying
+  // UseQueryResult already carries these; re-exposing them keeps the contract
+  // explicit without altering queryKey/queryFn/enabled.
+  return {
+    ...query,
+    isError: query.isError,
+    error: query.error,
+  };
 }
 
 export interface CreateProfileInput {

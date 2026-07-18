@@ -532,6 +532,11 @@ export function useImportNsoTasks() {
           name: p.name,
           tasks: p.tasks.map((t) => ({
             text: t.text,
+            // NsoImportTask declares section?: string and notes?: string as optional
+            // (not string | null). The runtime encoder uses a truthiness check
+            // (value.section ? candid_some(...) : candid_none()), so undefined
+            // maps to candid_none() and round-trips correctly. Keep `undefined`
+            // here — a literal null would be a TS error on a ?: string field.
             section: t.section && t.section.length > 0 ? t.section : undefined,
             notes: t.notes && t.notes.length > 0 ? t.notes : undefined,
           })),

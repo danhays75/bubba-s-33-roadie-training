@@ -74,7 +74,22 @@ export function BeLegendaryPage({
   const profileQuery = useMyProfile();
 
   const isAdmin = profileQuery.data?.role === "admin";
-  const activities = activitiesQuery.data ?? [];
+  // Sort activities by createdAt ascending in the frontend so editing an
+  // activity's name/categories (which the backend re-appends) leaves its card
+  // in the same visual position, and newly built activities appear in a
+  // consistent predictable spot. createdAt is a stringified bigint
+  // nanosecond timestamp — compare via BigInt() for safe cross-digit-width
+  // ascending sort. Do NOT mutate the query cache; sort a copy.
+  const activities = useMemo(() => {
+    const data = activitiesQuery.data ?? [];
+    return [...data].sort((a, b) => {
+      const aN = BigInt(a.createdAt);
+      const bN = BigInt(b.createdAt);
+      if (aN < bN) return -1;
+      if (aN > bN) return 1;
+      return 0;
+    });
+  }, [activitiesQuery.data]);
   const categories = categoriesQuery.data ?? [];
 
   // Resolve category ids → names for display on the cards.

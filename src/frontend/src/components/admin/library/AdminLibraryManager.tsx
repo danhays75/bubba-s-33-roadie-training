@@ -1,3 +1,4 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { BulkImportDialog } from "@/components/admin/library/BulkImportDialog";
 import { CategoryList } from "@/components/admin/library/CategoryList";
 import {
@@ -47,8 +48,13 @@ export function AdminLibraryManager({
 }): ReactElement {
   const { data: profile } = useMyProfile();
   const { data: positions } = useAllPositions();
-  const { data: categories, isLoading: categoriesLoading } =
-    useCategoriesByPosition(positionId);
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    error: categoriesErrorData,
+    refetch: refetchCategories,
+  } = useCategoriesByPosition(positionId);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
@@ -75,11 +81,33 @@ export function AdminLibraryManager({
     [categories],
   );
   useEffect(() => {
+    // Don't touch selection while the category list is still loading or
+    // undefined — a transient empty list is not a signal that the selected
+    // category was deleted.
+    if (categoriesLoading) {
+      return;
+    }
+
+    // If a category was selected but is no longer present in the list (e.g.
+    // it was just deleted from CategoryList, which only invalidates the
+    // categories query), reset to null so the auto-select branch below
+    // picks the first available category on this same pass. Without this,
+    // selectedCategoryId would keep pointing at a deleted id and the items
+    // pane would keep querying a non-existent category forever (the
+    // auto-select branch only runs when selectedCategoryId === null).
     if (
-      selectedCategoryId === null &&
-      orderedCategories.length > 0 &&
-      !categoriesLoading
+      selectedCategoryId !== null &&
+      !orderedCategories.some((c) => c.id === selectedCategoryId)
     ) {
+      setSelectedCategoryId(null);
+      return;
+    }
+
+    // Auto-select the first category once the list loads, so the items pane
+    // is populated without an extra click on desktop. Done in an effect (not
+    // during render) to keep React's render pure and avoid lint/runtime
+    // warnings about setState during render.
+    if (selectedCategoryId === null && orderedCategories.length > 0) {
       setSelectedCategoryId(orderedCategories[0].id);
     }
   }, [selectedCategoryId, orderedCategories, categoriesLoading]);
@@ -137,6 +165,9 @@ export function AdminLibraryManager({
           positionId={positionId}
           categories={orderedCategories}
           isLoading={categoriesLoading}
+          isError={categoriesError}
+          error={categoriesErrorData}
+          onRetry={() => refetchCategories()}
           selectedCategoryId={selectedCategoryId}
           onSelect={setSelectedCategoryId}
         />
@@ -163,7 +194,13 @@ function ItemsPane({
   positionId: string;
   categoryId: string | null;
 }): ReactElement {
-  const { data: items, isLoading } = useItemsByCategory(categoryId ?? "");
+  const {
+    data: items,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useItemsByCategory(categoryId ?? "");
   const { reorder, isPending: reorderPending } = useItemReorder(
     categoryId ?? "",
   );
@@ -202,6 +239,13 @@ function ItemsPane({
       <div className="mt-3">
         {isLoading ? (
           <ItemsSkeleton />
+        ) : isError ? (
+          <QueryErrorState
+            title="Couldn't load items"
+            description="We couldn't load the items right now. Please try again."
+            error={error}
+            onRetry={() => refetch()}
+          />
         ) : orderedItems.length === 0 ? (
           <ItemsEmptyState newTo={newTo} />
         ) : (

@@ -71,7 +71,7 @@ actor {
   include MixinAuthorization(accessControlState, null);
 
   include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId);
-  include LibraryApi(accessControlState, categories, items, nextCategoryId, nextItemId);
+  include LibraryApi(accessControlState, positions, categories, items, nextCategoryId, nextItemId);
   include NsoApi(accessControlState, profiles, nsoPhases, nsoTasks, nextPhaseId, nextTaskId);
   include LegendaryApi(accessControlState, categories, items, legendaryActivities, nextLegendaryActivityId);
 
