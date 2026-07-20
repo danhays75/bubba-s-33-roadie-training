@@ -27,6 +27,26 @@
   src: url("/assets/fonts/Oswald-Bold.woff2") format("woff2");
 }
 
+/* Zilla Slab — recipe print card title / variant dividers (700) */
+@font-face {
+  font-family: "Zilla Slab";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/zillaslab/v6/dFa6ZfeM_74wlPZtksIFajQ6_V6LVw.woff2")
+    format("woff2");
+}
+
+/* Roboto Slab — recipe print card fallback for title / variant dividers (800) */
+@font-face {
+  font-family: "Roboto Slab";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/robotoslab/v25/BngbUXZYTXPIvIBgJVSbYG6xLsE.woff2")
+    format("woff2");
+}
+
 /* Barlow — body (regular / medium / semibold) */
 @font-face {
   font-family: "Barlow";
@@ -135,7 +155,7 @@
     --legendary-banner-via: 0.62 0.22 35; /* warm transitional red-orange */
     --legendary-banner-to: 0.595 0.232 27; /* existing primary red */
     --legendary-banner-foreground: 0.16 0.02 75; /* dark text on gold gradient */
-    --legendary-glow: 0.82 0.17 75; /* gold glow color */
+    --legendary-glow: 0.88 0.2 78; /* gold glow color — brighter, more saturated */
     --legendary-glow-strength: 0.45; /* glow opacity ceiling */
 
     --legendary-card: 0.3 0.012 75; /* warm-tinted card, distinct from neutral card */
@@ -203,6 +223,39 @@
     --legendary-flash-highlight: 0.97 0.04 90;
     --legendary-flash-strength: 0.4;
     --legendary-flash-duration: 3.5s;
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Drinks Builder — ADDITIVE game tokens (Be Legendary Learning Hub).
+       Tap-based drink-construction game. Reuses legendary-correct (green)
+       for correct taps and legendary-incorrect (red) for wrong taps. Adds
+       liquid/foam/glow tokens for the SVG glass hero. Gradients/glow are
+       permitted here (Be Legendary). Does NOT alter any existing token.
+       ═══════════════════════════════════════════════════════════════════ */
+    --drinks-correct: 0.72 0.16 145; /* mirrors legendary-correct green */
+    --drinks-correct-foreground: 0.16 0.02 145;
+    --drinks-incorrect: 0.595 0.232 27; /* mirrors legendary-incorrect red */
+    --drinks-incorrect-foreground: 0.948 0.012 90;
+    --drinks-foam: 0.96 0.02 95; /* warm cream foam top on completion */
+    --drinks-foam-foreground: 0.18 0.01 75;
+    --drinks-liquid-default: 0.74 0.15 75; /* default amber/gold liquid fill */
+    --drinks-liquid-default-deep: 0.6 0.16 60; /* deeper amber base for depth */
+    --drinks-glass-stroke: 0.78 0.012 95; /* glass outline, light neutral */
+    --drinks-glass-shine: 0.95 0.01 95; /* glass specular highlight */
+    --drinks-streak-flame: 0.62 0.22 35; /* ON FIRE flame (warm red-orange) */
+    --drinks-streak-flame-glow: 0.82 0.17 75; /* flame glow halo (gold) */
+    --drinks-star: 0.82 0.17 75; /* star rating (gold) */
+    --drinks-star-foreground: 0.16 0.02 75;
+    --drinks-section-done: 0.801 0.171 75; /* section checkmark lit (in-training gold) */
+    --drinks-section-pending: 0.644 0.011 95; /* section checkmark muted */
+    --drinks-chip-bg: 0.31 0.012 75; /* legendary-card chip surface */
+    --drinks-chip-border: 0.42 0.05 75; /* legendary-card chip border */
+    --drinks-chip-selected-bg: 0.595 0.232 27; /* selected chip = primary red */
+    --drinks-chip-selected-border: 0.595 0.232 27;
+    --drinks-confetti-red: 0.595 0.232 27;
+    --drinks-confetti-gold: 0.801 0.171 75;
+    --drinks-confetti-navy: 0.285 0.094 254;
+    --drinks-confetti-green: 0.72 0.16 145;
+    --drinks-confetti-cream: 0.948 0.012 90;
   }
 
   .dark {
@@ -277,7 +330,7 @@
     --legendary-banner-via: 0.62 0.22 35;
     --legendary-banner-to: 0.595 0.232 27;
     --legendary-banner-foreground: 0.16 0.02 75;
-    --legendary-glow: 0.82 0.17 75;
+    --legendary-glow: 0.88 0.2 78;
     --legendary-glow-strength: 0.45;
 
     --legendary-card: 0.3 0.012 75;
@@ -319,6 +372,33 @@
     --legendary-flash-highlight: 0.97 0.04 90;
     --legendary-flash-strength: 0.4;
     --legendary-flash-duration: 3.5s;
+
+    /* Drinks Builder — mirror :root additive game tokens (dark only theme) */
+    --drinks-correct: 0.72 0.16 145;
+    --drinks-correct-foreground: 0.16 0.02 145;
+    --drinks-incorrect: 0.595 0.232 27;
+    --drinks-incorrect-foreground: 0.948 0.012 90;
+    --drinks-foam: 0.96 0.02 95;
+    --drinks-foam-foreground: 0.18 0.01 75;
+    --drinks-liquid-default: 0.74 0.15 75;
+    --drinks-liquid-default-deep: 0.6 0.16 60;
+    --drinks-glass-stroke: 0.78 0.012 95;
+    --drinks-glass-shine: 0.95 0.01 95;
+    --drinks-streak-flame: 0.62 0.22 35;
+    --drinks-streak-flame-glow: 0.82 0.17 75;
+    --drinks-star: 0.82 0.17 75;
+    --drinks-star-foreground: 0.16 0.02 75;
+    --drinks-section-done: 0.801 0.171 75;
+    --drinks-section-pending: 0.644 0.011 95;
+    --drinks-chip-bg: 0.31 0.012 75;
+    --drinks-chip-border: 0.42 0.05 75;
+    --drinks-chip-selected-bg: 0.595 0.232 27;
+    --drinks-chip-selected-border: 0.595 0.232 27;
+    --drinks-confetti-red: 0.595 0.232 27;
+    --drinks-confetti-gold: 0.801 0.171 75;
+    --drinks-confetti-navy: 0.285 0.094 254;
+    --drinks-confetti-green: 0.72 0.16 145;
+    --drinks-confetti-cream: 0.948 0.012 90;
   }
 }
 
@@ -566,6 +646,96 @@
     transform: rotateY(180deg);
   }
 
+  /* ── Reading-wave gold glow sweep (flashcard back face) ───────────────
+     ADDITIVE. When the card flips to the back, a gold glow wave flows
+     through every character in reading order over ~12s. Each character
+     span carries --wave-i (its reading-order index) and the container
+     carries --wave-count (total chars) and --wave-progress (0..1, driven
+     by the useReadingWave rAF loop). A character glows gold while the
+     wave is over it; the glow fades back to normal after the wave
+     passes. Pure color + text-shadow transition — NO font-size or
+     layout change, so nothing reflows. */
+  .flashcard-wave {
+    /* Driven by the useReadingWave hook via inline style on the container.
+       Defaults keep text normal if the wave is not running. */
+    --wave-progress: -1; /* -1 = inactive (no glow) */
+    --wave-count: 1;
+  }
+  .flashcard-wave-char {
+    /* Per-char index, set inline. */
+    --wave-i: 0;
+    /* Width of the glow window, in characters. A larger window makes the
+        glow pass over more characters at once so each one glows longer. */
+    --wave-window: 10;
+    color: inherit;
+    transition: color 0.35s ease-out, text-shadow 0.35s ease-out, transform
+      0.25s ease-out;
+    transform-origin: center;
+    /* Keep whitespace from collapsing when we wrap it in spans. */
+    white-space: pre-wrap;
+  }
+  .flashcard-wave-char.is-wave-space {
+    /* Spaces don't need the glow but still need to occupy width. */
+    white-space: pre;
+  }
+  /* The glow itself: gold color + gold text-shadow while the wave is
+     passing over this character. Activated only when --wave-progress >= 0
+     (set by the hook) and the character's index falls within the window
+     around the current wave position. We use a CSS calc + clamp trick:
+     distance = abs(--wave-i - progress*count); glow when distance < window.
+     Implemented via opacity of an overlay color using color-mix. */
+  .flashcard-wave-char {
+    /* Compute the wave position for this character.
+       pos = --wave-progress * --wave-count  (current char index the wave is at)
+       dist = abs(--wave-i - pos)
+       intensity = clamp(window - dist, 0, 1)  (1 at center, 0 at edge)
+       We blend the inherited color with the gold glow by intensity. */
+    --wave-pos: calc(var(--wave-progress) * var(--wave-count));
+    --wave-dist: calc(var(--wave-i) - var(--wave-pos));
+    /* abs() via max(a, -a) */
+    --wave-abs-dist: max(var(--wave-dist), calc(-1 * var(--wave-dist)));
+    --wave-intensity: clamp(
+      0,
+      calc(var(--wave-window) - var(--wave-abs-dist)),
+      1
+    );
+    /* Only apply the gold glow when the wave is active (progress >= 0). */
+  }
+  .flashcard-wave.is-active .flashcard-wave-char {
+    /* Blend toward gold at peak intensity; blend toward a dimmed neutral gray
+       at low intensity so the active character stands out from muted
+       surrounding text. The dimmed base is oklch(0.45 0 0) — a neutral
+       mid-gray. At intensity=1 the color is full gold; at intensity=0 it is
+       the dim gray; in between it transitions through. */
+    color: color-mix(
+      in oklch,
+      oklch(var(--legendary-glow)) calc(var(--wave-intensity) * 100%),
+      oklch(0.45 0 0) calc((1 - var(--wave-intensity)) * 100%)
+    );
+    /* Stronger three-layer gold shadow: bright tight core + mid halo + wide
+       soft halo. */
+    text-shadow: 0 0 4px
+      oklch(var(--legendary-glow) / calc(var(--wave-intensity) * 0.95)), 0 0
+      10px oklch(var(--legendary-glow) / calc(var(--wave-intensity) * 0.7)), 0 0
+      22px oklch(var(--legendary-glow) / calc(var(--wave-intensity) * 0.45));
+    /* Slight scale bump on the active character for extra emphasis. Transform
+       does not affect layout flow, so nothing reflows. */
+    transform: scale(calc(1 + var(--wave-intensity) * 0.08));
+  }
+
+  /* Reduced motion — skip the character sweep entirely. Text just appears
+     normally on flip with no glow wave. */
+  @media (prefers-reduced-motion: reduce) {
+    .flashcard-wave.is-active .flashcard-wave-char {
+      color: inherit;
+      text-shadow: none;
+      transform: none;
+    }
+    .flashcard-wave-char {
+      transition: none;
+    }
+  }
+
   /* ════════════════════════════════════════════════════════════════════
       Be Legendary — CINEMATIC PATRIOTIC HERO utilities (ADDITIVE redesign).
       All classes below are NEW. Existing bg-legendary-banner,
@@ -761,6 +931,289 @@
       opacity: 0;
     }
   }
+
+  /* ════════════════════════════════════════════════════════════════════
+     Drinks Builder — ADDITIVE game utilities (Be Legendary Learning Hub).
+     Tap-based drink-construction game. SVG glass hero, four sections
+     (Glassware/Specs/Assembly/Garnish), chip taps, streak flame, score
+     header, confetti burst. Gradients/glow permitted here. Existing
+     flat roadhouse tokens are untouched.
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* Color utilities — game-specific surfaces */
+  .bg-drinks-correct {
+    background-color: oklch(var(--drinks-correct));
+  }
+  .text-drinks-correct {
+    color: oklch(var(--drinks-correct));
+  }
+  .border-drinks-correct {
+    border-color: oklch(var(--drinks-correct));
+  }
+  .bg-drinks-incorrect {
+    background-color: oklch(var(--drinks-incorrect));
+  }
+  .text-drinks-incorrect {
+    color: oklch(var(--drinks-incorrect));
+  }
+  .border-drinks-incorrect {
+    border-color: oklch(var(--drinks-incorrect));
+  }
+  .bg-drinks-foam {
+    background-color: oklch(var(--drinks-foam));
+  }
+  .text-drinks-foam {
+    color: oklch(var(--drinks-foam));
+  }
+  .bg-drinks-liquid {
+    background: linear-gradient(
+      180deg,
+      oklch(var(--drinks-liquid-default)) 0%,
+      oklch(var(--drinks-liquid-default-deep)) 100%
+    );
+  }
+  .fill-drinks-liquid {
+    fill: oklch(var(--drinks-liquid-default));
+  }
+  .fill-drinks-foam {
+    fill: oklch(var(--drinks-foam));
+  }
+  .stroke-drinks-glass {
+    stroke: oklch(var(--drinks-glass-stroke));
+  }
+  .fill-drinks-glass-shine {
+    fill: oklch(var(--drinks-glass-shine));
+  }
+  .text-drinks-streak-flame {
+    color: oklch(var(--drinks-streak-flame));
+  }
+  .text-drinks-star {
+    color: oklch(var(--drinks-star));
+  }
+  .text-drinks-section-done {
+    color: oklch(var(--drinks-section-done));
+  }
+  .text-drinks-section-pending {
+    color: oklch(var(--drinks-section-pending));
+  }
+  .bg-drinks-chip {
+    background-color: oklch(var(--drinks-chip-bg));
+    border: 1px solid oklch(var(--drinks-chip-border));
+  }
+  .bg-drinks-chip-selected {
+    background-color: oklch(var(--drinks-chip-selected-bg));
+    border: 1px solid oklch(var(--drinks-chip-selected-border));
+    color: oklch(var(--primary-foreground));
+  }
+
+  /* ── Glass hero ─────────────────────────────────────────────────────
+     SVG glass container. Liquid fills proportionally to specs completed;
+     foam appears on completion. Liquid uses a clip-path/rect that animates
+     its height (glass-fill keyframe drives the rise). */
+  .drinks-glass-fill {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom;
+  }
+  .drinks-glass-foam {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+    transform-origin: center bottom;
+    transition: opacity 0.4s ease, transform 0.4s
+      cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .drinks-glass-foam.is-complete {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* ── Feedback animations ──────────────────────────────────────────── */
+  /* green-pop: scale up + fade on correct tap */
+  .animate-drinks-green-pop {
+    animation: drinks-green-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  /* red-shake: translateX oscillation on wrong tap */
+  .animate-drinks-red-shake {
+    animation: drinks-red-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+  /* rising-points: float up + fade for +score */
+  .animate-drinks-rising-points {
+    animation: drinks-rising-points 0.9s ease-out forwards;
+  }
+  /* glass-fill: smooth liquid rise (drives the SVG fill rect) */
+  .animate-drinks-glass-fill {
+    animation: drinks-glass-fill 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  /* foam-appear: foam top pops in on completion */
+  .animate-drinks-foam-appear {
+    animation: drinks-foam-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
+      forwards;
+  }
+  /* confetti-burst: particle burst on finish */
+  .animate-drinks-confetti-burst {
+    animation: drinks-confetti-burst 1.1s ease-out forwards;
+  }
+  /* legendary-banner: LEGENDARY! reveal (gold→red gradient + scale) */
+  .animate-drinks-legendary-banner {
+    animation: drinks-legendary-banner 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)
+      forwards;
+  }
+  /* streak-flame: ON FIRE flame flicker (infinite while streak active) */
+  .animate-drinks-streak-flame {
+    animation: drinks-streak-flame 0.6s ease-in-out infinite;
+  }
+  /* star-pop: star rating pop on completion */
+  .animate-drinks-star-pop {
+    animation: drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* ── Keyframes (also mirrored in tailwind.config.js) ──────────────── */
+  @keyframes drinks-green-pop {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    40% {
+      transform: scale(1.18);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes drinks-red-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    15% {
+      transform: translateX(-8px);
+    }
+    30% {
+      transform: translateX(7px);
+    }
+    45% {
+      transform: translateX(-6px);
+    }
+    60% {
+      transform: translateX(5px);
+    }
+    75% {
+      transform: translateX(-3px);
+    }
+    90% {
+      transform: translateX(2px);
+    }
+  }
+  @keyframes drinks-rising-points {
+    0% {
+      transform: translateY(0) scale(0.8);
+      opacity: 0;
+    }
+    20% {
+      transform: translateY(-6px) scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-44px) scale(1);
+      opacity: 0;
+    }
+  }
+  @keyframes drinks-glass-fill {
+    0% {
+      transform: scaleY(0);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes drinks-foam-appear {
+    0% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.85);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(-2px) scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes drinks-confetti-burst {
+    0% {
+      transform: translate(0, 0) scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(
+          var(--drinks-confetti-x, 0),
+          var(--drinks-confetti-y, -120px)
+        )
+        scale(1);
+      opacity: 0;
+    }
+  }
+  @keyframes drinks-legendary-banner {
+    0% {
+      transform: scale(0.6) translateY(20px);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.08) translateY(-4px);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes drinks-streak-flame {
+    0%,
+    100% {
+      transform: scale(1) rotate(-2deg);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(1.15) rotate(2deg);
+      opacity: 1;
+    }
+  }
+  @keyframes drinks-star-pop {
+    0% {
+      transform: scale(0) rotate(-30deg);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.25) rotate(8deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  /* Reduced motion — game animations shorten to instant state changes */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-drinks-green-pop,
+    .animate-drinks-red-shake,
+    .animate-drinks-rising-points,
+    .animate-drinks-glass-fill,
+    .animate-drinks-foam-appear,
+    .animate-drinks-confetti-burst,
+    .animate-drinks-legendary-banner,
+    .animate-drinks-streak-flame,
+    .animate-drinks-star-pop {
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+    }
+    .drinks-glass-fill,
+    .drinks-glass-foam {
+      transition: none;
+    }
+  }
 }
 
 /* ── Bubba's 33 Quill — dark rich-text editor for detail field values ──
@@ -875,4 +1328,102 @@
 }
 .bg-library-card dd ol {
   list-style-type: decimal;
+}
+
+/* =====================================================================
+   Recipe Print Card — additive LIGHT island (dark theme untouched)
+   Tokens scoped under :root + .dark (mirrored) so the light island is
+   available everywhere; utilities are intentionally unlayered so they
+   win over @layer-wrapped base rules.
+   ===================================================================== */
+:root {
+  --rpc-card: #ffffff;
+  --rpc-ink: #1a1a1a;
+  --rpc-blue: #1477be;
+  --rpc-rule: #000000;
+  --rpc-photo-frame: #1477be;
+  --rpc-bullet: #1a1a1a;
+  --rpc-font-slab: "Zilla Slab", "Roboto Slab", serif;
+}
+.dark {
+  --rpc-card: #ffffff;
+  --rpc-ink: #1a1a1a;
+  --rpc-blue: #1477be;
+  --rpc-rule: #000000;
+  --rpc-photo-frame: #1477be;
+  --rpc-bullet: #1a1a1a;
+  --rpc-font-slab: "Zilla Slab", "Roboto Slab", serif;
+}
+
+.recipe-print-card {
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: "Barlow", sans-serif;
+}
+.recipe-print-card-title {
+  font-family: "Zilla Slab", "Roboto Slab", serif;
+  font-weight: 700;
+  text-align: center;
+  font-variant: small-caps;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 0.25rem;
+}
+.recipe-print-card-subtitle {
+  font-weight: 700;
+  text-align: center;
+}
+.recipe-print-card-variant-divider {
+  font-family: "Zilla Slab", "Roboto Slab", serif;
+  font-weight: 700;
+  font-variant: small-caps;
+  border-bottom: 2px solid #000000;
+  text-align: left;
+  padding-bottom: 0.25rem;
+  margin-top: 1.5rem;
+}
+.recipe-print-card-heading {
+  color: #1477be;
+  font-weight: 700;
+  font-size: 26px;
+  text-transform: capitalize;
+}
+.recipe-print-card-square-bullet {
+  list-style-type: square;
+}
+.recipe-print-card-square-bullet li::marker {
+  color: #1a1a1a;
+  font-size: 10px;
+}
+.recipe-print-card-specs-row {
+  display: flex;
+  align-items: baseline;
+}
+.recipe-print-card-specs-row .amount {
+  font-weight: 600;
+}
+.recipe-print-card-specs-row .ingredient {
+  margin-left: auto;
+  text-align: right;
+}
+.recipe-print-card-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border: 3px solid #1477be;
+}
+.recipe-print-card-footer-legal {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.recipe-print-card-footer-legal .left {
+  color: #1477be;
+  text-align: left;
+}
+.recipe-print-card-footer-legal .center {
+  text-align: center;
+}
+.recipe-print-card-footer-legal .right {
+  color: #1477be;
+  text-align: right;
 }

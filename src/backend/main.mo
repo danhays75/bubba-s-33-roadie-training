@@ -126,6 +126,12 @@ actor {
         .payload("seasonal", func (i) = i.seasonal)
         .payload("sortOrder", func (i) = i.sortOrder)
         .payload("detailCount", func (i) = i.details.size())
+        .payload("hasRecipe", func (i) = switch (i.recipe) { case null false; case (?_) true })
+        .payload("recipeGlassware", func (i) = switch (i.recipe) { case null ""; case (?r) r.glassware })
+        .payload("recipeSpecCount", func (i) = switch (i.recipe) { case null 0; case (?r) r.specs.size() })
+        .payload("recipeVariantCount", func (i) = switch (i.recipe) { case null 0; case (?r) r.variants.size() })
+        .payload("recipeEquipmentCount", func (i) = switch (i.recipe) { case null 0; case (?r) r.equipment.size() })
+        .payload("recipeHasBulkMix", func (i) = switch (i.recipe) { case null false; case (?r) switch (r.yield) { case null r.equipment.size() > 0; case (?_) true } })
         .sample({
           id = 0;
           categoryId = 0;
@@ -137,6 +143,7 @@ actor {
           tags = [];
           seasonal = false;
           sortOrder = 0;
+          recipe = null;
         })
         .build(),
       // NsoPhase: an ordered stage of a new store opening. Manager/admin-only
@@ -206,12 +213,13 @@ actor {
       )
         .payload("id", func (a) = a.id)
         .payload("positionId", func (a) = a.positionId)
-        .payload("activityType", func (a) = switch (a.activityType) { case (#quiz) "quiz"; case (#flashcards) "flashcards" })
+        .payload("activityType", func (a) = switch (a.activityType) { case (#quiz) "quiz"; case (#flashcards) "flashcards"; case (#drinksBuilder) "drinksBuilder" })
         .payload("name", func (a) = a.name)
         .payload("sourceCategoryIds", func (a) = a.sourceCategoryIds.vals().map(Nat.toText).join(", "))
         .payload("contentCount", func (a) = switch (a.content) {
           case (#quizContent q) q.size();
           case (#flashcardContent f) f.size();
+          case (#drinksBuilderContent _) 1;
         })
         .payload("createdAt", func (a) = a.createdAt)
         .payload("createdBy", func (a) = a.createdBy.toText())

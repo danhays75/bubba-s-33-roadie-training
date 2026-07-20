@@ -20,14 +20,19 @@ export interface Activity {
   'positionId' : bigint,
   'sourceCategoryIds' : Array<bigint>,
 }
-export type ActivityContent = { 'quizContent' : QuizContent } |
+export type ActivityContent = {
+    'drinksBuilderContent' : DrinksBuilderContent
+  } |
+  { 'quizContent' : QuizContent } |
   { 'flashcardContent' : FlashcardContent };
-export type ActivityType = { 'quiz' : null } |
+export type ActivityType = { 'drinksBuilder' : null } |
+  { 'quiz' : null } |
   { 'flashcards' : null };
 export type AssignmentStatus = { 'inTraining' : null } |
   { 'certified' : null };
 export interface BuildActivityInput {
   'activityType' : ActivityType,
+  'content' : [] | [ActivityContent],
   'name' : string,
   'positionId' : bigint,
   'sourceCategoryIds' : Array<bigint>,
@@ -41,6 +46,19 @@ export interface Category {
 }
 export interface Cell { 'value' : Value, 'name' : string }
 export interface DetailField { 'value' : string, 'fieldLabel' : string }
+export interface DrinksBuilderContent { 'settings' : DrinksBuilderSettings }
+export interface DrinksBuilderSettings {
+  'includedCategories' : Array<string>,
+  'enforceAssemblyOrder' : boolean,
+  'pointsPerCorrect' : bigint,
+  'excludedDrinkTitles' : Array<string>,
+  'showScoring' : boolean,
+  'requireExactAmounts' : boolean,
+  'soundDefault' : boolean,
+  'decoyCount' : bigint,
+  'streakMultiplier' : boolean,
+  'roundsPerSession' : bigint,
+}
 export type Error = { 'FrontendOriginsNotConfigured' : null } |
   {
     'MixedSsoSources' : {
@@ -60,8 +78,15 @@ export interface Flashcard {
   'itemTitle' : string,
   'detailFields' : Array<{ 'value' : string, 'fieldLabel' : string }>,
   'itemPhoto' : [] | [string],
+  'recipe' : [] | [FlashcardRecipe],
 }
 export type FlashcardContent = Array<Flashcard>;
+export interface FlashcardRecipe {
+  'glassware' : string,
+  'garnish' : Array<string>,
+  'specs' : Array<{ 'ingredient' : string, 'amount' : string }>,
+  'assembly' : Array<string>,
+}
 export interface LibraryItem {
   'id' : bigint,
   'categoryId' : bigint,
@@ -73,6 +98,7 @@ export interface LibraryItem {
   'details' : Array<DetailField>,
   'photo' : [] | [string],
   'subtitle' : [] | [string],
+  'recipe' : [] | [Recipe],
 }
 export interface NsoImportInput {
   'moduleName' : string,
@@ -125,6 +151,23 @@ export type Question = {
   } |
   { 'trueFalse' : { 'statement' : string, 'isTrue' : boolean } };
 export type QuizContent = Array<Question>;
+export interface Recipe {
+  'equipment' : Array<string>,
+  'glassware' : string,
+  'variants' : Array<RecipeVariant>,
+  'garnish' : Array<string>,
+  'qualityIdentifier' : Array<string>,
+  'specs' : Array<RecipeSpec>,
+  'shelfLife' : [] | [string],
+  'assembly' : Array<string>,
+  'yield' : [] | [string],
+}
+export interface RecipeSpec { 'ingredient' : string, 'amount' : string }
+export interface RecipeVariant {
+  'variantLabel' : string,
+  'specs' : Array<RecipeSpec>,
+  'assembly' : Array<string>,
+}
 export interface Result { 'hasMore' : boolean, 'rows' : Array<Array<Cell>> }
 export type Result__1 = { 'ok' : null } |
   { 'err' : Error };
@@ -145,6 +188,7 @@ export interface Task {
 }
 export interface UpdateActivityInput {
   'id' : bigint,
+  'content' : [] | [ActivityContent],
   'name' : string,
   'sourceCategoryIds' : Array<bigint>,
 }
@@ -234,6 +278,7 @@ export interface _SERVICE {
       [] | [string],
       Array<string>,
       boolean,
+      [] | [Recipe],
     ],
     LibraryItem
   >,
@@ -259,6 +304,8 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCategoriesByPosition' : ActorMethod<[bigint], Array<Category>>,
   'getCategory' : ActorMethod<[bigint], [] | [Category]>,
+  'getDrinksBuilderDecoyPool' : ActorMethod<[bigint], Array<LibraryItem>>,
+  'getDrinksBuilderPlayablePool' : ActorMethod<[bigint], Array<LibraryItem>>,
   'getItem' : ActorMethod<[bigint], [] | [LibraryItem]>,
   'getItemsByCategory' : ActorMethod<[bigint], Array<LibraryItem>>,
   'getLegendaryActivitiesByPosition' : ActorMethod<[bigint], Array<Activity>>,
@@ -314,6 +361,7 @@ export interface _SERVICE {
       [] | [string],
       Array<string>,
       boolean,
+      [] | [Recipe],
     ],
     LibraryItem
   >,

@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-CqBi4Zwl.js"(exports, module) {
+  "assets/index-CBmc0JVE.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33162,6 +33162,26 @@ variant ${k2} -> ${e.message}`, {
       "value": Text$2,
       "fieldLabel": Text$2
     });
+    const RecipeSpec = Record({
+      "ingredient": Text$2,
+      "amount": Text$2
+    });
+    const RecipeVariant = Record({
+      "variantLabel": Text$2,
+      "specs": Vec(RecipeSpec),
+      "assembly": Vec(Text$2)
+    });
+    const Recipe = Record({
+      "equipment": Vec(Text$2),
+      "glassware": Text$2,
+      "variants": Vec(RecipeVariant),
+      "garnish": Vec(Text$2),
+      "qualityIdentifier": Vec(Text$2),
+      "specs": Vec(RecipeSpec),
+      "shelfLife": Opt(Text$2),
+      "assembly": Vec(Text$2),
+      "yield": Opt(Text$2)
+    });
     const LibraryItem = Record({
       "id": Nat,
       "categoryId": Nat,
@@ -33172,11 +33192,28 @@ variant ${k2} -> ${e.message}`, {
       "notes": Opt(Text$2),
       "details": Vec(DetailField),
       "photo": Opt(Text$2),
-      "subtitle": Opt(Text$2)
+      "subtitle": Opt(Text$2),
+      "recipe": Opt(Recipe)
     });
     const ActivityType$1 = Variant({
+      "drinksBuilder": Null,
       "quiz": Null,
       "flashcards": Null
+    });
+    const DrinksBuilderSettings = Record({
+      "includedCategories": Vec(Text$2),
+      "enforceAssemblyOrder": Bool,
+      "pointsPerCorrect": Nat,
+      "excludedDrinkTitles": Vec(Text$2),
+      "showScoring": Bool,
+      "requireExactAmounts": Bool,
+      "soundDefault": Bool,
+      "decoyCount": Nat,
+      "streakMultiplier": Bool,
+      "roundsPerSession": Nat
+    });
+    const DrinksBuilderContent = Record({
+      "settings": DrinksBuilderSettings
     });
     const Question = Variant({
       "multipleChoice": Record({
@@ -33193,15 +33230,25 @@ variant ${k2} -> ${e.message}`, {
       "trueFalse": Record({ "statement": Text$2, "isTrue": Bool })
     });
     const QuizContent = Vec(Question);
+    const FlashcardRecipe = Record({
+      "glassware": Text$2,
+      "garnish": Vec(Text$2),
+      "specs": Vec(
+        Record({ "ingredient": Text$2, "amount": Text$2 })
+      ),
+      "assembly": Vec(Text$2)
+    });
     const Flashcard$1 = Record({
       "itemTitle": Text$2,
       "detailFields": Vec(
         Record({ "value": Text$2, "fieldLabel": Text$2 })
       ),
-      "itemPhoto": Opt(Text$2)
+      "itemPhoto": Opt(Text$2),
+      "recipe": Opt(FlashcardRecipe)
     });
     const FlashcardContent = Vec(Flashcard$1);
     const ActivityContent = Variant({
+      "drinksBuilderContent": DrinksBuilderContent,
       "quizContent": QuizContent,
       "flashcardContent": FlashcardContent
     });
@@ -33290,6 +33337,7 @@ variant ${k2} -> ${e.message}`, {
     });
     const BuildActivityInput = Record({
       "activityType": ActivityType$1,
+      "content": Opt(ActivityContent),
       "name": Text$2,
       "positionId": Nat,
       "sourceCategoryIds": Vec(Nat)
@@ -33332,6 +33380,7 @@ variant ${k2} -> ${e.message}`, {
     });
     const UpdateActivityInput = Record({
       "id": Nat,
+      "content": Opt(ActivityContent),
       "name": Text$2,
       "sourceCategoryIds": Vec(Nat)
     });
@@ -33433,7 +33482,8 @@ variant ${k2} -> ${e.message}`, {
           Vec(DetailField),
           Opt(Text$2),
           Vec(Text$2),
-          Bool
+          Bool,
+          Opt(Recipe)
         ],
         [LibraryItem],
         []
@@ -33466,6 +33516,16 @@ variant ${k2} -> ${e.message}`, {
         ["query"]
       ),
       "getCategory": Func([Nat], [Opt(Category)], ["query"]),
+      "getDrinksBuilderDecoyPool": Func(
+        [Nat],
+        [Vec(LibraryItem)],
+        ["query"]
+      ),
+      "getDrinksBuilderPlayablePool": Func(
+        [Nat],
+        [Vec(LibraryItem)],
+        ["query"]
+      ),
       "getItem": Func([Nat], [Opt(LibraryItem)], ["query"]),
       "getItemsByCategory": Func([Nat], [Vec(LibraryItem)], ["query"]),
       "getLegendaryActivitiesByPosition": Func(
@@ -33552,7 +33612,8 @@ variant ${k2} -> ${e.message}`, {
           Vec(DetailField),
           Opt(Text$2),
           Vec(Text$2),
-          Bool
+          Bool,
+          Opt(Recipe)
         ],
         [LibraryItem],
         []
@@ -33600,6 +33661,26 @@ variant ${k2} -> ${e.message}`, {
         "value": IDL2.Text,
         "fieldLabel": IDL2.Text
       });
+      const RecipeSpec2 = IDL2.Record({
+        "ingredient": IDL2.Text,
+        "amount": IDL2.Text
+      });
+      const RecipeVariant2 = IDL2.Record({
+        "variantLabel": IDL2.Text,
+        "specs": IDL2.Vec(RecipeSpec2),
+        "assembly": IDL2.Vec(IDL2.Text)
+      });
+      const Recipe2 = IDL2.Record({
+        "equipment": IDL2.Vec(IDL2.Text),
+        "glassware": IDL2.Text,
+        "variants": IDL2.Vec(RecipeVariant2),
+        "garnish": IDL2.Vec(IDL2.Text),
+        "qualityIdentifier": IDL2.Vec(IDL2.Text),
+        "specs": IDL2.Vec(RecipeSpec2),
+        "shelfLife": IDL2.Opt(IDL2.Text),
+        "assembly": IDL2.Vec(IDL2.Text),
+        "yield": IDL2.Opt(IDL2.Text)
+      });
       const LibraryItem2 = IDL2.Record({
         "id": IDL2.Nat,
         "categoryId": IDL2.Nat,
@@ -33610,11 +33691,28 @@ variant ${k2} -> ${e.message}`, {
         "notes": IDL2.Opt(IDL2.Text),
         "details": IDL2.Vec(DetailField2),
         "photo": IDL2.Opt(IDL2.Text),
-        "subtitle": IDL2.Opt(IDL2.Text)
+        "subtitle": IDL2.Opt(IDL2.Text),
+        "recipe": IDL2.Opt(Recipe2)
       });
       const ActivityType2 = IDL2.Variant({
+        "drinksBuilder": IDL2.Null,
         "quiz": IDL2.Null,
         "flashcards": IDL2.Null
+      });
+      const DrinksBuilderSettings2 = IDL2.Record({
+        "includedCategories": IDL2.Vec(IDL2.Text),
+        "enforceAssemblyOrder": IDL2.Bool,
+        "pointsPerCorrect": IDL2.Nat,
+        "excludedDrinkTitles": IDL2.Vec(IDL2.Text),
+        "showScoring": IDL2.Bool,
+        "requireExactAmounts": IDL2.Bool,
+        "soundDefault": IDL2.Bool,
+        "decoyCount": IDL2.Nat,
+        "streakMultiplier": IDL2.Bool,
+        "roundsPerSession": IDL2.Nat
+      });
+      const DrinksBuilderContent2 = IDL2.Record({
+        "settings": DrinksBuilderSettings2
       });
       const Question2 = IDL2.Variant({
         "multipleChoice": IDL2.Record({
@@ -33631,15 +33729,25 @@ variant ${k2} -> ${e.message}`, {
         "trueFalse": IDL2.Record({ "statement": IDL2.Text, "isTrue": IDL2.Bool })
       });
       const QuizContent2 = IDL2.Vec(Question2);
+      const FlashcardRecipe2 = IDL2.Record({
+        "glassware": IDL2.Text,
+        "garnish": IDL2.Vec(IDL2.Text),
+        "specs": IDL2.Vec(
+          IDL2.Record({ "ingredient": IDL2.Text, "amount": IDL2.Text })
+        ),
+        "assembly": IDL2.Vec(IDL2.Text)
+      });
       const Flashcard2 = IDL2.Record({
         "itemTitle": IDL2.Text,
         "detailFields": IDL2.Vec(
           IDL2.Record({ "value": IDL2.Text, "fieldLabel": IDL2.Text })
         ),
-        "itemPhoto": IDL2.Opt(IDL2.Text)
+        "itemPhoto": IDL2.Opt(IDL2.Text),
+        "recipe": IDL2.Opt(FlashcardRecipe2)
       });
       const FlashcardContent2 = IDL2.Vec(Flashcard2);
       const ActivityContent2 = IDL2.Variant({
+        "drinksBuilderContent": DrinksBuilderContent2,
         "quizContent": QuizContent2,
         "flashcardContent": FlashcardContent2
       });
@@ -33728,6 +33836,7 @@ variant ${k2} -> ${e.message}`, {
       });
       const BuildActivityInput2 = IDL2.Record({
         "activityType": ActivityType2,
+        "content": IDL2.Opt(ActivityContent2),
         "name": IDL2.Text,
         "positionId": IDL2.Nat,
         "sourceCategoryIds": IDL2.Vec(IDL2.Nat)
@@ -33770,6 +33879,7 @@ variant ${k2} -> ${e.message}`, {
       });
       const UpdateActivityInput2 = IDL2.Record({
         "id": IDL2.Nat,
+        "content": IDL2.Opt(ActivityContent2),
         "name": IDL2.Text,
         "sourceCategoryIds": IDL2.Vec(IDL2.Nat)
       });
@@ -33871,7 +33981,8 @@ variant ${k2} -> ${e.message}`, {
             IDL2.Vec(DetailField2),
             IDL2.Opt(IDL2.Text),
             IDL2.Vec(IDL2.Text),
-            IDL2.Bool
+            IDL2.Bool,
+            IDL2.Opt(Recipe2)
           ],
           [LibraryItem2],
           []
@@ -33904,6 +34015,16 @@ variant ${k2} -> ${e.message}`, {
           ["query"]
         ),
         "getCategory": IDL2.Func([IDL2.Nat], [IDL2.Opt(Category2)], ["query"]),
+        "getDrinksBuilderDecoyPool": IDL2.Func(
+          [IDL2.Nat],
+          [IDL2.Vec(LibraryItem2)],
+          ["query"]
+        ),
+        "getDrinksBuilderPlayablePool": IDL2.Func(
+          [IDL2.Nat],
+          [IDL2.Vec(LibraryItem2)],
+          ["query"]
+        ),
         "getItem": IDL2.Func([IDL2.Nat], [IDL2.Opt(LibraryItem2)], ["query"]),
         "getItemsByCategory": IDL2.Func(
           [IDL2.Nat],
@@ -34002,7 +34123,8 @@ variant ${k2} -> ${e.message}`, {
             IDL2.Vec(DetailField2),
             IDL2.Opt(IDL2.Text),
             IDL2.Vec(IDL2.Text),
-            IDL2.Bool
+            IDL2.Bool,
+            IDL2.Opt(Recipe2)
           ],
           [LibraryItem2],
           []
@@ -34042,6 +34164,7 @@ variant ${k2} -> ${e.message}`, {
       return arg == null ? void 0 : arg;
     }
     var ActivityType = /* @__PURE__ */ ((ActivityType2) => {
+      ActivityType2["drinksBuilder"] = "drinksBuilder";
       ActivityType2["quiz"] = "quiz";
       ActivityType2["flashcards"] = "flashcards";
       return ActivityType2;
@@ -34118,14 +34241,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
         }
       }
       async __nextCategoryId() {
@@ -34230,42 +34353,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
-          } catch (e) {
-            this.processError(e);
-            throw new Error("unreachable");
-          }
-        } else {
-          const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
-        }
-      }
-      async __positions(arg0, arg1) {
-        if (this.processError) {
-          try {
-            const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
             return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
           return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
         }
       }
-      async __profiles(arg0, arg1) {
+      async __positions(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n36(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
             return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n36(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
           return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async __profiles(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__profiles(to_candid_opt_n40(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__profiles(to_candid_opt_n40(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageBlobsAreLive(arg0) {
@@ -34327,15 +34450,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n43(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n47(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n50(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n43(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n47(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n50(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34370,14 +34493,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n50(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n54(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n50(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n54(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34397,14 +34520,14 @@ variant ${k2} -> ${e.message}`, {
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n54(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n58(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n54(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n58(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34425,42 +34548,42 @@ variant ${k2} -> ${e.message}`, {
       async buildLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n56(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n60(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n56(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n60(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
-      async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
+      async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34468,14 +34591,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
         }
       }
       async createNsoPhase(arg0) {
@@ -34495,29 +34618,29 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n36(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Task_n30(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n40(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Task_n34(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n36(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Task_n30(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n40(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Task_n34(this._uploadFile, this._downloadFile, result);
         }
       }
       async createPosition(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
-            return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
-          return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+          return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
         }
       }
       async deleteCategory(arg0) {
@@ -34608,56 +34731,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n61(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n78(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n61(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n78(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllPositions();
-            return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllPositions();
-          return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n70(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n87(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n70(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n87(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -34678,28 +34801,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n72(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n89(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n72(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n89(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getDrinksBuilderDecoyPool(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getDrinksBuilderDecoyPool(arg0);
+            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getDrinksBuilderDecoyPool(arg0);
+          return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async getDrinksBuilderPlayablePool(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.getDrinksBuilderPlayablePool(arg0);
+            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.getDrinksBuilderPlayablePool(arg0);
+          return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItem(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n73(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n90(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n73(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n90(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -34720,28 +34871,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
-            return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
-          return from_candid_vec_n14(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
         }
       }
       async getLegendaryActivity(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivity(arg0);
-            return from_candid_opt_n74(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n91(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivity(arg0);
-          return from_candid_opt_n74(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n91(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -34762,28 +34913,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n75(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n92(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n75(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n92(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n69(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -34804,14 +34955,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n76(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n76(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -34846,42 +34997,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n77(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n77(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTasksByPhase(arg0);
-            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTasksByPhase(arg0);
-          return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async getPosition(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n78(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n78(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -34902,27 +35053,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n79(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n79(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n80(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n97(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n80(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n97(this._uploadFile, this._downloadFile, arg0));
           return result;
         }
       }
@@ -34944,14 +35095,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.rebuildLegendaryActivity(arg0);
-            return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+            return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.rebuildLegendaryActivity(arg0);
-          return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+          return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async reorderCategories(arg0, arg1) {
@@ -34985,28 +35136,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n88(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35014,14 +35165,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.reorderPositions(arg0);
-            return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.reorderPositions(arg0);
-          return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
         }
       }
       async schema() {
@@ -35055,70 +35206,70 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n89(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n106(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n89(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n106(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n91(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n108(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n91(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n108(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35139,57 +35290,57 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
-      async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
+      async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateLegendaryActivity(arg0);
-            return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n110(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateLegendaryActivity(arg0);
-          return from_candid_Activity_n15(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n110(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfile(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n39(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateNsoPhase(arg0, arg1) {
@@ -35209,40 +35360,40 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n36(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
       async updatePosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n60(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n60(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Position_n34(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
         }
       }
     }
-    function from_candid_ActivityContent_n19(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n20(_uploadFile, _downloadFile, value);
+    function from_candid_ActivityContent_n22(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n23(_uploadFile, _downloadFile, value);
     }
-    function from_candid_ActivityType_n17(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n18(_uploadFile, _downloadFile, value);
+    function from_candid_ActivityType_n20(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n21(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Activity_n15(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n16(_uploadFile, _downloadFile, value);
+    function from_candid_Activity_n18(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n19(_uploadFile, _downloadFile, value);
     }
     function from_candid_AssignmentStatus_n5(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n6(_uploadFile, _downloadFile, value);
@@ -35250,17 +35401,17 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n65(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n66(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n82(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n83(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n52(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n53(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n56(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n57(_uploadFile, _downloadFile, value);
     }
-    function from_candid_FlashcardContent_n25(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n26(_uploadFile, _downloadFile, value);
+    function from_candid_FlashcardContent_n28(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n29(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Flashcard_n27(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n28(_uploadFile, _downloadFile, value);
+    function from_candid_Flashcard_n30(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n31(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -35268,74 +35419,83 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, value) {
       return from_candid_record_n4(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Position_n34(_uploadFile, _downloadFile, value) {
+    function from_candid_Position_n38(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n39(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Question_n26(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n27(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_QuizContent_n24(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n25(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Recipe_n15(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n16(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Result__1_n54(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n55(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Result_n78(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n79(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Role_n45(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n46(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Task_n34(_uploadFile, _downloadFile, value) {
       return from_candid_record_n35(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Question_n23(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n24(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n43(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n44(_uploadFile, _downloadFile, value);
     }
-    function from_candid_QuizContent_n21(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n22(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n87(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n88(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n50(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n51(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n84(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n85(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n61(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n62(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_Role_n41(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n42(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_Task_n30(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n31(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_UserProfile_n39(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n40(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_UserRole_n70(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n71(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_Value_n67(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n68(_uploadFile, _downloadFile, value);
-    }
-    function from_candid__ImmutableObjectStorageRefillResult_n46(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n47(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n50(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n51(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
+    function from_candid_opt_n14(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Recipe_n15(_uploadFile, _downloadFile, value[0]);
+    }
     function from_candid_opt_n32(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n48(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n36(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n49(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n52(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n72(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n53(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : value[0];
+    }
+    function from_candid_opt_n89(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n73(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n90(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n74(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Activity_n15(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n91(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n75(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n39(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n92(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_UserProfile_n43(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n76(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n93(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n77(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n30(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n94(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n34(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n78(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n34(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n95(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n38(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n79(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n41(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n96(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n45(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
       return {
@@ -35348,14 +35508,28 @@ variant ${k2} -> ${e.message}`, {
         notes: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.notes)),
         details: value.details,
         photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo)),
-        subtitle: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.subtitle))
+        subtitle: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.subtitle)),
+        recipe: record_opt_to_undefined(from_candid_opt_n14(_uploadFile, _downloadFile, value.recipe))
       };
     }
     function from_candid_record_n16(_uploadFile, _downloadFile, value) {
       return {
+        equipment: value.equipment,
+        glassware: value.glassware,
+        variants: value.variants,
+        garnish: value.garnish,
+        qualityIdentifier: value.qualityIdentifier,
+        specs: value.specs,
+        shelfLife: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.shelfLife)),
+        assembly: value.assembly,
+        yield: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.yield))
+      };
+    }
+    function from_candid_record_n19(_uploadFile, _downloadFile, value) {
+      return {
         id: value.id,
-        activityType: from_candid_ActivityType_n17(_uploadFile, _downloadFile, value.activityType),
-        content: from_candid_ActivityContent_n19(_uploadFile, _downloadFile, value.content),
+        activityType: from_candid_ActivityType_n20(_uploadFile, _downloadFile, value.activityType),
+        content: from_candid_ActivityContent_n22(_uploadFile, _downloadFile, value.content),
         name: value.name,
         createdAt: value.createdAt,
         createdBy: value.createdBy,
@@ -35363,18 +35537,19 @@ variant ${k2} -> ${e.message}`, {
         sourceCategoryIds: value.sourceCategoryIds
       };
     }
-    function from_candid_record_n28(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n31(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
-        itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto))
+        itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto)),
+        recipe: record_opt_to_undefined(from_candid_opt_n32(_uploadFile, _downloadFile, value.recipe))
       };
     }
-    function from_candid_record_n31(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n35(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
-        assignedTo: record_opt_to_undefined(from_candid_opt_n32(_uploadFile, _downloadFile, value.assignedTo)),
+        assignedTo: record_opt_to_undefined(from_candid_opt_n36(_uploadFile, _downloadFile, value.assignedTo)),
         sortOrder: value.sortOrder,
         done: value.done,
         text: value.text,
@@ -35383,7 +35558,7 @@ variant ${k2} -> ${e.message}`, {
         phaseId: value.phaseId
       };
     }
-    function from_candid_record_n35(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n39(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         sortOrder: value.sortOrder,
@@ -35399,29 +35574,29 @@ variant ${k2} -> ${e.message}`, {
         positionId: value.positionId
       };
     }
-    function from_candid_record_n40(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n44(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         name: value.name,
-        role: from_candid_Role_n41(_uploadFile, _downloadFile, value.role),
+        role: from_candid_Role_n45(_uploadFile, _downloadFile, value.role),
         storeLocation: value.storeLocation
       };
     }
-    function from_candid_record_n47(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n51(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n48(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.topped_up_amount))
+        success: record_opt_to_undefined(from_candid_opt_n52(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n53(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
-    function from_candid_record_n62(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n79(_uploadFile, _downloadFile, value) {
       return {
         hasMore: value.hasMore,
-        rows: from_candid_vec_n63(_uploadFile, _downloadFile, value.rows)
+        rows: from_candid_vec_n80(_uploadFile, _downloadFile, value.rows)
       };
     }
-    function from_candid_record_n66(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n83(_uploadFile, _downloadFile, value) {
       return {
-        value: from_candid_Value_n67(_uploadFile, _downloadFile, value.value),
+        value: from_candid_Value_n84(_uploadFile, _downloadFile, value.value),
         name: value.name
       };
     }
@@ -35434,25 +35609,28 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_tuple_n38(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n42(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n39(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n43(_uploadFile, _downloadFile, value[1])
       ];
     }
-    function from_candid_variant_n18(_uploadFile, _downloadFile, value) {
-      return "quiz" in value ? "quiz" : "flashcards" in value ? "flashcards" : value;
+    function from_candid_variant_n21(_uploadFile, _downloadFile, value) {
+      return "drinksBuilder" in value ? "drinksBuilder" : "quiz" in value ? "quiz" : "flashcards" in value ? "flashcards" : value;
     }
-    function from_candid_variant_n20(_uploadFile, _downloadFile, value) {
-      return "quizContent" in value ? {
+    function from_candid_variant_n23(_uploadFile, _downloadFile, value) {
+      return "drinksBuilderContent" in value ? {
+        __kind__: "drinksBuilderContent",
+        drinksBuilderContent: value.drinksBuilderContent
+      } : "quizContent" in value ? {
         __kind__: "quizContent",
-        quizContent: from_candid_QuizContent_n21(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: from_candid_QuizContent_n24(_uploadFile, _downloadFile, value.quizContent)
       } : "flashcardContent" in value ? {
         __kind__: "flashcardContent",
-        flashcardContent: from_candid_FlashcardContent_n25(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: from_candid_FlashcardContent_n28(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function from_candid_variant_n24(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n27(_uploadFile, _downloadFile, value) {
       return "multipleChoice" in value ? {
         __kind__: "multipleChoice",
         multipleChoice: value.multipleChoice
@@ -35464,19 +35642,19 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function from_candid_variant_n42(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n46(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n51(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n55(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n52(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n56(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n53(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n57(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -35512,7 +35690,7 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
       return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
     }
-    function from_candid_variant_n68(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n85(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -35533,147 +35711,185 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n71(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n88(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
     }
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_LibraryItem_n12(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n14(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Activity_n15(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n17(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Activity_n18(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n2(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n22(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Question_n23(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n26(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Flashcard_n27(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n25(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Question_n26(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n29(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Task_n30(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Flashcard_n30(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n33(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Position_n34(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Task_n34(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n37(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n38(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_Position_n38(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n63(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n64(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n64(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n65(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n69(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n39(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n41(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n42(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_ActivityType_n58(_uploadFile, _downloadFile, value) {
+    function from_candid_vec_n80(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n81(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n81(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n82(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n86(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n43(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_ActivityContent_n64(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n65(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_ActivityType_n62(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n63(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_AssignmentStatus_n106(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n107(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_BuildActivityInput_n60(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n61(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_FlashcardContent_n66(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n67(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Flashcard_n68(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n69(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_NsoImportInput_n97(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n98(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_NsoImportPhase_n100(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n101(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_NsoImportTask_n103(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n104(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Question_n72(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n73(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_QuizContent_n70(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n71(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Recipe_n76(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n77(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Role_n108(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n109(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UpdateActivityInput_n110(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n111(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UserRole_n58(_uploadFile, _downloadFile, value) {
       return to_candid_variant_n59(_uploadFile, _downloadFile, value);
     }
-    function to_candid_AssignmentStatus_n89(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n90(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_BuildActivityInput_n56(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n57(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportInput_n80(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n81(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportPhase_n83(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n84(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportTask_n86(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n87(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_Role_n91(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n92(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_UserRole_n54(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n55(_uploadFile, _downloadFile, value);
-    }
-    function to_candid__ImmutableObjectStorageRefillInformation_n44(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n45(_uploadFile, _downloadFile, value);
+    function to_candid__ImmutableObjectStorageRefillInformation_n48(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n49(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n36(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n40(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n43(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n44(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n47(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n48(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n60(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n74(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_record_n45(_uploadFile, _downloadFile, value) {
-      return {
-        proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
-      };
+    function to_candid_opt_n75(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_Recipe_n76(_uploadFile, _downloadFile, value));
     }
-    function to_candid_record_n57(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n101(_uploadFile, _downloadFile, value) {
       return {
-        activityType: to_candid_ActivityType_n58(_uploadFile, _downloadFile, value.activityType),
-        name: value.name,
-        positionId: value.positionId,
-        sourceCategoryIds: value.sourceCategoryIds
-      };
-    }
-    function to_candid_record_n81(_uploadFile, _downloadFile, value) {
-      return {
-        moduleName: value.moduleName,
-        phases: to_candid_vec_n82(_uploadFile, _downloadFile, value.phases)
-      };
-    }
-    function to_candid_record_n84(_uploadFile, _downloadFile, value) {
-      return {
-        tasks: to_candid_vec_n85(_uploadFile, _downloadFile, value.tasks),
+        tasks: to_candid_vec_n102(_uploadFile, _downloadFile, value.tasks),
         name: value.name
       };
     }
-    function to_candid_record_n87(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n104(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         section: value.section ? candid_some(value.section) : candid_none(),
         notes: value.notes ? candid_some(value.notes) : candid_none()
       };
     }
-    function to_candid_variant_n55(_uploadFile, _downloadFile, value) {
-      return value == "admin" ? {
-        admin: null
-      } : value == "user" ? {
-        user: null
-      } : value == "guest" ? {
-        guest: null
-      } : value;
+    function to_candid_record_n111(_uploadFile, _downloadFile, value) {
+      return {
+        id: value.id,
+        content: value.content ? candid_some(to_candid_ActivityContent_n64(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        name: value.name,
+        sourceCategoryIds: value.sourceCategoryIds
+      };
     }
-    function to_candid_variant_n59(_uploadFile, _downloadFile, value) {
-      return value == "quiz" ? {
-        quiz: null
-      } : value == "flashcards" ? {
-        flashcards: null
-      } : value;
+    function to_candid_record_n49(_uploadFile, _downloadFile, value) {
+      return {
+        proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
+      };
     }
-    function to_candid_variant_n88(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n61(_uploadFile, _downloadFile, value) {
+      return {
+        activityType: to_candid_ActivityType_n62(_uploadFile, _downloadFile, value.activityType),
+        content: value.content ? candid_some(to_candid_ActivityContent_n64(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        name: value.name,
+        positionId: value.positionId,
+        sourceCategoryIds: value.sourceCategoryIds
+      };
+    }
+    function to_candid_record_n69(_uploadFile, _downloadFile, value) {
+      return {
+        itemTitle: value.itemTitle,
+        detailFields: value.detailFields,
+        itemPhoto: value.itemPhoto ? candid_some(value.itemPhoto) : candid_none(),
+        recipe: value.recipe ? candid_some(value.recipe) : candid_none()
+      };
+    }
+    function to_candid_record_n77(_uploadFile, _downloadFile, value) {
+      return {
+        equipment: value.equipment,
+        glassware: value.glassware,
+        variants: value.variants,
+        garnish: value.garnish,
+        qualityIdentifier: value.qualityIdentifier,
+        specs: value.specs,
+        shelfLife: value.shelfLife ? candid_some(value.shelfLife) : candid_none(),
+        assembly: value.assembly,
+        yield: value.yield ? candid_some(value.yield) : candid_none()
+      };
+    }
+    function to_candid_record_n98(_uploadFile, _downloadFile, value) {
+      return {
+        moduleName: value.moduleName,
+        phases: to_candid_vec_n99(_uploadFile, _downloadFile, value.phases)
+      };
+    }
+    function to_candid_variant_n105(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n90(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n107(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n92(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n109(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -35684,11 +35900,53 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_vec_n82(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n83(_uploadFile, _downloadFile, x2));
+    function to_candid_variant_n59(_uploadFile, _downloadFile, value) {
+      return value == "admin" ? {
+        admin: null
+      } : value == "user" ? {
+        user: null
+      } : value == "guest" ? {
+        guest: null
+      } : value;
     }
-    function to_candid_vec_n85(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n86(_uploadFile, _downloadFile, x2));
+    function to_candid_variant_n63(_uploadFile, _downloadFile, value) {
+      return value == "drinksBuilder" ? {
+        drinksBuilder: null
+      } : value == "quiz" ? {
+        quiz: null
+      } : value == "flashcards" ? {
+        flashcards: null
+      } : value;
+    }
+    function to_candid_variant_n65(_uploadFile, _downloadFile, value) {
+      return value.__kind__ === "drinksBuilderContent" ? {
+        drinksBuilderContent: value.drinksBuilderContent
+      } : value.__kind__ === "quizContent" ? {
+        quizContent: to_candid_QuizContent_n70(_uploadFile, _downloadFile, value.quizContent)
+      } : value.__kind__ === "flashcardContent" ? {
+        flashcardContent: to_candid_FlashcardContent_n66(_uploadFile, _downloadFile, value.flashcardContent)
+      } : value;
+    }
+    function to_candid_variant_n73(_uploadFile, _downloadFile, value) {
+      return value.__kind__ === "multipleChoice" ? {
+        multipleChoice: value.multipleChoice
+      } : value.__kind__ === "matching" ? {
+        matching: value.matching
+      } : value.__kind__ === "trueFalse" ? {
+        trueFalse: value.trueFalse
+      } : value;
+    }
+    function to_candid_vec_n102(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n103(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_vec_n67(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Flashcard_n68(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_vec_n71(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Question_n72(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_vec_n99(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n100(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -38657,40 +38915,40 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$C = [
+    const __iconNode$H = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$C);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$H);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$B = [
+    const __iconNode$G = [
       ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
       ["path", { d: "M19 12H5", key: "x3x0zl" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$B);
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$G);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$A = [
+    const __iconNode$F = [
       ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
       ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$A);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$F);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$z = [
+    const __iconNode$E = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -38700,14 +38958,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$z);
+    const BookOpen = createLucideIcon("book-open", __iconNode$E);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$y = [
+    const __iconNode$D = [
       [
         "path",
         {
@@ -38730,73 +38988,73 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
       ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
     ];
-    const Brain = createLucideIcon("brain", __iconNode$y);
+    const Brain = createLucideIcon("brain", __iconNode$D);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$x = [
+    const __iconNode$C = [
       ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
       ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
     ];
-    const CheckCheck = createLucideIcon("check-check", __iconNode$x);
+    const CheckCheck = createLucideIcon("check-check", __iconNode$C);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$w = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$w);
+    const __iconNode$B = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$v = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$v);
+    const __iconNode$A = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$u = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$u);
+    const __iconNode$z = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$z);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$t = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-    const ChevronRight = createLucideIcon("chevron-right", __iconNode$t);
+    const __iconNode$y = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$y);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$s = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$s);
+    const __iconNode$x = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$x);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$r = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$r);
+    const __iconNode$w = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$w);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$q = [
+    const __iconNode$v = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -38810,14 +39068,30 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$q);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$v);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$p = [
+    const __iconNode$u = [
+      [
+        "path",
+        {
+          d: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z",
+          key: "96xj49"
+        }
+      ]
+    ];
+    const Flame = createLucideIcon("flame", __iconNode$u);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$t = [
       ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
       ["path", { d: "m18 15 4-4", key: "16gjal" }],
       [
@@ -38828,14 +39102,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Hammer = createLucideIcon("hammer", __iconNode$p);
+    const Hammer = createLucideIcon("hammer", __iconNode$t);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$o = [
+    const __iconNode$s = [
       [
         "path",
         {
@@ -38845,14 +39119,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$o);
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$s);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$n = [
+    const __iconNode$r = [
       [
         "path",
         {
@@ -38861,14 +39135,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Heart = createLucideIcon("heart", __iconNode$n);
+    const Heart = createLucideIcon("heart", __iconNode$r);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$m = [
+    const __iconNode$q = [
       ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
       ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
       ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
@@ -38882,14 +39156,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
     ];
-    const ImageOff = createLucideIcon("image-off", __iconNode$m);
+    const ImageOff = createLucideIcon("image-off", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$l = [
+    const __iconNode$p = [
       [
         "path",
         {
@@ -38912,7 +39186,50 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$l);
+    const Layers = createLucideIcon("layers", __iconNode$p);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$o = [
+      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
+      ["path", { d: "M12 6v14", key: "1n7gus" }],
+      ["path", { d: "M8 8v12", key: "1gg7y9" }],
+      ["path", { d: "M4 4v16", key: "6qkkli" }]
+    ];
+    const Library = createLucideIcon("library", __iconNode$o);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$n = [
+      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
+      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
+    ];
+    const Link$2 = createLucideIcon("link", __iconNode$n);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$m = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$m);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$l = [
+      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+    ];
+    const Lock = createLucideIcon("lock", __iconNode$l);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38920,12 +39237,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$k = [
-      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
-      ["path", { d: "M12 6v14", key: "1n7gus" }],
-      ["path", { d: "M8 8v12", key: "1gg7y9" }],
-      ["path", { d: "M4 4v16", key: "6qkkli" }]
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
     ];
-    const Library = createLucideIcon("library", __iconNode$k);
+    const LogOut = createLucideIcon("log-out", __iconNode$k);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38933,48 +39249,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$j = [
-      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
-      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
-    ];
-    const Link$2 = createLucideIcon("link", __iconNode$j);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$i = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$i);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$h = [
-      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
-    ];
-    const Lock = createLucideIcon("lock", __iconNode$h);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$g = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-    ];
-    const LogOut = createLucideIcon("log-out", __iconNode$g);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$f = [
       ["path", { d: "M12 22v-9", key: "x3hkom" }],
       [
         "path",
@@ -38998,14 +39272,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const PackageOpen = createLucideIcon("package-open", __iconNode$f);
+    const PackageOpen = createLucideIcon("package-open", __iconNode$j);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$e = [
+    const __iconNode$i = [
       [
         "path",
         {
@@ -39017,7 +39291,59 @@ variant ${k2} -> ${e.message}`, {
       ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
       ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
     ];
-    const Package = createLucideIcon("package", __iconNode$e);
+    const Package = createLucideIcon("package", __iconNode$i);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$h = [
+      [
+        "path",
+        {
+          d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+          key: "1a8usu"
+        }
+      ],
+      ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+    ];
+    const Pencil = createLucideIcon("pencil", __iconNode$h);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$g = [
+      ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ["path", { d: "M12 5v14", key: "s699le" }]
+    ];
+    const Plus = createLucideIcon("plus", __iconNode$g);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$f = [
+      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+      ["path", { d: "M8 16H3v5", key: "1cv678" }]
+    ];
+    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$f);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$e = [
+      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+    ];
+    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$e);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39028,58 +39354,6 @@ variant ${k2} -> ${e.message}`, {
       [
         "path",
         {
-          d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
-          key: "1a8usu"
-        }
-      ],
-      ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
-    ];
-    const Pencil = createLucideIcon("pencil", __iconNode$d);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$c = [
-      ["path", { d: "M5 12h14", key: "1ays0h" }],
-      ["path", { d: "M12 5v14", key: "s699le" }]
-    ];
-    const Plus = createLucideIcon("plus", __iconNode$c);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$b = [
-      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-      ["path", { d: "M8 16H3v5", key: "1cv678" }]
-    ];
-    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$b);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$a = [
-      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
-    ];
-    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$a);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$9 = [
-      [
-        "path",
-        {
           d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
           key: "1c8476"
         }
@@ -39087,25 +39361,25 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
       ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
     ];
-    const Save = createLucideIcon("save", __iconNode$9);
+    const Save = createLucideIcon("save", __iconNode$d);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$8 = [
+    const __iconNode$c = [
       ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
       ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
     ];
-    const Search = createLucideIcon("search", __iconNode$8);
+    const Search = createLucideIcon("search", __iconNode$c);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$7 = [
+    const __iconNode$b = [
       [
         "path",
         {
@@ -39116,14 +39390,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M12 8v4", key: "1got3b" }],
       ["path", { d: "M12 16h.01", key: "1drbdi" }]
     ];
-    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$7);
+    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$b);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$6 = [
+    const __iconNode$a = [
       [
         "path",
         {
@@ -39136,28 +39410,44 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M4 17v2", key: "vumght" }],
       ["path", { d: "M5 18H3", key: "zchphs" }]
     ];
-    const Sparkles = createLucideIcon("sparkles", __iconNode$6);
+    const Sparkles = createLucideIcon("sparkles", __iconNode$a);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$5 = [
+    const __iconNode$9 = [
+      [
+        "path",
+        {
+          d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
+          key: "r04s7s"
+        }
+      ]
+    ];
+    const Star = createLucideIcon("star", __iconNode$9);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$8 = [
       ["path", { d: "M3 6h18", key: "d0wm0j" }],
       ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
       ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
       ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
       ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
     ];
-    const Trash2 = createLucideIcon("trash-2", __iconNode$5);
+    const Trash2 = createLucideIcon("trash-2", __iconNode$8);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$4 = [
+    const __iconNode$7 = [
       ["path", { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6", key: "17hqa7" }],
       ["path", { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18", key: "lmptdp" }],
       ["path", { d: "M4 22h16", key: "57wxv0" }],
@@ -39165,7 +39455,50 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22", key: "1np0yb" }],
       ["path", { d: "M18 2H6v7a6 6 0 0 0 12 0V2Z", key: "u46fv3" }]
     ];
-    const Trophy = createLucideIcon("trophy", __iconNode$4);
+    const Trophy = createLucideIcon("trophy", __iconNode$7);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$6 = [
+      ["path", { d: "M12 3v12", key: "1x0j5s" }],
+      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
+      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+    ];
+    const Upload = createLucideIcon("upload", __iconNode$6);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$5 = [
+      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
+      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
+      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+    ];
+    const Users = createLucideIcon("users", __iconNode$5);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$4 = [
+      [
+        "path",
+        {
+          d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
+          key: "uqj9uw"
+        }
+      ],
+      ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }],
+      ["path", { d: "M19.364 18.364a9 9 0 0 0 0-12.728", key: "ijwkga" }]
+    ];
+    const Volume2 = createLucideIcon("volume-2", __iconNode$4);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39173,11 +39506,17 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$3 = [
-      ["path", { d: "M12 3v12", key: "1x0j5s" }],
-      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
-      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+      [
+        "path",
+        {
+          d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
+          key: "uqj9uw"
+        }
+      ],
+      ["line", { x1: "22", x2: "16", y1: "9", y2: "15", key: "1ewh16" }],
+      ["line", { x1: "16", x2: "22", y1: "9", y2: "15", key: "5ykzw1" }]
     ];
-    const Upload = createLucideIcon("upload", __iconNode$3);
+    const VolumeX = createLucideIcon("volume-x", __iconNode$3);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39185,12 +39524,15 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$2 = [
-      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
-      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
-      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+      ["path", { d: "M8 22h8", key: "rmew8v" }],
+      ["path", { d: "M7 10h10", key: "1101jm" }],
+      ["path", { d: "M12 15v7", key: "t2xh3l" }],
+      [
+        "path",
+        { d: "M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z", key: "10ffi3" }
+      ]
     ];
-    const Users = createLucideIcon("users", __iconNode$2);
+    const Wine = createLucideIcon("wine", __iconNode$2);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -47313,7 +47655,7 @@ variant ${k2} -> ${e.message}`, {
     );
     DialogDescription$1.displayName = DESCRIPTION_NAME$1;
     var CLOSE_NAME = "DialogClose";
-    var DialogClose = reactExports.forwardRef(
+    var DialogClose$1 = reactExports.forwardRef(
       (props, forwardedRef) => {
         const { __scopeDialog, ...closeProps } = props;
         const context = useDialogContext(CLOSE_NAME, __scopeDialog);
@@ -47328,7 +47670,7 @@ variant ${k2} -> ${e.message}`, {
         );
       }
     );
-    DialogClose.displayName = CLOSE_NAME;
+    DialogClose$1.displayName = CLOSE_NAME;
     function getState$3(open) {
       return open ? "open" : "closed";
     }
@@ -47341,6 +47683,11 @@ variant ${k2} -> ${e.message}`, {
       ...props
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPortal$1, { "data-slot": "dialog-portal", ...props });
+    }
+    function DialogClose({
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose$1, { "data-slot": "dialog-close", ...props });
     }
     function DialogOverlay({
       className,
@@ -47371,14 +47718,14 @@ variant ${k2} -> ${e.message}`, {
           {
             "data-slot": "dialog-content",
             className: cn(
-              "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+              "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 flex max-h-[calc(100vh-2rem)] w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 overflow-hidden rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
               className
             ),
             ...props,
             children: [
               children,
               showCloseButton && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                DialogClose,
+                DialogClose$1,
                 {
                   "data-slot": "dialog-close",
                   className: "ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -47398,7 +47745,10 @@ variant ${k2} -> ${e.message}`, {
         "div",
         {
           "data-slot": "dialog-header",
-          className: cn("flex flex-col gap-2 text-center sm:text-left", className),
+          className: cn(
+            "flex flex-col gap-2 text-center sm:text-left shrink-0",
+            className
+          ),
           ...props
         }
       );
@@ -47409,7 +47759,7 @@ variant ${k2} -> ${e.message}`, {
         {
           "data-slot": "dialog-footer",
           className: cn(
-            "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+            "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end shrink-0",
             className
           ),
           ...props
@@ -48221,7 +48571,7 @@ variant ${k2} -> ${e.message}`, {
       (props, forwardedRef) => {
         const { __scopeAlertDialog, ...actionProps } = props;
         const dialogScope = useDialogScope(__scopeAlertDialog);
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose, { ...dialogScope, ...actionProps, ref: forwardedRef });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose$1, { ...dialogScope, ...actionProps, ref: forwardedRef });
       }
     );
     AlertDialogAction$1.displayName = ACTION_NAME;
@@ -48232,7 +48582,7 @@ variant ${k2} -> ${e.message}`, {
         const { cancelRef } = useAlertDialogContentContext(CANCEL_NAME, __scopeAlertDialog);
         const dialogScope = useDialogScope(__scopeAlertDialog);
         const ref = useComposedRefs(forwardedRef, cancelRef);
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose, { ...dialogScope, ...cancelProps, ref });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose$1, { ...dialogScope, ...cancelProps, ref });
       }
     );
     AlertDialogCancel$1.displayName = CANCEL_NAME;
@@ -49451,6 +49801,52 @@ variant ${k2} -> ${e.message}`, {
         sortOrder: Number(c2.sortOrder)
       };
     }
+    function toRecipe(r2) {
+      if (!r2) return null;
+      return {
+        glassware: r2.glassware,
+        specs: r2.specs.map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+        assembly: r2.assembly,
+        garnish: r2.garnish,
+        variants: r2.variants.map((v2) => ({
+          variantLabel: v2.variantLabel,
+          specs: v2.specs.map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient
+          })),
+          assembly: v2.assembly
+        })),
+        equipment: r2.equipment ?? [],
+        // Backend optional ?Text comes through as undefined or empty string when
+        // absent; normalize both to null so the frontend treats them uniformly.
+        yield: r2.yield && r2.yield.length > 0 ? r2.yield : null,
+        shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : null,
+        qualityIdentifier: r2.qualityIdentifier ?? []
+      };
+    }
+    function fromRecipe(r2) {
+      if (!r2) return null;
+      return {
+        glassware: r2.glassware,
+        specs: r2.specs.map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+        assembly: r2.assembly,
+        garnish: r2.garnish,
+        variants: r2.variants.map((v2) => ({
+          variantLabel: v2.variantLabel,
+          specs: v2.specs.map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient
+          })),
+          assembly: v2.assembly
+        })),
+        equipment: r2.equipment ?? [],
+        // Frontend stores null; the Candid ?Text boundary expects undefined for
+        // absent optionals. Translate null/empty -> undefined here.
+        yield: r2.yield && r2.yield.length > 0 ? r2.yield : void 0,
+        shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : void 0,
+        qualityIdentifier: r2.qualityIdentifier ?? []
+      };
+    }
     function toItem$1(i) {
       const details = (i.details ?? []).map((d2) => ({
         // id is frontend-only (not in the backend record). Generated here so each
@@ -49470,7 +49866,8 @@ variant ${k2} -> ${e.message}`, {
         notes: i.notes ?? null,
         tags: i.tags ?? [],
         seasonal: i.seasonal,
-        sortOrder: Number(i.sortOrder)
+        sortOrder: Number(i.sortOrder),
+        recipe: toRecipe(i.recipe)
       };
     }
     function useCategoriesByPosition(positionId) {
@@ -49634,7 +50031,8 @@ variant ${k2} -> ${e.message}`, {
             })),
             input.notes && input.notes.length > 0 ? input.notes : null,
             input.tags,
-            input.seasonal
+            input.seasonal,
+            fromRecipe(input.recipe)
           );
           return toItem$1(result);
         },
@@ -49665,7 +50063,8 @@ variant ${k2} -> ${e.message}`, {
             })),
             input.notes && input.notes.length > 0 ? input.notes : null,
             input.tags,
-            input.seasonal
+            input.seasonal,
+            fromRecipe(input.recipe)
           );
           return toItem$1(result);
         },
@@ -49758,13 +50157,18 @@ variant ${k2} -> ${e.message}`, {
           setError("Invalid JSON — could not parse the pasted text.");
           return;
         }
-        const validation = validateImportBlob$1(parsed);
-        if (!validation.ok || !validation.categories) {
-          setError(validation.error ?? "Invalid JSON structure.");
+        const detection = detectImportShape(parsed);
+        if (!detection.ok) {
+          setError(detection.error ?? "Invalid JSON structure.");
           return;
         }
-        const categories = validation.categories;
-        const warnings = validation.warnings ?? [];
+        if (detection.shape === "categories") {
+          await runCategoriesImport(detection.categories, detection.warnings ?? []);
+          return;
+        }
+        await runRecipesImport(detection.recipes, detection.warnings ?? []);
+      }
+      async function runCategoriesImport(categories, warnings) {
         setValidationWarnings(warnings);
         let createdCategories = 0;
         let createdItems = 0;
@@ -49852,7 +50256,8 @@ variant ${k2} -> ${e.message}`, {
                 notes: item.notes,
                 tags: item.tags,
                 seasonal: item.seasonal,
-                sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0
+                sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0,
+                recipe: (created == null ? void 0 : created.recipe) ?? null
               });
               createdItems += 1;
             }
@@ -49893,6 +50298,179 @@ variant ${k2} -> ${e.message}`, {
         } finally {
           setProgress(null);
         }
+      }
+      async function runRecipesImport(recipes, warnings) {
+        setValidationWarnings(warnings);
+        let createdCategories = 0;
+        let createdRecipes = 0;
+        let updatedRecipes = 0;
+        let skippedRecipes = 0;
+        let skippedDuplicates = 0;
+        const rowErrorCount = warnings.filter((w2) => w2.includes("Skipped.")).length;
+        const categoryIdByName = /* @__PURE__ */ new Map();
+        for (const c2 of existingCategories) {
+          categoryIdByName.set(c2.name, c2.id);
+        }
+        const touchedCategoryIds = /* @__PURE__ */ new Set();
+        const byCategory = /* @__PURE__ */ new Map();
+        for (const r2 of recipes) {
+          const list = byCategory.get(r2.category) ?? [];
+          list.push(r2);
+          byCategory.set(r2.category, list);
+        }
+        try {
+          for (const [categoryName, group] of byCategory) {
+            setProgress(`Importing category: ${categoryName}`);
+            let categoryId = categoryIdByName.get(categoryName);
+            if (!categoryId) {
+              const created = await createCategory.mutateAsync({
+                positionId,
+                name: categoryName,
+                coverPhoto: null
+              });
+              categoryId = created.id;
+              categoryIdByName.set(categoryName, categoryId);
+              createdCategories += 1;
+            }
+            touchedCategoryIds.add(categoryId);
+            const existingItems = await loadItemsForCategory(categoryId);
+            const existingByTitle = new Map(
+              existingItems.map((i) => [i.title, i])
+            );
+            for (const recipe of group) {
+              const existing = existingByTitle.get(recipe.title);
+              if (existing) {
+                if (importMode === "skip") {
+                  skippedRecipes += 1;
+                  continue;
+                }
+                if (existing.id === "") {
+                  skippedDuplicates += 1;
+                  continue;
+                }
+                setProgress(`Updating recipe: ${recipe.title} (${categoryName})`);
+                const payload2 = buildRecipePayload(recipe);
+                const tags2 = buildRecipeTags(recipe);
+                const subtitle2 = recipe.subtitle && recipe.subtitle.length > 0 ? recipe.subtitle : existing.subtitle;
+                const photo2 = recipe.photoUrl && recipe.photoUrl.length > 0 ? recipe.photoUrl : existing.photo;
+                await updateItem.mutateAsync({
+                  itemId: existing.id,
+                  categoryId,
+                  title: existing.title,
+                  subtitle: subtitle2,
+                  photo: photo2,
+                  details: [],
+                  notes: null,
+                  tags: tags2,
+                  seasonal: recipe.lto === true,
+                  recipe: payload2
+                });
+                updatedRecipes += 1;
+                continue;
+              }
+              setProgress(`Importing recipe: ${recipe.title} (${categoryName})`);
+              const payload = buildRecipePayload(recipe);
+              const tags = buildRecipeTags(recipe);
+              const subtitle = recipe.subtitle && recipe.subtitle.length > 0 ? recipe.subtitle : null;
+              const photo = recipe.photoUrl && recipe.photoUrl.length > 0 ? recipe.photoUrl : null;
+              const created = await createItem.mutateAsync({
+                categoryId,
+                title: recipe.title,
+                subtitle,
+                photo,
+                details: [],
+                notes: null,
+                tags,
+                seasonal: recipe.lto === true,
+                recipe: payload
+              });
+              existingByTitle.set(recipe.title, {
+                id: (created == null ? void 0 : created.id) ?? "",
+                categoryId,
+                title: recipe.title,
+                subtitle: (created == null ? void 0 : created.subtitle) ?? subtitle,
+                photo: (created == null ? void 0 : created.photo) ?? photo,
+                details: (created == null ? void 0 : created.details) ?? [],
+                notes: (created == null ? void 0 : created.notes) ?? null,
+                tags: (created == null ? void 0 : created.tags) ?? tags,
+                seasonal: (created == null ? void 0 : created.seasonal) ?? recipe.lto === true,
+                sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0,
+                recipe: (created == null ? void 0 : created.recipe) ?? payload
+              });
+              createdRecipes += 1;
+            }
+          }
+          await queryClient2.invalidateQueries({
+            queryKey: ["library-categories", positionId]
+          });
+          for (const cid of touchedCategoryIds) {
+            await queryClient2.invalidateQueries({
+              queryKey: ["library-items", cid]
+            });
+          }
+          const message = formatRecipeSummary(
+            createdCategories,
+            updatedRecipes,
+            createdRecipes,
+            skippedRecipes,
+            skippedDuplicates,
+            rowErrorCount
+          );
+          setSummary(message);
+          ue.success("Recipe import complete", { description: message });
+          setTimeout(() => {
+            onOpenChange(false);
+          }, 900);
+        } catch (err) {
+          const partial = `Created ${createdCategories} ${createdCategories === 1 ? "category" : "categories"}, updated ${updatedRecipes} ${updatedRecipes === 1 ? "recipe" : "recipes"}, created ${createdRecipes} ${createdRecipes === 1 ? "recipe" : "recipes"} before the failure.`;
+          const description = err instanceof Error ? err.message : void 0;
+          setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
+          ue.error("Recipe import stopped", { description: `${partial}` });
+          await queryClient2.invalidateQueries({
+            queryKey: ["library-categories", positionId]
+          });
+          for (const cid of touchedCategoryIds) {
+            await queryClient2.invalidateQueries({
+              queryKey: ["library-items", cid]
+            });
+          }
+        } finally {
+          setProgress(null);
+        }
+      }
+      function buildRecipePayload(recipe) {
+        const specs = recipe.specs.map((s) => ({
+          amount: s.amount,
+          ingredient: s.ingredient
+        }));
+        const variants = (recipe.variants ?? []).map((v2) => ({
+          variantLabel: v2.label,
+          specs: v2.specs.map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient
+          })),
+          assembly: v2.assembly
+        }));
+        const yieldValue = typeof recipe.yield === "string" && recipe.yield.length > 0 ? recipe.yield : null;
+        const shelfLifeValue = typeof recipe.shelfLife === "string" && recipe.shelfLife.length > 0 ? recipe.shelfLife : null;
+        return {
+          glassware: recipe.glassware,
+          specs,
+          assembly: recipe.assembly,
+          garnish: recipe.garnish ?? [],
+          variants,
+          equipment: recipe.equipment ?? [],
+          yield: yieldValue,
+          shelfLife: shelfLifeValue,
+          qualityIdentifier: recipe.qualityIdentifier ?? []
+        };
+      }
+      function buildRecipeTags(recipe) {
+        const tags = Array.isArray(recipe.tags) ? recipe.tags.filter((t) => typeof t === "string") : [];
+        if (recipe.lto === true && !tags.includes("LTO")) {
+          tags.push("LTO");
+        }
+        return tags;
       }
       async function loadItemsForCategory(categoryId) {
         const queryKey = ["library-items", categoryId];
@@ -49939,10 +50517,15 @@ variant ${k2} -> ${e.message}`, {
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogDescription, { children: [
-                "Paste a JSON blob of categories and items. The JSON",
+                "Paste a JSON blob of categories and items, or recipes. The top-level key (",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "categories" }),
+                " ",
+                "or ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "recipes" }),
+                ") is auto-detected. The JSON",
                 " ",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "position" }),
-                " field is ignored — import always targets this position’s library. Existing categories (matched by name) are reused, not duplicated. Items matched by title are skipped or updated depending on the mode below."
+                " field is ignored — import always targets this position’s library. Existing categories (matched by name) are reused, not duplicated. Items or recipes matched by title are skipped or updated depending on the mode below."
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleImport, className: "grid gap-4", children: [
@@ -50030,9 +50613,13 @@ variant ${k2} -> ${e.message}`, {
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-xs text-muted-foreground", children: [
-                  "Expected shape:",
+                  "Expected shape (auto-detected by the top-level key):",
                   " ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, categories: [{ name, items: [{ title, fields: [{ label, value }], tags?, seasonal?, notes? }] }] }" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, categories: [{ name, items: [{ title, fields: [{ label, value }], tags?, seasonal?, notes? }] }] }" }),
+                  " ",
+                  "or",
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, recipes: [{ title, variantLabel?, categoryId, fields: [{ label, value }], tags?, seasonal?, notes? }] }" })
                 ] })
               ] }),
               error && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -50122,7 +50709,28 @@ variant ${k2} -> ${e.message}`, {
         notes: i.notes ?? null,
         tags: i.tags ?? [],
         seasonal: i.seasonal,
-        sortOrder: Number(i.sortOrder)
+        sortOrder: Number(i.sortOrder),
+        recipe: i.recipe ? {
+          glassware: i.recipe.glassware,
+          specs: i.recipe.specs.map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient
+          })),
+          assembly: i.recipe.assembly,
+          garnish: i.recipe.garnish,
+          equipment: i.recipe.equipment ?? [],
+          yield: i.recipe.yield ?? null,
+          shelfLife: i.recipe.shelfLife ?? null,
+          qualityIdentifier: i.recipe.qualityIdentifier ?? [],
+          variants: i.recipe.variants.map((v2) => ({
+            variantLabel: v2.variantLabel,
+            specs: v2.specs.map((s) => ({
+              amount: s.amount,
+              ingredient: s.ingredient
+            })),
+            assembly: v2.assembly
+          }))
+        } : null
       };
     }
     function formatSummary$1(createdCategories, updatedItems, createdItems, skippedItems, skippedDuplicates) {
@@ -50222,6 +50830,220 @@ variant ${k2} -> ${e.message}`, {
         categories.push({ name: cat.name, items });
       }
       return { ok: true, categories, warnings };
+    }
+    function detectImportShape(parsed) {
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        return { ok: false, error: "JSON must be an object." };
+      }
+      const root2 = parsed;
+      const hasCategories = Array.isArray(root2.categories);
+      const hasRecipes = Array.isArray(root2.recipes);
+      if (hasCategories && hasRecipes) {
+        return {
+          ok: false,
+          error: "Ambiguous JSON: provide either 'categories' or 'recipes', not both."
+        };
+      }
+      if (hasRecipes) {
+        const recipesArray = root2.recipes;
+        const result = validateRecipesBlob(recipesArray);
+        if (!result.ok)
+          return { ok: false, error: result.error ?? "Invalid recipes JSON." };
+        return {
+          ok: true,
+          shape: "recipes",
+          recipes: result.recipes ?? [],
+          warnings: result.warnings ?? []
+        };
+      }
+      if (hasCategories) {
+        const result = validateImportBlob$1(parsed);
+        if (!result.ok || !result.categories) {
+          return { ok: false, error: result.error ?? "Invalid JSON structure." };
+        }
+        return {
+          ok: true,
+          shape: "categories",
+          categories: result.categories,
+          warnings: result.warnings ?? []
+        };
+      }
+      return {
+        ok: false,
+        error: "JSON must have a top-level 'categories' or 'recipes' array."
+      };
+    }
+    function validateRecipesBlob(rawRecipes) {
+      const recipes = [];
+      const warnings = [];
+      const seenPairs = /* @__PURE__ */ new Set();
+      for (let i = 0; i < rawRecipes.length; i += 1) {
+        const raw = rawRecipes[i];
+        if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+          return { ok: false, error: `recipes[${i}] must be an object.` };
+        }
+        const r2 = raw;
+        const title = typeof r2.title === "string" ? r2.title.trim() : "";
+        const category = typeof r2.category === "string" ? r2.category.trim() : "";
+        const glassware = typeof r2.glassware === "string" ? r2.glassware.trim() : "";
+        const yieldValue = typeof r2.yield === "string" ? r2.yield.trim() : "";
+        const equipmentValue = Array.isArray(r2.equipment) ? r2.equipment : [];
+        const isBulkMix2 = yieldValue.length > 0 || equipmentValue.length > 0;
+        const rowErrors = [];
+        if (title.length === 0) rowErrors.push("title is required");
+        if (category.length === 0) rowErrors.push("category is required");
+        if (!isBulkMix2 && glassware.length === 0) {
+          rowErrors.push("glassware is required");
+        }
+        if (!Array.isArray(r2.specs) || r2.specs.length === 0) {
+          rowErrors.push("specs must be a non-empty array");
+        } else {
+          for (let j2 = 0; j2 < r2.specs.length; j2 += 1) {
+            const s = r2.specs[j2];
+            if (typeof s !== "object" || s === null || Array.isArray(s)) {
+              rowErrors.push(`specs[${j2}] must be an object`);
+              continue;
+            }
+            const sr = s;
+            const amount = typeof sr.amount === "string" ? sr.amount.trim() : "";
+            const ingredient = typeof sr.ingredient === "string" ? sr.ingredient.trim() : "";
+            if (amount.length === 0 || ingredient.length === 0) {
+              rowErrors.push(`specs[${j2}] needs both amount and ingredient`);
+            }
+          }
+        }
+        if (!Array.isArray(r2.assembly) || r2.assembly.length === 0) {
+          rowErrors.push("assembly must be a non-empty array");
+        }
+        if (rowErrors.length > 0) {
+          const label = title.length > 0 ? `"${title}"` : `recipes[${i}]`;
+          warnings.push(`${label}: ${rowErrors.join("; ")}. Skipped.`);
+          continue;
+        }
+        const specs = r2.specs.map((s) => ({
+          amount: s.amount.trim(),
+          ingredient: s.ingredient.trim()
+        }));
+        const assembly = r2.assembly.filter(
+          (a2) => typeof a2 === "string"
+        );
+        const garnish = Array.isArray(r2.garnish) ? r2.garnish.filter((g2) => typeof g2 === "string") : void 0;
+        let variants;
+        if (Array.isArray(r2.variants)) {
+          variants = [];
+          for (let v2 = 0; v2 < r2.variants.length; v2 += 1) {
+            const rv = r2.variants[v2];
+            if (typeof rv !== "object" || rv === null || Array.isArray(rv)) {
+              warnings.push(
+                `"${title}" variants[${v2}] must be an object. Variant skipped.`
+              );
+              continue;
+            }
+            const rvr = rv;
+            const vLabel = typeof rvr.label === "string" ? rvr.label.trim() : "";
+            if (vLabel.length === 0) {
+              warnings.push(
+                `"${title}" variants[${v2}].label must be a non-empty string. Variant skipped.`
+              );
+              continue;
+            }
+            if (!Array.isArray(rvr.specs)) {
+              warnings.push(
+                `"${title}" variants[${v2}].specs must be an array. Variant skipped.`
+              );
+              continue;
+            }
+            const vSpecs = [];
+            let vSpecsOk = true;
+            for (let k2 = 0; k2 < rvr.specs.length; k2 += 1) {
+              const vs = rvr.specs[k2];
+              if (typeof vs !== "object" || vs === null || Array.isArray(vs)) {
+                vSpecsOk = false;
+                warnings.push(
+                  `"${title}" variants[${v2}].specs[${k2}] must be an object. Variant skipped.`
+                );
+                break;
+              }
+              const vsr = vs;
+              const vAmount = typeof vsr.amount === "string" ? vsr.amount.trim() : "";
+              const vIngredient = typeof vsr.ingredient === "string" ? vsr.ingredient.trim() : "";
+              if (vAmount.length === 0 || vIngredient.length === 0) {
+                vSpecsOk = false;
+                warnings.push(
+                  `"${title}" variants[${v2}].specs[${k2}] needs both amount and ingredient. Variant skipped.`
+                );
+                break;
+              }
+              vSpecs.push({ amount: vAmount, ingredient: vIngredient });
+            }
+            if (!vSpecsOk) continue;
+            if (vSpecs.length === 0) {
+              warnings.push(
+                `"${title}" variants[${v2}].specs must be non-empty. Variant skipped.`
+              );
+              continue;
+            }
+            if (!Array.isArray(rvr.assembly)) {
+              warnings.push(
+                `"${title}" variants[${v2}].assembly must be an array. Variant skipped.`
+              );
+              continue;
+            }
+            const vAssembly = rvr.assembly.filter(
+              (a2) => typeof a2 === "string"
+            );
+            variants.push({
+              label: vLabel,
+              specs: vSpecs,
+              assembly: vAssembly
+            });
+          }
+        }
+        const pairKey = `${category}\0${title}`;
+        if (seenPairs.has(pairKey)) {
+          warnings.push(
+            `Duplicate recipe "${title}" in category "${category}" at recipes[${i}] — the later occurrence will be skipped.`
+          );
+          continue;
+        }
+        seenPairs.add(pairKey);
+        recipes.push({
+          category,
+          title,
+          subtitle: typeof r2.subtitle === "string" && r2.subtitle.length > 0 ? r2.subtitle : void 0,
+          photoUrl: typeof r2.photoUrl === "string" && r2.photoUrl.length > 0 ? r2.photoUrl : void 0,
+          lto: r2.lto === true,
+          tags: Array.isArray(r2.tags) ? r2.tags.filter((t) => typeof t === "string") : void 0,
+          glassware,
+          specs,
+          assembly,
+          garnish,
+          variants,
+          // Bulk-mix metadata — all optional. Non-string entries in the array
+          // fields are filtered out; non-string scalars are dropped to undefined.
+          // buildRecipePayload applies the final defaults ([] / null).
+          equipment: Array.isArray(r2.equipment) ? r2.equipment.filter((e) => typeof e === "string") : void 0,
+          yield: typeof r2.yield === "string" && r2.yield.length > 0 ? r2.yield : void 0,
+          shelfLife: typeof r2.shelfLife === "string" && r2.shelfLife.length > 0 ? r2.shelfLife : void 0,
+          qualityIdentifier: Array.isArray(r2.qualityIdentifier) ? r2.qualityIdentifier.filter((q2) => typeof q2 === "string") : void 0
+        });
+      }
+      return { ok: true, recipes, warnings };
+    }
+    function formatRecipeSummary(createdCategories, updatedRecipes, createdRecipes, skippedRecipes, skippedDuplicates, rowErrorCount) {
+      const catWord = createdCategories === 1 ? "category" : "categories";
+      const updatedWord = updatedRecipes === 1 ? "recipe" : "recipes";
+      const createdWord = createdRecipes === 1 ? "recipe" : "recipes";
+      const skippedWord = skippedRecipes === 1 ? "recipe" : "recipes";
+      const dupWord = skippedDuplicates === 1 ? "recipe" : "recipes";
+      let base = `Created ${createdCategories} ${catWord}, updated ${updatedRecipes} ${updatedWord}, created ${createdRecipes} ${createdWord}, skipped ${skippedRecipes} ${skippedWord}.`;
+      if (skippedDuplicates > 0) {
+        base += ` Skipped ${skippedDuplicates} within-blob duplicate ${dupWord} (same title earlier in this import).`;
+      }
+      if (rowErrorCount > 0) {
+        base += ` ${rowErrorCount} ${rowErrorCount === 1 ? "recipe was" : "recipes were"} skipped due to validation errors.`;
+      }
+      return base;
     }
     const PLACEHOLDER$1 = `{
   "position": "Bartender",
@@ -62789,6 +63611,29 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
+    function makeRecipeRowId(prefix2) {
+      if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+        return crypto.randomUUID();
+      }
+      return `${prefix2}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+    const newSpecId = () => makeRecipeRowId("spec");
+    const newTextId = () => makeRecipeRowId("txt");
+    const newVariantId = () => makeRecipeRowId("var");
+    function emptySpec() {
+      return { id: newSpecId(), amount: "", ingredient: "" };
+    }
+    function emptyText() {
+      return { id: newTextId(), value: "" };
+    }
+    function emptyVariant() {
+      return {
+        id: newVariantId(),
+        variantLabel: "",
+        specs: [emptySpec()],
+        assembly: [emptyText()]
+      };
+    }
     function ItemEditorPage({
       positionId,
       categoryId,
@@ -62810,6 +63655,24 @@ ${escapeText(this.code(index2, length))}
       const [tags, setTags] = reactExports.useState([]);
       const [tagDraft, setTagDraft] = reactExports.useState("");
       const [seasonal, setSeasonal] = reactExports.useState(false);
+      const [isRecipe, setIsRecipe] = reactExports.useState(false);
+      const [recipeGlassware, setRecipeGlassware] = reactExports.useState("");
+      const [recipeSpecs, setRecipeSpecs] = reactExports.useState([emptySpec()]);
+      const [recipeAssembly, setRecipeAssembly] = reactExports.useState([
+        emptyText()
+      ]);
+      const [recipeGarnish, setRecipeGarnish] = reactExports.useState([
+        emptyText()
+      ]);
+      const [recipeVariants, setRecipeVariants] = reactExports.useState([
+        emptyVariant()
+      ]);
+      const [recipeEquipment, setRecipeEquipment] = reactExports.useState([
+        emptyText()
+      ]);
+      const [recipeYield, setRecipeYield] = reactExports.useState("");
+      const [recipeShelfLife, setRecipeShelfLife] = reactExports.useState("");
+      const [recipeQualityIdentifier, setRecipeQualityIdentifier] = reactExports.useState([emptyText()]);
       const [touched, setTouched] = reactExports.useState(false);
       const [hydrated, setHydrated] = reactExports.useState(false);
       reactExports.useEffect(() => {
@@ -62824,6 +63687,41 @@ ${escapeText(this.code(index2, length))}
           setNotes(existing.notes ?? "");
           setTags(existing.tags);
           setSeasonal(existing.seasonal);
+          if (existing.recipe) {
+            const r2 = existing.recipe;
+            setIsRecipe(true);
+            setRecipeGlassware(r2.glassware);
+            setRecipeSpecs(
+              r2.specs.length > 0 ? r2.specs.map((s) => ({ id: newSpecId(), ...s })) : [emptySpec()]
+            );
+            setRecipeAssembly(
+              r2.assembly.length > 0 ? r2.assembly.map((value) => ({ id: newTextId(), value })) : [emptyText()]
+            );
+            setRecipeGarnish(
+              r2.garnish.length > 0 ? r2.garnish.map((value) => ({ id: newTextId(), value })) : [emptyText()]
+            );
+            setRecipeVariants(
+              r2.variants.length > 0 ? r2.variants.map((v2) => ({
+                id: newVariantId(),
+                variantLabel: v2.variantLabel,
+                specs: v2.specs.length > 0 ? v2.specs.map((s) => ({ id: newSpecId(), ...s })) : [emptySpec()],
+                assembly: v2.assembly.length > 0 ? v2.assembly.map((value) => ({ id: newTextId(), value })) : [emptyText()]
+              })) : [emptyVariant()]
+            );
+            setRecipeEquipment(
+              r2.equipment.length > 0 ? r2.equipment.map((value) => ({ id: newTextId(), value })) : [emptyText()]
+            );
+            setRecipeYield(r2.yield ?? "");
+            setRecipeShelfLife(r2.shelfLife ?? "");
+            setRecipeQualityIdentifier(
+              r2.qualityIdentifier.length > 0 ? r2.qualityIdentifier.map((value) => ({
+                id: newTextId(),
+                value
+              })) : [emptyText()]
+            );
+          } else {
+            setIsRecipe(false);
+          }
           setHydrated(true);
         }
       }, [isCreate, hydrated, existing]);
@@ -62831,6 +63729,42 @@ ${escapeText(this.code(index2, length))}
       const titleError = touched && title.trim().length === 0 ? "Title is required" : null;
       const canSubmit = title.trim().length > 0;
       const isPending = createMutation.isPending || updateMutation.isPending;
+      function isBlankSpec(s) {
+        return s.amount.trim().length === 0 && s.ingredient.trim().length === 0;
+      }
+      function buildRecipe() {
+        if (!isRecipe) return null;
+        const cleanedSpecs = recipeSpecs.filter((s) => !isBlankSpec(s)).map((s) => ({ amount: s.amount, ingredient: s.ingredient }));
+        const cleanedAssembly = recipeAssembly.filter((r2) => r2.value.trim().length > 0).map((r2) => r2.value);
+        const cleanedGarnish = recipeGarnish.filter((r2) => r2.value.trim().length > 0).map((r2) => r2.value);
+        const cleanedVariants = recipeVariants.map((v2) => ({
+          variantLabel: v2.variantLabel.trim(),
+          specs: v2.specs.filter((s) => !isBlankSpec(s)).map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+          assembly: v2.assembly.filter((r2) => r2.value.trim().length > 0).map((r2) => r2.value)
+        })).filter(
+          (v2) => v2.variantLabel.length > 0 || v2.specs.length > 0 || v2.assembly.length > 0
+        );
+        const cleanedEquipment = recipeEquipment.filter((r2) => r2.value.trim().length > 0).map((r2) => r2.value);
+        const trimmedYield = recipeYield.trim();
+        const trimmedShelfLife = recipeShelfLife.trim();
+        const cleanedQualityIdentifier = recipeQualityIdentifier.filter((r2) => r2.value.trim().length > 0).map((r2) => r2.value);
+        const trimmedGlassware = recipeGlassware.trim();
+        if (trimmedGlassware.length === 0 && cleanedSpecs.length === 0 && cleanedAssembly.length === 0 && cleanedGarnish.length === 0 && cleanedVariants.length === 0 && cleanedEquipment.length === 0 && trimmedYield.length === 0 && trimmedShelfLife.length === 0 && cleanedQualityIdentifier.length === 0) {
+          return null;
+        }
+        return {
+          glassware: trimmedGlassware,
+          specs: cleanedSpecs,
+          assembly: cleanedAssembly,
+          garnish: cleanedGarnish,
+          variants: cleanedVariants,
+          equipment: cleanedEquipment,
+          yield: trimmedYield.length > 0 ? trimmedYield : null,
+          shelfLife: trimmedShelfLife.length > 0 ? trimmedShelfLife : null,
+          qualityIdentifier: cleanedQualityIdentifier
+        };
+      }
+      const recipeError = touched && isRecipe && buildRecipe() === null ? "Add at least glassware or one spec/step to save as a recipe, or turn the toggle off." : null;
       function commitTag() {
         const trimmed = tagDraft.trim();
         if (trimmed.length === 0) return;
@@ -62861,6 +63795,68 @@ ${escapeText(this.code(index2, length))}
       function handleNotesChange(e) {
         setNotes(e.target.value);
       }
+      function addSpec(list, setList) {
+        setList([...list, emptySpec()]);
+      }
+      function updateSpec(list, setList, index2, patch) {
+        setList(list.map((s, i) => i === index2 ? { ...s, ...patch } : s));
+      }
+      function removeSpec(list, setList, index2) {
+        if (list.length <= 1) {
+          setList([emptySpec()]);
+          return;
+        }
+        setList(list.filter((_2, i) => i !== index2));
+      }
+      function moveSpec(list, setList, index2, direction) {
+        const target = index2 + direction;
+        if (target < 0 || target >= list.length) return;
+        const next = [...list];
+        [next[index2], next[target]] = [next[target], next[index2]];
+        setList(next);
+      }
+      function addTextRow(list, setList) {
+        setList([...list, emptyText()]);
+      }
+      function updateTextRow(list, setList, index2, value) {
+        setList(list.map((r2, i) => i === index2 ? { ...r2, value } : r2));
+      }
+      function removeTextRow(list, setList, index2) {
+        if (list.length <= 1) {
+          setList([emptyText()]);
+          return;
+        }
+        setList(list.filter((_2, i) => i !== index2));
+      }
+      function moveTextRow(list, setList, index2, direction) {
+        const target = index2 + direction;
+        if (target < 0 || target >= list.length) return;
+        const next = [...list];
+        [next[index2], next[target]] = [next[target], next[index2]];
+        setList(next);
+      }
+      function addVariant() {
+        setRecipeVariants([...recipeVariants, emptyVariant()]);
+      }
+      function updateVariant(index2, patch) {
+        setRecipeVariants(
+          recipeVariants.map((v2, i) => i === index2 ? { ...v2, ...patch } : v2)
+        );
+      }
+      function removeVariant(index2) {
+        if (recipeVariants.length <= 1) {
+          setRecipeVariants([emptyVariant()]);
+          return;
+        }
+        setRecipeVariants(recipeVariants.filter((_2, i) => i !== index2));
+      }
+      function moveVariant(index2, direction) {
+        const target = index2 + direction;
+        if (target < 0 || target >= recipeVariants.length) return;
+        const next = [...recipeVariants];
+        [next[index2], next[target]] = [next[target], next[index2]];
+        setRecipeVariants(next);
+      }
       const backTo = reactExports.useMemo(
         () => ({
           to: "/admin/positions/$positionId/library",
@@ -62872,6 +63868,7 @@ ${escapeText(this.code(index2, length))}
         e.preventDefault();
         setTouched(true);
         if (!canSubmit) return;
+        if (isRecipe && buildRecipe() === null) return;
         const cleanedDetails = details.filter(
           (d2) => d2.fieldLabel.trim().length > 0 || d2.value.trim().length > 0
         );
@@ -62880,6 +63877,7 @@ ${escapeText(this.code(index2, length))}
         const trimmedSubtitle = subtitle.trim();
         const trimmedPhoto = photo.trim();
         const trimmedNotes = notes.trim();
+        const recipePayload = buildRecipe();
         try {
           if (isCreate) {
             await createMutation.mutateAsync({
@@ -62890,7 +63888,8 @@ ${escapeText(this.code(index2, length))}
               details: finalDetails,
               notes: trimmedNotes.length > 0 ? trimmedNotes : null,
               tags,
-              seasonal
+              seasonal,
+              recipe: recipePayload
             });
             ue.success("Item created");
           } else {
@@ -62903,7 +63902,8 @@ ${escapeText(this.code(index2, length))}
               details: finalDetails,
               notes: trimmedNotes.length > 0 ? trimmedNotes : null,
               tags,
-              seasonal
+              seasonal,
+              recipe: recipePayload
             });
             ue.success("Item updated");
           }
@@ -63153,6 +64153,1115 @@ ${escapeText(this.code(index2, length))}
                   }
                 )
               ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4 rounded-md border border-border bg-card p-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-0.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Label,
+                    {
+                      htmlFor: "item-recipe",
+                      className: "font-heading uppercase text-xs tracking-wider",
+                      children: "This is a recipe"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Adds a cocktail spec (glassware, specs, assembly, garnish, variants) to this item." })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Switch,
+                  {
+                    id: "item-recipe",
+                    checked: isRecipe,
+                    onCheckedChange: setIsRecipe,
+                    disabled: isPending,
+                    "aria-label": "This is a recipe toggle",
+                    "data-ocid": "library.admin.item.editor.recipe_toggle"
+                  }
+                )
+              ] }),
+              isRecipe && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "fieldset",
+                {
+                  className: "grid gap-5 rounded-md border border-border bg-muted/20 p-4",
+                  "data-ocid": "library.admin.item.editor.recipe.section",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("legend", { className: "px-2 font-heading uppercase text-xs tracking-wider", children: "Recipe" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Label,
+                        {
+                          htmlFor: "recipe-glassware",
+                          className: "font-heading uppercase text-xs tracking-wider",
+                          children: "Glassware"
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input$1,
+                        {
+                          id: "recipe-glassware",
+                          value: recipeGlassware,
+                          onChange: (e) => setRecipeGlassware(e.target.value),
+                          onBlur: () => setTouched(true),
+                          placeholder: "e.g. Rocks glass",
+                          disabled: isPending,
+                          "data-ocid": "library.admin.item.editor.recipe.glassware_input",
+                          autoComplete: "off",
+                          maxLength: 80
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Specs" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Measured ingredients (e.g. 2 oz / Bourbon)." }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "grid gap-2",
+                          "data-ocid": "library.admin.item.editor.recipe.specs.list",
+                          children: [
+                            recipeSpecs.map((spec, index2) => {
+                              const isFirst = index2 === 0;
+                              const isLast = index2 === recipeSpecs.length - 1;
+                              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                "div",
+                                {
+                                  className: "flex items-start gap-2 rounded-md border border-border bg-card p-2",
+                                  "data-ocid": `library.admin.item.editor.recipe.specs.item.${index2 + 1}`,
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      Input$1,
+                                      {
+                                        value: spec.amount,
+                                        onChange: (e) => updateSpec(recipeSpecs, setRecipeSpecs, index2, {
+                                          amount: e.target.value
+                                        }),
+                                        placeholder: "Amount e.g. 2 oz",
+                                        "aria-label": `Spec ${index2 + 1} amount`,
+                                        disabled: isPending,
+                                        "data-ocid": `library.admin.item.editor.recipe.specs.item.${index2 + 1}.amount_input`,
+                                        autoComplete: "off",
+                                        maxLength: 40,
+                                        className: "flex-1"
+                                      }
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      Input$1,
+                                      {
+                                        value: spec.ingredient,
+                                        onChange: (e) => updateSpec(recipeSpecs, setRecipeSpecs, index2, {
+                                          ingredient: e.target.value
+                                        }),
+                                        placeholder: "Ingredient e.g. Bourbon",
+                                        "aria-label": `Spec ${index2 + 1} ingredient`,
+                                        disabled: isPending,
+                                        "data-ocid": `library.admin.item.editor.recipe.specs.item.${index2 + 1}.ingredient_input`,
+                                        autoComplete: "off",
+                                        maxLength: 80,
+                                        className: "flex-1"
+                                      }
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => moveSpec(recipeSpecs, setRecipeSpecs, index2, -1),
+                                          disabled: isPending || isFirst,
+                                          "aria-label": `Move spec ${index2 + 1} up`,
+                                          "data-ocid": `library.admin.item.editor.recipe.specs.item.${index2 + 1}.move_up`,
+                                          className: "text-muted-foreground hover:text-foreground",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => moveSpec(recipeSpecs, setRecipeSpecs, index2, 1),
+                                          disabled: isPending || isLast,
+                                          "aria-label": `Move spec ${index2 + 1} down`,
+                                          "data-ocid": `library.admin.item.editor.recipe.specs.item.${index2 + 1}.move_down`,
+                                          className: "text-muted-foreground hover:text-foreground",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => removeSpec(recipeSpecs, setRecipeSpecs, index2),
+                                          disabled: isPending,
+                                          "aria-label": `Remove spec ${index2 + 1}`,
+                                          "data-ocid": `library.admin.item.editor.recipe.specs.item.${index2 + 1}.remove`,
+                                          className: "text-muted-foreground hover:text-primary",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                        }
+                                      )
+                                    ] })
+                                  ]
+                                },
+                                spec.id
+                              );
+                            }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              Button,
+                              {
+                                type: "button",
+                                variant: "outline",
+                                onClick: () => addSpec(recipeSpecs, setRecipeSpecs),
+                                disabled: isPending,
+                                "data-ocid": "library.admin.item.editor.recipe.specs.add",
+                                className: "w-full justify-center gap-2",
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                  "Add spec"
+                                ]
+                              }
+                            )
+                          ]
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Assembly" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Prep steps in order." }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "grid gap-2",
+                          "data-ocid": "library.admin.item.editor.recipe.assembly.list",
+                          children: [
+                            recipeAssembly.map((row, index2) => {
+                              const isFirst = index2 === 0;
+                              const isLast = index2 === recipeAssembly.length - 1;
+                              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                "div",
+                                {
+                                  className: "flex items-start gap-2 rounded-md border border-border bg-card p-2",
+                                  "data-ocid": `library.admin.item.editor.recipe.assembly.item.${index2 + 1}`,
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      Input$1,
+                                      {
+                                        value: row.value,
+                                        onChange: (e) => updateTextRow(
+                                          recipeAssembly,
+                                          setRecipeAssembly,
+                                          index2,
+                                          e.target.value
+                                        ),
+                                        placeholder: `Step ${index2 + 1} e.g. Stir over ice`,
+                                        "aria-label": `Assembly step ${index2 + 1}`,
+                                        disabled: isPending,
+                                        "data-ocid": `library.admin.item.editor.recipe.assembly.item.${index2 + 1}.input`,
+                                        autoComplete: "off",
+                                        maxLength: 200,
+                                        className: "flex-1"
+                                      }
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => moveTextRow(
+                                            recipeAssembly,
+                                            setRecipeAssembly,
+                                            index2,
+                                            -1
+                                          ),
+                                          disabled: isPending || isFirst,
+                                          "aria-label": `Move assembly step ${index2 + 1} up`,
+                                          "data-ocid": `library.admin.item.editor.recipe.assembly.item.${index2 + 1}.move_up`,
+                                          className: "text-muted-foreground hover:text-foreground",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => moveTextRow(
+                                            recipeAssembly,
+                                            setRecipeAssembly,
+                                            index2,
+                                            1
+                                          ),
+                                          disabled: isPending || isLast,
+                                          "aria-label": `Move assembly step ${index2 + 1} down`,
+                                          "data-ocid": `library.admin.item.editor.recipe.assembly.item.${index2 + 1}.move_down`,
+                                          className: "text-muted-foreground hover:text-foreground",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => removeTextRow(
+                                            recipeAssembly,
+                                            setRecipeAssembly,
+                                            index2
+                                          ),
+                                          disabled: isPending,
+                                          "aria-label": `Remove assembly step ${index2 + 1}`,
+                                          "data-ocid": `library.admin.item.editor.recipe.assembly.item.${index2 + 1}.remove`,
+                                          className: "text-muted-foreground hover:text-primary",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                        }
+                                      )
+                                    ] })
+                                  ]
+                                },
+                                row.id
+                              );
+                            }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              Button,
+                              {
+                                type: "button",
+                                variant: "outline",
+                                onClick: () => addTextRow(recipeAssembly, setRecipeAssembly),
+                                disabled: isPending,
+                                "data-ocid": "library.admin.item.editor.recipe.assembly.add",
+                                className: "w-full justify-center gap-2",
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                  "Add step"
+                                ]
+                              }
+                            )
+                          ]
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Garnish" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Garnish items (e.g. Orange twist)." }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "grid gap-2",
+                          "data-ocid": "library.admin.item.editor.recipe.garnish.list",
+                          children: [
+                            recipeGarnish.map((row, index2) => {
+                              const isFirst = index2 === 0;
+                              const isLast = index2 === recipeGarnish.length - 1;
+                              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                "div",
+                                {
+                                  className: "flex items-start gap-2 rounded-md border border-border bg-card p-2",
+                                  "data-ocid": `library.admin.item.editor.recipe.garnish.item.${index2 + 1}`,
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      Input$1,
+                                      {
+                                        value: row.value,
+                                        onChange: (e) => updateTextRow(
+                                          recipeGarnish,
+                                          setRecipeGarnish,
+                                          index2,
+                                          e.target.value
+                                        ),
+                                        placeholder: `Garnish ${index2 + 1} e.g. Orange twist`,
+                                        "aria-label": `Garnish item ${index2 + 1}`,
+                                        disabled: isPending,
+                                        "data-ocid": `library.admin.item.editor.recipe.garnish.item.${index2 + 1}.input`,
+                                        autoComplete: "off",
+                                        maxLength: 80,
+                                        className: "flex-1"
+                                      }
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => moveTextRow(
+                                            recipeGarnish,
+                                            setRecipeGarnish,
+                                            index2,
+                                            -1
+                                          ),
+                                          disabled: isPending || isFirst,
+                                          "aria-label": `Move garnish ${index2 + 1} up`,
+                                          "data-ocid": `library.admin.item.editor.recipe.garnish.item.${index2 + 1}.move_up`,
+                                          className: "text-muted-foreground hover:text-foreground",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => moveTextRow(
+                                            recipeGarnish,
+                                            setRecipeGarnish,
+                                            index2,
+                                            1
+                                          ),
+                                          disabled: isPending || isLast,
+                                          "aria-label": `Move garnish ${index2 + 1} down`,
+                                          "data-ocid": `library.admin.item.editor.recipe.garnish.item.${index2 + 1}.move_down`,
+                                          className: "text-muted-foreground hover:text-foreground",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Button,
+                                        {
+                                          type: "button",
+                                          variant: "ghost",
+                                          size: "icon",
+                                          onClick: () => removeTextRow(
+                                            recipeGarnish,
+                                            setRecipeGarnish,
+                                            index2
+                                          ),
+                                          disabled: isPending,
+                                          "aria-label": `Remove garnish ${index2 + 1}`,
+                                          "data-ocid": `library.admin.item.editor.recipe.garnish.item.${index2 + 1}.remove`,
+                                          className: "text-muted-foreground hover:text-primary",
+                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                        }
+                                      )
+                                    ] })
+                                  ]
+                                },
+                                row.id
+                              );
+                            }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              Button,
+                              {
+                                type: "button",
+                                variant: "outline",
+                                onClick: () => addTextRow(recipeGarnish, setRecipeGarnish),
+                                disabled: isPending,
+                                "data-ocid": "library.admin.item.editor.recipe.garnish.add",
+                                className: "w-full justify-center gap-2",
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                  "Add garnish"
+                                ]
+                              }
+                            )
+                          ]
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Variants" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Named variations (e.g. From Bulk) with their own specs and assembly." }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "grid gap-3",
+                          "data-ocid": "library.admin.item.editor.recipe.variants.list",
+                          children: [
+                            recipeVariants.map((variant, vIndex) => {
+                              const isFirst = vIndex === 0;
+                              const isLast = vIndex === recipeVariants.length - 1;
+                              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                "div",
+                                {
+                                  className: "grid gap-3 rounded-md border border-border bg-card p-3",
+                                  "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}`,
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-2", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Input$1,
+                                        {
+                                          value: variant.variantLabel,
+                                          onChange: (e) => updateVariant(vIndex, {
+                                            variantLabel: e.target.value
+                                          }),
+                                          placeholder: "Variant name e.g. From Bulk",
+                                          "aria-label": `Variant ${vIndex + 1} label`,
+                                          disabled: isPending,
+                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.label_input`,
+                                          autoComplete: "off",
+                                          maxLength: 80,
+                                          className: "flex-1 font-heading text-xs uppercase tracking-wider"
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                          Button,
+                                          {
+                                            type: "button",
+                                            variant: "ghost",
+                                            size: "icon",
+                                            onClick: () => moveVariant(vIndex, -1),
+                                            disabled: isPending || isFirst,
+                                            "aria-label": `Move variant ${vIndex + 1} up`,
+                                            "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.move_up`,
+                                            className: "text-muted-foreground hover:text-foreground",
+                                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                          }
+                                        ),
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                          Button,
+                                          {
+                                            type: "button",
+                                            variant: "ghost",
+                                            size: "icon",
+                                            onClick: () => moveVariant(vIndex, 1),
+                                            disabled: isPending || isLast,
+                                            "aria-label": `Move variant ${vIndex + 1} down`,
+                                            "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.move_down`,
+                                            className: "text-muted-foreground hover:text-foreground",
+                                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                          }
+                                        ),
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                          Button,
+                                          {
+                                            type: "button",
+                                            variant: "ghost",
+                                            size: "icon",
+                                            onClick: () => removeVariant(vIndex),
+                                            disabled: isPending,
+                                            "aria-label": `Remove variant ${vIndex + 1}`,
+                                            "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.remove`,
+                                            className: "text-muted-foreground hover:text-primary",
+                                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                          }
+                                        )
+                                      ] })
+                                    ] }),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2 pl-2 border-l border-border", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-[10px] tracking-wider text-muted-foreground", children: "Specs" }),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                        "div",
+                                        {
+                                          className: "grid gap-2",
+                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.list`,
+                                          children: [
+                                            variant.specs.map((spec, sIndex) => {
+                                              const sFirst = sIndex === 0;
+                                              const sLast = sIndex === variant.specs.length - 1;
+                                              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                                "div",
+                                                {
+                                                  className: "flex items-start gap-2",
+                                                  "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.item.${sIndex + 1}`,
+                                                  children: [
+                                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                      Input$1,
+                                                      {
+                                                        value: spec.amount,
+                                                        onChange: (e) => updateVariant(vIndex, {
+                                                          specs: variant.specs.map(
+                                                            (s, i) => i === sIndex ? { ...s, amount: e.target.value } : s
+                                                          )
+                                                        }),
+                                                        placeholder: "Amount",
+                                                        "aria-label": `Variant ${vIndex + 1} spec ${sIndex + 1} amount`,
+                                                        disabled: isPending,
+                                                        "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.item.${sIndex + 1}.amount_input`,
+                                                        autoComplete: "off",
+                                                        maxLength: 40,
+                                                        className: "flex-1"
+                                                      }
+                                                    ),
+                                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                      Input$1,
+                                                      {
+                                                        value: spec.ingredient,
+                                                        onChange: (e) => updateVariant(vIndex, {
+                                                          specs: variant.specs.map(
+                                                            (s, i) => i === sIndex ? {
+                                                              ...s,
+                                                              ingredient: e.target.value
+                                                            } : s
+                                                          )
+                                                        }),
+                                                        placeholder: "Ingredient",
+                                                        "aria-label": `Variant ${vIndex + 1} spec ${sIndex + 1} ingredient`,
+                                                        disabled: isPending,
+                                                        "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.item.${sIndex + 1}.ingredient_input`,
+                                                        autoComplete: "off",
+                                                        maxLength: 80,
+                                                        className: "flex-1"
+                                                      }
+                                                    ),
+                                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                        Button,
+                                                        {
+                                                          type: "button",
+                                                          variant: "ghost",
+                                                          size: "icon",
+                                                          onClick: () => moveSpec(
+                                                            variant.specs,
+                                                            (next) => updateVariant(vIndex, {
+                                                              specs: next
+                                                            }),
+                                                            sIndex,
+                                                            -1
+                                                          ),
+                                                          disabled: isPending || sFirst,
+                                                          "aria-label": `Move spec ${sIndex + 1} up`,
+                                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.item.${sIndex + 1}.move_up`,
+                                                          className: "text-muted-foreground hover:text-foreground",
+                                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                                        }
+                                                      ),
+                                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                        Button,
+                                                        {
+                                                          type: "button",
+                                                          variant: "ghost",
+                                                          size: "icon",
+                                                          onClick: () => moveSpec(
+                                                            variant.specs,
+                                                            (next) => updateVariant(vIndex, {
+                                                              specs: next
+                                                            }),
+                                                            sIndex,
+                                                            1
+                                                          ),
+                                                          disabled: isPending || sLast,
+                                                          "aria-label": `Move spec ${sIndex + 1} down`,
+                                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.item.${sIndex + 1}.move_down`,
+                                                          className: "text-muted-foreground hover:text-foreground",
+                                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                                        }
+                                                      ),
+                                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                        Button,
+                                                        {
+                                                          type: "button",
+                                                          variant: "ghost",
+                                                          size: "icon",
+                                                          onClick: () => removeSpec(
+                                                            variant.specs,
+                                                            (next) => updateVariant(vIndex, {
+                                                              specs: next
+                                                            }),
+                                                            sIndex
+                                                          ),
+                                                          disabled: isPending,
+                                                          "aria-label": `Remove spec ${sIndex + 1}`,
+                                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.item.${sIndex + 1}.remove`,
+                                                          className: "text-muted-foreground hover:text-primary",
+                                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                                        }
+                                                      )
+                                                    ] })
+                                                  ]
+                                                },
+                                                spec.id
+                                              );
+                                            }),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "outline",
+                                                size: "sm",
+                                                onClick: () => addSpec(
+                                                  variant.specs,
+                                                  (next) => updateVariant(vIndex, { specs: next })
+                                                ),
+                                                disabled: isPending,
+                                                "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.specs.add`,
+                                                className: "w-full justify-center gap-2",
+                                                children: [
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                                  "Add spec"
+                                                ]
+                                              }
+                                            )
+                                          ]
+                                        }
+                                      )
+                                    ] }),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2 pl-2 border-l border-border", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-[10px] tracking-wider text-muted-foreground", children: "Assembly" }),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                        "div",
+                                        {
+                                          className: "grid gap-2",
+                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.list`,
+                                          children: [
+                                            variant.assembly.map((row, aIndex) => {
+                                              const aFirst = aIndex === 0;
+                                              const aLast = aIndex === variant.assembly.length - 1;
+                                              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                                "div",
+                                                {
+                                                  className: "flex items-start gap-2",
+                                                  "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.item.${aIndex + 1}`,
+                                                  children: [
+                                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                      Input$1,
+                                                      {
+                                                        value: row.value,
+                                                        onChange: (e) => updateVariant(vIndex, {
+                                                          assembly: variant.assembly.map(
+                                                            (s, i) => i === aIndex ? { ...s, value: e.target.value } : s
+                                                          )
+                                                        }),
+                                                        placeholder: `Step ${aIndex + 1}`,
+                                                        "aria-label": `Variant ${vIndex + 1} assembly step ${aIndex + 1}`,
+                                                        disabled: isPending,
+                                                        "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.item.${aIndex + 1}.input`,
+                                                        autoComplete: "off",
+                                                        maxLength: 200,
+                                                        className: "flex-1"
+                                                      }
+                                                    ),
+                                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                        Button,
+                                                        {
+                                                          type: "button",
+                                                          variant: "ghost",
+                                                          size: "icon",
+                                                          onClick: () => moveTextRow(
+                                                            variant.assembly,
+                                                            (next) => updateVariant(vIndex, {
+                                                              assembly: next
+                                                            }),
+                                                            aIndex,
+                                                            -1
+                                                          ),
+                                                          disabled: isPending || aFirst,
+                                                          "aria-label": `Move assembly step ${aIndex + 1} up`,
+                                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.item.${aIndex + 1}.move_up`,
+                                                          className: "text-muted-foreground hover:text-foreground",
+                                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                                        }
+                                                      ),
+                                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                        Button,
+                                                        {
+                                                          type: "button",
+                                                          variant: "ghost",
+                                                          size: "icon",
+                                                          onClick: () => moveTextRow(
+                                                            variant.assembly,
+                                                            (next) => updateVariant(vIndex, {
+                                                              assembly: next
+                                                            }),
+                                                            aIndex,
+                                                            1
+                                                          ),
+                                                          disabled: isPending || aLast,
+                                                          "aria-label": `Move assembly step ${aIndex + 1} down`,
+                                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.item.${aIndex + 1}.move_down`,
+                                                          className: "text-muted-foreground hover:text-foreground",
+                                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                                        }
+                                                      ),
+                                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                        Button,
+                                                        {
+                                                          type: "button",
+                                                          variant: "ghost",
+                                                          size: "icon",
+                                                          onClick: () => removeTextRow(
+                                                            variant.assembly,
+                                                            (next) => updateVariant(vIndex, {
+                                                              assembly: next
+                                                            }),
+                                                            aIndex
+                                                          ),
+                                                          disabled: isPending,
+                                                          "aria-label": `Remove assembly step ${aIndex + 1}`,
+                                                          "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.item.${aIndex + 1}.remove`,
+                                                          className: "text-muted-foreground hover:text-primary",
+                                                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                                        }
+                                                      )
+                                                    ] })
+                                                  ]
+                                                },
+                                                row.id
+                                              );
+                                            }),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "outline",
+                                                size: "sm",
+                                                onClick: () => addTextRow(
+                                                  variant.assembly,
+                                                  (next) => updateVariant(vIndex, { assembly: next })
+                                                ),
+                                                disabled: isPending,
+                                                "data-ocid": `library.admin.item.editor.recipe.variants.item.${vIndex + 1}.assembly.add`,
+                                                className: "w-full justify-center gap-2",
+                                                children: [
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                                  "Add step"
+                                                ]
+                                              }
+                                            )
+                                          ]
+                                        }
+                                      )
+                                    ] })
+                                  ]
+                                },
+                                variant.id
+                              );
+                            }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              Button,
+                              {
+                                type: "button",
+                                variant: "outline",
+                                onClick: addVariant,
+                                disabled: isPending,
+                                "data-ocid": "library.admin.item.editor.recipe.variants.add",
+                                className: "w-full justify-center gap-2",
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                  "Add variant"
+                                ]
+                              }
+                            )
+                          ]
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: "grid gap-4 rounded-md border border-dashed border-border bg-muted/30 p-3",
+                        "data-ocid": "library.admin.item.editor.recipe.bulk_mix.section",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-0.5", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-xs tracking-wider", children: "Bulk Mix" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Bulk-batch metadata for batch recipes (equipment, yield, shelf life, quality checks). Optional for drink recipes." })
+                          ] }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Equipment" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Tools needed for the batch (e.g. Cambro, measures, whisk)." }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              "div",
+                              {
+                                className: "grid gap-2",
+                                "data-ocid": "library.admin.item.editor.recipe.equipment.list",
+                                children: [
+                                  recipeEquipment.map((row, index2) => {
+                                    const isFirst = index2 === 0;
+                                    const isLast = index2 === recipeEquipment.length - 1;
+                                    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                      "div",
+                                      {
+                                        className: "flex items-start gap-2 rounded-md border border-border bg-card p-2",
+                                        "data-ocid": `library.admin.item.editor.recipe.equipment.item.${index2 + 1}`,
+                                        children: [
+                                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                            Input$1,
+                                            {
+                                              value: row.value,
+                                              onChange: (e) => updateTextRow(
+                                                recipeEquipment,
+                                                setRecipeEquipment,
+                                                index2,
+                                                e.target.value
+                                              ),
+                                              placeholder: `Equipment ${index2 + 1} e.g. Cambro`,
+                                              "aria-label": `Equipment item ${index2 + 1}`,
+                                              disabled: isPending,
+                                              "data-ocid": `library.admin.item.editor.recipe.equipment.item.${index2 + 1}.input`,
+                                              autoComplete: "off",
+                                              maxLength: 80,
+                                              className: "flex-1"
+                                            }
+                                          ),
+                                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "ghost",
+                                                size: "icon",
+                                                onClick: () => moveTextRow(
+                                                  recipeEquipment,
+                                                  setRecipeEquipment,
+                                                  index2,
+                                                  -1
+                                                ),
+                                                disabled: isPending || isFirst,
+                                                "aria-label": `Move equipment ${index2 + 1} up`,
+                                                "data-ocid": `library.admin.item.editor.recipe.equipment.item.${index2 + 1}.move_up`,
+                                                className: "text-muted-foreground hover:text-foreground",
+                                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                              }
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "ghost",
+                                                size: "icon",
+                                                onClick: () => moveTextRow(
+                                                  recipeEquipment,
+                                                  setRecipeEquipment,
+                                                  index2,
+                                                  1
+                                                ),
+                                                disabled: isPending || isLast,
+                                                "aria-label": `Move equipment ${index2 + 1} down`,
+                                                "data-ocid": `library.admin.item.editor.recipe.equipment.item.${index2 + 1}.move_down`,
+                                                className: "text-muted-foreground hover:text-foreground",
+                                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                              }
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "ghost",
+                                                size: "icon",
+                                                onClick: () => removeTextRow(
+                                                  recipeEquipment,
+                                                  setRecipeEquipment,
+                                                  index2
+                                                ),
+                                                disabled: isPending,
+                                                "aria-label": `Remove equipment ${index2 + 1}`,
+                                                "data-ocid": `library.admin.item.editor.recipe.equipment.item.${index2 + 1}.remove`,
+                                                className: "text-muted-foreground hover:text-primary",
+                                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                              }
+                                            )
+                                          ] })
+                                        ]
+                                      },
+                                      row.id
+                                    );
+                                  }),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                    Button,
+                                    {
+                                      type: "button",
+                                      variant: "outline",
+                                      onClick: () => addTextRow(recipeEquipment, setRecipeEquipment),
+                                      disabled: isPending,
+                                      "data-ocid": "library.admin.item.editor.recipe.equipment.add",
+                                      className: "w-full justify-center gap-2",
+                                      children: [
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                        "Add equipment"
+                                      ]
+                                    }
+                                  )
+                                ]
+                              }
+                            )
+                          ] }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              Label,
+                              {
+                                htmlFor: "recipe-yield",
+                                className: "font-heading uppercase text-xs tracking-wider",
+                                children: [
+                                  "Yield",
+                                  " ",
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground normal-case", children: "(optional)" })
+                                ]
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              Input$1,
+                              {
+                                id: "recipe-yield",
+                                value: recipeYield,
+                                onChange: (e) => setRecipeYield(e.target.value),
+                                placeholder: "e.g. 2 Gallons + 1 Quart + 1½ cups (300 oz)",
+                                disabled: isPending,
+                                "data-ocid": "library.admin.item.editor.recipe.yield_input",
+                                autoComplete: "off",
+                                maxLength: 120
+                              }
+                            )
+                          ] }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              Label,
+                              {
+                                htmlFor: "recipe-shelf-life",
+                                className: "font-heading uppercase text-xs tracking-wider",
+                                children: [
+                                  "Shelf Life",
+                                  " ",
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground normal-case", children: "(optional)" })
+                                ]
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              Input$1,
+                              {
+                                id: "recipe-shelf-life",
+                                value: recipeShelfLife,
+                                onChange: (e) => setRecipeShelfLife(e.target.value),
+                                placeholder: "e.g. 5 Days",
+                                disabled: isPending,
+                                "data-ocid": "library.admin.item.editor.recipe.shelf_life_input",
+                                autoComplete: "off",
+                                maxLength: 40
+                              }
+                            )
+                          ] }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Quality Identifier" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Quality checks to perform on the batch (e.g. Brix, pH, taste)." }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              "div",
+                              {
+                                className: "grid gap-2",
+                                "data-ocid": "library.admin.item.editor.recipe.quality_identifier.list",
+                                children: [
+                                  recipeQualityIdentifier.map((row, index2) => {
+                                    const isFirst = index2 === 0;
+                                    const isLast = index2 === recipeQualityIdentifier.length - 1;
+                                    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                      "div",
+                                      {
+                                        className: "flex items-start gap-2 rounded-md border border-border bg-card p-2",
+                                        "data-ocid": `library.admin.item.editor.recipe.quality_identifier.item.${index2 + 1}`,
+                                        children: [
+                                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                            Input$1,
+                                            {
+                                              value: row.value,
+                                              onChange: (e) => updateTextRow(
+                                                recipeQualityIdentifier,
+                                                setRecipeQualityIdentifier,
+                                                index2,
+                                                e.target.value
+                                              ),
+                                              placeholder: `Check ${index2 + 1} e.g. Brix 18-20`,
+                                              "aria-label": `Quality identifier ${index2 + 1}`,
+                                              disabled: isPending,
+                                              "data-ocid": `library.admin.item.editor.recipe.quality_identifier.item.${index2 + 1}.input`,
+                                              autoComplete: "off",
+                                              maxLength: 80,
+                                              className: "flex-1"
+                                            }
+                                          ),
+                                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 gap-1", children: [
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "ghost",
+                                                size: "icon",
+                                                onClick: () => moveTextRow(
+                                                  recipeQualityIdentifier,
+                                                  setRecipeQualityIdentifier,
+                                                  index2,
+                                                  -1
+                                                ),
+                                                disabled: isPending || isFirst,
+                                                "aria-label": `Move quality identifier ${index2 + 1} up`,
+                                                "data-ocid": `library.admin.item.editor.recipe.quality_identifier.item.${index2 + 1}.move_up`,
+                                                className: "text-muted-foreground hover:text-foreground",
+                                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, {})
+                                              }
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "ghost",
+                                                size: "icon",
+                                                onClick: () => moveTextRow(
+                                                  recipeQualityIdentifier,
+                                                  setRecipeQualityIdentifier,
+                                                  index2,
+                                                  1
+                                                ),
+                                                disabled: isPending || isLast,
+                                                "aria-label": `Move quality identifier ${index2 + 1} down`,
+                                                "data-ocid": `library.admin.item.editor.recipe.quality_identifier.item.${index2 + 1}.move_down`,
+                                                className: "text-muted-foreground hover:text-foreground",
+                                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, {})
+                                              }
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Button,
+                                              {
+                                                type: "button",
+                                                variant: "ghost",
+                                                size: "icon",
+                                                onClick: () => removeTextRow(
+                                                  recipeQualityIdentifier,
+                                                  setRecipeQualityIdentifier,
+                                                  index2
+                                                ),
+                                                disabled: isPending,
+                                                "aria-label": `Remove quality identifier ${index2 + 1}`,
+                                                "data-ocid": `library.admin.item.editor.recipe.quality_identifier.item.${index2 + 1}.remove`,
+                                                className: "text-muted-foreground hover:text-primary",
+                                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, {})
+                                              }
+                                            )
+                                          ] })
+                                        ]
+                                      },
+                                      row.id
+                                    );
+                                  }),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                    Button,
+                                    {
+                                      type: "button",
+                                      variant: "outline",
+                                      onClick: () => addTextRow(
+                                        recipeQualityIdentifier,
+                                        setRecipeQualityIdentifier
+                                      ),
+                                      disabled: isPending,
+                                      "data-ocid": "library.admin.item.editor.recipe.quality_identifier.add",
+                                      className: "w-full justify-center gap-2",
+                                      children: [
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, {}),
+                                        "Add check"
+                                      ]
+                                    }
+                                  )
+                                ]
+                              }
+                            )
+                          ] })
+                        ]
+                      }
+                    ),
+                    recipeError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "p",
+                      {
+                        className: "text-xs text-primary font-body",
+                        "data-ocid": "library.admin.item.editor.recipe.field_error",
+                        children: recipeError
+                      }
+                    )
+                  ]
+                }
+              ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-3 pt-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Button,
@@ -66903,7 +69012,7 @@ ${escapeText(this.code(index2, length))}
     function SheetClose({
       ...props
     }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose, { "data-slot": "sheet-close", ...props });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogClose$1, { "data-slot": "sheet-close", ...props });
     }
     function SheetPortal({
       ...props
@@ -66949,7 +69058,7 @@ ${escapeText(this.code(index2, length))}
             ...props,
             children: [
               children,
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogClose, { className: "ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogClose$1, { className: "ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Close" })
               ] })
@@ -71383,6 +73492,347 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    function DrinksBuilderSettingsForm({
+      value,
+      onChange,
+      categories,
+      disabled = false
+    }) {
+      function patch(key, next) {
+        onChange({ ...value, [key]: next });
+      }
+      function toggleIncludedCategory(categoryId) {
+        const next = value.includedCategories.includes(categoryId) ? value.includedCategories.filter((id) => id !== categoryId) : [...value.includedCategories, categoryId];
+        patch("includedCategories", next);
+      }
+      function addExcludedTitle() {
+        patch("excludedDrinkTitles", [...value.excludedDrinkTitles, ""]);
+      }
+      function updateExcludedTitle(index2, text) {
+        const next = value.excludedDrinkTitles.map(
+          (t, i) => i === index2 ? text : t
+        );
+        patch("excludedDrinkTitles", next);
+      }
+      function removeExcludedTitle(index2) {
+        patch(
+          "excludedDrinkTitles",
+          value.excludedDrinkTitles.filter((_2, i) => i !== index2)
+        );
+      }
+      function clampNumber(raw, min2, max2) {
+        if (raw === "") return min2;
+        const n = Number.parseInt(raw, 10);
+        if (Number.isNaN(n)) return min2;
+        return Math.max(min2, Math.min(max2, n));
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "grid gap-5 rounded-md border border-border bg-library-card p-4",
+          "data-ocid": "legendary.drinks_builder.settings_form",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("fieldset", { className: "grid gap-2", disabled, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("legend", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Included categories" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Pick which categories the game draws drinks from. Leave all unchecked to use every category." }),
+              categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "rounded-md border border-dashed border-border px-3 py-3 text-center font-body text-xs text-muted-foreground",
+                  "data-ocid": "legendary.drinks_builder.settings_form.included_categories.empty_state",
+                  children: "No categories available — all will be used."
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "ul",
+                {
+                  className: "max-h-44 grid gap-1.5 overflow-y-auto pr-1",
+                  "data-ocid": "legendary.drinks_builder.settings_form.included_categories.list",
+                  children: categories.map((category, index2) => {
+                    const checked = value.includedCategories.includes(category.id);
+                    return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "label",
+                      {
+                        htmlFor: `db-included-${category.id}`,
+                        className: cn(
+                          "flex items-center gap-3 rounded-md border px-3 py-2 cursor-pointer transition-colors",
+                          checked ? "border-primary/60 bg-primary/10" : "border-border bg-card hover:bg-muted/40"
+                        ),
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Checkbox,
+                            {
+                              id: `db-included-${category.id}`,
+                              checked,
+                              onCheckedChange: () => toggleIncludedCategory(category.id),
+                              disabled,
+                              "data-ocid": `legendary.drinks_builder.settings_form.included_categories.item.${index2 + 1}`
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name })
+                        ]
+                      }
+                    ) }, category.id);
+                  })
+                }
+              ),
+              value.includedCategories.length === 0 && categories.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-primary", children: "None checked — all categories will be used." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("fieldset", { className: "grid gap-2", disabled, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("legend", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Excluded drink titles" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Hide specific drinks by exact title. Leave empty to include every drink from the included categories." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "ul",
+                {
+                  className: "grid gap-1.5",
+                  "data-ocid": "legendary.drinks_builder.settings_form.excluded_titles.list",
+                  children: value.excludedDrinkTitles.map((title, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "li",
+                    {
+                      className: "flex items-center gap-2",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          Input$1,
+                          {
+                            value: title,
+                            onChange: (e) => updateExcludedTitle(index2, e.target.value),
+                            placeholder: "e.g. Long Island Iced Tea",
+                            autoComplete: "off",
+                            maxLength: 80,
+                            disabled,
+                            "data-ocid": `legendary.drinks_builder.settings_form.excluded_titles.input.${index2 + 1}`
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          Button,
+                          {
+                            type: "button",
+                            variant: "outline",
+                            size: "icon",
+                            onClick: () => removeExcludedTitle(index2),
+                            disabled,
+                            "aria-label": `Remove excluded title ${index2 + 1}`,
+                            "data-ocid": `legendary.drinks_builder.settings_form.excluded_titles.remove_button.${index2 + 1}`,
+                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                          }
+                        )
+                      ]
+                    },
+                    `db-excluded-${title}`
+                  ))
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  onClick: addExcludedTitle,
+                  disabled,
+                  "data-ocid": "legendary.drinks_builder.settings_form.excluded_titles.add_button",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+                    " Add excluded title"
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                NumberField,
+                {
+                  id: "db-decoy-count",
+                  label: "Decoy count",
+                  hint: "Wrong chips per section (0-3).",
+                  value: value.decoyCount,
+                  min: 0,
+                  max: 3,
+                  disabled,
+                  onChange: (raw) => patch("decoyCount", clampNumber(raw, 0, 3)),
+                  ocid: "legendary.drinks_builder.settings_form.decoy_count"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                NumberField,
+                {
+                  id: "db-points-per-correct",
+                  label: "Points per correct",
+                  hint: "Score awarded per correct tap.",
+                  value: value.pointsPerCorrect,
+                  min: 0,
+                  max: 1e4,
+                  disabled,
+                  onChange: (raw) => patch("pointsPerCorrect", clampNumber(raw, 0, 1e4)),
+                  ocid: "legendary.drinks_builder.settings_form.points_per_correct"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                NumberField,
+                {
+                  id: "db-rounds-per-session",
+                  label: "Rounds per session",
+                  hint: "0 = endless practice.",
+                  value: value.roundsPerSession,
+                  min: 0,
+                  max: 1e3,
+                  disabled,
+                  onChange: (raw) => patch("roundsPerSession", clampNumber(raw, 0, 1e3)),
+                  ocid: "legendary.drinks_builder.settings_form.rounds_per_session"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("fieldset", { className: "grid gap-2 sm:grid-cols-2", disabled, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("legend", { className: "font-heading uppercase text-xs tracking-wider text-foreground sm:col-span-2", children: "Behavior toggles" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ToggleRow,
+                {
+                  id: "db-require-exact",
+                  label: "Require exact amounts",
+                  hint: "Player must tap the exact spec amount.",
+                  checked: value.requireExactAmounts,
+                  onChange: (v2) => patch("requireExactAmounts", v2),
+                  disabled,
+                  ocid: "legendary.drinks_builder.settings_form.require_exact_amounts"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ToggleRow,
+                {
+                  id: "db-enforce-order",
+                  label: "Enforce assembly order",
+                  hint: "Assembly steps must be tapped in order.",
+                  checked: value.enforceAssemblyOrder,
+                  onChange: (v2) => patch("enforceAssemblyOrder", v2),
+                  disabled,
+                  ocid: "legendary.drinks_builder.settings_form.enforce_assembly_order"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ToggleRow,
+                {
+                  id: "db-show-scoring",
+                  label: "Show scoring",
+                  hint: "Display the running score during play.",
+                  checked: value.showScoring,
+                  onChange: (v2) => patch("showScoring", v2),
+                  disabled,
+                  ocid: "legendary.drinks_builder.settings_form.show_scoring"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ToggleRow,
+                {
+                  id: "db-streak-multiplier",
+                  label: "Streak multiplier",
+                  hint: "Streaks multiply points per correct tap.",
+                  checked: value.streakMultiplier,
+                  onChange: (v2) => patch("streakMultiplier", v2),
+                  disabled,
+                  ocid: "legendary.drinks_builder.settings_form.streak_multiplier"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ToggleRow,
+                {
+                  id: "db-sound-default",
+                  label: "Sound on by default",
+                  hint: "Plays feedback sounds until muted.",
+                  checked: value.soundDefault,
+                  onChange: (v2) => patch("soundDefault", v2),
+                  disabled,
+                  ocid: "legendary.drinks_builder.settings_form.sound_default"
+                }
+              )
+            ] })
+          ]
+        }
+      );
+    }
+    function NumberField({
+      id,
+      label,
+      hint,
+      value,
+      min: min2,
+      max: max2,
+      disabled,
+      onChange,
+      ocid
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label,
+          {
+            htmlFor: id,
+            className: "font-heading uppercase text-xs tracking-wider text-foreground",
+            children: label
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Input$1,
+          {
+            id,
+            type: "number",
+            inputMode: "numeric",
+            min: min2,
+            max: max2,
+            value,
+            onChange: (e) => onChange(e.target.value),
+            disabled,
+            "data-ocid": ocid
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: hint })
+      ] });
+    }
+    function ToggleRow({
+      id,
+      label,
+      hint,
+      checked,
+      onChange,
+      disabled,
+      ocid
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "label",
+        {
+          htmlFor: id,
+          className: cn(
+            "flex items-start gap-3 rounded-md border px-3 py-2.5 transition-colors",
+            checked ? "border-primary/60 bg-primary/10" : "border-border bg-card hover:bg-muted/40",
+            disabled && "cursor-not-allowed opacity-60"
+          ),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Checkbox,
+              {
+                id,
+                checked,
+                onCheckedChange: (v2) => onChange(v2 === true),
+                disabled,
+                "data-ocid": ocid
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-1 flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide text-foreground", children: label }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: hint })
+            ] })
+          ]
+        }
+      );
+    }
+    const DEFAULT_DRINKS_BUILDER_SETTINGS = {
+      includedCategories: [],
+      excludedDrinkTitles: [],
+      decoyCount: 2,
+      requireExactAmounts: true,
+      enforceAssemblyOrder: true,
+      showScoring: true,
+      streakMultiplier: true,
+      pointsPerCorrect: 50,
+      roundsPerSession: 0,
+      soundDefault: true
+    };
     function toFrontendQuestion(q2) {
       if (q2.__kind__ === "multipleChoice") {
         return {
@@ -71409,7 +73859,27 @@ Defaulting to \`null\`.`;
       return {
         itemTitle: f2.itemTitle,
         itemPhoto: f2.itemPhoto ?? null,
-        detailFields: f2.detailFields
+        detailFields: f2.detailFields,
+        recipe: f2.recipe ? {
+          glassware: f2.recipe.glassware,
+          specs: f2.recipe.specs,
+          assembly: f2.recipe.assembly,
+          garnish: f2.recipe.garnish
+        } : null
+      };
+    }
+    function toFrontendDrinksBuilderSettings(s) {
+      return {
+        includedCategories: s.includedCategories,
+        excludedDrinkTitles: s.excludedDrinkTitles,
+        decoyCount: Number(s.decoyCount),
+        requireExactAmounts: s.requireExactAmounts,
+        enforceAssemblyOrder: s.enforceAssemblyOrder,
+        showScoring: s.showScoring,
+        streakMultiplier: s.streakMultiplier,
+        pointsPerCorrect: Number(s.pointsPerCorrect),
+        roundsPerSession: Number(s.roundsPerSession),
+        soundDefault: s.soundDefault
       };
     }
     function toFrontendActivityContent(c2) {
@@ -71419,9 +73889,15 @@ Defaulting to \`null\`.`;
           questions: c2.quizContent.map(toFrontendQuestion)
         };
       }
+      if (c2.__kind__ === "flashcardContent") {
+        return {
+          kind: "flashcardContent",
+          flashcards: c2.flashcardContent.map(toFrontendFlashcard)
+        };
+      }
       return {
-        kind: "flashcardContent",
-        flashcards: c2.flashcardContent.map(toFrontendFlashcard)
+        kind: "drinksBuilderContent",
+        settings: toFrontendDrinksBuilderSettings(c2.drinksBuilderContent.settings)
       };
     }
     function toFrontendActivity(a2) {
@@ -71434,6 +73910,40 @@ Defaulting to \`null\`.`;
         content: toFrontendActivityContent(a2.content),
         createdAt: a2.createdAt.toString(),
         createdBy: a2.createdBy.toString()
+      };
+    }
+    function toCandidActivityContent(content) {
+      if (content.kind === "drinksBuilderContent") {
+        return {
+          __kind__: "drinksBuilderContent",
+          drinksBuilderContent: {
+            settings: toCandidDrinksBuilderSettings(content.settings)
+          }
+        };
+      }
+      if (content.kind === "quizContent") {
+        return {
+          __kind__: "quizContent",
+          quizContent: []
+        };
+      }
+      return {
+        __kind__: "flashcardContent",
+        flashcardContent: []
+      };
+    }
+    function toCandidDrinksBuilderSettings(s) {
+      return {
+        includedCategories: s.includedCategories,
+        excludedDrinkTitles: s.excludedDrinkTitles,
+        decoyCount: BigInt(s.decoyCount),
+        requireExactAmounts: s.requireExactAmounts,
+        enforceAssemblyOrder: s.enforceAssemblyOrder,
+        showScoring: s.showScoring,
+        streakMultiplier: s.streakMultiplier,
+        pointsPerCorrect: BigInt(s.pointsPerCorrect),
+        roundsPerSession: BigInt(s.roundsPerSession),
+        soundDefault: s.soundDefault
       };
     }
     function useLegendaryActivitiesByPosition(positionId) {
@@ -71470,9 +73980,10 @@ Defaulting to \`null\`.`;
           if (!actor) throw new Error("Backend not ready");
           const result = await actor.buildLegendaryActivity({
             positionId: BigInt(input.positionId),
-            activityType: input.activityType === "quiz" ? ActivityType.quiz : ActivityType.flashcards,
+            activityType: input.activityType === "quiz" ? ActivityType.quiz : input.activityType === "drinksBuilder" ? ActivityType.drinksBuilder : ActivityType.flashcards,
             name: input.name,
-            sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id))
+            sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id)),
+            content: input.content ? toCandidActivityContent(input.content) : void 0
           });
           return toFrontendActivity(result);
         },
@@ -71510,7 +74021,8 @@ Defaulting to \`null\`.`;
           const result = await actor.updateLegendaryActivity({
             id: BigInt(input.id),
             name: input.name,
-            sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id))
+            sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id)),
+            content: input.content ? toCandidActivityContent(input.content) : void 0
           });
           return toFrontendActivity(result);
         },
@@ -71553,12 +74065,14 @@ Defaulting to \`null\`.`;
       const [name, setName] = reactExports.useState("");
       const [activityType, setActivityType] = reactExports.useState(null);
       const [selectedCategoryIds, setSelectedCategoryIds] = reactExports.useState([]);
+      const [drinksBuilderSettings, setDrinksBuilderSettings] = reactExports.useState(DEFAULT_DRINKS_BUILDER_SETTINGS);
       const [error, setError] = reactExports.useState(null);
       reactExports.useEffect(() => {
         if (open) {
           setName("");
           setActivityType(null);
           setSelectedCategoryIds([]);
+          setDrinksBuilderSettings(DEFAULT_DRINKS_BUILDER_SETTINGS);
           setError(null);
         }
       }, [open]);
@@ -71579,7 +74093,11 @@ Defaulting to \`null\`.`;
             positionId,
             activityType,
             name: trimmedName,
-            sourceCategoryIds: selectedCategoryIds
+            sourceCategoryIds: selectedCategoryIds,
+            content: activityType === "drinksBuilder" ? {
+              kind: "drinksBuilderContent",
+              settings: drinksBuilderSettings
+            } : void 0
           });
           ue.success("Activity built", {
             description: `"${trimmedName}" is now available for all staff.`
@@ -71612,121 +74130,151 @@ Defaulting to \`null\`.`;
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Pick library categories, choose a format, and generate a practice activity for this position. Available to all staff instantly." })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleBuild, className: "grid gap-5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Label,
-                  {
-                    htmlFor: "legendary-activity-name",
-                    className: "font-heading uppercase text-xs tracking-wider text-foreground",
-                    children: "Activity name"
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Input$1,
-                  {
-                    id: "legendary-activity-name",
-                    value: name,
-                    onChange: (e) => setName(e.target.value),
-                    placeholder: "e.g. Menu Knowledge Quiz",
-                    autoComplete: "off",
-                    maxLength: 80,
-                    disabled: buildMutation.isPending,
-                    "data-ocid": "legendary.builder.dialog.name_input"
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Activity type" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
-                  {
-                    className: "grid grid-cols-2 gap-2",
-                    role: "radiogroup",
-                    "aria-label": "Activity type",
-                    "data-ocid": "legendary.builder.dialog.type.toggle",
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        ActivityTypeOption,
-                        {
-                          value: "quiz",
-                          label: "Quiz",
-                          description: "Multiple choice questions",
-                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }),
-                          selected: activityType === "quiz",
-                          onSelect: () => setActivityType("quiz"),
-                          disabled: buildMutation.isPending
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        ActivityTypeOption,
-                        {
-                          value: "flashcards",
-                          label: "Flashcards",
-                          description: "Flip cards to study",
-                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" }),
-                          selected: activityType === "flashcards",
-                          onSelect: () => setActivityType("flashcards"),
-                          disabled: buildMutation.isPending
-                        }
-                      )
-                    ]
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Source categories" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Items from these categories generate the activity content." }),
-                categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton$1, {}) : categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "div",
-                  {
-                    className: "rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center",
-                    "data-ocid": "legendary.builder.dialog.categories.empty_state",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No categories exist for this position yet. Add library categories first." })
-                  }
-                ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "ul",
-                  {
-                    className: "max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1",
-                    "data-ocid": "legendary.builder.dialog.categories.list",
-                    children: categories.map((category, index2) => {
-                      const checked = selectedCategoryIds.includes(category.id);
-                      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                        "label",
-                        {
-                          htmlFor: `legendary-cat-${category.id}`,
-                          className: cn(
-                            "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
-                            checked ? "border-primary/60 bg-primary/10" : "border-border bg-library-card hover:bg-muted/40"
-                          ),
-                          children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              Checkbox,
-                              {
-                                id: `legendary-cat-${category.id}`,
-                                checked,
-                                onCheckedChange: () => toggleCategory(category.id),
-                                disabled: buildMutation.isPending,
-                                "data-ocid": `legendary.builder.dialog.categories.item.${index2 + 1}`
-                              }
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleBuild, className: "flex min-h-0 flex-col gap-5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-0 -mr-2 overflow-y-auto pr-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Label,
+                    {
+                      htmlFor: "legendary-activity-name",
+                      className: "font-heading uppercase text-xs tracking-wider text-foreground",
+                      children: "Activity name"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Input$1,
+                    {
+                      id: "legendary-activity-name",
+                      value: name,
+                      onChange: (e) => setName(e.target.value),
+                      placeholder: "e.g. Menu Knowledge Quiz",
+                      autoComplete: "off",
+                      maxLength: 80,
+                      disabled: buildMutation.isPending,
+                      "data-ocid": "legendary.builder.dialog.name_input"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Activity type" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "grid grid-cols-2 gap-2 sm:grid-cols-3",
+                      role: "radiogroup",
+                      "aria-label": "Activity type",
+                      "data-ocid": "legendary.builder.dialog.type.toggle",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ActivityTypeOption,
+                          {
+                            value: "quiz",
+                            label: "Quiz",
+                            description: "Multiple choice questions",
+                            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }),
+                            selected: activityType === "quiz",
+                            onSelect: () => setActivityType("quiz"),
+                            disabled: buildMutation.isPending
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ActivityTypeOption,
+                          {
+                            value: "flashcards",
+                            label: "Flashcards",
+                            description: "Flip cards to study",
+                            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" }),
+                            selected: activityType === "flashcards",
+                            onSelect: () => setActivityType("flashcards"),
+                            disabled: buildMutation.isPending
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ActivityTypeOption,
+                          {
+                            value: "drinksBuilder",
+                            label: "Drinks Builder",
+                            description: "Build drinks by tapping",
+                            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Wine, { className: "size-5" }),
+                            selected: activityType === "drinksBuilder",
+                            onSelect: () => setActivityType("drinksBuilder"),
+                            disabled: buildMutation.isPending
+                          }
+                        )
+                      ]
+                    }
+                  )
+                ] }),
+                activityType === "drinksBuilder" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Drinks Builder settings" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Configure the tap-based drink construction game. Source categories above seed the global decoy pool." }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    DrinksBuilderSettingsForm,
+                    {
+                      value: drinksBuilderSettings,
+                      onChange: setDrinksBuilderSettings,
+                      categories: categories.map((c2) => ({
+                        id: c2.id,
+                        name: c2.name
+                      })),
+                      disabled: buildMutation.isPending
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Source categories" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Items from these categories generate the activity content." }),
+                  categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton$1, {}) : categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center",
+                      "data-ocid": "legendary.builder.dialog.categories.empty_state",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No categories exist for this position yet. Add library categories first." })
+                    }
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "ul",
+                    {
+                      className: "max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1",
+                      "data-ocid": "legendary.builder.dialog.categories.list",
+                      children: categories.map((category, index2) => {
+                        const checked = selectedCategoryIds.includes(category.id);
+                        return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "label",
+                          {
+                            htmlFor: `legendary-cat-${category.id}`,
+                            className: cn(
+                              "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
+                              checked ? "border-primary/60 bg-primary/10" : "border-border bg-library-card hover:bg-muted/40"
                             ),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex min-w-0 flex-1 flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name }) })
-                          ]
-                        }
-                      ) }, category.id);
-                    })
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                Checkbox,
+                                {
+                                  id: `legendary-cat-${category.id}`,
+                                  checked,
+                                  onCheckedChange: () => toggleCategory(category.id),
+                                  disabled: buildMutation.isPending,
+                                  "data-ocid": `legendary.builder.dialog.categories.item.${index2 + 1}`
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex min-w-0 flex-1 flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name }) })
+                            ]
+                          }
+                        ) }, category.id);
+                      })
+                    }
+                  )
+                ] }),
+                error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    className: "text-xs text-primary font-body",
+                    "data-ocid": "legendary.builder.dialog.error_state",
+                    role: "alert",
+                    children: error
                   }
                 )
-              ] }),
-              error && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "p",
-                {
-                  className: "text-xs text-primary font-body",
-                  "data-ocid": "legendary.builder.dialog.error_state",
-                  role: "alert",
-                  children: error
-                }
-              ),
+              ] }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Button,
@@ -71812,11 +74360,15 @@ Defaulting to \`null\`.`;
       const updateMutation = useUpdateLegendaryActivity();
       const [name, setName] = reactExports.useState("");
       const [selectedCategoryIds, setSelectedCategoryIds] = reactExports.useState([]);
+      const [drinksBuilderSettings, setDrinksBuilderSettings] = reactExports.useState(DEFAULT_DRINKS_BUILDER_SETTINGS);
       const [error, setError] = reactExports.useState(null);
       reactExports.useEffect(() => {
         if (open && activity) {
           setName(activity.name);
           setSelectedCategoryIds([...activity.sourceCategoryIds]);
+          setDrinksBuilderSettings(
+            activity.activityType === "drinksBuilder" && activity.content.kind === "drinksBuilderContent" ? activity.content.settings : DEFAULT_DRINKS_BUILDER_SETTINGS
+          );
           setError(null);
         }
       }, [open, activity]);
@@ -71837,7 +74389,11 @@ Defaulting to \`null\`.`;
             id: activity.id,
             positionId,
             name: trimmedName,
-            sourceCategoryIds: selectedCategoryIds
+            sourceCategoryIds: selectedCategoryIds,
+            content: activity.activityType === "drinksBuilder" ? {
+              kind: "drinksBuilderContent",
+              settings: drinksBuilderSettings
+            } : void 0
           });
           ue.success("Activity updated", {
             description: `"${trimmedName}" was saved.`
@@ -71870,118 +74426,146 @@ Defaulting to \`null\`.`;
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Update the name or source categories. The activity type is fixed at build time and cannot change." })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSave, className: "grid gap-5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Label,
-                  {
-                    htmlFor: "legendary-activity-edit-name",
-                    className: "font-heading uppercase text-xs tracking-wider text-foreground",
-                    children: "Activity name"
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Input$1,
-                  {
-                    id: "legendary-activity-edit-name",
-                    value: name,
-                    onChange: (e) => setName(e.target.value),
-                    placeholder: "e.g. Menu Knowledge Quiz",
-                    autoComplete: "off",
-                    maxLength: 80,
-                    disabled: updateMutation.isPending,
-                    "data-ocid": "legendary.editor.dialog.name_input"
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Activity type" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
-                  {
-                    className: "grid grid-cols-2 gap-2",
-                    role: "radiogroup",
-                    "aria-label": "Activity type (read-only)",
-                    "aria-readonly": "true",
-                    "data-ocid": "legendary.editor.dialog.type.toggle",
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        ReadOnlyActivityTypeOption,
-                        {
-                          value: "quiz",
-                          label: "Quiz",
-                          description: "Multiple choice questions",
-                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }),
-                          selected: (activity == null ? void 0 : activity.activityType) === "quiz"
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        ReadOnlyActivityTypeOption,
-                        {
-                          value: "flashcards",
-                          label: "Flashcards",
-                          description: "Flip cards to study",
-                          icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" }),
-                          selected: (activity == null ? void 0 : activity.activityType) === "flashcards"
-                        }
-                      )
-                    ]
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Source categories" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Items from these categories generate the activity content." }),
-                categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton, {}) : categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "div",
-                  {
-                    className: "rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center",
-                    "data-ocid": "legendary.editor.dialog.categories.empty_state",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No categories exist for this position yet. Add library categories first." })
-                  }
-                ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "ul",
-                  {
-                    className: "max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1",
-                    "data-ocid": "legendary.editor.dialog.categories.list",
-                    children: categories.map((category, index2) => {
-                      const checked = selectedCategoryIds.includes(category.id);
-                      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                        "label",
-                        {
-                          htmlFor: `legendary-edit-cat-${category.id}`,
-                          className: cn(
-                            "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
-                            checked ? "border-primary/60 bg-primary/10" : "border-border bg-library-card hover:bg-muted/40"
-                          ),
-                          children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              Checkbox,
-                              {
-                                id: `legendary-edit-cat-${category.id}`,
-                                checked,
-                                onCheckedChange: () => toggleCategory(category.id),
-                                disabled: updateMutation.isPending,
-                                "data-ocid": `legendary.editor.dialog.categories.item.${index2 + 1}`
-                              }
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSave, className: "flex min-h-0 flex-col gap-5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-0 -mr-2 overflow-y-auto pr-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Label,
+                    {
+                      htmlFor: "legendary-activity-edit-name",
+                      className: "font-heading uppercase text-xs tracking-wider text-foreground",
+                      children: "Activity name"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Input$1,
+                    {
+                      id: "legendary-activity-edit-name",
+                      value: name,
+                      onChange: (e) => setName(e.target.value),
+                      placeholder: "e.g. Menu Knowledge Quiz",
+                      autoComplete: "off",
+                      maxLength: 80,
+                      disabled: updateMutation.isPending,
+                      "data-ocid": "legendary.editor.dialog.name_input"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Activity type" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "grid grid-cols-2 gap-2 sm:grid-cols-3",
+                      role: "radiogroup",
+                      "aria-label": "Activity type (read-only)",
+                      "aria-readonly": "true",
+                      "data-ocid": "legendary.editor.dialog.type.toggle",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ReadOnlyActivityTypeOption,
+                          {
+                            value: "quiz",
+                            label: "Quiz",
+                            description: "Multiple choice questions",
+                            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }),
+                            selected: (activity == null ? void 0 : activity.activityType) === "quiz"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ReadOnlyActivityTypeOption,
+                          {
+                            value: "flashcards",
+                            label: "Flashcards",
+                            description: "Flip cards to study",
+                            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" }),
+                            selected: (activity == null ? void 0 : activity.activityType) === "flashcards"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ReadOnlyActivityTypeOption,
+                          {
+                            value: "drinksBuilder",
+                            label: "Drinks Builder",
+                            description: "Build drinks by tapping glassware, specs, assembly, and garnish",
+                            icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Wine, { className: "size-5" }),
+                            selected: (activity == null ? void 0 : activity.activityType) === "drinksBuilder"
+                          }
+                        )
+                      ]
+                    }
+                  )
+                ] }),
+                (activity == null ? void 0 : activity.activityType) === "drinksBuilder" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Drinks Builder settings" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Configure the tap-based drink construction game. Source categories above seed the global decoy pool." }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    DrinksBuilderSettingsForm,
+                    {
+                      value: drinksBuilderSettings,
+                      onChange: setDrinksBuilderSettings,
+                      categories: categories.map((c2) => ({
+                        id: c2.id,
+                        name: c2.name
+                      })),
+                      disabled: updateMutation.isPending
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Source categories" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Items from these categories generate the activity content." }),
+                  categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryListSkeleton, {}) : categories.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center",
+                      "data-ocid": "legendary.editor.dialog.categories.empty_state",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No categories exist for this position yet. Add library categories first." })
+                    }
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "ul",
+                    {
+                      className: "max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1",
+                      "data-ocid": "legendary.editor.dialog.categories.list",
+                      children: categories.map((category, index2) => {
+                        const checked = selectedCategoryIds.includes(category.id);
+                        return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "label",
+                          {
+                            htmlFor: `legendary-edit-cat-${category.id}`,
+                            className: cn(
+                              "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
+                              checked ? "border-primary/60 bg-primary/10" : "border-border bg-library-card hover:bg-muted/40"
                             ),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex min-w-0 flex-1 flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name }) })
-                          ]
-                        }
-                      ) }, category.id);
-                    })
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                Checkbox,
+                                {
+                                  id: `legendary-edit-cat-${category.id}`,
+                                  checked,
+                                  onCheckedChange: () => toggleCategory(category.id),
+                                  disabled: updateMutation.isPending,
+                                  "data-ocid": `legendary.editor.dialog.categories.item.${index2 + 1}`
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex min-w-0 flex-1 flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-sm uppercase tracking-wide text-foreground", children: category.name }) })
+                            ]
+                          }
+                        ) }, category.id);
+                      })
+                    }
+                  )
+                ] }),
+                error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    className: "text-xs text-primary font-body",
+                    "data-ocid": "legendary.editor.dialog.error_state",
+                    role: "alert",
+                    children: error
                   }
                 )
-              ] }),
-              error && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "p",
-                {
-                  className: "text-xs text-primary font-body",
-                  "data-ocid": "legendary.editor.dialog.error_state",
-                  role: "alert",
-                  children: error
-                }
-              ),
+              ] }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Button,
@@ -72120,7 +74704,7 @@ Defaulting to \`null\`.`;
       const isLoading = activitiesQuery.isLoading || categoriesQuery.isLoading && !categories.length;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition$1, { positionId: resolvedPositionId }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendaryBanner, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendaryBanner$1, {}),
         isAdmin ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-5 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
           Button,
           {
@@ -72194,7 +74778,7 @@ Defaulting to \`null\`.`;
         )
       ] });
     }
-    function LegendaryBanner() {
+    function LegendaryBanner$1() {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "header",
         {
@@ -72246,9 +74830,10 @@ Defaulting to \`null\`.`;
     }) {
       const navigate = useNavigate();
       const isQuiz = activity.activityType === "quiz";
+      const isDrinksBuilder = activity.activityType === "drinksBuilder";
       const sourceNames = activity.sourceCategoryIds.map((id) => categoryNameById.get(id)).filter((n) => typeof n === "string");
       function handleOpen() {
-        const to = isQuiz ? `/position/${positionId}/legendary/quiz/${activity.id}` : `/position/${positionId}/legendary/flashcards/${activity.id}`;
+        const to = isQuiz ? `/position/${positionId}/legendary/quiz/${activity.id}` : isDrinksBuilder ? `/position/${positionId}/legendary/drinks-builder/${activity.id}` : `/position/${positionId}/legendary/flashcards/${activity.id}`;
         void navigate({ to });
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -72278,7 +74863,7 @@ Defaulting to \`null\`.`;
                     {
                       className: "flex size-11 shrink-0 items-center justify-center rounded-md bg-background/40 text-primary",
                       "aria-hidden": true,
-                      children: isQuiz ? /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" })
+                      children: isQuiz ? /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "size-5" }) : isDrinksBuilder ? /* @__PURE__ */ jsxRuntimeExports.jsx(Wine, { className: "size-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "size-5" })
                     }
                   ),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex min-w-0 flex-1 flex-col gap-1", children: [
@@ -72350,13 +74935,15 @@ Defaulting to \`null\`.`;
     function ActivityTypeBadge({
       type
     }) {
+      const label = type === "quiz" ? "Quiz" : type === "drinksBuilder" ? "Drinks Builder" : "Flashcards";
+      const ocid = type === "quiz" ? "legendary.activity.type.quiz.badge" : type === "drinksBuilder" ? "legendary.activity.type.drinks_builder.badge" : "legendary.activity.type.flashcards.badge";
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         Badge,
         {
           variant: "outline",
           className: "border-primary/40 text-primary",
-          "data-ocid": type === "quiz" ? "legendary.activity.type.quiz.badge" : "legendary.activity.type.flashcards.badge",
-          children: type === "quiz" ? "Quiz" : "Flashcards"
+          "data-ocid": ocid,
+          children: label
         }
       );
     }
@@ -72537,6 +75124,1832 @@ Defaulting to \`null\`.`;
     function BeLegendaryRoute() {
       const { id } = useParams({ strict: false });
       return /* @__PURE__ */ jsxRuntimeExports.jsx(BeLegendaryPage, { positionId: String(id ?? "") });
+    }
+    const CONFETTI_COLORS = [
+      "oklch(var(--drinks-confetti-red))",
+      "oklch(var(--drinks-confetti-gold))",
+      "oklch(var(--drinks-confetti-navy))",
+      "oklch(var(--drinks-confetti-green))",
+      "oklch(var(--drinks-confetti-cream))"
+    ];
+    const PARTICLE_LIFETIME_MS = 1100;
+    function usePrefersReducedMotion() {
+      const [reduced, setReduced] = reactExports.useState(false);
+      reactExports.useEffect(() => {
+        if (typeof window === "undefined" || !window.matchMedia) return;
+        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        setReduced(mq.matches);
+        const handler = (e) => setReduced(e.matches);
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+      }, []);
+      return reduced;
+    }
+    function useConfetti() {
+      const canvasRef = reactExports.useRef(null);
+      const particlesRef = reactExports.useRef([]);
+      const rafRef = reactExports.useRef(null);
+      const reducedMotion = usePrefersReducedMotion();
+      const resizeCanvas = reactExports.useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        const w2 = window.innerWidth;
+        const h2 = window.innerHeight;
+        canvas.width = Math.floor(w2 * dpr);
+        canvas.height = Math.floor(h2 * dpr);
+        canvas.style.width = `${w2}px`;
+        canvas.style.height = `${h2}px`;
+        const ctx = canvas.getContext("2d");
+        if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }, []);
+      reactExports.useEffect(() => {
+        resizeCanvas();
+        if (typeof window === "undefined") return;
+        window.addEventListener("resize", resizeCanvas);
+        return () => window.removeEventListener("resize", resizeCanvas);
+      }, [resizeCanvas]);
+      const tick = reactExports.useCallback(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas == null ? void 0 : canvas.getContext("2d");
+        if (!canvas || !ctx) {
+          rafRef.current = null;
+          return;
+        }
+        const w2 = window.innerWidth;
+        const h2 = window.innerHeight;
+        ctx.clearRect(0, 0, w2, h2);
+        const particles = particlesRef.current;
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p2 = particles[i];
+          p2.vy += 0.18;
+          p2.vx *= 0.99;
+          p2.x += p2.vx;
+          p2.y += p2.vy;
+          p2.rot += p2.vrot;
+          p2.life -= p2.decay;
+          if (p2.life <= 0 || p2.y > h2 + 40) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, Math.min(1, p2.life));
+          ctx.translate(p2.x, p2.y);
+          ctx.rotate(p2.rot);
+          ctx.fillStyle = p2.color;
+          if (p2.shape === "circle") {
+            ctx.beginPath();
+            ctx.arc(0, 0, p2.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(-p2.size / 2, -p2.size / 2, p2.size, p2.size * 0.6);
+          }
+          ctx.restore();
+        }
+        if (particles.length > 0) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          rafRef.current = null;
+          ctx.clearRect(0, 0, w2, h2);
+        }
+      }, []);
+      const burst = reactExports.useCallback(
+        (opts) => {
+          if (reducedMotion) return;
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const w2 = window.innerWidth;
+          const h2 = window.innerHeight;
+          const cx2 = (opts == null ? void 0 : opts.x) ?? w2 / 2;
+          const cy = (opts == null ? void 0 : opts.y) ?? h2 / 2;
+          const count2 = (opts == null ? void 0 : opts.count) ?? 80;
+          const newParticles = [];
+          for (let i = 0; i < count2; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 4 + Math.random() * 7;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed - 3;
+            const size2 = 6 + Math.random() * 8;
+            const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+            const decay = 1 / (PARTICLE_LIFETIME_MS / 16.7);
+            newParticles.push({
+              x: cx2,
+              y: cy,
+              vx,
+              vy,
+              rot: Math.random() * Math.PI,
+              vrot: (Math.random() - 0.5) * 0.3,
+              size: size2,
+              color,
+              life: 1,
+              decay,
+              shape: Math.random() > 0.5 ? "rect" : "circle"
+            });
+          }
+          particlesRef.current.push(...newParticles);
+          if (rafRef.current == null) {
+            rafRef.current = requestAnimationFrame(tick);
+          }
+        },
+        [reducedMotion, tick]
+      );
+      reactExports.useEffect(() => {
+        return () => {
+          if (rafRef.current != null) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+          }
+        };
+      }, []);
+      const ConfettiCanvas = reactExports.useCallback(() => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "canvas",
+          {
+            ref: canvasRef,
+            "aria-hidden": true,
+            className: "pointer-events-none fixed inset-0 z-50",
+            "data-ocid": "drinks.confetti.canvas"
+          }
+        );
+      }, []);
+      return { burst, ConfettiCanvas };
+    }
+    const DEFAULT_LIQUID_COLOR = "#F2A900";
+    let detailFieldCounter = 0;
+    function toFrontendItem(i) {
+      const details = (i.details ?? []).map((d2) => ({
+        id: `db-detail-${detailFieldCounter++}`,
+        fieldLabel: d2.fieldLabel,
+        value: d2.value
+      }));
+      return {
+        id: i.id.toString(),
+        categoryId: i.categoryId.toString(),
+        title: i.title,
+        subtitle: i.subtitle ?? null,
+        photo: i.photo ?? null,
+        details,
+        notes: i.notes ?? null,
+        tags: i.tags ?? [],
+        seasonal: i.seasonal,
+        sortOrder: Number(i.sortOrder),
+        recipe: i.recipe ? {
+          glassware: i.recipe.glassware,
+          specs: i.recipe.specs.map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient
+          })),
+          assembly: i.recipe.assembly,
+          garnish: i.recipe.garnish,
+          variants: i.recipe.variants.map((v2) => ({
+            variantLabel: v2.variantLabel,
+            specs: v2.specs.map((s) => ({
+              amount: s.amount,
+              ingredient: s.ingredient
+            })),
+            assembly: v2.assembly
+          })),
+          equipment: i.recipe.equipment ?? [],
+          yield: i.recipe.yield && i.recipe.yield.length > 0 ? i.recipe.yield : null,
+          shelfLife: i.recipe.shelfLife && i.recipe.shelfLife.length > 0 ? i.recipe.shelfLife : null,
+          qualityIdentifier: i.recipe.qualityIdentifier ?? []
+        } : null
+      };
+    }
+    function isBulkMix$1(item) {
+      const r2 = item.recipe;
+      if (!r2) return false;
+      return r2.yield != null || r2.equipment != null && r2.equipment.length > 0;
+    }
+    function isInScope(item) {
+      const r2 = item.recipe;
+      if (!r2) return false;
+      if (isBulkMix$1(item)) return false;
+      return r2.glassware.trim().length > 0 && r2.specs.length > 0 && r2.assembly.length > 0;
+    }
+    function resolveLiquidColor(_recipe) {
+      return DEFAULT_LIQUID_COLOR;
+    }
+    function buildPlayablePool(items, categoryNameById, settings) {
+      const included = settings.includedCategories;
+      const excluded = new Set(
+        settings.excludedDrinkTitles.map((t) => t.trim().toLowerCase())
+      );
+      const drinks = [];
+      for (const item of items) {
+        if (!isInScope(item)) continue;
+        if (included.length > 0 && !included.includes(item.categoryId)) continue;
+        if (excluded.has(item.title.trim().toLowerCase())) continue;
+        const r2 = item.recipe;
+        if (!r2) continue;
+        drinks.push({
+          id: item.id,
+          title: item.title,
+          categoryId: item.categoryId,
+          categoryName: categoryNameById.get(item.categoryId) ?? "",
+          glassware: r2.glassware,
+          specs: r2.specs.map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient
+          })),
+          assembly: [...r2.assembly],
+          garnish: [...r2.garnish],
+          color: resolveLiquidColor(),
+          photo: item.photo ?? null
+        });
+      }
+      let emptyReason = null;
+      if (drinks.length === 0) emptyReason = "noPlayable";
+      return { drinks, categoryNameById, emptyReason };
+    }
+    function formatSpecLabel(amount, ingredient, requireExactAmounts) {
+      return requireExactAmounts ? `${amount} ${ingredient}`.trim() : ingredient.trim();
+    }
+    function buildDecoyPool(allDrinks, currentDrinkId, requireExactAmounts) {
+      const glassware = /* @__PURE__ */ new Set();
+      const specs = /* @__PURE__ */ new Set();
+      const assembly = /* @__PURE__ */ new Set();
+      const garnish = /* @__PURE__ */ new Set();
+      for (const d2 of allDrinks) {
+        if (d2.id === currentDrinkId) continue;
+        if (d2.glassware) glassware.add(d2.glassware);
+        for (const s of d2.specs) {
+          specs.add(formatSpecLabel(s.amount, s.ingredient, requireExactAmounts));
+        }
+        for (const a2 of d2.assembly) assembly.add(a2);
+        for (const g2 of d2.garnish) {
+          if (g2) garnish.add(g2);
+        }
+      }
+      return {
+        glassware: [...glassware],
+        specs: [...specs],
+        assembly: [...assembly],
+        garnish: [...garnish]
+      };
+    }
+    function mulberry32$1(seed) {
+      let a2 = seed >>> 0;
+      return () => {
+        a2 |= 0;
+        a2 = a2 + 1831565813 | 0;
+        let t = Math.imul(a2 ^ a2 >>> 15, 1 | a2);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    function seededShuffle$1(items, seed) {
+      if (items.length <= 1) return [...items];
+      const rand = mulberry32$1(seed);
+      const out = [...items];
+      for (let i = out.length - 1; i > 0; i--) {
+        const j2 = Math.floor(rand() * (i + 1));
+        [out[i], out[j2]] = [out[j2], out[i]];
+      }
+      return out;
+    }
+    function pickDecoys(pool, correctLabels, n, seed) {
+      const exclude = new Set(correctLabels);
+      const seen = /* @__PURE__ */ new Set();
+      const filtered = [];
+      for (const p2 of pool) {
+        if (exclude.has(p2)) continue;
+        if (seen.has(p2)) continue;
+        seen.add(p2);
+        filtered.push(p2);
+      }
+      const shuffled = seededShuffle$1(filtered, seed);
+      return shuffled.slice(0, Math.max(0, n));
+    }
+    const SECTION_LABELS = {
+      glassware: "Glassware",
+      specs: "Specs",
+      assembly: "Assembly",
+      garnish: "Garnish"
+    };
+    function buildRound(drink, decoyPool, decoyCount, roundSeed, requireExactAmounts) {
+      const correctSpecs = drink.specs.map(
+        (s) => formatSpecLabel(s.amount, s.ingredient, requireExactAmounts)
+      );
+      const correctAssembly = [...drink.assembly];
+      const correctGarnish = drink.garnish.filter((g2) => g2.length > 0);
+      const makeChips = (correctLabels, pool, sectionSeed, orderIndices) => {
+        const correct = correctLabels.filter((l2) => l2.length > 0);
+        if (correct.length === 0) return [];
+        const decoys = pickDecoys(pool, correct, decoyCount, sectionSeed);
+        const correctChips = correct.map((label, i) => ({
+          id: `${drink.id}-${label}-${i}`,
+          label,
+          isCorrect: true,
+          selected: false,
+          feedback: "idle",
+          orderIndex: orderIndices ? orderIndices[i] : void 0
+        }));
+        const decoyChips = decoys.map((label, i) => ({
+          id: `${drink.id}-${label}-d${i}`,
+          label,
+          isCorrect: false,
+          selected: false,
+          feedback: "idle"
+        }));
+        const all = seededShuffle$1(
+          [...correctChips, ...decoyChips],
+          sectionSeed ^ 5921370
+        );
+        return all;
+      };
+      const sections = [
+        {
+          kind: "glassware",
+          label: SECTION_LABELS.glassware,
+          chips: makeChips(
+            drink.glassware ? [drink.glassware] : [],
+            decoyPool.glassware,
+            roundSeed + 1
+          ),
+          done: false
+        },
+        {
+          kind: "specs",
+          label: SECTION_LABELS.specs,
+          chips: makeChips(correctSpecs, decoyPool.specs, roundSeed + 2),
+          done: false
+        },
+        {
+          kind: "assembly",
+          label: SECTION_LABELS.assembly,
+          // Tag each correct assembly chip with its recipe array index
+          // (0-based position in drink.assembly) BEFORE the shuffle so the
+          // shuffle preserves orderIndex on each chip object. Only the
+          // assembly section passes orderIndices; the grading and the Step N
+          // popup number read orderIndex back to compare against recipe order.
+          chips: makeChips(
+            correctAssembly,
+            decoyPool.assembly,
+            roundSeed + 3,
+            correctAssembly.map((_2, i) => i)
+          ),
+          done: false
+        },
+        {
+          kind: "garnish",
+          label: SECTION_LABELS.garnish,
+          chips: makeChips(correctGarnish, decoyPool.garnish, roundSeed + 4),
+          done: false
+        }
+      ].map(
+        (section) => section.chips.length === 0 ? { ...section, done: true } : section
+      );
+      const completeAtBuild = sections.every((s) => s.done);
+      return {
+        drink,
+        sections,
+        wrongTaps: 0,
+        complete: completeAtBuild
+      };
+    }
+    function useDrinksBuilder(activityId) {
+      var _a2, _b2;
+      const { actor, isFetching } = useBackend();
+      const activityQuery = useLegendaryActivity(activityId);
+      const settings = reactExports.useMemo(() => {
+        const a2 = activityQuery.data;
+        if (!a2) return null;
+        if (a2.content.kind !== "drinksBuilderContent") return null;
+        const s = a2.content.settings;
+        return {
+          includedCategories: s.includedCategories,
+          excludedDrinkTitles: s.excludedDrinkTitles,
+          decoyCount: s.decoyCount,
+          requireExactAmounts: s.requireExactAmounts,
+          enforceAssemblyOrder: s.enforceAssemblyOrder,
+          showScoring: s.showScoring,
+          streakMultiplier: s.streakMultiplier,
+          pointsPerCorrect: s.pointsPerCorrect,
+          roundsPerSession: s.roundsPerSession,
+          soundDefault: s.soundDefault
+        };
+      }, [activityQuery.data]);
+      const playableQuery = useQuery({
+        queryKey: ["drinks-builder-playable", activityId],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getDrinksBuilderPlayablePool(
+            BigInt(activityId)
+          );
+          return result.map(toFrontendItem);
+        },
+        enabled: !!actor && !isFetching && !!activityId
+      });
+      const decoyQuery = useQuery({
+        queryKey: ["drinks-builder-decoys", activityId],
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getDrinksBuilderDecoyPool(BigInt(activityId));
+          return result.map(toFrontendItem);
+        },
+        enabled: !!actor && !isFetching && !!activityId
+      });
+      const categoryNameById = reactExports.useMemo(() => {
+        const map = /* @__PURE__ */ new Map();
+        for (const item of [
+          ...playableQuery.data ?? [],
+          ...decoyQuery.data ?? []
+        ]) {
+          if (!map.has(item.categoryId)) map.set(item.categoryId, "");
+        }
+        return map;
+      }, [playableQuery.data, decoyQuery.data]);
+      const playablePool = reactExports.useMemo(() => {
+        if (!settings) {
+          return { drinks: [], categoryNameById, emptyReason: null };
+        }
+        return buildPlayablePool(playableQuery.data ?? [], categoryNameById, {
+          includedCategories: settings.includedCategories,
+          excludedDrinkTitles: settings.excludedDrinkTitles
+        });
+      }, [playableQuery.data, categoryNameById, settings]);
+      const allInScopeDrinks = reactExports.useMemo(() => {
+        const seen = /* @__PURE__ */ new Set();
+        const out = [];
+        for (const d2 of playablePool.drinks) {
+          if (!seen.has(d2.id)) {
+            seen.add(d2.id);
+            out.push(d2);
+          }
+        }
+        for (const item of decoyQuery.data ?? []) {
+          if (seen.has(item.id)) continue;
+          if (!isInScope(item)) continue;
+          const r2 = item.recipe;
+          if (!r2) continue;
+          seen.add(item.id);
+          out.push({
+            id: item.id,
+            title: item.title,
+            categoryId: item.categoryId,
+            categoryName: "",
+            glassware: r2.glassware,
+            specs: r2.specs.map((s) => ({
+              amount: s.amount,
+              ingredient: s.ingredient
+            })),
+            assembly: [...r2.assembly],
+            garnish: [...r2.garnish],
+            color: resolveLiquidColor(),
+            photo: item.photo ?? null
+          });
+        }
+        return out;
+      }, [playablePool.drinks, decoyQuery.data]);
+      const [session, setSession] = reactExports.useState(null);
+      const [sessionKey, setSessionKey] = reactExports.useState(0);
+      const builtFromRef = reactExports.useRef("");
+      reactExports.useEffect(() => {
+        if (!settings) return;
+        if (playablePool.emptyReason === "noPlayable") return;
+        const poolSize = playablePool.drinks.length;
+        const requestedRounds = settings.roundsPerSession === 0 ? poolSize : settings.roundsPerSession;
+        const roundsCount = Math.min(requestedRounds, poolSize);
+        if (roundsCount === 0) return;
+        const fingerprint = `${sessionKey}|${roundsCount}|${settings.requireExactAmounts}|${playablePool.drinks.map((d2) => d2.id).join(",")}`;
+        if (fingerprint === builtFromRef.current) return;
+        builtFromRef.current = fingerprint;
+        const shuffled = seededShuffle$1(playablePool.drinks, sessionKey + 1);
+        const chosen = shuffled.slice(0, roundsCount);
+        const rounds = chosen.map((drink, i) => {
+          const decoys = buildDecoyPool(
+            allInScopeDrinks,
+            drink.id,
+            settings.requireExactAmounts
+          );
+          return buildRound(
+            drink,
+            decoys,
+            settings.decoyCount,
+            i * 31 + sessionKey,
+            settings.requireExactAmounts
+          );
+        });
+        setSession({
+          rounds,
+          currentIndex: 0,
+          score: 0,
+          streak: 0,
+          totalWrongTaps: 0,
+          completedDrinks: 0,
+          finished: rounds.length === 0,
+          muted: !settings.soundDefault
+        });
+      }, [
+        settings,
+        playablePool.drinks,
+        playablePool.emptyReason,
+        allInScopeDrinks,
+        sessionKey
+      ]);
+      const tapChip = reactExports.useCallback(
+        (sectionKind, chipId) => {
+          let result = "noop";
+          setSession((prev) => {
+            if (!prev || prev.finished) {
+              result = "noop";
+              return prev;
+            }
+            const round2 = prev.rounds[prev.currentIndex];
+            if (!round2 || round2.complete) {
+              result = "noop";
+              return prev;
+            }
+            const section = round2.sections.find((s) => s.kind === sectionKind);
+            if (!section || section.done) {
+              result = "noop";
+              return prev;
+            }
+            const chip = section.chips.find((c2) => c2.id === chipId);
+            if (!chip || chip.selected) {
+              result = "noop";
+              return prev;
+            }
+            const isCorrect = chip.isCorrect;
+            const enforceOrder = !!(settings == null ? void 0 : settings.enforceAssemblyOrder) && sectionKind === "assembly";
+            let outOfOrder = false;
+            if (enforceOrder && isCorrect) {
+              const unselectedOrderIndices = section.chips.filter(
+                (c2) => c2.isCorrect && !c2.selected && typeof c2.orderIndex === "number"
+              ).map((c2) => c2.orderIndex);
+              if (unselectedOrderIndices.length > 0) {
+                const nextExpectedOrderIndex = Math.min(...unselectedOrderIndices);
+                if (typeof chip.orderIndex !== "number" || chip.orderIndex > nextExpectedOrderIndex) {
+                  outOfOrder = true;
+                }
+              }
+            }
+            const isWrongTap = !isCorrect || outOfOrder;
+            if (isWrongTap) {
+              const newChips2 = section.chips.map(
+                (c2) => c2.id === chipId ? { ...c2, feedback: "incorrect" } : c2
+              );
+              const newSection2 = {
+                ...section,
+                chips: newChips2,
+                done: false
+                // unchanged — wrong taps never complete a section
+              };
+              const newSections2 = round2.sections.map(
+                (s) => s.kind === sectionKind ? newSection2 : s
+              );
+              const newWrongTaps = round2.wrongTaps + 1;
+              const newRound2 = {
+                ...round2,
+                sections: newSections2,
+                wrongTaps: newWrongTaps,
+                complete: false
+                // unchanged
+              };
+              const newRounds2 = prev.rounds.map(
+                (r2, i) => i === prev.currentIndex ? newRound2 : r2
+              );
+              result = "wrong";
+              return {
+                ...prev,
+                rounds: newRounds2,
+                streak: 0,
+                totalWrongTaps: prev.totalWrongTaps + 1
+              };
+            }
+            const newChips = section.chips.map(
+              (c2) => c2.id === chipId ? {
+                ...c2,
+                selected: true,
+                feedback: "correct"
+              } : c2
+            );
+            const sectionDone = newChips.every((c2) => !c2.isCorrect || c2.selected);
+            const newSection = {
+              ...section,
+              chips: newChips,
+              done: sectionDone
+            };
+            const newSections = round2.sections.map(
+              (s) => s.kind === sectionKind ? newSection : s
+            );
+            const newComplete = newSections.every((s) => s.done);
+            const newRound = {
+              ...round2,
+              sections: newSections,
+              wrongTaps: round2.wrongTaps,
+              // unchanged on a correct tap
+              complete: newComplete
+            };
+            const newRounds = prev.rounds.map(
+              (r2, i) => i === prev.currentIndex ? newRound : r2
+            );
+            let scoreDelta = 0;
+            const newStreak = prev.streak + 1;
+            if (newComplete && !round2.complete) {
+              const basePoints = settings ? settings.pointsPerCorrect : 0;
+              const streakBonus = (settings == null ? void 0 : settings.streakMultiplier) ? settings.pointsPerCorrect * Math.max(0, prev.streak) : 0;
+              scoreDelta = basePoints + streakBonus;
+            }
+            const completedDrinksDelta = newComplete && !round2.complete ? 1 : 0;
+            result = "correct";
+            return {
+              ...prev,
+              rounds: newRounds,
+              score: prev.score + scoreDelta,
+              streak: newStreak,
+              totalWrongTaps: prev.totalWrongTaps,
+              // unchanged on a correct tap
+              completedDrinks: prev.completedDrinks + completedDrinksDelta
+            };
+          });
+          return result;
+        },
+        [settings]
+      );
+      const nextDrink = reactExports.useCallback(() => {
+        setSession((prev) => {
+          if (!prev || prev.finished) return prev;
+          const nextIndex = prev.currentIndex + 1;
+          if (nextIndex >= prev.rounds.length) {
+            return { ...prev, finished: true };
+          }
+          return { ...prev, currentIndex: nextIndex };
+        });
+      }, []);
+      const restart = reactExports.useCallback(() => {
+        setSession(null);
+        setSessionKey((k2) => k2 + 1);
+      }, []);
+      const toggleMute = reactExports.useCallback(() => {
+        setSession((prev) => prev ? { ...prev, muted: !prev.muted } : prev);
+      }, []);
+      const setMuted = reactExports.useCallback((next) => {
+        setSession((prev) => prev ? { ...prev, muted: next } : prev);
+      }, []);
+      const isLoading = activityQuery.isLoading || playableQuery.isLoading || decoyQuery.isLoading || !settings && !activityQuery.isError;
+      const isError = activityQuery.isError || playableQuery.isError || decoyQuery.isError;
+      return {
+        isLoading,
+        isError,
+        activityName: ((_a2 = activityQuery.data) == null ? void 0 : _a2.name) ?? null,
+        positionId: ((_b2 = activityQuery.data) == null ? void 0 : _b2.positionId) ?? null,
+        settings,
+        session,
+        emptyReason: playablePool.emptyReason,
+        tapChip,
+        nextDrink,
+        restart,
+        toggleMute,
+        setMuted
+      };
+    }
+    function useDrinksBuilderSound(soundDefault) {
+      const [muted, setMutedState] = reactExports.useState(!soundDefault);
+      const ctxRef = reactExports.useRef(null);
+      const getCtx = reactExports.useCallback(() => {
+        if (typeof window === "undefined") return null;
+        if (ctxRef.current) return ctxRef.current;
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return null;
+        try {
+          ctxRef.current = new Ctor();
+          return ctxRef.current;
+        } catch {
+          return null;
+        }
+      }, []);
+      const resumeCtx = reactExports.useCallback(async () => {
+        const ctx = getCtx();
+        if (ctx && ctx.state === "suspended") {
+          try {
+            await ctx.resume();
+          } catch {
+          }
+        }
+      }, [getCtx]);
+      const playTone = reactExports.useCallback(
+        (freq, duration, type, gain, startOffset = 0) => {
+          const ctx = getCtx();
+          if (!ctx) return;
+          const now2 = ctx.currentTime + startOffset;
+          const osc = ctx.createOscillator();
+          const g2 = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now2);
+          g2.gain.setValueAtTime(1e-4, now2);
+          g2.gain.exponentialRampToValueAtTime(gain, now2 + 0.01);
+          g2.gain.exponentialRampToValueAtTime(1e-4, now2 + duration);
+          osc.connect(g2);
+          g2.connect(ctx.destination);
+          osc.start(now2);
+          osc.stop(now2 + duration + 0.02);
+        },
+        [getCtx]
+      );
+      const playCorrect = reactExports.useCallback(() => {
+        if (muted) return;
+        void resumeCtx();
+        playTone(880, 0.12, "sine", 0.18, 0);
+        playTone(1320, 0.16, "sine", 0.16, 0.08);
+      }, [muted, playTone, resumeCtx]);
+      const playWrong = reactExports.useCallback(() => {
+        if (muted) return;
+        void resumeCtx();
+        playTone(110, 0.22, "sawtooth", 0.16, 0);
+        playTone(82, 0.18, "square", 0.08, 0.04);
+      }, [muted, playTone, resumeCtx]);
+      const playFinish = reactExports.useCallback(() => {
+        if (muted) return;
+        void resumeCtx();
+        playTone(523.25, 0.18, "triangle", 0.18, 0);
+        playTone(659.25, 0.18, "triangle", 0.18, 0.12);
+        playTone(783.99, 0.32, "triangle", 0.2, 0.24);
+      }, [muted, playTone, resumeCtx]);
+      const toggleMute = reactExports.useCallback(() => {
+        setMutedState((m2) => !m2);
+      }, []);
+      const setMuted = reactExports.useCallback((next) => {
+        setMutedState(next);
+      }, []);
+      reactExports.useEffect(() => {
+        return () => {
+          const ctx = ctxRef.current;
+          if (ctx) {
+            try {
+              void ctx.close();
+            } catch {
+            }
+          }
+          ctxRef.current = null;
+        };
+      }, []);
+      return {
+        muted,
+        toggleMute,
+        setMuted,
+        playCorrect,
+        playWrong,
+        playFinish
+      };
+    }
+    const SECTION_META = [
+      { kind: "glassware", label: "Glassware", index: 1 },
+      { kind: "specs", label: "Specs", index: 2 },
+      { kind: "assembly", label: "Assembly", index: 3 },
+      { kind: "garnish", label: "Garnish", index: 4 }
+    ];
+    function DrinksBuilderActivity({
+      activityId
+    }) {
+      const {
+        isLoading,
+        isError,
+        activityName,
+        positionId,
+        settings,
+        session,
+        emptyReason,
+        tapChip,
+        nextDrink,
+        restart,
+        toggleMute
+      } = useDrinksBuilder(activityId);
+      const sound = useDrinksBuilderSound((settings == null ? void 0 : settings.soundDefault) ?? true);
+      const { burst, ConfettiCanvas } = useConfetti();
+      const lastSyncedMuted = reactExports.useRef(null);
+      reactExports.useEffect(() => {
+        if (!session) return;
+        if (lastSyncedMuted.current !== session.muted) {
+          lastSyncedMuted.current = session.muted;
+          sound.setMuted(session.muted);
+        }
+      }, [session, sound]);
+      const celebratedRoundKey = reactExports.useRef("");
+      reactExports.useEffect(() => {
+        if (!session || !settings) return;
+        const round22 = session.rounds[session.currentIndex] ?? null;
+        if (!round22 || !round22.complete) return;
+        const key = `${session.currentIndex}-${round22.drink.id}`;
+        if (celebratedRoundKey.current === key) return;
+        celebratedRoundKey.current = key;
+        sound.playFinish();
+        burst();
+      }, [session, settings, sound, burst]);
+      const [showStep, setShowStep] = reactExports.useState(null);
+      const stepTimer = reactExports.useRef(null);
+      reactExports.useEffect(() => {
+        return () => {
+          if (stepTimer.current) clearTimeout(stepTimer.current);
+        };
+      }, []);
+      reactExports.useEffect(() => {
+        if (!session) {
+          celebratedRoundKey.current = "";
+          lastSyncedMuted.current = null;
+        }
+      }, [session]);
+      if (isLoading) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(DrinksBuilderSkeleton, {});
+      }
+      if (isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DrinksBuilderError,
+          {
+            positionId,
+            onRetry: () => window.location.reload()
+          }
+        );
+      }
+      if (emptyReason === "noPlayable") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DrinksBuilderEmptyPool,
+          {
+            positionId,
+            activityName
+          }
+        );
+      }
+      if (!session || !settings) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(DrinksBuilderSkeleton, {});
+      }
+      if (session.finished) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SessionSummary,
+          {
+            session,
+            showScoring: settings.showScoring,
+            positionId: positionId ?? "",
+            onRestart: restart
+          }
+        );
+      }
+      const round2 = session.rounds[session.currentIndex] ?? null;
+      if (!round2) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(DrinksBuilderSkeleton, {});
+      }
+      const showScore = settings.showScoring;
+      const completedSections = round2.sections.filter((s) => s.done).length;
+      const fillFraction = completedSections / 4;
+      const isComplete = round2.complete;
+      const streak = session.streak;
+      const onFire = streak >= 4;
+      const streakActive = streak >= 2;
+      const streakLabel = onFire ? "ON FIRE" : streak === 3 ? "x3" : streak === 2 ? "x2" : null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-[100dvh] bg-background text-foreground", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ConfettiCanvas, {}),
+        showStep !== null ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "pointer-events-none fixed inset-x-0 top-1/3 z-40 flex justify-center px-4",
+            "aria-live": "polite",
+            "data-ocid": "drinks.assembly.step_popup",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center rounded-full border border-primary/50 bg-gradient-to-r from-[oklch(var(--legendary-banner-from))] via-[oklch(var(--legendary-banner-via))] to-[oklch(var(--legendary-banner-to))] px-5 py-2 font-display text-lg uppercase tracking-wide text-[oklch(var(--legendary-banner-foreground))] shadow-subtle animate-drinks-legendary-banner", children: [
+              "Step ",
+              showStep
+            ] })
+          }
+        ) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DrinksBuilderHeader,
+          {
+            positionId: positionId ?? "",
+            showScore,
+            score: session.score,
+            muted: sound.muted,
+            onToggleMute: () => {
+              sound.toggleMute();
+              toggleMute();
+            }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "mx-auto w-full max-w-md px-4 pb-16", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "section",
+            {
+              className: "mt-4 flex items-center gap-4",
+              "data-ocid": "drinks.hero.section",
+              "aria-label": "Current drink",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  DrinksGlass,
+                  {
+                    fillFraction,
+                    isComplete,
+                    color: round2.drink.color
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 flex-1 flex-col gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "h2",
+                    {
+                      className: "break-words text-balance font-display text-2xl uppercase leading-tight tracking-wide text-foreground",
+                      "data-ocid": "drinks.hero.drink_name",
+                      children: round2.drink.title
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: "inline-flex w-fit items-center rounded-sm border border-secondary/50 bg-secondary/20 px-2 py-0.5 font-heading text-[0.65rem] uppercase tracking-[0.2em] text-secondary-foreground",
+                      "data-ocid": "drinks.hero.category_badge",
+                      children: round2.drink.categoryName || "Classic"
+                    }
+                  ),
+                  showScore && settings.streakMultiplier && streakActive && streakLabel ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "span",
+                    {
+                      className: cn(
+                        "inline-flex w-fit items-center gap-1 font-heading text-xs uppercase tracking-wide",
+                        onFire ? "text-drinks-streak-flame animate-drinks-streak-flame" : "text-drinks-section-done"
+                      ),
+                      "data-ocid": "drinks.hero.streak_indicator",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Flame, { className: "size-4", "aria-hidden": true }),
+                        streakLabel,
+                        " STREAK"
+                      ]
+                    }
+                  ) : null
+                ] })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "section",
+            {
+              className: "mt-6 flex flex-col gap-3",
+              "data-ocid": "drinks.sections",
+              "aria-label": "Drink sections",
+              children: SECTION_META.map((meta) => {
+                const section = round2.sections.find((s) => s.kind === meta.kind);
+                if (!section) return null;
+                const activeMeta = SECTION_META.find(
+                  (m2) => {
+                    var _a2;
+                    return !((_a2 = round2.sections.find((s) => s.kind === m2.kind)) == null ? void 0 : _a2.done);
+                  }
+                );
+                const activeMetaIndex = activeMeta ? activeMeta.index : 5;
+                const isActive = meta.index === activeMetaIndex;
+                const isFuture = meta.index > activeMetaIndex;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SectionCard,
+                  {
+                    section,
+                    label: meta.label,
+                    index: meta.index,
+                    isActive,
+                    isFuture,
+                    showScore,
+                    pointsPerCorrect: settings.pointsPerCorrect,
+                    streakMultiplier: settings.streakMultiplier,
+                    streak,
+                    enforceAssemblyOrder: settings.enforceAssemblyOrder,
+                    onTapChip: (chipId) => {
+                      const chip = section.chips.find((c2) => c2.id === chipId);
+                      if (!chip || chip.selected) return;
+                      const result = tapChip(section.kind, chipId);
+                      if (result === "correct") {
+                        sound.playCorrect();
+                        if (section.kind === "assembly" && chip.isCorrect) {
+                          const stepNumber = typeof chip.orderIndex === "number" ? chip.orderIndex + 1 : section.chips.filter(
+                            (c2) => c2.isCorrect && c2.selected
+                          ).length + 1;
+                          setShowStep(stepNumber);
+                          if (stepTimer.current) clearTimeout(stepTimer.current);
+                          stepTimer.current = setTimeout(
+                            () => setShowStep(null),
+                            900
+                          );
+                        }
+                      } else if (result === "wrong") {
+                        sound.playWrong();
+                        if (typeof navigator !== "undefined" && navigator.vibrate) {
+                          try {
+                            navigator.vibrate(200);
+                          } catch {
+                          }
+                        }
+                      }
+                    }
+                  },
+                  meta.kind
+                );
+              })
+            }
+          ),
+          isComplete ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LegendaryBanner,
+            {
+              round: round2,
+              showScore,
+              score: session.score,
+              isLastRound: session.currentIndex + 1 >= session.rounds.length,
+              onNextDrink: nextDrink
+            }
+          ) : null
+        ] })
+      ] });
+    }
+    function DrinksBuilderHeader({
+      positionId,
+      showScore,
+      score,
+      muted,
+      onToggleMute
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "header",
+        {
+          className: "sticky top-0 z-30 border-b border-border bg-card",
+          "data-ocid": "drinks.header",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex w-full max-w-md items-center justify-between gap-2 px-4 py-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "sm",
+                asChild: true,
+                "data-ocid": "drinks.back_button",
+                className: "text-muted-foreground hover:text-foreground",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link$1,
+                  {
+                    to: "/position/$id/legendary",
+                    params: { id: positionId },
+                    "aria-label": "Back to Be Legendary",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" })
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "font-display text-xl uppercase leading-none tracking-wide text-foreground",
+                "data-ocid": "drinks.header.title",
+                children: "Be Legendary"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              showScore ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: "font-heading text-lg tabular-nums tracking-wide text-foreground",
+                  "data-ocid": "drinks.header.score",
+                  "aria-label": `Score ${score}`,
+                  children: score
+                }
+              ) : null,
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  variant: "ghost",
+                  size: "icon",
+                  onClick: onToggleMute,
+                  "aria-label": muted ? "Unmute sound" : "Mute sound",
+                  "aria-pressed": muted,
+                  "data-ocid": "drinks.mute_toggle",
+                  className: "text-muted-foreground hover:text-foreground",
+                  children: muted ? /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeX, { className: "size-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Volume2, { className: "size-4" })
+                }
+              )
+            ] })
+          ] })
+        }
+      );
+    }
+    function DrinksGlass({
+      fillFraction,
+      isComplete,
+      color
+    }) {
+      const clamped = Math.max(0, Math.min(1, fillFraction));
+      const liquidTop = 80 - 60 * clamped;
+      const foamY = 20;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "svg",
+        {
+          viewBox: "0 0 100 110",
+          className: "size-20 shrink-0",
+          role: "img",
+          "aria-label": isComplete ? "Filled martini glass, complete" : `Martini glass, ${Math.round(clamped * 100)}% filled`,
+          "data-ocid": "drinks.hero.glass",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "polygon",
+              {
+                points: "20,20 80,20 50,80",
+                fill: "none",
+                className: "stroke-drinks-glass",
+                strokeWidth: "2",
+                strokeLinejoin: "round"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "drinks-bowl-clip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("polygon", { points: "20,20 80,20 50,80" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { clipPath: "url(#drinks-bowl-clip)", children: [
+              clamped > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "polygon",
+                {
+                  points: `20,${liquidTop} 80,${liquidTop} 50,80`,
+                  fill: color,
+                  className: "drinks-glass-fill",
+                  style: { transformOrigin: "50px 80px" }
+                }
+              ) : null,
+              isComplete ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "ellipse",
+                {
+                  cx: "50",
+                  cy: foamY + 4,
+                  rx: "30",
+                  ry: "6",
+                  className: "fill-drinks-foam drinks-glass-foam is-complete"
+                }
+              ) : null
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "line",
+              {
+                x1: "28",
+                y1: "26",
+                x2: "44",
+                y2: "58",
+                className: "fill-drinks-glass-shine",
+                strokeWidth: "2",
+                strokeLinecap: "round"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "line",
+              {
+                x1: "50",
+                y1: "80",
+                x2: "50",
+                y2: "98",
+                className: "stroke-drinks-glass",
+                strokeWidth: "2"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "line",
+              {
+                x1: "36",
+                y1: "98",
+                x2: "64",
+                y2: "98",
+                className: "stroke-drinks-glass",
+                strokeWidth: "2",
+                strokeLinecap: "round"
+              }
+            )
+          ]
+        }
+      );
+    }
+    function SectionCard({
+      section,
+      label,
+      index: index2,
+      isActive,
+      isFuture,
+      showScore,
+      pointsPerCorrect,
+      streakMultiplier,
+      streak,
+      enforceAssemblyOrder,
+      onTapChip
+    }) {
+      const done = section.done;
+      const isAssembly = section.kind === "assembly";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: cn(
+            "rounded-md border p-4 transition-smooth",
+            done ? "border-drinks-correct/60 bg-drinks-correct/10" : isActive ? "border-primary/50 bg-card" : "border-border bg-card/60",
+            isFuture && "opacity-50"
+          ),
+          "data-ocid": `drinks.section.${section.kind}`,
+          "aria-label": label,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: cn(
+                    "flex size-6 shrink-0 items-center justify-center rounded-full transition-smooth",
+                    done ? "bg-drinks-correct text-drinks-correct-foreground" : "bg-muted text-drinks-section-pending"
+                  ),
+                  "aria-hidden": true,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h3",
+                {
+                  className: "font-heading text-sm uppercase tracking-[0.2em] text-foreground",
+                  "data-ocid": `drinks.section.${section.kind}.label`,
+                  children: label
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "span",
+                {
+                  className: "ml-auto font-heading text-[0.65rem] uppercase tracking-wide text-muted-foreground",
+                  "aria-hidden": true,
+                  children: [
+                    index2,
+                    "/4"
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "mt-3 flex flex-wrap gap-2",
+                "data-ocid": `drinks.section.${section.kind}.chips`,
+                children: section.chips.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "w-full rounded-sm border border-dashed border-border/60 px-3 py-2 text-center font-body text-xs text-muted-foreground", children: "No options for this section." }) : section.chips.map((chip, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  ChipButton,
+                  {
+                    chip,
+                    index: i,
+                    sectionKind: section.kind,
+                    isAssembly,
+                    enforceAssemblyOrder,
+                    disabled: !isActive || chip.selected,
+                    showScore,
+                    pointsPerCorrect,
+                    streakMultiplier,
+                    streak,
+                    onTap: () => onTapChip(chip.id)
+                  },
+                  chip.id
+                ))
+              }
+            ),
+            isActive && !done ? /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-2 font-body text-[0.7rem] text-muted-foreground", children: [
+              section.kind === "glassware" && "Tap the correct glass.",
+              section.kind === "specs" && "Tap every correct spec.",
+              section.kind === "assembly" && "Pick the steps of building this drink in order.",
+              section.kind === "garnish" && "Tap every correct garnish."
+            ] }) : null
+          ]
+        }
+      );
+    }
+    function ChipButton({
+      chip,
+      index: index2,
+      sectionKind,
+      isAssembly,
+      enforceAssemblyOrder,
+      disabled,
+      showScore,
+      pointsPerCorrect,
+      streakMultiplier,
+      streak,
+      onTap
+    }) {
+      const [showPoints, setShowPoints] = reactExports.useState(false);
+      reactExports.useEffect(() => {
+        if (chip.feedback === "correct" && chip.selected) {
+          setShowPoints(true);
+          const t = setTimeout(() => setShowPoints(false), 900);
+          return () => clearTimeout(t);
+        }
+      }, [chip.feedback, chip.selected]);
+      const isCorrectFeedback = chip.feedback === "correct";
+      const isIncorrectFeedback = chip.feedback === "incorrect";
+      const isLocked = chip.selected;
+      const popupValue = streakMultiplier ? pointsPerCorrect * Math.max(1, streak) : pointsPerCorrect;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: onTap,
+          disabled,
+          "data-ocid": `drinks.section.${sectionKind}.chip.${index2 + 1}`,
+          "aria-label": `${chip.label}${isLocked ? ", selected" : ""}`,
+          className: cn(
+            "relative inline-flex min-h-11 items-center gap-2 rounded-md border px-3 py-2 text-left font-body text-sm transition-smooth",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            !isLocked && !disabled && "border-drinks-chip-border bg-drinks-chip text-foreground hover:border-primary/60 hover:bg-drinks-chip/80",
+            !isLocked && disabled && "border-border bg-card/40 text-muted-foreground opacity-60 cursor-not-allowed",
+            isCorrectFeedback && "border-drinks-correct bg-drinks-correct/15 text-drinks-correct animate-drinks-green-pop",
+            isIncorrectFeedback && "border-drinks-incorrect bg-drinks-incorrect/15 text-drinks-incorrect animate-drinks-red-shake"
+          ),
+          children: [
+            isAssembly && isLocked && isCorrectFeedback ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "flex size-5 shrink-0 items-center justify-center rounded-full bg-drinks-correct text-[0.6rem] font-semibold text-drinks-correct-foreground",
+                "aria-hidden": true,
+                children: enforceAssemblyOrder ? (chip.orderIndex ?? index2) + 1 : 1
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 flex-1 break-words", children: chip.label }),
+            isCorrectFeedback ? /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5 shrink-0", "aria-hidden": true }) : null,
+            showPoints && showScore ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "span",
+              {
+                className: "pointer-events-none absolute -top-2 right-2 font-heading text-xs font-semibold text-drinks-section-done animate-drinks-rising-points",
+                "aria-hidden": true,
+                "data-ocid": `drinks.section.${sectionKind}.points.${index2 + 1}`,
+                children: [
+                  "+",
+                  popupValue
+                ]
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function LegendaryBanner({
+      round: round2,
+      showScore,
+      score,
+      isLastRound,
+      onNextDrink
+    }) {
+      const wrong = round2.wrongTaps;
+      const stars = wrong === 0 ? 3 : wrong <= 2 ? 2 : 1;
+      const drink = round2.drink;
+      const photo = drink.photo;
+      const hasPhoto = typeof photo === "string" && photo.length > 0;
+      const [lightboxOpen, setLightboxOpen] = reactExports.useState(false);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "mt-8 flex flex-col items-center gap-4",
+          "data-ocid": "drinks.finish.section",
+          "aria-label": "Drink complete",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "relative flex w-full max-w-xs flex-col items-center gap-3 rounded-lg border border-primary/40 bg-card/80 p-5 shadow-subtle animate-drinks-legendary-banner",
+                "data-ocid": "drinks.finish.photo_card",
+                children: [
+                  hasPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => setLightboxOpen(true),
+                      className: "group block w-full cursor-zoom-in rounded-md border border-border bg-background/60 p-2 transition-smooth hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      "aria-label": `Open ${drink.title} drink full size`,
+                      "data-ocid": "drinks.finish.photo_frame",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "img",
+                        {
+                          src: photo,
+                          alt: `${drink.title} drink`,
+                          className: "block h-auto w-full object-contain",
+                          loading: "lazy",
+                          "data-ocid": "drinks.finish.photo"
+                        }
+                      )
+                    }
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "flex w-full items-center justify-center rounded-md border border-border bg-background/60 p-4",
+                      "data-ocid": "drinks.finish.photo_frame",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(DrinksGlass, { fillFraction: 1, isComplete: true, color: drink.color })
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: "break-words text-balance text-center font-display text-lg uppercase leading-tight tracking-wide text-foreground",
+                      "data-ocid": "drinks.finish.drink_name",
+                      children: drink.title
+                    }
+                  ),
+                  drink.categoryName ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: "inline-flex w-fit items-center rounded-sm border border-secondary/50 bg-secondary/20 px-2 py-0.5 font-heading text-[0.65rem] uppercase tracking-[0.2em] text-secondary-foreground",
+                      "data-ocid": "drinks.finish.category_badge",
+                      children: drink.categoryName
+                    }
+                  ) : null
+                ]
+              }
+            ),
+            hasPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: lightboxOpen, onOpenChange: setLightboxOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              DialogContent,
+              {
+                className: "max-w-[90vw] max-h-[80vh] border-primary/40 bg-card p-0 overflow-hidden",
+                "data-ocid": "drinks.finish.lightbox",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "sr-only", children: drink.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 border-b border-border px-4 py-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "p",
+                        {
+                          className: "break-words text-balance font-display text-base uppercase leading-tight tracking-wide text-foreground",
+                          "data-ocid": "drinks.finish.lightbox.title",
+                          children: drink.title
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        DialogClose,
+                        {
+                          asChild: true,
+                          "data-ocid": "drinks.finish.lightbox.close_button",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Button,
+                            {
+                              variant: "ghost",
+                              size: "icon",
+                              "aria-label": "Close lightbox",
+                              className: "text-muted-foreground hover:text-foreground",
+                              children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4", "aria-hidden": true })
+                            }
+                          )
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center bg-background/80 p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "img",
+                      {
+                        src: photo,
+                        alt: `${drink.title} drink`,
+                        className: "block h-auto max-h-[70vh] w-auto max-w-full object-contain",
+                        "data-ocid": "drinks.finish.lightbox.photo"
+                      }
+                    ) })
+                  ] })
+                ]
+              }
+            ) }) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "w-full rounded-md border border-primary/40 bg-gradient-to-r from-[oklch(var(--legendary-banner-from))] via-[oklch(var(--legendary-banner-via))] to-[oklch(var(--legendary-banner-to))] px-4 py-6 text-center animate-drinks-legendary-banner",
+                "data-ocid": "drinks.legendary_banner",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-3xl uppercase tracking-wide text-[oklch(var(--legendary-banner-foreground))]", children: "Legendary!" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 font-heading text-xs uppercase tracking-[0.2em] text-[oklch(var(--legendary-banner-foreground))]/80", children: [
+                    round2.drink.title,
+                    " complete"
+                  ] })
+                ]
+              }
+            ),
+            showScore ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "flex items-center gap-1",
+                "data-ocid": "drinks.star_rating",
+                "aria-label": `${stars} out of 3 stars`,
+                children: [1, 2, 3].map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Star,
+                  {
+                    className: cn(
+                      "size-7 animate-drinks-star-pop",
+                      s <= stars ? "fill-drinks-star text-drinks-star" : "text-muted-foreground/40"
+                    ),
+                    style: { animationDelay: `${(s - 1) * 0.12}s` },
+                    "aria-hidden": true
+                  },
+                  s
+                ))
+              }
+            ) : null,
+            showScore ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "p",
+              {
+                className: "font-heading text-sm uppercase tracking-[0.2em] text-muted-foreground",
+                "data-ocid": "drinks.finish.score",
+                "aria-label": `Score ${score}`,
+                children: [
+                  "Score",
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg tabular-nums text-foreground", children: score })
+                ]
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                type: "button",
+                onClick: onNextDrink,
+                "data-ocid": "drinks.next_drink_button",
+                className: "min-w-40",
+                children: isLastRound ? "See results" : "Next drink"
+              }
+            )
+          ]
+        }
+      );
+    }
+    function SessionSummary({
+      session,
+      showScoring,
+      positionId,
+      onRestart
+    }) {
+      const starsEarned = session.rounds.reduce((acc, r2) => {
+        if (!r2.complete) return acc;
+        return acc + (r2.wrongTaps === 0 ? 3 : r2.wrongTaps <= 2 ? 2 : 1);
+      }, 0);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-[100dvh] bg-background text-foreground", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DrinksBuilderHeader,
+          {
+            positionId,
+            showScore: false,
+            score: 0,
+            muted: true,
+            onToggleMute: () => {
+            }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "main",
+          {
+            className: "mx-auto flex w-full max-w-md flex-col items-center gap-6 px-4 py-12 text-center",
+            "data-ocid": "drinks.session_summary",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h1",
+                {
+                  className: "font-display text-3xl uppercase tracking-wide text-foreground",
+                  "data-ocid": "drinks.session_summary.title",
+                  children: "Session complete"
+                }
+              ),
+              showScoring ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid w-full grid-cols-3 gap-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SummaryStat,
+                  {
+                    label: "Score",
+                    value: String(session.score),
+                    dataOcid: "drinks.session_summary.score"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SummaryStat,
+                  {
+                    label: "Stars",
+                    value: String(starsEarned),
+                    dataOcid: "drinks.session_summary.stars"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SummaryStat,
+                  {
+                    label: "Drinks",
+                    value: String(session.completedDrinks),
+                    dataOcid: "drinks.session_summary.drinks"
+                  }
+                )
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "max-w-sm font-body text-sm text-muted-foreground", children: [
+                "You built ",
+                session.completedDrinks,
+                " ",
+                session.completedDrinks === 1 ? "drink" : "drinks",
+                ". Nice reps."
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 sm:flex-row", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "button",
+                    onClick: onRestart,
+                    "data-ocid": "drinks.session_summary.restart_button",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "size-4", "aria-hidden": true }),
+                      "Play again"
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    variant: "outline",
+                    asChild: true,
+                    "data-ocid": "drinks.session_summary.back_button",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: positionId }, children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+                      "Back to Be Legendary"
+                    ] })
+                  }
+                )
+              ] })
+            ]
+          }
+        )
+      ] });
+    }
+    function SummaryStat({
+      label,
+      value,
+      dataOcid
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "flex flex-col items-center gap-1 rounded-md border border-border bg-card px-3 py-4",
+          "data-ocid": dataOcid,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-2xl tabular-nums text-foreground", children: value }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground", children: label })
+          ]
+        }
+      );
+    }
+    function DrinksBuilderSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "min-h-[100dvh] bg-background",
+          "data-ocid": "drinks.loading_state",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-md px-4 py-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-full rounded-md" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 flex items-center gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "size-20 rounded-md" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-6 w-3/4" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-4 w-1/3" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6 flex flex-col gap-3", children: [1, 2, 3, 4].map((i) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-20 w-full rounded-md" }, i)) })
+          ] })
+        }
+      );
+    }
+    function DrinksBuilderError({
+      positionId,
+      onRetry
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center",
+          "data-ocid": "drinks.error_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl uppercase tracking-wide text-foreground", children: "Couldn't load the game" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-sm text-muted-foreground", children: "We couldn't load this Drinks Builder session. Reloading usually fixes it." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: onRetry, "data-ocid": "drinks.error_state.retry_button", children: "Reload" }),
+            positionId ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "sm",
+                asChild: true,
+                "data-ocid": "drinks.error_state.back_button",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: positionId }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+                  "Back to Be Legendary"
+                ] })
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function DrinksBuilderEmptyPool({
+      positionId,
+      activityName
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center",
+          "data-ocid": "drinks.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl uppercase tracking-wide text-foreground", children: "No playable drinks" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-sm text-muted-foreground", children: activityName ? `"${activityName}" has no in-scope recipes yet. An admin needs to add recipes with glassware, specs, and assembly to the source categories.` : "This activity has no in-scope recipes yet. An admin needs to add recipes with glassware, specs, and assembly to the source categories." }),
+            positionId ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "sm",
+                asChild: true,
+                "data-ocid": "drinks.empty_state.back_button",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: positionId }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+                  "Back to Be Legendary"
+                ] })
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function LegendaryDrinksBuilderRoute() {
+      const { activityId } = useParams({ strict: false });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(DrinksBuilderActivity, { activityId: String(activityId ?? "") });
+    }
+    const WAVE_DURATION_MS = 55e3;
+    function useReadingWave(active, totalChars) {
+      const containerRef = reactExports.useRef(null);
+      reactExports.useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        if (totalChars <= 0) {
+          el.classList.remove("is-active");
+          el.style.setProperty("--wave-progress", "-1");
+          return;
+        }
+        if (!active) {
+          el.classList.remove("is-active");
+          el.style.setProperty("--wave-progress", "-1");
+          return;
+        }
+        el.classList.add("is-active");
+        el.style.setProperty("--wave-count", String(totalChars));
+        el.style.setProperty("--wave-progress", "0");
+        let rafId = 0;
+        const start = performance.now();
+        const tick = (now2) => {
+          const elapsed = now2 - start;
+          const progress = Math.min(elapsed / WAVE_DURATION_MS, 1);
+          el.style.setProperty("--wave-progress", progress.toFixed(6));
+          if (progress < 1) {
+            rafId = requestAnimationFrame(tick);
+          } else {
+            el.classList.remove("is-active");
+            el.style.setProperty("--wave-progress", "-1");
+          }
+        };
+        rafId = requestAnimationFrame(tick);
+        return () => {
+          cancelAnimationFrame(rafId);
+          el.classList.remove("is-active");
+          el.style.setProperty("--wave-progress", "-1");
+        };
+      }, [active, totalChars]);
+      return containerRef;
+    }
+    function WaveText({
+      text,
+      startIndex,
+      className
+    }) {
+      const chars = Array.from(text);
+      const node = /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: chars.map((ch, i) => {
+        const isSpace = /\s/.test(ch);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            className: cn(
+              "flashcard-wave-char",
+              isSpace && "is-wave-space",
+              className
+            ),
+            style: { ["--wave-i"]: startIndex + i },
+            children: ch
+          },
+          `w-${startIndex + i}`
+        );
+      }) });
+      return { node, count: chars.length };
+    }
+    function useWaveHtml(html, startIndex, active) {
+      const ref = reactExports.useRef(null);
+      const [count2, setCount] = reactExports.useState(0);
+      reactExports.useEffect(() => {
+        var _a2;
+        const el = ref.current;
+        if (!el) return;
+        el.innerHTML = html;
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+          acceptNode: (node) => node.nodeValue && node.nodeValue.length > 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+        });
+        let runningIndex = startIndex;
+        const textNodes = [];
+        let current = walker.nextNode();
+        while (current) {
+          textNodes.push(current);
+          current = walker.nextNode();
+        }
+        for (const textNode of textNodes) {
+          const text = textNode.nodeValue ?? "";
+          const chars = Array.from(text);
+          const frag = document.createDocumentFragment();
+          for (const ch of chars) {
+            const isSpace = /\s/.test(ch);
+            const span = document.createElement("span");
+            span.className = cn("flashcard-wave-char", isSpace && "is-wave-space");
+            span.style.setProperty("--wave-i", String(runningIndex));
+            span.textContent = ch;
+            frag.appendChild(span);
+            runningIndex += 1;
+          }
+          (_a2 = textNode.parentNode) == null ? void 0 : _a2.replaceChild(frag, textNode);
+        }
+        setCount(runningIndex - startIndex);
+      }, [html, startIndex, active]);
+      return { ref, count: count2 };
     }
     function FlashcardActivity({
       activityId
@@ -72725,29 +77138,213 @@ Defaulting to \`null\`.`;
       ] });
     }
     function BackFace({ card }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between border-b border-legendary-card-border pb-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-base uppercase tracking-wide text-foreground", children: card.itemTitle }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-widest text-muted-foreground", children: "Details" })
-        ] }),
-        card.detailFields.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No detail fields recorded for this item." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("dl", { className: "flex flex-col gap-2.5", children: card.detailFields.map((field, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            "data-ocid": `flashcard.detail.${i + 1}`,
-            className: "flex flex-col gap-0.5 border-b border-legendary-card-border/40 pb-2 last:border-b-0 last:pb-0",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("dt", { className: "font-heading text-xs uppercase tracking-wide text-primary", children: field.fieldLabel }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "dd",
+      const runs = computeBackFaceRuns(card);
+      const totalChars = runs.reduce((sum, r2) => sum + r2.text.length, 0);
+      const [active, setActive] = reactExports.useState(false);
+      const containerRef = useReadingWave(active, totalChars);
+      reactExports.useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        const flipper = el.closest(".flashcard-flipper");
+        if (!flipper) return;
+        const sync = () => {
+          setActive(flipper.classList.contains("is-flipped"));
+        };
+        sync();
+        const observer = new MutationObserver(sync);
+        observer.observe(flipper, { attributes: true, attributeFilter: ["class"] });
+        return () => observer.disconnect();
+      }, [containerRef]);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          ref: containerRef,
+          className: "flashcard-wave flex h-full flex-col gap-3",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between border-b border-legendary-card-border pb-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-base uppercase leading-tight tracking-wide text-foreground break-words text-balance", children: runs[0] ? WaveText({ text: runs[0].text, startIndex: runs[0].start }).node : null }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-widest text-muted-foreground shrink-0 ml-2", children: card.recipe ? "Recipe" : "Details" })
+            ] }),
+            card.recipe ? /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardRecipeBack, { recipe: card.recipe, runs }) : card.detailFields.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "No detail fields recorded for this item." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("dl", { className: "flex flex-col gap-2.5", children: card.detailFields.map((field, i) => {
+              const labelRun = runs.find(
+                (r2) => r2.source === "detailLabel" && r2.index === i
+              );
+              const valueRun = runs.find(
+                (r2) => r2.source === "detailValue" && r2.index === i
+              );
+              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
                 {
-                  className: "font-body text-sm text-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4",
-                  dangerouslySetInnerHTML: { __html: field.value }
-                }
-              )
-            ]
-          },
-          `field-${i}`
-        )) })
+                  "data-ocid": `flashcard.detail.${i + 1}`,
+                  className: "flex flex-col gap-0.5 border-b border-legendary-card-border/40 pb-2 last:border-b-0 last:pb-0",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("dt", { className: "font-heading text-xs uppercase tracking-wide text-primary", children: labelRun ? WaveText({
+                      text: labelRun.text,
+                      startIndex: labelRun.start
+                    }).node : field.fieldLabel }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("dd", { className: "font-body text-sm text-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4", children: valueRun ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      WaveHtmlValue,
+                      {
+                        html: valueRun.text,
+                        startIndex: valueRun.start,
+                        active
+                      }
+                    ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "span",
+                      {
+                        dangerouslySetInnerHTML: { __html: field.value }
+                      }
+                    ) })
+                  ]
+                },
+                `field-${i}`
+              );
+            }) })
+          ]
+        }
+      );
+    }
+    function computeBackFaceRuns(card) {
+      const runs = [];
+      let cursor = 0;
+      const push2 = (text, source, index2) => {
+        if (text.length === 0) return;
+        runs.push({ text, start: cursor, source, index: index2 });
+        cursor += Array.from(text).length;
+      };
+      push2(card.itemTitle, "title", 0);
+      if (card.recipe) {
+        const r2 = card.recipe;
+        push2(r2.glassware, "glassware", 0);
+        r2.specs.forEach(
+          (spec, i) => push2(`${spec.amount} ${spec.ingredient}`, "spec", i)
+        );
+        r2.assembly.forEach((step, i) => push2(step, "assembly", i));
+        r2.garnish.forEach((g2, i) => push2(g2, "garnish", i));
+      } else {
+        card.detailFields.forEach((field, i) => {
+          push2(field.fieldLabel, "detailLabel", i);
+          push2(htmlToPlainText(field.value), "detailValue", i);
+        });
+      }
+      return runs;
+    }
+    function htmlToPlainText(html) {
+      if (typeof document === "undefined") return html.replace(/<[^>]+>/g, "");
+      const tpl = document.createElement("template");
+      tpl.innerHTML = html;
+      let out = "";
+      const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_TEXT, {
+        acceptNode: (node) => node.nodeValue && node.nodeValue.length > 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      });
+      let current = walker.nextNode();
+      while (current) {
+        out += current.nodeValue ?? "";
+        current = walker.nextNode();
+      }
+      return out;
+    }
+    function WaveHtmlValue({
+      html,
+      startIndex,
+      active
+    }) {
+      const { ref } = useWaveHtml(html, startIndex, active);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref });
+    }
+    function FlashcardRecipeBack({
+      recipe,
+      runs
+    }) {
+      const glasswareRun = runs.find((r2) => r2.source === "glassware");
+      const specRuns = runs.filter((r2) => r2.source === "spec");
+      const assemblyRuns = runs.filter((r2) => r2.source === "assembly");
+      const garnishRuns = runs.filter((r2) => r2.source === "garnish");
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3.5", children: [
+        recipe.glassware.trim().length > 0 && glasswareRun ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "flashcard.recipe.glassware", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-xs uppercase tracking-widest text-primary", children: "Glassware" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 font-body text-sm text-foreground", children: WaveText({
+            text: glasswareRun.text,
+            startIndex: glasswareRun.start
+          }).node })
+        ] }) : null,
+        recipe.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "flashcard.recipe.specs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-xs uppercase tracking-widest text-primary", children: "Specs" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "mt-1 flex flex-col gap-1", children: recipe.specs.map((spec, i) => {
+            const run = specRuns[i];
+            if (!run) return null;
+            const sepIdx = run.text.indexOf(" ");
+            const amountText = sepIdx >= 0 ? run.text.slice(0, sepIdx) : run.text;
+            const ingredientText = sepIdx >= 0 ? run.text.slice(sepIdx + 1) : "";
+            const amountWave = WaveText({
+              text: amountText,
+              startIndex: run.start
+            });
+            const ingredientWave = WaveText({
+              text: ingredientText,
+              startIndex: run.start + Array.from(amountText).length + 1
+            });
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "li",
+              {
+                "data-ocid": `flashcard.recipe.spec.${i + 1}`,
+                className: "flex items-baseline gap-2 font-body text-sm text-foreground",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "shrink-0 whitespace-nowrap font-mono text-xs text-muted-foreground", children: amountWave.node }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words", children: ingredientWave.node })
+                ]
+              },
+              `fspec-${spec.amount}-${spec.ingredient}`
+            );
+          }) })
+        ] }) : null,
+        recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "flashcard.recipe.assembly", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-xs uppercase tracking-widest text-primary", children: "Assembly" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "mt-1 flex flex-col gap-1.5", children: recipe.assembly.map((step, i) => {
+            const run = assemblyRuns[i];
+            if (!run) return null;
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "li",
+              {
+                "data-ocid": `flashcard.recipe.assembly_step.${i + 1}`,
+                className: "flex items-baseline gap-2 font-body text-sm leading-relaxed text-foreground",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "shrink-0 font-heading text-xs text-primary", children: [
+                    i + 1,
+                    "."
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words", children: WaveText({
+                    text: run.text,
+                    startIndex: run.start
+                  }).node })
+                ]
+              },
+              `fasm-${step}`
+            );
+          }) })
+        ] }) : null,
+        recipe.garnish.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "flashcard.recipe.garnish", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-xs uppercase tracking-widest text-primary", children: "Garnish" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "mt-1 flex flex-col gap-1", children: recipe.garnish.map((g2, i) => {
+            const run = garnishRuns[i];
+            if (!run) return null;
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "li",
+              {
+                "data-ocid": `flashcard.recipe.garnish_item.${i + 1}`,
+                className: "flex items-baseline gap-2 font-body text-sm text-foreground",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "shrink-0 text-primary", "aria-hidden": true, children: "•" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words", children: WaveText({
+                    text: run.text,
+                    startIndex: run.start
+                  }).node })
+                ]
+              },
+              `fgar-${g2}`
+            );
+          }) })
+        ] }) : null
       ] });
     }
     function DeckControls({
@@ -73791,9 +78388,369 @@ Defaulting to \`null\`.`;
       const item = itemQuery.data ?? null;
       const isLoading = itemQuery.isLoading;
       const notFound = !isLoading && !item;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-5xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(BackToCategory, { positionId, categoryId }),
-        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardSkeleton, {}) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCard, { item })
+        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardSkeleton, {}) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : item.recipe ? isBulkMix(item.recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx(BulkMixRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(PrintRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCard, { item })
+      ] });
+    }
+    function PrintRecipeCard({
+      item
+    }) {
+      var _a2;
+      const recipe = item.recipe;
+      const categoryQuery = useCategory(item.categoryId);
+      const categoryName = ((_a2 = categoryQuery.data) == null ? void 0 : _a2.name) ?? "";
+      const isLTO = item.seasonal || item.tags.some((t) => t.toUpperCase() === "LTO");
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "article",
+        {
+          className: "recipe-print-card mx-auto mt-4 w-full max-w-3xl rounded-md p-6 shadow-lg sm:p-10",
+          "data-ocid": "library.item.print_card",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "recipe-print-card-title text-3xl sm:text-4xl",
+                "data-ocid": "library.item.print_title",
+                children: item.title
+              }
+            ),
+            item.subtitle && item.subtitle.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "recipe-print-card-subtitle mt-3 text-base sm:text-lg",
+                "data-ocid": "library.item.print_subtitle",
+                children: item.subtitle
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10", children: [
+              item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "order-1 sm:order-2 sm:w-[320px] sm:shrink-0",
+                  "data-ocid": "library.item.print_photo",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "img",
+                    {
+                      src: item.photo,
+                      alt: item.title,
+                      className: "recipe-print-card-photo block h-auto w-full object-contain",
+                      loading: "lazy"
+                    }
+                  )
+                }
+              ) : null,
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "order-2 min-w-0 sm:order-1 sm:flex-1",
+                  "data-ocid": "library.item.print_content",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeContent, { recipe })
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mt-8 text-center text-sm font-semibold",
+                "data-ocid": "library.item.print_brand",
+                children: "Bubba’s 33 · Be Legendary / Serve Responsibly"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "recipe-print-card-footer-legal mt-4 text-xs",
+                "data-ocid": "library.item.print_legal",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "left", children: categoryName }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "center", children: "CONFIDENTIAL AND PROPRIETARY © Bubba’s 33" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "right", children: isLTO ? "LTO" : "" })
+                ]
+              }
+            )
+          ]
+        }
+      );
+    }
+    function isBulkMix(recipe) {
+      const hasYield = recipe.yield != null && recipe.yield.trim().length > 0;
+      const hasEquipment = recipe.equipment.length > 0;
+      return hasYield || hasEquipment;
+    }
+    function BulkMixRecipeCard({
+      item
+    }) {
+      const recipe = item.recipe;
+      const isLTO = item.seasonal || item.tags.some((t) => t.toUpperCase() === "LTO");
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "article",
+        {
+          className: "recipe-print-card mx-auto mt-4 w-full max-w-3xl rounded-md p-6 shadow-lg sm:p-10",
+          "data-ocid": "library.item.bulk_mix_card",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "recipe-print-card-title text-3xl sm:text-4xl",
+                "data-ocid": "library.item.bulk_mix_title",
+                children: item.title
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10",
+                "data-ocid": "library.item.bulk_mix_top_row",
+                children: [
+                  recipe.equipment.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_equipment", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Equipment" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.equipment.map((tool, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "li",
+                      {
+                        className: "leading-relaxed",
+                        "data-ocid": `library.item.bulk_mix_equipment_item.${i + 1}`,
+                        children: tool
+                      },
+                      `eq-${tool}`
+                    )) })
+                  ] }) : null,
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "flex flex-col gap-6",
+                      "data-ocid": "library.item.bulk_mix_meta",
+                      children: [
+                        recipe.yield != null && recipe.yield.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_yield", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Bulk Mix" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "li",
+                            {
+                              className: "leading-relaxed",
+                              "data-ocid": "library.item.bulk_mix_yield_item.1",
+                              children: recipe.yield
+                            }
+                          ) })
+                        ] }) : null,
+                        recipe.shelfLife != null && recipe.shelfLife.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_shelf_life", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Shelf Life" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "li",
+                            {
+                              className: "leading-relaxed",
+                              "data-ocid": "library.item.bulk_mix_shelf_life_item.1",
+                              children: recipe.shelfLife
+                            }
+                          ) })
+                        ] }) : null
+                      ]
+                    }
+                  )
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "mt-8 flex flex-col gap-6",
+                "data-ocid": "library.item.bulk_mix_body",
+                children: [
+                  recipe.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_specs", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Specs" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      SpecsRow,
+                      {
+                        spec,
+                        index: i
+                      },
+                      `bmspec-${spec.amount}-${spec.ingredient}`
+                    )) })
+                  ] }) : null,
+                  recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_assembly", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Assembly" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      BulkMixAssemblyStep,
+                      {
+                        step,
+                        index: i
+                      },
+                      `bmasm-${step}`
+                    )) })
+                  ] }) : null,
+                  recipe.qualityIdentifier.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_quality", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Quality Identifier" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.qualityIdentifier.map((qi, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "li",
+                      {
+                        className: "leading-relaxed",
+                        "data-ocid": `library.item.bulk_mix_quality_item.${i + 1}`,
+                        children: qi
+                      },
+                      `qi-${qi}`
+                    )) })
+                  ] }) : null
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mt-8 text-center text-sm font-semibold",
+                "data-ocid": "library.item.bulk_mix_brand",
+                children: "Bubba’s 33 · Be Legendary / Serve Responsibly"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "recipe-print-card-footer-legal mt-4 text-xs",
+                "data-ocid": "library.item.bulk_mix_legal",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "left", children: "BULK MIX" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "center", children: "CONFIDENTIAL AND PROPRIETARY © Bubba’s 33" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "right", children: isLTO ? "LTO" : "" })
+                ]
+              }
+            )
+          ]
+        }
+      );
+    }
+    function BulkMixAssemblyStep({
+      step,
+      index: index2
+    }) {
+      const boldPrefixes = ["Cover, label", "Label, date", "Store at"];
+      const matched = boldPrefixes.find((p2) => step.startsWith(p2));
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "li",
+        {
+          className: "leading-relaxed",
+          "data-ocid": `library.item.bulk_mix_assembly_step.${index2 + 1}`,
+          children: matched ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: matched }),
+            step.slice(matched.length)
+          ] }) : step
+        }
+      );
+    }
+    function RecipeContent({ recipe }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-6", children: [
+        recipe.glassware.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_glassware", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Glassware" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1", children: recipe.glassware })
+        ] }) : null,
+        recipe.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_specs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Specs" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SpecsRow,
+            {
+              spec,
+              index: i
+            },
+            `spec-${spec.amount}-${spec.ingredient}`
+          )) })
+        ] }) : null,
+        recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_assembly", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Assembly" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "li",
+            {
+              className: "leading-relaxed",
+              "data-ocid": `library.item.print_assembly_step.${i + 1}`,
+              children: step
+            },
+            `asm-${step}`
+          )) })
+        ] }) : null,
+        recipe.garnish.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_garnish", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Garnish" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.garnish.map((g2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "li",
+            {
+              className: "leading-relaxed",
+              "data-ocid": `library.item.print_garnish_step.${i + 1}`,
+              children: g2
+            },
+            `gar-${g2}`
+          )) })
+        ] }) : null,
+        recipe.variants.map((variant, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          VariantBlock,
+          {
+            variant,
+            index: i
+          },
+          `var-${variant.variantLabel}`
+        ))
+      ] });
+    }
+    function SpecsRow({
+      spec,
+      index: index2
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "li",
+        {
+          className: "recipe-print-card-specs-row",
+          "data-ocid": `library.item.print_spec.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount whitespace-nowrap pr-3", children: spec.amount }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ingredient", children: spec.ingredient })
+          ]
+        }
+      );
+    }
+    function VariantBlock({
+      variant,
+      index: index2
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": `library.item.print_variant.${index2 + 1}`, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "h3",
+          {
+            className: "recipe-print-card-variant-divider text-xl",
+            "data-ocid": `library.item.print_variant_label.${index2 + 1}`,
+            children: variant.variantLabel.toUpperCase()
+          }
+        ),
+        variant.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mt-3",
+            "data-ocid": `library.item.print_variant_specs.${index2 + 1}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "recipe-print-card-heading", children: "Specs" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: variant.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SpecsRow,
+                {
+                  spec,
+                  index: i
+                },
+                `vspec-${variant.variantLabel}-${spec.amount}-${spec.ingredient}`
+              )) })
+            ]
+          }
+        ) : null,
+        variant.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mt-3",
+            "data-ocid": `library.item.print_variant_assembly.${index2 + 1}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "recipe-print-card-heading", children: "Assembly" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: variant.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "li",
+                {
+                  className: "leading-relaxed",
+                  "data-ocid": `library.item.print_variant_assembly_step.${index2 + 1}.${i + 1}`,
+                  children: step
+                },
+                `vasm-${variant.variantLabel}-${step}`
+              )) })
+            ]
+          }
+        ) : null
       ] });
     }
     function RecipeCard({
@@ -73802,7 +78759,7 @@ Defaulting to \`null\`.`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "article",
         {
-          className: "mt-4 bg-library-card border border-border p-5 sm:p-6",
+          className: "mt-4 bg-library-card border border-border p-5 sm:p-8",
           "data-ocid": "library.item.card",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-start justify-between gap-3", children: [
@@ -73829,30 +78786,26 @@ Defaulting to \`null\`.`;
                 children: item.subtitle
               }
             ) : null,
-            item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "mt-5 w-full overflow-hidden rounded-md border border-border bg-card max-h-[160px] sm:max-h-[200px]",
-                "data-ocid": "library.item.photo",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title })
-              }
-            ) : null,
-            item.details.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "dl",
-              {
-                className: "mt-5 flex flex-col divide-y divide-border border-y border-border",
-                "data-ocid": "library.item.fields",
-                children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0 order-2 lg:order-1", children: [
+                item.details.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("dl", { className: "flex flex-col gap-7", "data-ocid": "library.item.fields", children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "div",
                   {
-                    className: "flex flex-col gap-0.5 py-3 sm:flex-row sm:items-baseline sm:gap-4",
+                    className: "flex flex-col gap-1.5",
                     "data-ocid": `library.item.field.${index2 + 1}`,
                     children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("dt", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground sm:w-32 sm:shrink-0", children: field.fieldLabel }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "dt",
+                        {
+                          className: "font-heading text-sm uppercase tracking-wider text-secondary",
+                          "data-ocid": `library.item.field_label.${index2 + 1}`,
+                          children: field.fieldLabel
+                        }
+                      ),
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
                         "dd",
                         {
-                          className: "font-body text-base text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
+                          className: "font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
                           "data-ocid": `library.item.field_value.${index2 + 1}`,
                           dangerouslySetInnerHTML: { __html: field.value }
                         }
@@ -73860,22 +78813,44 @@ Defaulting to \`null\`.`;
                     ]
                   },
                   `${field.fieldLabel}-${index2}`
-                ))
-              }
-            ) : null,
-            item.notes ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "mt-5", "data-ocid": "library.item.notes", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xs uppercase tracking-wider text-muted-foreground", children: "Notes" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground", children: item.notes })
-            ] }) : null,
-            item.tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "mt-5", "data-ocid": "library.item.tags", children: /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-wrap gap-2", children: item.tags.map((tag, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "li",
-              {
-                className: "rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground",
-                "data-ocid": `library.item.tag.${index2 + 1}`,
-                children: tag
-              },
-              tag
-            )) }) }) : null
+                )) }) : null,
+                item.notes ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "section",
+                  {
+                    className: item.details.length > 0 ? "mt-8" : "mt-0",
+                    "data-ocid": "library.item.notes",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-sm uppercase tracking-wider text-secondary", children: "Notes" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground", children: item.notes })
+                    ]
+                  }
+                ) : null,
+                item.tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "section",
+                  {
+                    className: item.details.length > 0 || item.notes ? "mt-8" : "mt-0",
+                    "data-ocid": "library.item.tags",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-wrap gap-2", children: item.tags.map((tag, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "li",
+                      {
+                        className: "rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground",
+                        "data-ocid": `library.item.tag.${index2 + 1}`,
+                        children: tag
+                      },
+                      tag
+                    )) })
+                  }
+                ) : null
+              ] }),
+              item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0",
+                  "data-ocid": "library.item.photo",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border border-border bg-card p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title }) })
+                }
+              ) : null
+            ] })
           ]
         }
       );
@@ -73892,12 +78867,13 @@ Defaulting to \`null\`.`;
           className: "block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
           "aria-label": "Open full-size photo",
           title: "Tap to view full size",
+          "data-ocid": "library.item.photo_button",
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
             {
               src: photo,
               alt: title,
-              className: "h-[160px] w-full object-contain object-center sm:h-[200px]",
+              className: "block h-auto w-full object-contain",
               loading: "lazy"
             }
           )
@@ -73938,14 +78914,18 @@ Defaulting to \`null\`.`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "article",
         {
-          className: "mt-4 bg-library-card border border-border p-5 sm:p-6",
+          className: "mt-4 bg-library-card border border-border p-5 sm:p-8",
           "data-ocid": "library.item.loading_state",
           "aria-hidden": true,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-9 w-2/3" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-5 aspect-[16/9] w-full rounded-md" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-5 flex flex-col gap-3", children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-full" }, k2)) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-5 h-20 w-full" })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 order-2 lg:order-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-7", children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-4 w-28" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-16 w-full" })
+              ] }, k2)) }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "order-1 lg:order-2 lg:w-[340px] lg:shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-[360px] w-full rounded-md" }) })
+            ] })
           ]
         }
       );
@@ -74115,6 +79095,12 @@ Defaulting to \`null\`.`;
       component: LegendaryFlashcardsRoute,
       errorComponent: RouteErrorComponent
     });
+    const legendaryDrinksBuilderRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/position/$id/legendary/drinks-builder/$activityId",
+      component: LegendaryDrinksBuilderRoute,
+      errorComponent: RouteErrorComponent
+    });
     const nsoRoute = createRoute({
       getParentRoute: () => Route,
       path: "/new-store-opening",
@@ -74168,6 +79154,7 @@ Defaulting to \`null\`.`;
       beLegendaryRoute,
       legendaryQuizRoute,
       legendaryFlashcardsRoute,
+      legendaryDrinksBuilderRoute,
       categoryDetailRoute,
       heartShowcaseRoute,
       itemDetailRoute,

@@ -24,6 +24,7 @@ import { NsoPage } from "./routes/new-store-opening";
 import { PositionDetailRoute } from "./routes/position.$id";
 import { HeartShowcaseRoute } from "./routes/position.$id.heart.$categoryId";
 import { BeLegendaryRoute } from "./routes/position.$id.legendary";
+import { LegendaryDrinksBuilderRoute } from "./routes/position.$id.legendary.drinks-builder.$activityId";
 import { LegendaryFlashcardsRoute } from "./routes/position.$id.legendary.flashcards.$activityId";
 import { LegendaryQuizRoute } from "./routes/position.$id.legendary.quiz.$activityId";
 import { CategoryDetailRoute } from "./routes/position.$id.library.$categoryId";
@@ -265,6 +266,18 @@ const legendaryFlashcardsRoute = createRoute({
   errorComponent: RouteErrorComponent,
 });
 
+// Be Legendary Drinks Builder practice flow. Registered as a flat child of
+// RootRoute with the full path (matching legendaryQuizRoute /
+// legendaryFlashcardsRoute) so it mounts without requiring BeLegendaryPage to
+// render an <Outlet/>. Reads $activityId and renders DrinksBuilderActivity,
+// which fetches the activity and reads positionId from it.
+const legendaryDrinksBuilderRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/position/$id/legendary/drinks-builder/$activityId",
+  component: LegendaryDrinksBuilderRoute,
+  errorComponent: RouteErrorComponent,
+});
+
 // New Store Opening tracker — additive top-level route (own page under the
 // Layout nav, NOT nested under /admin). Manager/Admin gated inside NsoPage.
 const nsoRoute = createRoute({
@@ -334,6 +347,7 @@ const routeTree = RootRoute.addChildren([
   beLegendaryRoute,
   legendaryQuizRoute,
   legendaryFlashcardsRoute,
+  legendaryDrinksBuilderRoute,
   categoryDetailRoute,
   heartShowcaseRoute,
   itemDetailRoute,

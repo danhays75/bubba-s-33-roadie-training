@@ -28,6 +28,26 @@ export const DetailField = IDL.Record({
   'value' : IDL.Text,
   'fieldLabel' : IDL.Text,
 });
+export const RecipeSpec = IDL.Record({
+  'ingredient' : IDL.Text,
+  'amount' : IDL.Text,
+});
+export const RecipeVariant = IDL.Record({
+  'variantLabel' : IDL.Text,
+  'specs' : IDL.Vec(RecipeSpec),
+  'assembly' : IDL.Vec(IDL.Text),
+});
+export const Recipe = IDL.Record({
+  'equipment' : IDL.Vec(IDL.Text),
+  'glassware' : IDL.Text,
+  'variants' : IDL.Vec(RecipeVariant),
+  'garnish' : IDL.Vec(IDL.Text),
+  'qualityIdentifier' : IDL.Vec(IDL.Text),
+  'specs' : IDL.Vec(RecipeSpec),
+  'shelfLife' : IDL.Opt(IDL.Text),
+  'assembly' : IDL.Vec(IDL.Text),
+  'yield' : IDL.Opt(IDL.Text),
+});
 export const LibraryItem = IDL.Record({
   'id' : IDL.Nat,
   'categoryId' : IDL.Nat,
@@ -39,10 +59,27 @@ export const LibraryItem = IDL.Record({
   'details' : IDL.Vec(DetailField),
   'photo' : IDL.Opt(IDL.Text),
   'subtitle' : IDL.Opt(IDL.Text),
+  'recipe' : IDL.Opt(Recipe),
 });
 export const ActivityType = IDL.Variant({
+  'drinksBuilder' : IDL.Null,
   'quiz' : IDL.Null,
   'flashcards' : IDL.Null,
+});
+export const DrinksBuilderSettings = IDL.Record({
+  'includedCategories' : IDL.Vec(IDL.Text),
+  'enforceAssemblyOrder' : IDL.Bool,
+  'pointsPerCorrect' : IDL.Nat,
+  'excludedDrinkTitles' : IDL.Vec(IDL.Text),
+  'showScoring' : IDL.Bool,
+  'requireExactAmounts' : IDL.Bool,
+  'soundDefault' : IDL.Bool,
+  'decoyCount' : IDL.Nat,
+  'streakMultiplier' : IDL.Bool,
+  'roundsPerSession' : IDL.Nat,
+});
+export const DrinksBuilderContent = IDL.Record({
+  'settings' : DrinksBuilderSettings,
 });
 export const Question = IDL.Variant({
   'multipleChoice' : IDL.Record({
@@ -59,15 +96,25 @@ export const Question = IDL.Variant({
   'trueFalse' : IDL.Record({ 'statement' : IDL.Text, 'isTrue' : IDL.Bool }),
 });
 export const QuizContent = IDL.Vec(Question);
+export const FlashcardRecipe = IDL.Record({
+  'glassware' : IDL.Text,
+  'garnish' : IDL.Vec(IDL.Text),
+  'specs' : IDL.Vec(
+    IDL.Record({ 'ingredient' : IDL.Text, 'amount' : IDL.Text })
+  ),
+  'assembly' : IDL.Vec(IDL.Text),
+});
 export const Flashcard = IDL.Record({
   'itemTitle' : IDL.Text,
   'detailFields' : IDL.Vec(
     IDL.Record({ 'value' : IDL.Text, 'fieldLabel' : IDL.Text })
   ),
   'itemPhoto' : IDL.Opt(IDL.Text),
+  'recipe' : IDL.Opt(FlashcardRecipe),
 });
 export const FlashcardContent = IDL.Vec(Flashcard);
 export const ActivityContent = IDL.Variant({
+  'drinksBuilderContent' : DrinksBuilderContent,
   'quizContent' : QuizContent,
   'flashcardContent' : FlashcardContent,
 });
@@ -156,6 +203,7 @@ export const UserRole = IDL.Variant({
 });
 export const BuildActivityInput = IDL.Record({
   'activityType' : ActivityType,
+  'content' : IDL.Opt(ActivityContent),
   'name' : IDL.Text,
   'positionId' : IDL.Nat,
   'sourceCategoryIds' : IDL.Vec(IDL.Nat),
@@ -198,6 +246,7 @@ export const NsoImportSummary = IDL.Record({
 });
 export const UpdateActivityInput = IDL.Record({
   'id' : IDL.Nat,
+  'content' : IDL.Opt(ActivityContent),
   'name' : IDL.Text,
   'sourceCategoryIds' : IDL.Vec(IDL.Nat),
 });
@@ -301,6 +350,7 @@ export const idlService = IDL.Service({
         IDL.Opt(IDL.Text),
         IDL.Vec(IDL.Text),
         IDL.Bool,
+        IDL.Opt(Recipe),
       ],
       [LibraryItem],
       [],
@@ -333,6 +383,16 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getCategory' : IDL.Func([IDL.Nat], [IDL.Opt(Category)], ['query']),
+  'getDrinksBuilderDecoyPool' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Vec(LibraryItem)],
+      ['query'],
+    ),
+  'getDrinksBuilderPlayablePool' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Vec(LibraryItem)],
+      ['query'],
+    ),
   'getItem' : IDL.Func([IDL.Nat], [IDL.Opt(LibraryItem)], ['query']),
   'getItemsByCategory' : IDL.Func([IDL.Nat], [IDL.Vec(LibraryItem)], ['query']),
   'getLegendaryActivitiesByPosition' : IDL.Func(
@@ -420,6 +480,7 @@ export const idlService = IDL.Service({
         IDL.Opt(IDL.Text),
         IDL.Vec(IDL.Text),
         IDL.Bool,
+        IDL.Opt(Recipe),
       ],
       [LibraryItem],
       [],
@@ -470,6 +531,26 @@ export const idlFactory = ({ IDL }) => {
     'value' : IDL.Text,
     'fieldLabel' : IDL.Text,
   });
+  const RecipeSpec = IDL.Record({
+    'ingredient' : IDL.Text,
+    'amount' : IDL.Text,
+  });
+  const RecipeVariant = IDL.Record({
+    'variantLabel' : IDL.Text,
+    'specs' : IDL.Vec(RecipeSpec),
+    'assembly' : IDL.Vec(IDL.Text),
+  });
+  const Recipe = IDL.Record({
+    'equipment' : IDL.Vec(IDL.Text),
+    'glassware' : IDL.Text,
+    'variants' : IDL.Vec(RecipeVariant),
+    'garnish' : IDL.Vec(IDL.Text),
+    'qualityIdentifier' : IDL.Vec(IDL.Text),
+    'specs' : IDL.Vec(RecipeSpec),
+    'shelfLife' : IDL.Opt(IDL.Text),
+    'assembly' : IDL.Vec(IDL.Text),
+    'yield' : IDL.Opt(IDL.Text),
+  });
   const LibraryItem = IDL.Record({
     'id' : IDL.Nat,
     'categoryId' : IDL.Nat,
@@ -481,10 +562,27 @@ export const idlFactory = ({ IDL }) => {
     'details' : IDL.Vec(DetailField),
     'photo' : IDL.Opt(IDL.Text),
     'subtitle' : IDL.Opt(IDL.Text),
+    'recipe' : IDL.Opt(Recipe),
   });
   const ActivityType = IDL.Variant({
+    'drinksBuilder' : IDL.Null,
     'quiz' : IDL.Null,
     'flashcards' : IDL.Null,
+  });
+  const DrinksBuilderSettings = IDL.Record({
+    'includedCategories' : IDL.Vec(IDL.Text),
+    'enforceAssemblyOrder' : IDL.Bool,
+    'pointsPerCorrect' : IDL.Nat,
+    'excludedDrinkTitles' : IDL.Vec(IDL.Text),
+    'showScoring' : IDL.Bool,
+    'requireExactAmounts' : IDL.Bool,
+    'soundDefault' : IDL.Bool,
+    'decoyCount' : IDL.Nat,
+    'streakMultiplier' : IDL.Bool,
+    'roundsPerSession' : IDL.Nat,
+  });
+  const DrinksBuilderContent = IDL.Record({
+    'settings' : DrinksBuilderSettings,
   });
   const Question = IDL.Variant({
     'multipleChoice' : IDL.Record({
@@ -501,15 +599,25 @@ export const idlFactory = ({ IDL }) => {
     'trueFalse' : IDL.Record({ 'statement' : IDL.Text, 'isTrue' : IDL.Bool }),
   });
   const QuizContent = IDL.Vec(Question);
+  const FlashcardRecipe = IDL.Record({
+    'glassware' : IDL.Text,
+    'garnish' : IDL.Vec(IDL.Text),
+    'specs' : IDL.Vec(
+      IDL.Record({ 'ingredient' : IDL.Text, 'amount' : IDL.Text })
+    ),
+    'assembly' : IDL.Vec(IDL.Text),
+  });
   const Flashcard = IDL.Record({
     'itemTitle' : IDL.Text,
     'detailFields' : IDL.Vec(
       IDL.Record({ 'value' : IDL.Text, 'fieldLabel' : IDL.Text })
     ),
     'itemPhoto' : IDL.Opt(IDL.Text),
+    'recipe' : IDL.Opt(FlashcardRecipe),
   });
   const FlashcardContent = IDL.Vec(Flashcard);
   const ActivityContent = IDL.Variant({
+    'drinksBuilderContent' : DrinksBuilderContent,
     'quizContent' : QuizContent,
     'flashcardContent' : FlashcardContent,
   });
@@ -598,6 +706,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const BuildActivityInput = IDL.Record({
     'activityType' : ActivityType,
+    'content' : IDL.Opt(ActivityContent),
     'name' : IDL.Text,
     'positionId' : IDL.Nat,
     'sourceCategoryIds' : IDL.Vec(IDL.Nat),
@@ -640,6 +749,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const UpdateActivityInput = IDL.Record({
     'id' : IDL.Nat,
+    'content' : IDL.Opt(ActivityContent),
     'name' : IDL.Text,
     'sourceCategoryIds' : IDL.Vec(IDL.Nat),
   });
@@ -743,6 +853,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Opt(IDL.Text),
           IDL.Vec(IDL.Text),
           IDL.Bool,
+          IDL.Opt(Recipe),
         ],
         [LibraryItem],
         [],
@@ -775,6 +886,16 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getCategory' : IDL.Func([IDL.Nat], [IDL.Opt(Category)], ['query']),
+    'getDrinksBuilderDecoyPool' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Vec(LibraryItem)],
+        ['query'],
+      ),
+    'getDrinksBuilderPlayablePool' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Vec(LibraryItem)],
+        ['query'],
+      ),
     'getItem' : IDL.Func([IDL.Nat], [IDL.Opt(LibraryItem)], ['query']),
     'getItemsByCategory' : IDL.Func(
         [IDL.Nat],
@@ -874,6 +995,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Opt(IDL.Text),
           IDL.Vec(IDL.Text),
           IDL.Bool,
+          IDL.Opt(Recipe),
         ],
         [LibraryItem],
         [],

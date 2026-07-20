@@ -4,10 +4,20 @@ type AccessControlState__470099793 =
     var adminAssigned : Bool;
     userRoles : Map__246123559<Principal, UserRole__514476249>
   };
+type AccessControlState__623790961 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__324529758>
+  };
 type AccessControlState__690678898 =
   {
     var adminAssigned : Bool;
     userRoles : Map__246123559<Principal, UserRole__488381355>
+  };
+type AccessControlState__695342702 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__646337209>
   };
 type AccessControlState__75059763 =
   {
@@ -19,10 +29,20 @@ type AccessControlState__80168300 =
     var adminAssigned : Bool;
     userRoles : Map__246123559<Principal, UserRole__851322309>
   };
+type AccessControlState__803439430 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__163450367>
+  };
 type AccessControlState__825338347 =
   {
     var adminAssigned : Bool;
     userRoles : Map__246123559<Principal, UserRole__33289320>
+  };
+type AccessControlState__943352191 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__246123559<Principal, UserRole__786984507>
   };
 type AccessControlState__954572192 =
   {
@@ -36,11 +56,25 @@ type ActivityContent__532236063 =
   };
 type ActivityContent__574653767 =
   {
+    #drinksBuilderContent : DrinksBuilderContent__314782049;
     #flashcardContent : FlashcardContent__940199489;
     #quizContent : QuizContent__29847209
   };
-type ActivityType__183601006 = {#flashcards; #quiz};
+type ActivityContent__794902583 =
+  {
+    #flashcardContent : FlashcardContent__818154083;
+    #quizContent : QuizContent__223370273
+  };
+type ActivityContent__966367940 =
+  {
+    #flashcardContent : FlashcardContent__563357507;
+    #quizContent : QuizContent__643368002
+  };
+type ActivityType__183601006 = {#drinksBuilder; #flashcards; #quiz};
+type ActivityType__199622199 = {#flashcards; #quiz};
 type ActivityType__219945923 = {#flashcards; #quiz};
+type ActivityType__269452934 = {#drinksBuilder; #flashcards; #quiz};
+type ActivityType__354676686 = {#flashcards; #quiz};
 type Activity__149814726 =
   {
     activityType : ActivityType__219945923;
@@ -63,13 +97,39 @@ type Activity__247612037 =
     positionId : Nat;
     sourceCategoryIds : [Nat]
   };
+type Activity__48101340 =
+  {
+    activityType : ActivityType__199622199;
+    content : ActivityContent__794902583;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sourceCategoryIds : [Nat]
+  };
 type Activity__616495317 = Activity__247612037;
+type Activity__891148727 =
+  {
+    activityType : ActivityType__354676686;
+    content : ActivityContent__966367940;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sourceCategoryIds : [Nat]
+  };
 type AssignmentStatus__149382977 = {#certified; #inTraining};
 type AssignmentStatus__223044902 = {#certified; #inTraining};
+type AssignmentStatus__300934368 = {#certified; #inTraining};
+type AssignmentStatus__361061421 = {#certified; #inTraining};
+type AssignmentStatus__396148315 = {#certified; #inTraining};
 type AssignmentStatus__481123893 = {#certified; #inTraining};
 type AssignmentStatus__53229539 = {#certified; #inTraining};
 type AssignmentStatus__573693629 = {#certified; #inTraining};
 type AssignmentStatus__609627758 = {#certified; #inTraining};
+type AssignmentStatus__714785750 = {#certified; #inTraining};
 type AssignmentStatus__750850714 = {#certified; #inTraining};
 type Category__126721063 =
   {
@@ -80,6 +140,30 @@ type Category__126721063 =
     sortOrder : Nat
   };
 type Category__160512014 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
+type Category__170373213 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
+type Category__273555389 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
+type Category__288702680 =
   {
     coverPhoto : ?Text;
     id : Nat;
@@ -111,6 +195,14 @@ type Category__681034651 =
     positionId : Nat;
     sortOrder : Nat
   };
+type Category__691747777 =
+  {
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
 type Category__756272159 =
   {
     coverPhoto : ?Text;
@@ -123,13 +215,98 @@ type Category__877266824 = Category__756272159;
 type Data__552063367<K, V> = {var count : Nat__93962160; kvs : [var ?(K, V)]};
 type DetailField__180695552 = {fieldLabel : Text; value : Text};
 type DetailField__256025502 = {fieldLabel : Text; value : Text};
+type DetailField__579089233 = {fieldLabel : Text; value : Text};
+type DetailField__695576903 = {fieldLabel : Text; value : Text};
+type DetailField__746999893 = {fieldLabel : Text; value : Text};
 type DetailField__804330347 = {fieldLabel : Text; value : Text};
 type DetailField__900205256 = {fieldLabel : Text; value : Text};
+type DetailField__949844336 = {fieldLabel : Text; value : Text};
 type DetailField__962204773 = {fieldLabel : Text; value : Text};
 type DetailField__996971810 = {fieldLabel : Text; value : Text};
+type DrinksBuilderContent__314782049 =
+  {settings : DrinksBuilderSettings__270768576};
+type DrinksBuilderContent__502390584 =
+  {settings : DrinksBuilderSettings__544897469};
+type DrinksBuilderContent__572449311 =
+  {settings : DrinksBuilderSettings__286601907};
+type DrinksBuilderSettings__270768576 =
+  {
+    decoyCount : Nat;
+    enforceAssemblyOrder : Bool;
+    excludedDrinkTitles : [Text];
+    includedCategories : [Text];
+    pointsPerCorrect : Nat;
+    requireExactAmounts : Bool;
+    roundsPerSession : Nat;
+    showScoring : Bool;
+    soundDefault : Bool;
+    streakMultiplier : Bool
+  };
+type DrinksBuilderSettings__286601907 =
+  {
+    decoyCount : Nat;
+    enforceAssemblyOrder : Bool;
+    excludedDrinkTitles : [Text];
+    includedCategories : [Text];
+    pointsPerCorrect : Nat;
+    requireExactAmounts : Bool;
+    roundsPerSession : Nat;
+    showScoring : Bool;
+    soundDefault : Bool;
+    streakMultiplier : Bool
+  };
+type DrinksBuilderSettings__544897469 =
+  {
+    decoyCount : Nat;
+    enforceAssemblyOrder : Bool;
+    excludedDrinkTitles : [Text];
+    includedCategories : [Text];
+    pointsPerCorrect : Nat;
+    requireExactAmounts : Bool;
+    roundsPerSession : Nat;
+    showScoring : Bool;
+    soundDefault : Bool;
+    streakMultiplier : Bool
+  };
 type FlashcardContent__462229243 = [Flashcard__935089849];
+type FlashcardContent__563357507 = [Flashcard__52780488];
+type FlashcardContent__818154083 = [Flashcard__14884103];
 type FlashcardContent__940199489 = [Flashcard__435867289];
+type FlashcardContent__94961007 = [Flashcard__119857192];
+type FlashcardRecipe__183768900 =
+  {
+    assembly : [Text];
+    garnish : [Text];
+    glassware : Text;
+    specs : [{amount : Text; ingredient : Text}]
+  };
+type FlashcardRecipe__94827366 =
+  {
+    assembly : [Text];
+    garnish : [Text];
+    glassware : Text;
+    specs : [{amount : Text; ingredient : Text}]
+  };
+type Flashcard__119857192 =
+  {
+    detailFields : [{fieldLabel : Text; value : Text}];
+    itemPhoto : ?Text;
+    itemTitle : Text
+  };
+type Flashcard__14884103 =
+  {
+    detailFields : [{fieldLabel : Text; value : Text}];
+    itemPhoto : ?Text;
+    itemTitle : Text
+  };
 type Flashcard__435867289 =
+  {
+    detailFields : [{fieldLabel : Text; value : Text}];
+    itemPhoto : ?Text;
+    itemTitle : Text;
+    recipe : ?FlashcardRecipe__94827366
+  };
+type Flashcard__52780488 =
   {
     detailFields : [{fieldLabel : Text; value : Text}];
     itemPhoto : ?Text;
@@ -152,6 +329,7 @@ type LibraryItem__399737546 =
     id : Nat;
     notes : ?Text;
     photo : ?Text;
+    recipe : ?Recipe__1046613284;
     seasonal : Bool;
     sortOrder : Nat;
     subtitle : ?Text;
@@ -165,6 +343,20 @@ type LibraryItem__557945265 =
     id : Nat;
     notes : ?Text;
     photo : ?Text;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type LibraryItem__64332672 =
+  {
+    categoryId : Nat;
+    details : [DetailField__579089233];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?Recipe__827879001;
     seasonal : Bool;
     sortOrder : Nat;
     subtitle : ?Text;
@@ -222,6 +414,20 @@ type LibraryItem__935798410 =
     tags : [Text];
     title : Text
   };
+type LibraryItem__950249397 =
+  {
+    categoryId : Nat;
+    details : [DetailField__695576903];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?Recipe__528289914;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
 type List__716101829<T> =
   {
     var blockIndex : Nat__93962160;
@@ -235,6 +441,95 @@ type Map__719753394<K, V> =
   {var root : Node__279997185<K, V>; var size : Nat__93962160};
 type Nat__920180692 = Nat;
 type Nat__93962160 = Nat__920180692;
+type NewActivityContent__834236679 =
+  {
+    #drinksBuilderContent : DrinksBuilderContent__572449311;
+    #flashcardContent : FlashcardContent__94961007;
+    #quizContent : QuizContent__744112692
+  };
+type NewActivityContent__959839262 =
+  {
+    #drinksBuilderContent : DrinksBuilderContent__502390584;
+    #flashcardContent : NewFlashcardContent__262549535;
+    #quizContent : QuizContent__46131542
+  };
+type NewActivityType__1019852960 = {#drinksBuilder; #flashcards; #quiz};
+type NewActivity__233244927 =
+  {
+    activityType : NewActivityType__1019852960;
+    content : NewActivityContent__834236679;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sourceCategoryIds : [Nat]
+  };
+type NewActivity__252644926 =
+  {
+    activityType : ActivityType__269452934;
+    content : NewActivityContent__959839262;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sourceCategoryIds : [Nat]
+  };
+type NewActor__180733458 =
+  {
+    var accessControlState : AccessControlState__695342702;
+    assignments : List__852723865<PositionAssignment__616949047>;
+    categories : List__852723865<Category__288702680>;
+    items : List__852723865<NewLibraryItem__87850365>;
+    legendaryActivities : List__852723865<Activity__48101340>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__928744096>;
+    nsoTasks : List__852723865<Task__179304481>;
+    positions : List__852723865<Position__200429189>;
+    profiles : Map__246123559<Principal, UserProfile__278634132>
+  };
+type NewActor__204237839 =
+  {
+    var accessControlState : AccessControlState__943352191;
+    assignments : List__852723865<PositionAssignment__349748336>;
+    categories : List__852723865<Category__170373213>;
+    items : List__852723865<LibraryItem__64332672>;
+    legendaryActivities : List__852723865<NewActivity__252644926>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__496045583>;
+    nsoTasks : List__852723865<Task__497933695>;
+    positions : List__852723865<Position__418445021>;
+    profiles : Map__246123559<Principal, UserProfile__30192772>
+  };
+type NewActor__222500057 =
+  {
+    var accessControlState : AccessControlState__623790961;
+    assignments : List__852723865<PositionAssignment__919811250>;
+    categories : List__852723865<Category__273555389>;
+    items : List__852723865<LibraryItem__950249397>;
+    legendaryActivities : List__852723865<NewActivity__233244927>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__50981955>;
+    nsoTasks : List__852723865<Task__235568049>;
+    positions : List__852723865<Position__318830573>;
+    profiles : Map__246123559<Principal, UserProfile__142651752>
+  };
 type NewActor__292081718 =
   {
     var accessControlState : AccessControlState__690678898;
@@ -277,6 +572,24 @@ type NewActor__544122477 =
     positions : List__852723865<Position__371037758>;
     profiles : Map__246123559<Principal, UserProfile__946597095>
   };
+type NewActor__57786907 =
+  {
+    var accessControlState : AccessControlState__803439430;
+    assignments : List__852723865<PositionAssignment__686122253>;
+    categories : List__852723865<Category__691747777>;
+    items : List__852723865<NewLibraryItem__381126491>;
+    legendaryActivities : List__852723865<Activity__891148727>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__151503348>;
+    nsoTasks : List__852723865<Task__615126471>;
+    positions : List__852723865<Position__834311727>;
+    profiles : Map__246123559<Principal, UserProfile__306774772>
+  };
 type NewActor__625870533 =
   {
     var accessControlState : AccessControlState__75059763;
@@ -313,8 +626,90 @@ type NewActor__746619218 =
     positions : List__852723865<Position__404825400>;
     profiles : Map__246123559<Principal, UserProfile__789457244>
   };
+type NewFlashcardContent__262549535 = [NewFlashcard__998756620];
+type NewFlashcard__998756620 =
+  {
+    detailFields : [{fieldLabel : Text; value : Text}];
+    itemPhoto : ?Text;
+    itemTitle : Text;
+    recipe : ?FlashcardRecipe__183768900
+  };
+type NewLibraryItem__381126491 =
+  {
+    categoryId : Nat;
+    details : [DetailField__949844336];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?NewRecipe__726559885;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type NewLibraryItem__87850365 =
+  {
+    categoryId : Nat;
+    details : [DetailField__746999893];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?Recipe__16157437;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type NewRecipe__726559885 =
+  {
+    assembly : [Text];
+    equipment : [Text];
+    garnish : [Text];
+    glassware : Text;
+    qualityIdentifier : [Text];
+    shelfLife : ?Text;
+    specs : [RecipeSpec__1019072628];
+    variants : [RecipeVariant__727383390];
+    yield : ?Text
+  };
 type Node__279997185<K, V> =
   {#internal : Internal__455405067<K, V>; #leaf : Leaf__114713147<K, V>};
+type OldActivityContent__1031218613 =
+  {
+    #drinksBuilderContent : DrinksBuilderContent__502390584;
+    #flashcardContent : OldFlashcardContent__575157605;
+    #quizContent : QuizContent__46131542
+  };
+type OldActivityContent__614016091 =
+  {
+    #flashcardContent : FlashcardContent__94961007;
+    #quizContent : QuizContent__744112692
+  };
+type OldActivityType__574762129 = {#flashcards; #quiz};
+type OldActivity__156533604 =
+  {
+    activityType : OldActivityType__574762129;
+    content : OldActivityContent__614016091;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sourceCategoryIds : [Nat]
+  };
+type OldActivity__165273146 =
+  {
+    activityType : ActivityType__269452934;
+    content : OldActivityContent__1031218613;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sourceCategoryIds : [Nat]
+  };
 type OldActor__150656829 =
   {
     var accessControlState : AccessControlState__954572192;
@@ -330,6 +725,24 @@ type OldActor__150656829 =
     nsoTasks : List__852723865<Task__205849316>;
     positions : List__852723865<Position__572056758>;
     profiles : Map__246123559<Principal, UserProfile__921863851>
+  };
+type OldActor__198466139 =
+  {
+    var accessControlState : AccessControlState__695342702;
+    assignments : List__852723865<PositionAssignment__616949047>;
+    categories : List__852723865<Category__288702680>;
+    items : List__852723865<OldLibraryItem__176234150>;
+    legendaryActivities : List__852723865<Activity__48101340>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__928744096>;
+    nsoTasks : List__852723865<Task__179304481>;
+    positions : List__852723865<Position__200429189>;
+    profiles : Map__246123559<Principal, UserProfile__278634132>
   };
 type OldActor__331980100 =
   {
@@ -356,6 +769,24 @@ type OldActor__356507366 =
     profiles : Map__246123559<Principal, UserProfile__789457244>
   };
 type OldActor__472261015 = {};
+type OldActor__477246813 =
+  {
+    var accessControlState : AccessControlState__943352191;
+    assignments : List__852723865<PositionAssignment__349748336>;
+    categories : List__852723865<Category__170373213>;
+    items : List__852723865<LibraryItem__64332672>;
+    legendaryActivities : List__852723865<OldActivity__165273146>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__496045583>;
+    nsoTasks : List__852723865<Task__497933695>;
+    positions : List__852723865<Position__418445021>;
+    profiles : Map__246123559<Principal, UserProfile__30192772>
+  };
 type OldActor__644677411 =
   {
     var accessControlState : AccessControlState__690678898;
@@ -363,6 +794,24 @@ type OldActor__644677411 =
     nextPositionId : {var value : Nat};
     positions : List__852723865<Position__507482950>;
     profiles : Map__246123559<Principal, UserProfile__201697168>
+  };
+type OldActor__650741527 =
+  {
+    var accessControlState : AccessControlState__803439430;
+    assignments : List__852723865<PositionAssignment__686122253>;
+    categories : List__852723865<Category__691747777>;
+    items : List__852723865<OldLibraryItem__142332632>;
+    legendaryActivities : List__852723865<Activity__891148727>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__151503348>;
+    nsoTasks : List__852723865<Task__615126471>;
+    positions : List__852723865<Position__834311727>;
+    profiles : Map__246123559<Principal, UserProfile__306774772>
   };
 type OldActor__732394136 =
   {
@@ -376,6 +825,58 @@ type OldActor__732394136 =
     positions : List__852723865<Position__258863425>;
     profiles : Map__246123559<Principal, UserProfile__678953854>
   };
+type OldActor__845032218 =
+  {
+    var accessControlState : AccessControlState__623790961;
+    assignments : List__852723865<PositionAssignment__919811250>;
+    categories : List__852723865<Category__273555389>;
+    items : List__852723865<LibraryItem__950249397>;
+    legendaryActivities : List__852723865<OldActivity__156533604>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__852723865<Phase__50981955>;
+    nsoTasks : List__852723865<Task__235568049>;
+    positions : List__852723865<Position__318830573>;
+    profiles : Map__246123559<Principal, UserProfile__142651752>
+  };
+type OldFlashcardContent__575157605 = [OldFlashcard__108876639];
+type OldFlashcard__108876639 =
+  {
+    detailFields : [{fieldLabel : Text; value : Text}];
+    itemPhoto : ?Text;
+    itemTitle : Text
+  };
+type OldLibraryItem__142332632 =
+  {
+    categoryId : Nat;
+    details : [DetailField__949844336];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?OldRecipe__549710316;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type OldLibraryItem__176234150 =
+  {
+    categoryId : Nat;
+    details : [DetailField__746999893];
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
 type OldLibraryItem__32705546 =
   {
     categoryId : Nat;
@@ -388,10 +889,22 @@ type OldLibraryItem__32705546 =
     tags : [Text];
     title : Text
   };
+type OldRecipe__549710316 =
+  {
+    assembly : [Text];
+    garnish : [Text];
+    glassware : Text;
+    specs : [RecipeSpec__1019072628];
+    variants : [RecipeVariant__727383390]
+  };
+type Phase__151503348 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__385781890 = {id : Nat; name : Text; sortOrder : Nat};
+type Phase__496045583 = {id : Nat; name : Text; sortOrder : Nat};
+type Phase__50981955 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__585612074 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__698421073 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__744141695 = Phase__698421073;
+type Phase__928744096 = {id : Nat; name : Text; sortOrder : Nat};
 type PositionAssignment__1060231071 =
   {
     positionId : Nat;
@@ -407,6 +920,12 @@ type PositionAssignment__165074627 =
 type PositionAssignment__184245974 =
   {positionId : Nat; status : AssignmentStatus__53229539; userId : Principal};
 type PositionAssignment__19141584 = PositionAssignment__746071586;
+type PositionAssignment__349748336 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__361061421;
+    userId : Principal
+  };
 type PositionAssignment__41900785 =
   {
     positionId : Nat;
@@ -417,6 +936,18 @@ type PositionAssignment__527873470 =
   {
     positionId : Nat;
     status : AssignmentStatus__609627758;
+    userId : Principal
+  };
+type PositionAssignment__616949047 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__396148315;
+    userId : Principal
+  };
+type PositionAssignment__686122253 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__714785750;
     userId : Principal
   };
 type PositionAssignment__746071586 =
@@ -431,6 +962,12 @@ type PositionAssignment__876916776 =
     status : AssignmentStatus__223044902;
     userId : Principal
   };
+type PositionAssignment__919811250 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__300934368;
+    userId : Principal
+  };
 type Position__133786439 =
   {
     coverPhoto : ?Text;
@@ -439,7 +976,23 @@ type Position__133786439 =
     name : Text;
     sortOrder : Nat
   };
+type Position__200429189 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
 type Position__258863425 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__318830573 =
   {
     coverPhoto : ?Text;
     description : ?Text;
@@ -456,6 +1009,14 @@ type Position__371037758 =
     sortOrder : Nat
   };
 type Position__404825400 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__418445021 =
   {
     coverPhoto : ?Text;
     description : ?Text;
@@ -487,7 +1048,25 @@ type Position__727886607 =
     name : Text;
     sortOrder : Nat
   };
+type Position__834311727 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    sortOrder : Nat
+  };
 type Position__915296267 = Position__133786439;
+type Question__1069067030 =
+  {
+    #matching :
+      {
+        pairs : [{fieldValue : Text; itemTitle : Text}];
+        shuffledOptions : [Text]
+      };
+    #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
+    #trueFalse : {isTrue : Bool; statement : Text}
+  };
 type Question__1217471 =
   {
     #matching :
@@ -508,16 +1087,137 @@ type Question__13764254 =
     #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
     #trueFalse : {isTrue : Bool; statement : Text}
   };
+type Question__665470715 =
+  {
+    #matching :
+      {
+        pairs : [{fieldValue : Text; itemTitle : Text}];
+        shuffledOptions : [Text]
+      };
+    #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
+    #trueFalse : {isTrue : Bool; statement : Text}
+  };
+type Question__815930206 =
+  {
+    #matching :
+      {
+        pairs : [{fieldValue : Text; itemTitle : Text}];
+        shuffledOptions : [Text]
+      };
+    #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
+    #trueFalse : {isTrue : Bool; statement : Text}
+  };
+type Question__855596449 =
+  {
+    #matching :
+      {
+        pairs : [{fieldValue : Text; itemTitle : Text}];
+        shuffledOptions : [Text]
+      };
+    #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
+    #trueFalse : {isTrue : Bool; statement : Text}
+  };
+type QuizContent__223370273 = [Question__855596449];
 type QuizContent__29847209 = [Question__13764254];
+type QuizContent__46131542 = [Question__815930206];
+type QuizContent__643368002 = [Question__665470715];
+type QuizContent__744112692 = [Question__1069067030];
 type QuizContent__777510998 = [Question__1217471];
+type RecipeSpec__1019072628 = {amount : Text; ingredient : Text};
+type RecipeSpec__1072064218 = {amount : Text; ingredient : Text};
+type RecipeSpec__220073553 = {amount : Text; ingredient : Text};
+type RecipeSpec__845553566 = {amount : Text; ingredient : Text};
+type RecipeSpec__896949608 = {amount : Text; ingredient : Text};
+type RecipeVariant__275265846 =
+  {assembly : [Text]; specs : [RecipeSpec__896949608]; variantLabel : Text};
+type RecipeVariant__477665623 =
+  {assembly : [Text]; specs : [RecipeSpec__220073553]; variantLabel : Text};
+type RecipeVariant__530313952 =
+  {assembly : [Text]; specs : [RecipeSpec__845553566]; variantLabel : Text};
+type RecipeVariant__727383390 =
+  {assembly : [Text]; specs : [RecipeSpec__1019072628]; variantLabel : Text};
+type RecipeVariant__884928205 =
+  {assembly : [Text]; specs : [RecipeSpec__1072064218]; variantLabel : Text};
+type Recipe__1046613284 =
+  {
+    assembly : [Text];
+    equipment : [Text];
+    garnish : [Text];
+    glassware : Text;
+    qualityIdentifier : [Text];
+    shelfLife : ?Text;
+    specs : [RecipeSpec__220073553];
+    variants : [RecipeVariant__477665623];
+    yield : ?Text
+  };
+type Recipe__16157437 =
+  {
+    assembly : [Text];
+    garnish : [Text];
+    glassware : Text;
+    specs : [RecipeSpec__1072064218];
+    variants : [RecipeVariant__884928205]
+  };
+type Recipe__528289914 =
+  {
+    assembly : [Text];
+    equipment : [Text];
+    garnish : [Text];
+    glassware : Text;
+    qualityIdentifier : [Text];
+    shelfLife : ?Text;
+    specs : [RecipeSpec__896949608];
+    variants : [RecipeVariant__275265846];
+    yield : ?Text
+  };
+type Recipe__827879001 =
+  {
+    assembly : [Text];
+    equipment : [Text];
+    garnish : [Text];
+    glassware : Text;
+    qualityIdentifier : [Text];
+    shelfLife : ?Text;
+    specs : [RecipeSpec__845553566];
+    variants : [RecipeVariant__530313952];
+    yield : ?Text
+  };
 type Role__21333812 = {#admin; #manager; #trainee; #trainer};
 type Role__269972045 = {#admin; #manager; #trainee; #trainer};
+type Role__50349522 = {#admin; #manager; #trainee; #trainer};
 type Role__619690062 = {#admin; #manager; #trainee; #trainer};
 type Role__669935463 = {#admin; #manager; #trainee; #trainer};
+type Role__713512308 = {#admin; #manager; #trainee; #trainer};
+type Role__732436080 = {#admin; #manager; #trainee; #trainer};
 type Role__732944952 = {#admin; #manager; #trainee; #trainer};
 type Role__809817463 = {#admin; #manager; #trainee; #trainer};
 type Role__878966967 = {#admin; #manager; #trainee; #trainer};
+type Role__906047977 = {#admin; #manager; #trainee; #trainer};
+type Task__179304481 =
+  {
+    assignedTo : ?Principal;
+    completionDate : ?Text;
+    done : Bool;
+    id : Nat;
+    notes : ?Text;
+    phaseId : Nat;
+    section : ?Text;
+    sortOrder : Nat;
+    text : Text
+  };
 type Task__205849316 =
+  {
+    assignedTo : ?Principal;
+    completionDate : ?Text;
+    done : Bool;
+    id : Nat;
+    notes : ?Text;
+    phaseId : Nat;
+    section : ?Text;
+    sortOrder : Nat;
+    text : Text
+  };
+type Task__235568049 =
   {
     assignedTo : ?Principal;
     completionDate : ?Text;
@@ -541,7 +1241,31 @@ type Task__275704326 =
     sortOrder : Nat;
     text : Text
   };
+type Task__497933695 =
+  {
+    assignedTo : ?Principal;
+    completionDate : ?Text;
+    done : Bool;
+    id : Nat;
+    notes : ?Text;
+    phaseId : Nat;
+    section : ?Text;
+    sortOrder : Nat;
+    text : Text
+  };
 type Task__578812480 = Task__275704326;
+type Task__615126471 =
+  {
+    assignedTo : ?Principal;
+    completionDate : ?Text;
+    done : Bool;
+    id : Nat;
+    notes : ?Text;
+    phaseId : Nat;
+    section : ?Text;
+    sortOrder : Nat;
+    text : Text
+  };
 type Task__701012125 =
   {
     assignedTo : ?Principal;
@@ -554,8 +1278,16 @@ type Task__701012125 =
     sortOrder : Nat;
     text : Text
   };
+type UserProfile__142651752 =
+  {id : Principal; name : Text; role : Role__732436080; storeLocation : Text};
 type UserProfile__201697168 =
   {id : Principal; name : Text; role : Role__269972045; storeLocation : Text};
+type UserProfile__278634132 =
+  {id : Principal; name : Text; role : Role__713512308; storeLocation : Text};
+type UserProfile__30192772 =
+  {id : Principal; name : Text; role : Role__906047977; storeLocation : Text};
+type UserProfile__306774772 =
+  {id : Principal; name : Text; role : Role__50349522; storeLocation : Text};
 type UserProfile__472152495 = UserProfile__507055787;
 type UserProfile__507055787 =
   {id : Principal; name : Text; role : Role__878966967; storeLocation : Text};
@@ -569,12 +1301,16 @@ type UserProfile__921863851 =
   {id : Principal; name : Text; role : Role__669935463; storeLocation : Text};
 type UserProfile__946597095 =
   {id : Principal; name : Text; role : Role__21333812; storeLocation : Text};
+type UserRole__163450367 = {#admin; #guest; #user};
 type UserRole__199018766 = {#admin; #guest; #user};
+type UserRole__324529758 = {#admin; #guest; #user};
 type UserRole__33289320 = {#admin; #guest; #user};
 type UserRole__488381355 = {#admin; #guest; #user};
 type UserRole__514476249 = {#admin; #guest; #user};
+type UserRole__646337209 = {#admin; #guest; #user};
 type UserRole__663019211 = {#admin; #guest; #user};
 type UserRole__686137147 = {#admin; #guest; #user};
+type UserRole__786984507 = {#admin; #guest; #user};
 type UserRole__851322309 = {#admin; #guest; #user};
 {
   "20260702_162129" : (old : OldActor__472261015) -> NewActor__625870533;
@@ -582,7 +1318,11 @@ type UserRole__851322309 = {#admin; #guest; #user};
   "20260703_000000" : (old : OldActor__331980100) -> NewActor__544122477;
   "20260703_000001" : (old : OldActor__356507366) -> NewActor__746619218;
   "20260707_154344" : (old : OldActor__732394136) -> NewActor__662364540;
-  "20260712_000000" : (old : OldActor__150656829) -> NewActor__299107891
+  "20260712_000000" : (old : OldActor__150656829) -> NewActor__299107891;
+  "20260718_000000" : (old : OldActor__198466139) -> NewActor__180733458;
+  "20260719_000000" : (old : OldActor__650741527) -> NewActor__57786907;
+  "20260720_000000" : (old : OldActor__845032218) -> NewActor__222500057;
+  "20260720_023128" : (old : OldActor__477246813) -> NewActor__204237839
 }
 actor  {
   stable accessControlState :

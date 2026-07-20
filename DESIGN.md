@@ -134,3 +134,71 @@ Premium, motivational, celebratory. Condensed Anton marquee type over a glowing 
 - Admin-triggered generation only; nothing auto-generates.
 - Mobile-first; activity cards stack single-column on phone.
 - Built to easily add more activity types later (activity cards are generic).
+
+## Recipe Print Card (additive — light island)
+
+> ADDITIVE only — a LIGHT island scoped under `.recipe-print-card*`. The dark roadhouse theme is untouched. Uses literal hex `#1477BE` (not the dark `--secondary` token) for the recipe blue.
+
+### Palette
+| Token | Hex | Use |
+|---|---|---|
+| recipe-card-bg | #ffffff | card surface (light island) |
+| recipe-blue | #1477BE | photo frame, section headings, variant rules |
+| recipe-ink | #1a1a1a | body text, title |
+| recipe-rule | #000000 | 2px title rule, square bullets |
+
+### Zones
+- **Title block**: 2px black rule beneath, slab small-caps (Zilla Slab 700 / Roboto Slab 800).
+- **Body**: two-column on desktop; mobile-first photo stacks ON TOP. 3px blue photo frame.
+- **Section headings**: blue bold 26px, body sans font for copy.
+- **Lists**: square bullets; specs rows = amount-left / ingredient-right.
+- **Variant dividers**: slab small-caps label + 2px rule.
+- **Footer**: text-only brand lockup + 3-column legal row with LTO marker.
+
+### Constraints
+- Additive only — dark theme tokens and rules are NOT altered.
+- Mobile-first: photo stacks on top, copy below; no-photo variant spans full width.
+- Slab family used ONLY for title and variant dividers; everything else stays on the app body sans.
+- No print/PDF export in this build; no logo brand assets in footer.
+
+## Drinks Builder Game (additive — Be Legendary activity)
+
+> ADDITIVE only — reuses roadhouse bg/card/nav + the Be Legendary additive layer. Gradients/glow permitted (Be Legendary rule). Mobile-first, tap-based, practice-only with session scores. Sound + confetti generated in-app (WebAudio / client-side), no asset files.
+
+### Game Screen Layout
+- **Header**: Anton "BE LEGENDARY" title left, mute toggle (WebAudio) right, live session score beneath in Oswald numerals.
+- **Hero row**: SVG glass hero left, drink name (Oswald) + category badge (navy) + streak flame indicator right.
+- **Body**: four sections — Glassware, Specs, Assembly, Garnish — each a stack of tappable chips with checkmark icons; completing a spec fills the glass proportionally.
+
+### SVG Glass Hero
+- Inline SVG glass; liquid (default amber/gold) rises proportionally to specs completed via `drinks-glass-fill` (scaleY origin bottom).
+- Foam cap appears on full completion via `drinks-foam-appear`. No per-recipe custom liquid color (default amber/gold only).
+
+### Feedback Animations
+| Animation | Trigger |
+|---|---|
+| `drinks-green-pop` | correct chip tap |
+| `drinks-red-shake` | incorrect chip tap |
+| `drinks-rising-points` | +points float-up on correct |
+| `drinks-glass-fill` | liquid rise per spec completed |
+| `drinks-foam-appear` | foam cap on full completion |
+| `drinks-confetti-burst` | client-side confetti on completion |
+| `drinks-legendary-banner` | gold→red LEGENDARY! banner on perfect run |
+| `drinks-streak-flame` | streak flame flicker (infinite) |
+| `drinks-star-pop` | star burst on streak milestone |
+
+### Additive Tokens (drinks-*)
+| Token | Use |
+|---|---|
+| drinks-glass-stroke / drinks-liquid / drinks-foam | SVG glass line, amber fill, cream foam |
+| drinks-correct / drinks-incorrect | green / red chip feedback fills |
+| drinks-streak | streak flame tint |
+| drinks-confetti-* | confetti particle colors |
+| drinks-banner-* | LEGENDARY! banner gradient stops |
+
+### Dark Theme Application
+- Reuses roadhouse `--background` (#141412), `--card` (#1E1E1B), `--nav` (#000) and Be Legendary additive layer (legendary-card, legendary-banner gradient).
+- Gradients/glow permitted ONLY on Drinks Builder surfaces (glass hero glow, LEGENDARY! banner) per Be Legendary rule.
+
+### Reduced Motion
+- All `drinks-*` animations pause under `prefers-reduced-motion`; glass fills instantly, confetti/banner/star/flame disabled.

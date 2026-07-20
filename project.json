@@ -1,22 +1,18 @@
 {
-  "overview": "Bubba's 33 Roadie Training — a staff learning hub covering New Store Opening tasks, per-position training and certification, a shared Library of categories and items, and a Be Legendary practice mode with quizzes and flashcards, anchored by a cinematic patriotic hero banner.",
+  "overview": "A roadie training app for Bubba's 33 bartenders with a Be Legendary practice hub featuring quizzes, flashcards, and an interactive Drinks Builder game.",
   "features": [
-    "New Store Opening task tracker with per-position checklists",
-    "Per-position training and certification tracking",
-    "Shared Library of categories and items with admin management",
-    "Be Legendary practice mode with quizzes and flashcards",
-    "Cinematic patriotic Be Legendary hero banner",
-    "Admin tools for users, positions, library, and content"
+    "Be Legendary practice hub with quizzes and flashcards",
+    "Interactive Drinks Builder game with filling glass, streaks, and instant feedback",
+    "Admin-configurable game settings per position",
+    "Dark roadhouse theme throughout the game",
+    "Recipe library with structured drink data"
   ],
-  "category": "training-app",
+  "category": "training",
   "tags": [
-    "training",
-    "certification",
-    "staff-onboarding",
-    "quizzes",
-    "flashcards",
-    "library",
+    "hospitality",
+    "bartender-training",
+    "practice-games",
     "be-legendary"
   ],
-  "last_updated": "2026-07-18T02:14:13.370Z"
+  "last_updated": "2026-07-20T01:03:16.897Z"
 }

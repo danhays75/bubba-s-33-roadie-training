@@ -591,7 +591,7 @@ video {
     --legendary-banner-via: 0.62 0.22 35; /* warm transitional red-orange */
     --legendary-banner-to: 0.595 0.232 27; /* existing primary red */
     --legendary-banner-foreground: 0.16 0.02 75; /* dark text on gold gradient */
-    --legendary-glow: 0.82 0.17 75; /* gold glow color */
+    --legendary-glow: 0.88 0.2 78; /* gold glow color — brighter, more saturated */
     --legendary-glow-strength: 0.45; /* glow opacity ceiling */
 
     --legendary-card: 0.3 0.012 75; /* warm-tinted card, distinct from neutral card */
@@ -659,6 +659,39 @@ video {
     --legendary-flash-highlight: 0.97 0.04 90;
     --legendary-flash-strength: 0.4;
     --legendary-flash-duration: 3.5s;
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Drinks Builder — ADDITIVE game tokens (Be Legendary Learning Hub).
+       Tap-based drink-construction game. Reuses legendary-correct (green)
+       for correct taps and legendary-incorrect (red) for wrong taps. Adds
+       liquid/foam/glow tokens for the SVG glass hero. Gradients/glow are
+       permitted here (Be Legendary). Does NOT alter any existing token.
+       ═══════════════════════════════════════════════════════════════════ */
+    --drinks-correct: 0.72 0.16 145; /* mirrors legendary-correct green */
+    --drinks-correct-foreground: 0.16 0.02 145;
+    --drinks-incorrect: 0.595 0.232 27; /* mirrors legendary-incorrect red */
+    --drinks-incorrect-foreground: 0.948 0.012 90;
+    --drinks-foam: 0.96 0.02 95; /* warm cream foam top on completion */
+    --drinks-foam-foreground: 0.18 0.01 75;
+    --drinks-liquid-default: 0.74 0.15 75; /* default amber/gold liquid fill */
+    --drinks-liquid-default-deep: 0.6 0.16 60; /* deeper amber base for depth */
+    --drinks-glass-stroke: 0.78 0.012 95; /* glass outline, light neutral */
+    --drinks-glass-shine: 0.95 0.01 95; /* glass specular highlight */
+    --drinks-streak-flame: 0.62 0.22 35; /* ON FIRE flame (warm red-orange) */
+    --drinks-streak-flame-glow: 0.82 0.17 75; /* flame glow halo (gold) */
+    --drinks-star: 0.82 0.17 75; /* star rating (gold) */
+    --drinks-star-foreground: 0.16 0.02 75;
+    --drinks-section-done: 0.801 0.171 75; /* section checkmark lit (in-training gold) */
+    --drinks-section-pending: 0.644 0.011 95; /* section checkmark muted */
+    --drinks-chip-bg: 0.31 0.012 75; /* legendary-card chip surface */
+    --drinks-chip-border: 0.42 0.05 75; /* legendary-card chip border */
+    --drinks-chip-selected-bg: 0.595 0.232 27; /* selected chip = primary red */
+    --drinks-chip-selected-border: 0.595 0.232 27;
+    --drinks-confetti-red: 0.595 0.232 27;
+    --drinks-confetti-gold: 0.801 0.171 75;
+    --drinks-confetti-navy: 0.285 0.094 254;
+    --drinks-confetti-green: 0.72 0.16 145;
+    --drinks-confetti-cream: 0.948 0.012 90;
   }
 
   .dark {
@@ -733,7 +766,7 @@ video {
     --legendary-banner-via: 0.62 0.22 35;
     --legendary-banner-to: 0.595 0.232 27;
     --legendary-banner-foreground: 0.16 0.02 75;
-    --legendary-glow: 0.82 0.17 75;
+    --legendary-glow: 0.88 0.2 78;
     --legendary-glow-strength: 0.45;
 
     --legendary-card: 0.3 0.012 75;
@@ -775,6 +808,33 @@ video {
     --legendary-flash-highlight: 0.97 0.04 90;
     --legendary-flash-strength: 0.4;
     --legendary-flash-duration: 3.5s;
+
+    /* Drinks Builder — mirror :root additive game tokens (dark only theme) */
+    --drinks-correct: 0.72 0.16 145;
+    --drinks-correct-foreground: 0.16 0.02 145;
+    --drinks-incorrect: 0.595 0.232 27;
+    --drinks-incorrect-foreground: 0.948 0.012 90;
+    --drinks-foam: 0.96 0.02 95;
+    --drinks-foam-foreground: 0.18 0.01 75;
+    --drinks-liquid-default: 0.74 0.15 75;
+    --drinks-liquid-default-deep: 0.6 0.16 60;
+    --drinks-glass-stroke: 0.78 0.012 95;
+    --drinks-glass-shine: 0.95 0.01 95;
+    --drinks-streak-flame: 0.62 0.22 35;
+    --drinks-streak-flame-glow: 0.82 0.17 75;
+    --drinks-star: 0.82 0.17 75;
+    --drinks-star-foreground: 0.16 0.02 75;
+    --drinks-section-done: 0.801 0.171 75;
+    --drinks-section-pending: 0.644 0.011 95;
+    --drinks-chip-bg: 0.31 0.012 75;
+    --drinks-chip-border: 0.42 0.05 75;
+    --drinks-chip-selected-bg: 0.595 0.232 27;
+    --drinks-chip-selected-border: 0.595 0.232 27;
+    --drinks-confetti-red: 0.595 0.232 27;
+    --drinks-confetti-gold: 0.801 0.171 75;
+    --drinks-confetti-navy: 0.285 0.094 254;
+    --drinks-confetti-green: 0.72 0.16 145;
+    --drinks-confetti-cream: 0.948 0.012 90;
   }
   * {
   border-color: oklch(var(--border));
@@ -1513,6 +1573,9 @@ video {
 .-top-12 {
   top: -3rem;
 }
+.-top-2 {
+  top: -0.5rem;
+}
 .bottom-0 {
   bottom: 0px;
 }
@@ -1555,6 +1618,9 @@ video {
 .top-1\/2 {
   top: 50%;
 }
+.top-1\/3 {
+  top: 33.333333%;
+}
 .top-3\.5 {
   top: 0.875rem;
 }
@@ -1585,6 +1651,9 @@ video {
 .z-20 {
   z-index: 20;
 }
+.z-30 {
+  z-index: 30;
+}
 .z-40 {
   z-index: 40;
 }
@@ -1593,6 +1662,12 @@ video {
 }
 .z-\[1\] {
   z-index: 1;
+}
+.order-1 {
+  order: 1;
+}
+.order-2 {
+  order: 2;
 }
 .col-start-2 {
   grid-column-start: 2;
@@ -1636,6 +1711,9 @@ video {
 .-ml-4 {
   margin-left: -1rem;
 }
+.-mr-2 {
+  margin-right: -0.5rem;
+}
 .-mt-4 {
   margin-top: -1rem;
 }
@@ -1648,8 +1726,14 @@ video {
 .ml-1 {
   margin-left: 0.25rem;
 }
+.ml-2 {
+  margin-left: 0.5rem;
+}
 .ml-auto {
   margin-left: auto;
+}
+.mt-0 {
+  margin-top: 0px;
 }
 .mt-0\.5 {
   margin-top: 0.125rem;
@@ -1767,6 +1851,10 @@ video {
   width: 0.625rem;
   height: 0.625rem;
 }
+.size-20 {
+  width: 5rem;
+  height: 5rem;
+}
 .size-3 {
   width: 0.75rem;
   height: 0.75rem;
@@ -1873,8 +1961,8 @@ video {
 .h-\[1\.15rem\] {
   height: 1.15rem;
 }
-.h-\[160px\] {
-  height: 160px;
+.h-\[360px\] {
+  height: 360px;
 }
 .h-\[4\.5rem\] {
   height: 4.5rem;
@@ -1900,17 +1988,26 @@ video {
 .h-svh {
   height: 100svh;
 }
+.max-h-44 {
+  max-height: 11rem;
+}
 .max-h-60 {
   max-height: 15rem;
-}
-.max-h-\[160px\] {
-  max-height: 160px;
 }
 .max-h-\[300px\] {
   max-height: 300px;
 }
 .max-h-\[40vh\] {
   max-height: 40vh;
+}
+.max-h-\[70vh\] {
+  max-height: 70vh;
+}
+.max-h-\[80vh\] {
+  max-height: 80vh;
+}
+.max-h-\[calc\(100vh-2rem\)\] {
+  max-height: calc(100vh - 2rem);
 }
 .max-h-full {
   max-height: 100%;
@@ -1938,6 +2035,9 @@ video {
 }
 .min-h-6 {
   min-height: 1.5rem;
+}
+.min-h-\[100dvh\] {
+  min-height: 100dvh;
 }
 .min-h-\[44px\] {
   min-height: 44px;
@@ -2058,6 +2158,9 @@ video {
 .min-w-32 {
   min-width: 8rem;
 }
+.min-w-40 {
+  min-width: 10rem;
+}
 .min-w-5 {
   min-width: 1.25rem;
 }
@@ -2088,11 +2191,17 @@ video {
 .max-w-4xl {
   max-width: 56rem;
 }
+.max-w-5xl {
+  max-width: 64rem;
+}
 .max-w-\[12rem\] {
   max-width: 12rem;
 }
 .max-w-\[16rem\] {
   max-width: 16rem;
+}
+.max-w-\[90vw\] {
+  max-width: 90vw;
 }
 .max-w-\[calc\(100\%-2rem\)\] {
   max-width: calc(100% - 2rem);
@@ -2190,6 +2299,182 @@ video {
 }
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+@keyframes drinks-confetti-burst {
+
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--drinks-confetti-x, 0), var(--drinks-confetti-y, -120px)) scale(1);
+    opacity: 0;
+  }
+}
+.animate-drinks-confetti-burst {
+  animation: drinks-confetti-burst 1.1s ease-out forwards;
+}
+@keyframes drinks-foam-appear {
+
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.85);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-drinks-foam-appear {
+  animation: drinks-foam-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes drinks-glass-fill {
+
+  0% {
+    transform: scaleY(0);
+  }
+
+  100% {
+    transform: scaleY(1);
+  }
+}
+.animate-drinks-glass-fill {
+  animation: drinks-glass-fill 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes drinks-green-pop {
+
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  40% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-drinks-green-pop {
+  animation: drinks-green-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes drinks-legendary-banner {
+
+  0% {
+    transform: scale(0.6) translateY(20px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.08) translateY(-4px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+.animate-drinks-legendary-banner {
+  animation: drinks-legendary-banner 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes drinks-red-shake {
+
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  15% {
+    transform: translateX(-8px);
+  }
+
+  30% {
+    transform: translateX(7px);
+  }
+
+  45% {
+    transform: translateX(-6px);
+  }
+
+  60% {
+    transform: translateX(5px);
+  }
+
+  75% {
+    transform: translateX(-3px);
+  }
+
+  90% {
+    transform: translateX(2px);
+  }
+}
+.animate-drinks-red-shake {
+  animation: drinks-red-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes drinks-rising-points {
+
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+
+  20% {
+    transform: translateY(-6px) scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-44px) scale(1);
+    opacity: 0;
+  }
+}
+.animate-drinks-rising-points {
+  animation: drinks-rising-points 0.9s ease-out forwards;
+}
+@keyframes drinks-star-pop {
+
+  0% {
+    transform: scale(0) rotate(-30deg);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.25) rotate(8deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+.animate-drinks-star-pop {
+  animation: drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes drinks-streak-flame {
+
+  0%, 100% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.15) rotate(2deg);
+    opacity: 1;
+  }
+}
+.animate-drinks-streak-flame {
+  animation: drinks-streak-flame 0.6s ease-in-out infinite;
 }
 @keyframes heartbeat {
 
@@ -2299,6 +2584,9 @@ video {
 .cursor-pointer {
   cursor: pointer;
 }
+.cursor-zoom-in {
+  cursor: zoom-in;
+}
 .touch-none {
   touch-action: none;
 }
@@ -2332,6 +2620,9 @@ video {
 }
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .grid-cols-\[0_1fr\] {
   grid-template-columns: 0 1fr;
@@ -2399,6 +2690,9 @@ video {
 .gap-3 {
   gap: 0.75rem;
 }
+.gap-3\.5 {
+  gap: 0.875rem;
+}
 .gap-4 {
   gap: 1rem;
 }
@@ -2407,6 +2701,12 @@ video {
 }
 .gap-6 {
   gap: 1.5rem;
+}
+.gap-7 {
+  gap: 1.75rem;
+}
+.gap-8 {
+  gap: 2rem;
 }
 .gap-y-0\.5 {
   row-gap: 0.125rem;
@@ -2430,14 +2730,6 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
-}
-.divide-y > :not([hidden]) ~ :not([hidden]) {
-  --tw-divide-y-reverse: 0;
-  border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
-  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
-}
-.divide-border > :not([hidden]) ~ :not([hidden]) {
-  border-color: oklch(var(--border));
 }
 .self-start {
   align-self: flex-start;
@@ -2568,6 +2860,9 @@ video {
 .border-primary\/40 {
   border-color: oklch(var(--primary) / 0.4);
 }
+.border-primary\/50 {
+  border-color: oklch(var(--primary) / 0.5);
+}
 .border-primary\/60 {
   border-color: oklch(var(--primary) / 0.6);
 }
@@ -2578,6 +2873,9 @@ video {
 .border-secondary {
   --tw-border-opacity: 1;
   border-color: oklch(var(--secondary) / var(--tw-border-opacity, 1));
+}
+.border-secondary\/50 {
+  border-color: oklch(var(--secondary) / 0.5);
 }
 .border-sidebar-border {
   border-color: oklch(var(--sidebar-border));
@@ -2636,6 +2934,12 @@ video {
   --tw-bg-opacity: 1;
   background-color: oklch(var(--muted) / var(--tw-bg-opacity, 1));
 }
+.bg-muted\/20 {
+  background-color: oklch(var(--muted) / 0.2);
+}
+.bg-muted\/30 {
+  background-color: oklch(var(--muted) / 0.3);
+}
 .bg-muted\/40 {
   background-color: oklch(var(--muted) / 0.4);
 }
@@ -2675,6 +2979,9 @@ video {
   --tw-bg-opacity: 1;
   background-color: oklch(var(--secondary) / var(--tw-bg-opacity, 1));
 }
+.bg-secondary\/20 {
+  background-color: oklch(var(--secondary) / 0.2);
+}
 .bg-sidebar {
   background-color: oklch(var(--sidebar));
 }
@@ -2683,6 +2990,21 @@ video {
 }
 .bg-transparent {
   background-color: transparent;
+}
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+.from-\[oklch\(var\(--legendary-banner-from\)\)\] {
+  --tw-gradient-from: oklch(var(--legendary-banner-from)) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.via-\[oklch\(var\(--legendary-banner-via\)\)\] {
+  --tw-gradient-to: rgb(255 255 255 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), oklch(var(--legendary-banner-via)) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.to-\[oklch\(var\(--legendary-banner-to\)\)\] {
+  --tw-gradient-to: oklch(var(--legendary-banner-to)) var(--tw-gradient-to-position);
 }
 .fill-current {
   fill: currentColor;
@@ -2757,6 +3079,10 @@ video {
   padding-left: 1rem;
   padding-right: 1rem;
 }
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -2823,6 +3149,9 @@ video {
 }
 .pb-1 {
   padding-bottom: 0.25rem;
+}
+.pb-16 {
+  padding-bottom: 4rem;
 }
 .pb-2 {
   padding-bottom: 0.5rem;
@@ -2989,6 +3318,9 @@ video {
 .uppercase {
   text-transform: uppercase;
 }
+.capitalize {
+  text-transform: capitalize;
+}
 .normal-case {
   text-transform: none;
 }
@@ -3040,6 +3372,9 @@ video {
 }
 .text-\[oklch\(0\.82_0\.09_235\)\] {
   color: oklch(0.82 0.09 235);
+}
+.text-\[oklch\(var\(--legendary-banner-foreground\)\)\] {
+  color: oklch(var(--legendary-banner-foreground));
 }
 .text-accent-foreground {
   color: oklch(var(--accent-foreground));
@@ -3107,6 +3442,10 @@ video {
 }
 .text-seasonal-foreground {
   color: oklch(var(--seasonal-foreground));
+}
+.text-secondary {
+  --tw-text-opacity: 1;
+  color: oklch(var(--secondary) / var(--tw-text-opacity, 1));
 }
 .text-secondary-foreground {
   color: oklch(var(--secondary-foreground));
@@ -3589,6 +3928,94 @@ video {
     color: oklch(var(--legendary-flip-back-foreground));
     transform: rotateY(180deg);
   }
+/* ── Reading-wave gold glow sweep (flashcard back face) ───────────────
+     ADDITIVE. When the card flips to the back, a gold glow wave flows
+     through every character in reading order over ~12s. Each character
+     span carries --wave-i (its reading-order index) and the container
+     carries --wave-count (total chars) and --wave-progress (0..1, driven
+     by the useReadingWave rAF loop). A character glows gold while the
+     wave is over it; the glow fades back to normal after the wave
+     passes. Pure color + text-shadow transition — NO font-size or
+     layout change, so nothing reflows. */
+.flashcard-wave {
+    /* Driven by the useReadingWave hook via inline style on the container.
+       Defaults keep text normal if the wave is not running. */
+    --wave-progress: -1; /* -1 = inactive (no glow) */
+    --wave-count: 1;
+  }
+.flashcard-wave-char {
+    /* Per-char index, set inline. */
+    --wave-i: 0;
+    /* Width of the glow window, in characters. A larger window makes the
+        glow pass over more characters at once so each one glows longer. */
+    --wave-window: 10;
+    color: inherit;
+    transition: color 0.35s ease-out, text-shadow 0.35s ease-out, transform
+      0.25s ease-out;
+    transform-origin: center;
+    /* Keep whitespace from collapsing when we wrap it in spans. */
+    white-space: pre-wrap;
+  }
+.flashcard-wave-char.is-wave-space {
+    /* Spaces don't need the glow but still need to occupy width. */
+    white-space: pre;
+  }
+/* The glow itself: gold color + gold text-shadow while the wave is
+     passing over this character. Activated only when --wave-progress >= 0
+     (set by the hook) and the character's index falls within the window
+     around the current wave position. We use a CSS calc + clamp trick:
+     distance = abs(--wave-i - progress*count); glow when distance < window.
+     Implemented via opacity of an overlay color using color-mix. */
+.flashcard-wave-char {
+    /* Compute the wave position for this character.
+       pos = --wave-progress * --wave-count  (current char index the wave is at)
+       dist = abs(--wave-i - pos)
+       intensity = clamp(window - dist, 0, 1)  (1 at center, 0 at edge)
+       We blend the inherited color with the gold glow by intensity. */
+    --wave-pos: calc(var(--wave-progress) * var(--wave-count));
+    --wave-dist: calc(var(--wave-i) - var(--wave-pos));
+    /* abs() via max(a, -a) */
+    --wave-abs-dist: max(var(--wave-dist), calc(-1 * var(--wave-dist)));
+    --wave-intensity: clamp(
+      0,
+      calc(var(--wave-window) - var(--wave-abs-dist)),
+      1
+    );
+    /* Only apply the gold glow when the wave is active (progress >= 0). */
+  }
+.flashcard-wave.is-active .flashcard-wave-char {
+    /* Blend toward gold at peak intensity; blend toward a dimmed neutral gray
+       at low intensity so the active character stands out from muted
+       surrounding text. The dimmed base is oklch(0.45 0 0) — a neutral
+       mid-gray. At intensity=1 the color is full gold; at intensity=0 it is
+       the dim gray; in between it transitions through. */
+    color: color-mix(
+      in oklch,
+      oklch(var(--legendary-glow)) calc(var(--wave-intensity) * 100%),
+      oklch(0.45 0 0) calc((1 - var(--wave-intensity)) * 100%)
+    );
+    /* Stronger three-layer gold shadow: bright tight core + mid halo + wide
+       soft halo. */
+    text-shadow: 0 0 4px
+      oklch(var(--legendary-glow) / calc(var(--wave-intensity) * 0.95)), 0 0
+      10px oklch(var(--legendary-glow) / calc(var(--wave-intensity) * 0.7)), 0 0
+      22px oklch(var(--legendary-glow) / calc(var(--wave-intensity) * 0.45));
+    /* Slight scale bump on the active character for extra emphasis. Transform
+       does not affect layout flow, so nothing reflows. */
+    transform: scale(calc(1 + var(--wave-intensity) * 0.08));
+  }
+/* Reduced motion — skip the character sweep entirely. Text just appears
+     normally on flip with no glow wave. */
+@media (prefers-reduced-motion: reduce) {
+    .flashcard-wave.is-active .flashcard-wave-char {
+      color: inherit;
+      text-shadow: none;
+      transform: none;
+    }
+    .flashcard-wave-char {
+      transition: none;
+    }
+  }
 /* ════════════════════════════════════════════════════════════════════
       Be Legendary — CINEMATIC PATRIOTIC HERO utilities (ADDITIVE redesign).
       All classes below are NEW. Existing bg-legendary-banner,
@@ -3778,6 +4205,283 @@ video {
       opacity: 0;
     }
   }
+/* ════════════════════════════════════════════════════════════════════
+     Drinks Builder — ADDITIVE game utilities (Be Legendary Learning Hub).
+     Tap-based drink-construction game. SVG glass hero, four sections
+     (Glassware/Specs/Assembly/Garnish), chip taps, streak flame, score
+     header, confetti burst. Gradients/glow permitted here. Existing
+     flat roadhouse tokens are untouched.
+     ════════════════════════════════════════════════════════════════════ */
+/* Color utilities — game-specific surfaces */
+.bg-drinks-correct {
+    background-color: oklch(var(--drinks-correct));
+  }
+.text-drinks-correct {
+    color: oklch(var(--drinks-correct));
+  }
+.border-drinks-correct {
+    border-color: oklch(var(--drinks-correct));
+  }
+.bg-drinks-incorrect {
+    background-color: oklch(var(--drinks-incorrect));
+  }
+.text-drinks-incorrect {
+    color: oklch(var(--drinks-incorrect));
+  }
+.border-drinks-incorrect {
+    border-color: oklch(var(--drinks-incorrect));
+  }
+.bg-drinks-foam {
+    background-color: oklch(var(--drinks-foam));
+  }
+.text-drinks-foam {
+    color: oklch(var(--drinks-foam));
+  }
+.bg-drinks-liquid {
+    background: linear-gradient(
+      180deg,
+      oklch(var(--drinks-liquid-default)) 0%,
+      oklch(var(--drinks-liquid-default-deep)) 100%
+    );
+  }
+.fill-drinks-liquid {
+    fill: oklch(var(--drinks-liquid-default));
+  }
+.fill-drinks-foam {
+    fill: oklch(var(--drinks-foam));
+  }
+.stroke-drinks-glass {
+    stroke: oklch(var(--drinks-glass-stroke));
+  }
+.fill-drinks-glass-shine {
+    fill: oklch(var(--drinks-glass-shine));
+  }
+.text-drinks-streak-flame {
+    color: oklch(var(--drinks-streak-flame));
+  }
+.text-drinks-star {
+    color: oklch(var(--drinks-star));
+  }
+.text-drinks-section-done {
+    color: oklch(var(--drinks-section-done));
+  }
+.text-drinks-section-pending {
+    color: oklch(var(--drinks-section-pending));
+  }
+.bg-drinks-chip {
+    background-color: oklch(var(--drinks-chip-bg));
+    border: 1px solid oklch(var(--drinks-chip-border));
+  }
+.bg-drinks-chip-selected {
+    background-color: oklch(var(--drinks-chip-selected-bg));
+    border: 1px solid oklch(var(--drinks-chip-selected-border));
+    color: oklch(var(--primary-foreground));
+  }
+/* ── Glass hero ─────────────────────────────────────────────────────
+     SVG glass container. Liquid fills proportionally to specs completed;
+     foam appears on completion. Liquid uses a clip-path/rect that animates
+     its height (glass-fill keyframe drives the rise). */
+.drinks-glass-fill {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom;
+  }
+.drinks-glass-foam {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+    transform-origin: center bottom;
+    transition: opacity 0.4s ease, transform 0.4s
+      cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+.drinks-glass-foam.is-complete {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+/* ── Feedback animations ──────────────────────────────────────────── */
+/* green-pop: scale up + fade on correct tap */
+.animate-drinks-green-pop {
+    animation: drinks-green-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+/* red-shake: translateX oscillation on wrong tap */
+.animate-drinks-red-shake {
+    animation: drinks-red-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+/* rising-points: float up + fade for +score */
+.animate-drinks-rising-points {
+    animation: drinks-rising-points 0.9s ease-out forwards;
+  }
+/* glass-fill: smooth liquid rise (drives the SVG fill rect) */
+.animate-drinks-glass-fill {
+    animation: drinks-glass-fill 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+/* foam-appear: foam top pops in on completion */
+.animate-drinks-foam-appear {
+    animation: drinks-foam-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
+      forwards;
+  }
+/* confetti-burst: particle burst on finish */
+.animate-drinks-confetti-burst {
+    animation: drinks-confetti-burst 1.1s ease-out forwards;
+  }
+/* legendary-banner: LEGENDARY! reveal (gold→red gradient + scale) */
+.animate-drinks-legendary-banner {
+    animation: drinks-legendary-banner 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)
+      forwards;
+  }
+/* streak-flame: ON FIRE flame flicker (infinite while streak active) */
+.animate-drinks-streak-flame {
+    animation: drinks-streak-flame 0.6s ease-in-out infinite;
+  }
+/* star-pop: star rating pop on completion */
+.animate-drinks-star-pop {
+    animation: drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+/* ── Keyframes (also mirrored in tailwind.config.js) ──────────────── */
+@keyframes drinks-green-pop {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    40% {
+      transform: scale(1.18);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+@keyframes drinks-red-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    15% {
+      transform: translateX(-8px);
+    }
+    30% {
+      transform: translateX(7px);
+    }
+    45% {
+      transform: translateX(-6px);
+    }
+    60% {
+      transform: translateX(5px);
+    }
+    75% {
+      transform: translateX(-3px);
+    }
+    90% {
+      transform: translateX(2px);
+    }
+  }
+@keyframes drinks-rising-points {
+    0% {
+      transform: translateY(0) scale(0.8);
+      opacity: 0;
+    }
+    20% {
+      transform: translateY(-6px) scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-44px) scale(1);
+      opacity: 0;
+    }
+  }
+@keyframes drinks-glass-fill {
+    0% {
+      transform: scaleY(0);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+@keyframes drinks-foam-appear {
+    0% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.85);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(-2px) scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+@keyframes drinks-confetti-burst {
+    0% {
+      transform: translate(0, 0) scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(
+          var(--drinks-confetti-x, 0),
+          var(--drinks-confetti-y, -120px)
+        )
+        scale(1);
+      opacity: 0;
+    }
+  }
+@keyframes drinks-legendary-banner {
+    0% {
+      transform: scale(0.6) translateY(20px);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.08) translateY(-4px);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+@keyframes drinks-streak-flame {
+    0%,
+    100% {
+      transform: scale(1) rotate(-2deg);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(1.15) rotate(2deg);
+      opacity: 1;
+    }
+  }
+@keyframes drinks-star-pop {
+    0% {
+      transform: scale(0) rotate(-30deg);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.25) rotate(8deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+/* Reduced motion — game animations shorten to instant state changes */
+@media (prefers-reduced-motion: reduce) {
+    .animate-drinks-green-pop,
+    .animate-drinks-red-shake,
+    .animate-drinks-rising-points,
+    .animate-drinks-glass-fill,
+    .animate-drinks-foam-appear,
+    .animate-drinks-confetti-burst,
+    .animate-drinks-legendary-banner,
+    .animate-drinks-streak-flame,
+    .animate-drinks-star-pop {
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+    }
+    .drinks-glass-fill,
+    .drinks-glass-foam {
+      transition: none;
+    }
+  }
 .\[--cell-size\:--spacing\(8\)\] {
   --cell-size: var(--spacing(8));
 }
@@ -3805,6 +4509,26 @@ video {
   font-weight: 700;
   font-display: swap;
   src: url("/assets/fonts/Oswald-Bold.woff2") format("woff2");
+}
+
+/* Zilla Slab — recipe print card title / variant dividers (700) */
+@font-face {
+  font-family: "Zilla Slab";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/zillaslab/v6/dFa6ZfeM_74wlPZtksIFajQ6_V6LVw.woff2")
+    format("woff2");
+}
+
+/* Roboto Slab — recipe print card fallback for title / variant dividers (800) */
+@font-face {
+  font-family: "Roboto Slab";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/robotoslab/v25/BngbUXZYTXPIvIBgJVSbYG6xLsE.woff2")
+    format("woff2");
 }
 
 /* Barlow — body (regular / medium / semibold) */
@@ -3942,6 +4666,105 @@ video {
 }
 .bg-library-card dd ol {
   list-style-type: decimal;
+}
+
+/* =====================================================================
+   Recipe Print Card — additive LIGHT island (dark theme untouched)
+   Tokens scoped under :root + .dark (mirrored) so the light island is
+   available everywhere; utilities are intentionally unlayered so they
+   win over @layer-wrapped base rules.
+   ===================================================================== */
+:root {
+  --rpc-card: #ffffff;
+  --rpc-ink: #1a1a1a;
+  --rpc-blue: #1477be;
+  --rpc-rule: #000000;
+  --rpc-photo-frame: #1477be;
+  --rpc-bullet: #1a1a1a;
+  --rpc-font-slab: "Zilla Slab", "Roboto Slab", serif;
+}
+.dark {
+  --rpc-card: #ffffff;
+  --rpc-ink: #1a1a1a;
+  --rpc-blue: #1477be;
+  --rpc-rule: #000000;
+  --rpc-photo-frame: #1477be;
+  --rpc-bullet: #1a1a1a;
+  --rpc-font-slab: "Zilla Slab", "Roboto Slab", serif;
+}
+
+.recipe-print-card {
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: "Barlow", sans-serif;
+}
+.recipe-print-card-title {
+  font-family: "Zilla Slab", "Roboto Slab", serif;
+  font-weight: 700;
+  text-align: center;
+  font-variant: small-caps;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 0.25rem;
+}
+.recipe-print-card-subtitle {
+  font-weight: 700;
+  text-align: center;
+}
+.recipe-print-card-variant-divider {
+  font-family: "Zilla Slab", "Roboto Slab", serif;
+  font-weight: 700;
+  font-variant: small-caps;
+  border-bottom: 2px solid #000000;
+  text-align: left;
+  padding-bottom: 0.25rem;
+  margin-top: 1.5rem;
+}
+.recipe-print-card-heading {
+  color: #1477be;
+  font-weight: 700;
+  font-size: 26px;
+  text-transform: capitalize;
+}
+.recipe-print-card-square-bullet {
+  list-style-type: square;
+}
+.recipe-print-card-square-bullet li::marker {
+  color: #1a1a1a;
+  font-size: 10px;
+}
+.recipe-print-card-specs-row {
+  display: flex;
+  align-items: baseline;
+}
+.recipe-print-card-specs-row .amount {
+  font-weight: 600;
+}
+.recipe-print-card-specs-row .ingredient {
+  margin-left: auto;
+  text-align: right;
+}
+.recipe-print-card-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border: 3px solid #1477be;
+}
+.recipe-print-card-footer-legal {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.recipe-print-card-footer-legal .left {
+  color: #1477be;
+  text-align: left;
+}
+.recipe-print-card-footer-legal .center {
+  text-align: center;
+}
+.recipe-print-card-footer-legal .right {
+  color: #1477be;
+  text-align: right;
 }
 .selection\:bg-primary *::-moz-selection {
   --tw-bg-opacity: 1;
@@ -5186,6 +6009,18 @@ video {
 }
 @media (min-width: 640px) {
 
+  .sm\:order-1 {
+    order: 1;
+  }
+
+  .sm\:order-2 {
+    order: 2;
+  }
+
+  .sm\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+
   .sm\:block {
     display: block;
   }
@@ -5202,20 +6037,12 @@ video {
     height: 20rem;
   }
 
-  .sm\:h-\[200px\] {
-    height: 200px;
-  }
-
   .sm\:max-h-80 {
     max-height: 20rem;
   }
 
-  .sm\:max-h-\[200px\] {
-    max-height: 200px;
-  }
-
-  .sm\:w-32 {
-    width: 8rem;
+  .sm\:w-\[320px\] {
+    width: 320px;
   }
 
   .sm\:max-w-2xl {
@@ -5238,6 +6065,10 @@ video {
     max-width: 36rem;
   }
 
+  .sm\:flex-1 {
+    flex: 1 1 0%;
+  }
+
   .sm\:shrink-0 {
     flex-shrink: 0;
   }
@@ -5254,12 +6085,12 @@ video {
     flex-direction: row;
   }
 
-  .sm\:items-end {
-    align-items: flex-end;
+  .sm\:items-start {
+    align-items: flex-start;
   }
 
-  .sm\:items-baseline {
-    align-items: baseline;
+  .sm\:items-end {
+    align-items: flex-end;
   }
 
   .sm\:justify-end {
@@ -5270,6 +6101,10 @@ video {
     justify-content: space-between;
   }
 
+  .sm\:gap-10 {
+    gap: 2.5rem;
+  }
+
   .sm\:gap-2\.5 {
     gap: 0.625rem;
   }
@@ -5278,12 +6113,12 @@ video {
     gap: 0.75rem;
   }
 
-  .sm\:gap-4 {
-    gap: 1rem;
+  .sm\:p-10 {
+    padding: 2.5rem;
   }
 
-  .sm\:p-6 {
-    padding: 1.5rem;
+  .sm\:p-8 {
+    padding: 2rem;
   }
 
   .sm\:px-5 {
@@ -5446,8 +6281,44 @@ video {
 }
 @media (min-width: 1024px) {
 
+  .lg\:sticky {
+    position: sticky;
+  }
+
+  .lg\:top-6 {
+    top: 1.5rem;
+  }
+
+  .lg\:order-1 {
+    order: 1;
+  }
+
+  .lg\:order-2 {
+    order: 2;
+  }
+
+  .lg\:w-\[340px\] {
+    width: 340px;
+  }
+
+  .lg\:shrink-0 {
+    flex-shrink: 0;
+  }
+
   .lg\:grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .lg\:flex-row {
+    flex-direction: row;
+  }
+
+  .lg\:items-start {
+    align-items: flex-start;
+  }
+
+  .lg\:gap-10 {
+    gap: 2.5rem;
   }
 }
 .\[\&\:first-child\[data-selected\=true\]_button\]\:rounded-l-md:first-child[data-selected=true] button {

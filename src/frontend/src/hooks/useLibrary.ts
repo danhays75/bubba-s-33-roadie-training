@@ -1,4 +1,11 @@
-import type { Category, DetailField, LibraryItem } from "@/types/foundation";
+import type {
+  Category,
+  DetailField,
+  LibraryItem,
+  Recipe,
+  RecipeSpec,
+  RecipeVariant,
+} from "@/types/foundation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBackend } from "./useBackend";
 
@@ -50,6 +57,102 @@ function toCategory(c: {
   };
 }
 
+/**
+ * Translates a Candid Recipe to the frontend Recipe type. Mirrors the backend
+ * shape 1:1 — recipe sub-records are value records with no ids, so there is
+ * no bigint translation. The only thing to preserve is `variantLabel` (not
+ * `label`) on variants, which the type system already enforces.
+ *
+ * Returns null when the backend omits the optional ?Recipe field (plain
+ * Library card, not a cocktail spec).
+ */
+function toRecipe(
+  r:
+    | {
+        glassware: string;
+        specs: Array<{ amount: string; ingredient: string }>;
+        assembly: Array<string>;
+        garnish: Array<string>;
+        variants: Array<{
+          variantLabel: string;
+          specs: Array<{ amount: string; ingredient: string }>;
+          assembly: Array<string>;
+        }>;
+        equipment?: Array<string>;
+        yield?: string;
+        shelfLife?: string;
+        qualityIdentifier?: Array<string>;
+      }
+    | undefined,
+): Recipe | null {
+  if (!r) return null;
+  return {
+    glassware: r.glassware,
+    specs: r.specs.map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+    assembly: r.assembly,
+    garnish: r.garnish,
+    variants: r.variants.map((v) => ({
+      variantLabel: v.variantLabel,
+      specs: v.specs.map((s) => ({
+        amount: s.amount,
+        ingredient: s.ingredient,
+      })),
+      assembly: v.assembly,
+    })),
+    equipment: r.equipment ?? [],
+    // Backend optional ?Text comes through as undefined or empty string when
+    // absent; normalize both to null so the frontend treats them uniformly.
+    yield: r.yield && r.yield.length > 0 ? r.yield : null,
+    shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : null,
+    qualityIdentifier: r.qualityIdentifier ?? [],
+  };
+}
+
+/**
+ * Maps a frontend Recipe (or null) to the backend Candid Recipe shape for
+ * createItem/updateItem. Strips nothing (recipe has no frontend-only fields
+ * like DetailField.id) — it is a 1:1 structural copy that exists mainly to
+ * satisfy the Candid type at the actor boundary and to normalize null/undefined
+ * to null so items without a recipe pass through unchanged.
+ */
+function fromRecipe(r: Recipe | null | undefined): {
+  glassware: string;
+  specs: Array<{ amount: string; ingredient: string }>;
+  assembly: Array<string>;
+  garnish: Array<string>;
+  variants: Array<{
+    variantLabel: string;
+    specs: Array<{ amount: string; ingredient: string }>;
+    assembly: Array<string>;
+  }>;
+  equipment: Array<string>;
+  yield: string | undefined;
+  shelfLife: string | undefined;
+  qualityIdentifier: Array<string>;
+} | null {
+  if (!r) return null;
+  return {
+    glassware: r.glassware,
+    specs: r.specs.map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+    assembly: r.assembly,
+    garnish: r.garnish,
+    variants: r.variants.map((v) => ({
+      variantLabel: v.variantLabel,
+      specs: v.specs.map((s) => ({
+        amount: s.amount,
+        ingredient: s.ingredient,
+      })),
+      assembly: v.assembly,
+    })),
+    equipment: r.equipment ?? [],
+    // Frontend stores null; the Candid ?Text boundary expects undefined for
+    // absent optionals. Translate null/empty -> undefined here.
+    yield: r.yield && r.yield.length > 0 ? r.yield : undefined,
+    shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : undefined,
+    qualityIdentifier: r.qualityIdentifier ?? [],
+  };
+}
+
 /** Translates a Candid LibraryItem (bigint ids) to the local string-id shape. */
 function toItem(i: {
   id: bigint;
@@ -62,6 +165,21 @@ function toItem(i: {
   tags: Array<string>;
   seasonal: boolean;
   sortOrder: bigint;
+  recipe?: {
+    glassware: string;
+    specs: Array<{ amount: string; ingredient: string }>;
+    assembly: Array<string>;
+    garnish: Array<string>;
+    variants: Array<{
+      variantLabel: string;
+      specs: Array<{ amount: string; ingredient: string }>;
+      assembly: Array<string>;
+    }>;
+    equipment?: Array<string>;
+    yield?: string;
+    shelfLife?: string;
+    qualityIdentifier?: Array<string>;
+  };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({
     // id is frontend-only (not in the backend record). Generated here so each
@@ -82,6 +200,7 @@ function toItem(i: {
     tags: i.tags ?? [],
     seasonal: i.seasonal,
     sortOrder: Number(i.sortOrder),
+    recipe: toRecipe(i.recipe),
   };
 }
 
@@ -296,6 +415,7 @@ export interface CreateItemInput {
   notes?: string | null;
   tags: string[];
   seasonal: boolean;
+  recipe?: Recipe | null;
 }
 
 /** Creates a new item under a category (admin only). */
@@ -305,7 +425,7 @@ export function useCreateItem() {
   return useMutation({
     mutationFn: async (input: CreateItemInput) => {
       if (!actor) throw new Error("Backend not ready");
-      // Candid: createItem(categoryId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal)
+      // Candid: createItem(categoryId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal, recipe: ?Recipe)
       const result = await actor.createItem(
         BigInt(input.categoryId),
         input.title,
@@ -318,6 +438,7 @@ export function useCreateItem() {
         input.notes && input.notes.length > 0 ? input.notes : null,
         input.tags,
         input.seasonal,
+        fromRecipe(input.recipe),
       );
       return toItem(result);
     },
@@ -339,6 +460,7 @@ export interface UpdateItemInput {
   notes?: string | null;
   tags: string[];
   seasonal: boolean;
+  recipe?: Recipe | null;
 }
 
 /** Updates an existing item (admin only). */
@@ -353,7 +475,7 @@ export function useUpdateItem() {
       if (input.itemId == null || input.itemId.trim() === "") {
         throw new Error("updateItem requires a non-empty item id");
       }
-      // Candid: updateItem(itemId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal)
+      // Candid: updateItem(itemId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal, recipe: ?Recipe)
       const result = await actor.updateItem(
         BigInt(input.itemId),
         input.title,
@@ -366,6 +488,7 @@ export function useUpdateItem() {
         input.notes && input.notes.length > 0 ? input.notes : null,
         input.tags,
         input.seasonal,
+        fromRecipe(input.recipe),
       );
       return toItem(result);
     },

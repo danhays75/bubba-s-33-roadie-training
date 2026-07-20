@@ -35,6 +35,7 @@ import {
   Sparkles,
   Trash2,
   Trophy,
+  Wine,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ReactElement } from "react";
@@ -261,6 +262,7 @@ function ActivityCard({
 }): ReactElement {
   const navigate = useNavigate();
   const isQuiz = activity.activityType === "quiz";
+  const isDrinksBuilder = activity.activityType === "drinksBuilder";
 
   const sourceNames = activity.sourceCategoryIds
     .map((id) => categoryNameById.get(id))
@@ -268,12 +270,14 @@ function ActivityCard({
 
   function handleOpen() {
     // Navigate to the activity's practice route. Quiz activities go to the
-    // quiz route; flashcard activities go to the flashcards route. The
-    // activity id comes AFTER the quiz/flashcards literal segment to match
-    // the flattened RootRoute paths.
+    // quiz route; flashcard activities go to the flashcards route; drinks
+    // builder activities go to the drinks-builder route. The activity id
+    // comes AFTER the literal segment to match the flattened RootRoute paths.
     const to = isQuiz
       ? `/position/${positionId}/legendary/quiz/${activity.id}`
-      : `/position/${positionId}/legendary/flashcards/${activity.id}`;
+      : isDrinksBuilder
+        ? `/position/${positionId}/legendary/drinks-builder/${activity.id}`
+        : `/position/${positionId}/legendary/flashcards/${activity.id}`;
     void navigate({ to });
   }
 
@@ -305,6 +309,8 @@ function ActivityCard({
           >
             {isQuiz ? (
               <Brain className="size-5" />
+            ) : isDrinksBuilder ? (
+              <Wine className="size-5" />
             ) : (
               <Layers className="size-5" />
             )}
@@ -383,17 +389,25 @@ function ActivityTypeBadge({
 }: {
   type: LegendaryActivity["activityType"];
 }): ReactElement {
+  const label =
+    type === "quiz"
+      ? "Quiz"
+      : type === "drinksBuilder"
+        ? "Drinks Builder"
+        : "Flashcards";
+  const ocid =
+    type === "quiz"
+      ? "legendary.activity.type.quiz.badge"
+      : type === "drinksBuilder"
+        ? "legendary.activity.type.drinks_builder.badge"
+        : "legendary.activity.type.flashcards.badge";
   return (
     <Badge
       variant="outline"
       className="border-primary/40 text-primary"
-      data-ocid={
-        type === "quiz"
-          ? "legendary.activity.type.quiz.badge"
-          : "legendary.activity.type.flashcards.badge"
-      }
+      data-ocid={ocid}
     >
-      {type === "quiz" ? "Quiz" : "Flashcards"}
+      {label}
     </Badge>
   );
 }

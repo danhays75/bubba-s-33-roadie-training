@@ -1,0 +1,173 @@
+{
+  "note": "Batch 8 — bulk-mix recipes (batched cocktail mixes, syrups, infusions, and pre-batched service mixes). Bulk mixes carry no glassware, garnish, photo, or variants; they are identified by a non-empty yield and/or a non-empty equipment array. This note is a human comment and is silently ignored by the importer.",
+  "recipes": [
+    {
+      "title": "Batched Negroni Service Mix",
+      "category": "Batched Cocktails",
+      "subtitle": "Pre-batched stirred service pour, 750 mL yield",
+      "glassware": "",
+      "tags": ["batched", "italian", "aperitivo"],
+      "lto": false,
+      "specs": [
+        { "amount": "375 mL", "ingredient": "Beefeater London Dry Gin" },
+        { "amount": "375 mL", "ingredient": "Campari" },
+        { "amount": "375 mL", "ingredient": "Cocchi Vermouth di Torino" },
+        { "amount": "75 mL", "ingredient": "Filtered water (dilution)" }
+      ],
+      "assembly": [
+        "Combine gin, Campari, and vermouth in a 1 L glass bottle.",
+        "Add filtered water to target 22% ABV dilution for service.",
+        "Seal, invert gently three times to integrate — do not shake.",
+        "Label, date, and refrigerate at 34–38°F for up to 14 days.",
+        "Pour 3 oz over a large rock in a rocks glass at service; express one orange peel over the top and discard."
+      ],
+      "yield": "750 mL bottled service mix",
+      "shelfLife": "14 days refrigerated",
+      "qualityIdentifier": [
+        "Taste: balanced bitter-sweet, no spirit burn",
+        "Visual: clear ruby-red, no haze",
+        "ABV check: 22% ±0.5%"
+      ]
+    },
+    {
+      "title": "Honey Syrup (2:1)",
+      "category": "House Syrups",
+      "subtitle": "Standard 2:1 honey-to-water bar syrup",
+      "glassware": "",
+      "tags": ["syrup", "pantry", "vegan"],
+      "lto": false,
+      "specs": [
+        { "amount": "500 g", "ingredient": "Wildflower honey" },
+        { "amount": "250 g", "ingredient": "Filtered water" }
+      ],
+      "assembly": [
+        "Combine water and honey in a non-reactive saucepan.",
+        "Warm over low heat, whisking until fully dissolved — do not boil.",
+        "Strain through a fine-mesh chinois into a clean container.",
+        "Cool to room temperature before bottling.",
+        "Cover, label, and store at 34–38°F for up to 30 days."
+      ],
+      "equipment": [
+        "Non-reactive saucepan",
+        "Whisk",
+        "Fine-mesh chinois",
+        "Squeeze bottles"
+      ],
+      "shelfLife": "30 days refrigerated",
+      "qualityIdentifier": [
+        "Brix: 68–72°",
+        "Visual: clear, no crystallization",
+        "Taste: clean honey, no caramel notes"
+      ]
+    },
+    {
+      "title": "Pineapple Gum Syrup",
+      "category": "House Syrups",
+      "subtitle": "Gum arabic–stabilized pineapple syrup for tropical builds",
+      "glassware": "",
+      "tags": ["syrup", "tropical", "gum-arabic"],
+      "lto": false,
+      "specs": [
+        { "amount": "500 g", "ingredient": "Fresh pineapple juice, strained" },
+        { "amount": "500 g", "ingredient": "Cane sugar" },
+        { "amount": "50 g", "ingredient": "Gum arabic powder" },
+        { "amount": "2 g", "ingredient": "Cream of tartar" }
+      ],
+      "assembly": [
+        "Whisk gum arabic into strained pineapple juice; hydrate 30 minutes.",
+        "Combine juice mixture and sugar in a saucepan over low heat.",
+        "Stir until sugar dissolves; hold at 140°F for 10 minutes — do not simmer.",
+        "Add cream of tartar, stir to combine, and remove from heat.",
+        "Strain through a super-fine chinois into a sanitized bottle.",
+        "Cover, label, and store at 34–38°F for up to 21 days."
+      ],
+      "yield": "1 L bottled syrup",
+      "equipment": [
+        "Non-reactive saucepan",
+        "Whisk",
+        "Super-fine chinois",
+        "Sanitized swing-top bottles",
+        "Refractometer"
+      ],
+      "shelfLife": "21 days refrigerated",
+      "qualityIdentifier": [
+        "Brix: 64–66°",
+        "Viscosity: coats a spoon, slow drip",
+        "Taste: bright pineapple, no raw gum starchiness"
+      ]
+    },
+    {
+      "title": "Cold Brew Coffee Concentrate",
+      "category": "Infusions & Concentrates",
+      "subtitle": "18-hour cold steep concentrate for coffee cocktails",
+      "glassware": "",
+      "tags": ["infusion", "coffee", "cold-brew"],
+      "lto": false,
+      "specs": [
+        {
+          "amount": "1 kg",
+          "ingredient": "Ethiopia Yirgacheffe, coarse grind"
+        },
+        { "amount": "4 L", "ingredient": "Filtered cold water" }
+      ],
+      "assembly": [
+        "Charge a cold brew tower with 4 L filtered water at 40°F.",
+        "Add coarse-ground coffee evenly across the bed; do not tamp.",
+        "Steep undisturbed at 38–42°F for 18 hours.",
+        "Drain concentrate through a paper filter-lined chinois.",
+        "Transfer to sanitized keg; pressurize at 12 PSI with nitrogen blend.",
+        "Label, date, and hold at 36°F for up to 10 days."
+      ],
+      "equipment": [
+        "Cold brew tower",
+        "Paper filters",
+        "Chinois",
+        "Sanitized keg",
+        "Nitrogen regulator"
+      ],
+      "shelfLife": "10 days refrigerated, kegged",
+      "qualityIdentifier": [
+        "TDS: 2.4–2.8%",
+        "Visual: dark, no sediment",
+        "Taste: clean, low bitterness, no oxidation"
+      ]
+    },
+    {
+      "title": "Spiced Demerara Service Mix",
+      "category": "Batched Cocktails",
+      "subtitle": "Pre-batched spiced old-fashioned service pour, 1 L yield",
+      "glassware": "",
+      "tags": ["batched", "whiskey", "spiced"],
+      "lto": true,
+      "specs": [
+        { "amount": "600 mL", "ingredient": "Appleton Estate Reserve rum" },
+        { "amount": "200 mL", "ingredient": "Laird's Bonded Apple Brandy" },
+        { "amount": "150 mL", "ingredient": "Spiced demerara syrup (2:1)" },
+        { "amount": "50 mL", "ingredient": "Angostura bitters" },
+        { "amount": "25 mL", "ingredient": "Filtered water (dilution)" }
+      ],
+      "assembly": [
+        "Toast whole allspice, clove, and cinnamon in a dry pan until fragrant; cool.",
+        "Combine rum, apple brandy, spiced syrup, and bitters in a 1 L bottle.",
+        "Add toasted spices and seal; rest 24 hours refrigerated to infuse.",
+        "Strain out spices through a fine chinois into a clean bottle.",
+        "Add filtered water to target 24% ABV dilution for service.",
+        "Cover, label, and store at 34–38°F for up to 21 days.",
+        "Pour 3 oz over a large rock; express one orange peel over the top and discard."
+      ],
+      "yield": "1 L bottled service mix",
+      "equipment": [
+        "Dry sauté pan",
+        "Fine chinois",
+        "1 L glass bottle",
+        "Cork stopper"
+      ],
+      "shelfLife": "21 days refrigerated",
+      "qualityIdentifier": [
+        "Taste: warm spice, balanced sweetness, no spirit burn",
+        "Visual: clear amber, no spice sediment",
+        "ABV check: 24% ±0.5%"
+      ]
+    }
+  ]
+}

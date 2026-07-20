@@ -35,6 +35,7 @@ type UserProfile =
  };
 type UpdateActivityInput = 
  record {
+   content: opt ActivityContent;
    id: nat;
    name: text;
    sourceCategoryIds: vec nat;
@@ -67,6 +68,29 @@ type Result =
  record {
    hasMore: bool;
    rows: vec vec Cell;
+ };
+type RecipeVariant = 
+ record {
+   assembly: vec text;
+   specs: vec RecipeSpec;
+   variantLabel: text;
+ };
+type RecipeSpec = 
+ record {
+   amount: text;
+   ingredient: text;
+ };
+type Recipe = 
+ record {
+   assembly: vec text;
+   equipment: vec text;
+   garnish: vec text;
+   glassware: text;
+   qualityIdentifier: vec text;
+   shelfLife: opt text;
+   specs: vec RecipeSpec;
+   variants: vec RecipeVariant;
+   yield: opt text;
  };
 type QuizContent = vec Question;
 type Question = 
@@ -144,11 +168,22 @@ type LibraryItem =
    id: nat;
    notes: opt text;
    photo: opt text;
+   recipe: opt Recipe;
    seasonal: bool;
    sortOrder: nat;
    subtitle: opt text;
    tags: vec text;
    title: text;
+ };
+type FlashcardRecipe = 
+ record {
+   assembly: vec text;
+   garnish: vec text;
+   glassware: text;
+   specs: vec record {
+                amount: text;
+                ingredient: text;
+              };
  };
 type FlashcardContent = vec Flashcard;
 type Flashcard = 
@@ -159,6 +194,7 @@ type Flashcard =
                      };
    itemPhoto: opt text;
    itemTitle: text;
+   recipe: opt FlashcardRecipe;
  };
 type Error = 
  variant {
@@ -182,6 +218,20 @@ type Error =
    UnknownNonce;
    UntrustedSsoSource: record {domain: text;};
  };
+type DrinksBuilderSettings = 
+ record {
+   decoyCount: nat;
+   enforceAssemblyOrder: bool;
+   excludedDrinkTitles: vec text;
+   includedCategories: vec text;
+   pointsPerCorrect: nat;
+   requireExactAmounts: bool;
+   roundsPerSession: nat;
+   showScoring: bool;
+   soundDefault: bool;
+   streakMultiplier: bool;
+ };
+type DrinksBuilderContent = record {settings: DrinksBuilderSettings;};
 type DetailField = 
  record {
    fieldLabel: text;
@@ -203,6 +253,7 @@ type Category =
 type BuildActivityInput = 
  record {
    activityType: ActivityType;
+   content: opt ActivityContent;
    name: text;
    positionId: nat;
    sourceCategoryIds: vec nat;
@@ -214,11 +265,13 @@ type AssignmentStatus =
  };
 type ActivityType = 
  variant {
+   drinksBuilder;
    flashcards;
    quiz;
  };
 type ActivityContent = 
  variant {
+   drinksBuilderContent: DrinksBuilderContent;
    flashcardContent: FlashcardContent;
    quizContent: QuizContent;
  };
@@ -275,7 +328,7 @@ service : {
    (Category);
   createItem: (categoryId: nat, title: text, subtitle: opt text, photo:
    opt text, details: vec DetailField, notes: opt text, tags: vec text,
-   seasonal: bool) -> (LibraryItem);
+   seasonal: bool, recipe: opt Recipe) -> (LibraryItem);
   createMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   createNsoPhase: (name: text) -> (Phase);
   createNsoTask: (phaseId: nat, "text": text, section: opt text, assignedTo:
@@ -294,6 +347,8 @@ service : {
   getCallerUserRole: () -> (UserRole) query;
   getCategoriesByPosition: (positionId: nat) -> (vec Category) query;
   getCategory: (categoryId: nat) -> (opt Category) query;
+  getDrinksBuilderDecoyPool: (activityId: nat) -> (vec LibraryItem) query;
+  getDrinksBuilderPlayablePool: (activityId: nat) -> (vec LibraryItem) query;
   getItem: (itemId: nat) -> (opt LibraryItem) query;
   getItemsByCategory: (categoryId: nat) -> (vec LibraryItem) query;
   getLegendaryActivitiesByPosition: (positionId: nat) -> (vec Activity) query;
@@ -343,8 +398,8 @@ service : {
   updateCategory: (categoryId: nat, name: text, coverPhoto: opt text) ->
    (Category);
   updateItem: (itemId: nat, title: text, subtitle: opt text, photo: opt text,
-   details: vec DetailField, notes: opt text, tags: vec text, seasonal:
-   bool) -> (LibraryItem);
+   details: vec DetailField, notes: opt text, tags: vec text, seasonal: 
+   bool, recipe: opt Recipe) -> (LibraryItem);
   updateLegendaryActivity: (input: UpdateActivityInput) -> (Activity);
   updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   updateNsoPhase: (id: nat, name: text) -> ();

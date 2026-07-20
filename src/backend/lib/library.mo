@@ -16,6 +16,9 @@ module {
   public type Category = Types.Category;
   public type LibraryItem = Types.LibraryItem;
   public type DetailField = Types.DetailField;
+  public type Recipe = Types.Recipe;
+  public type RecipeSpec = Types.RecipeSpec;
+  public type RecipeVariant = Types.RecipeVariant;
 
   // --- Category helpers ---
 
@@ -24,10 +27,7 @@ module {
   };
 
   public func listCategoriesByPosition(categories : List.List<Category>, positionId : Nat) : [Category] {
-    categories
-      .filter(func(c) { c.positionId == positionId })
-      .toArray()
-      .sort(func(a, b) { Nat.compare(a.sortOrder, b.sortOrder) });
+    categories.filter(func(c) { c.positionId == positionId }).toArray();
   };
 
   public func createCategory(
@@ -39,8 +39,9 @@ module {
   ) : Category {
     let id = nextId.value;
     nextId.value := nextId.value + 1;
-    // sortOrder = current count of categories in this position + 1, so the new
-    // category appends to the end of the per-position sequence starting at 1.
+    // sortOrder is PER POSITION: the new category appends to the end of its
+    // position's sequence starting at 1. Count the existing categories in the
+    // same position and add 1 — mirrors createPosition in foundation.mo.
     let samePositionCount = categories.filter(func(c) { c.positionId == positionId }).size();
     let sortOrder = samePositionCount + 1;
     let category : Category = {
@@ -75,30 +76,38 @@ module {
     };
   };
 
-  // Remove the category AND cascade-delete its items. Renumber the remaining
-  // categories' sortOrder within the affected position (1-based, contiguous).
   public func deleteCategory(categories : List.List<Category>, items : List.List<LibraryItem>, id : Nat) : ?Category {
     let found = categories.find(func(c) { c.id == id });
     switch (found) {
       case (?existing) {
-        // Cascade-delete items belonging to this category.
+        // Cascade delete: remove the category's items first.
         let keptItems = items.filter(func(i) { i.categoryId != id });
         items.clear();
         keptItems.forEach(func(i) { items.add(i) });
-        // Remove the category and renumber the remaining categories within the
-        // affected position (1-based, contiguous).
-        let positionId = existing.positionId;
+        // Now remove the category and renumber the remaining categories
+        // per-position starting at 1. Mirrors deletePosition in foundation.mo,
+        // but scoped per position.
         let keptCategories = categories.filter(func(c) { c.id != id });
         categories.clear();
-        var order = 1;
-        keptCategories.forEach(func(c) {
-          let renumbered : Category = if (c.positionId == positionId) {
-            { c with sortOrder = order };
-          } else {
-            c;
+        // Group kept categories by position so each position's sequence is
+        // renumbered independently starting at 1.
+        let positionIds = keptCategories.map<Category, Nat>(func(c) { c.positionId }).toArray();
+        // For each distinct position (in first-seen order), renumber its
+        // categories in their existing order.
+        let seen : Map.Map<Nat, Bool> = Map.empty();
+        positionIds.forEach(func(pid) {
+          switch (seen.get(pid)) {
+            case (?_) {};
+            case null {
+              seen.add(pid, true);
+              var order = 1;
+              keptCategories.filter(func(c) { c.positionId == pid }).forEach(func(c) {
+                let renumbered : Category = { c with sortOrder = order };
+                categories.add(renumbered);
+                order := order + 1;
+              });
+            };
           };
-          categories.add(renumbered);
-          if (c.positionId == positionId) { order := order + 1 };
         });
         ?existing;
       };
@@ -106,57 +115,46 @@ module {
     };
   };
 
-  // Reassign sortOrder 1..N within the given position based on the order of ids
-  // in orderedCategoryIds. Categories in this position not listed keep their
-  // relative order after the listed ones. Returns the position's categories
-  // sorted by new sortOrder.
   public func reorderCategories(
     categories : List.List<Category>,
     positionId : Nat,
     orderedCategoryIds : [Nat],
   ) : [Category] {
+    // Reassign sortOrder per-position starting at 1 in the given order.
+    // Categories in this position not listed keep their relative order after
+    // the listed ones. Categories in other positions are untouched.
     let all = categories.toArray();
-    let inPosition = all.filter(func(c) { c.positionId == positionId });
-    let others = all.filter(func(c) { c.positionId != positionId });
-    // Rebuild the in-position list: listed ids first (in given order), then
-    // unlisted in-position categories preserving their existing relative order.
+    categories.clear();
     let placed : Map.Map<Nat, Bool> = Map.empty();
-    var reordered : [Category] = [];
     var order = 1;
     for (id in orderedCategoryIds.values()) {
-      // Dedup guard: skip ids already placed in this same call so a duplicated
-      // id in the input cannot renumber the same record twice and corrupt the
-      // list with duplicate sortOrder values.
-      switch (placed.get(id)) {
-        case (?_) {};
-        case null {
-          switch (inPosition.find(func(c) { c.id == id })) {
-            case (?c) {
-              placed.add(id, true);
-              let renumbered : Category = { c with sortOrder = order };
-              reordered := reordered.concat([renumbered]);
-              order := order + 1;
-            };
-            case null {};
-          };
-        };
-      };
-    };
-    for (c in inPosition.values()) {
-      switch (placed.get(c.id)) {
-        case (?_) {};
-        case null {
+      switch (all.find(func(c) { c.id == id and c.positionId == positionId })) {
+        case (?c) {
           let renumbered : Category = { c with sortOrder = order };
-          reordered := reordered.concat([renumbered]);
+          categories.add(renumbered);
+          placed.add(id, true);
           order := order + 1;
         };
+        case null {};
       };
     };
-    // Rewrite the categories list: others unchanged, then reordered in-position.
-    categories.clear();
-    others.forEach(func(c) { categories.add(c) });
-    reordered.forEach(func(c) { categories.add(c) });
-    reordered;
+    // Append unlisted categories of this position, preserving their existing order.
+    for (c in all.values()) {
+      if (c.positionId == positionId) {
+        switch (placed.get(c.id)) {
+          case (?_) {};
+          case null {
+            let renumbered : Category = { c with sortOrder = order };
+            categories.add(renumbered);
+            order := order + 1;
+          };
+        };
+      } else {
+        // Other positions: re-add unchanged.
+        categories.add(c);
+      };
+    };
+    categories.filter(func(c) { c.positionId == positionId }).toArray();
   };
 
   // --- LibraryItem helpers ---
@@ -166,10 +164,7 @@ module {
   };
 
   public func listItemsByCategory(items : List.List<LibraryItem>, categoryId : Nat) : [LibraryItem] {
-    items
-      .filter(func(i) { i.categoryId == categoryId })
-      .toArray()
-      .sort(func(a, b) { Nat.compare(a.sortOrder, b.sortOrder) });
+    items.filter(func(i) { i.categoryId == categoryId }).toArray();
   };
 
   public func createItem(
@@ -183,11 +178,13 @@ module {
     notes : ?Text,
     tags : [Text],
     seasonal : Bool,
+    recipe : ?Recipe,
   ) : LibraryItem {
     let id = nextId.value;
     nextId.value := nextId.value + 1;
-    // sortOrder = current count of items in this category + 1, so the new item
-    // appends to the end of the per-category sequence starting at 1.
+    // sortOrder is PER CATEGORY: the new item appends to the end of its
+    // category's sequence starting at 1. Count the existing items in the same
+    // category and add 1 — mirrors the createPosition pattern in foundation.mo.
     let sameCategoryCount = items.filter(func(i) { i.categoryId == categoryId }).size();
     let sortOrder = sameCategoryCount + 1;
     let item : LibraryItem = {
@@ -201,6 +198,7 @@ module {
       tags;
       seasonal;
       sortOrder;
+      recipe;
     };
     items.add(item);
     item;
@@ -216,10 +214,15 @@ module {
     notes : ?Text,
     tags : [Text],
     seasonal : Bool,
+    recipe : ?Recipe,
   ) : ?LibraryItem {
     let found = items.find(func(i) { i.id == id });
     switch (found) {
       case (?existing) {
+        // Spread the existing record and override the editable fields. The
+        // id / categoryId / sortOrder are preserved (not part of the update
+        // payload); recipe is carried through so the item can be promoted to
+        // or demoted from a recipe. Mirrors updatePosition in foundation.mo.
         let updated : LibraryItem = {
           existing with
           title;
@@ -229,6 +232,7 @@ module {
           notes;
           tags;
           seasonal;
+          recipe;
         };
         items.mapInPlace(
           func(i) {
@@ -241,24 +245,24 @@ module {
     };
   };
 
-  // Remove the item and renumber the remaining items' sortOrder within the
-  // affected category (1-based, contiguous).
   public func deleteItem(items : List.List<LibraryItem>, id : Nat) : ?LibraryItem {
     let found = items.find(func(i) { i.id == id });
     switch (found) {
       case (?existing) {
+        // Remove the item by filtering it out, then renumber the remaining
+        // items in the same category per-parent starting at 1. Items in other
+        // categories are re-added unchanged.
         let categoryId = existing.categoryId;
         let kept = items.filter(func(i) { i.id != id });
         items.clear();
+        // Re-add items in other categories unchanged.
+        kept.filter(func(i) { i.categoryId != categoryId }).forEach(func(i) { items.add(i) });
+        // Renumber the affected category's items in their original order.
         var order = 1;
-        kept.forEach(func(i) {
-          let renumbered : LibraryItem = if (i.categoryId == categoryId) {
-            { i with sortOrder = order };
-          } else {
-            i;
-          };
+        kept.filter(func(i) { i.categoryId == categoryId }).forEach(func(i) {
+          let renumbered : LibraryItem = { i with sortOrder = order };
           items.add(renumbered);
-          if (i.categoryId == categoryId) { order := order + 1 };
+          order := order + 1;
         });
         ?existing;
       };
@@ -266,111 +270,85 @@ module {
     };
   };
 
-  // Reassign sortOrder 1..N within the given category based on the order of ids
-  // in orderedItemIds. Items in this category not listed keep their relative
-  // order after the listed ones. Returns the category's items sorted by new
-  // sortOrder.
   public func reorderItems(
     items : List.List<LibraryItem>,
     categoryId : Nat,
     orderedItemIds : [Nat],
   ) : [LibraryItem] {
+    // Reassign sortOrder per-category starting at 1 in the given order.
+    // Items in this category not listed keep their relative order after the
+    // listed ones. Items in other categories are untouched.
     let all = items.toArray();
-    let inCategory = all.filter(func(i) { i.categoryId == categoryId });
-    let others = all.filter(func(i) { i.categoryId != categoryId });
+    items.clear();
     let placed : Map.Map<Nat, Bool> = Map.empty();
-    var reordered : [LibraryItem] = [];
     var order = 1;
     for (id in orderedItemIds.values()) {
-      // Dedup guard: skip ids already placed in this same call so a duplicated
-      // id in the input cannot renumber the same record twice and corrupt the
-      // list with duplicate sortOrder values.
-      switch (placed.get(id)) {
-        case (?_) {};
-        case null {
-          switch (inCategory.find(func(i) { i.id == id })) {
-            case (?i) {
-              placed.add(id, true);
-              let renumbered : LibraryItem = { i with sortOrder = order };
-              reordered := reordered.concat([renumbered]);
-              order := order + 1;
-            };
-            case null {};
-          };
-        };
-      };
-    };
-    for (i in inCategory.values()) {
-      switch (placed.get(i.id)) {
-        case (?_) {};
-        case null {
+      switch (all.find(func(i) { i.id == id and i.categoryId == categoryId })) {
+        case (?i) {
           let renumbered : LibraryItem = { i with sortOrder = order };
-          reordered := reordered.concat([renumbered]);
+          items.add(renumbered);
+          placed.add(id, true);
           order := order + 1;
         };
+        case null {};
       };
     };
-    items.clear();
-    others.forEach(func(i) { items.add(i) });
-    reordered.forEach(func(i) { items.add(i) });
-    reordered;
+    // Append unlisted items of this category, preserving their existing order.
+    for (i in all.values()) {
+      if (i.categoryId == categoryId) {
+        switch (placed.get(i.id)) {
+          case (?_) {};
+          case null {
+            let renumbered : LibraryItem = { i with sortOrder = order };
+            items.add(renumbered);
+            order := order + 1;
+          };
+        };
+      } else {
+        // Other categories: re-add unchanged.
+        items.add(i);
+      };
+    };
+    items.filter(func(i) { i.categoryId == categoryId }).toArray();
   };
 
-  // Position-scoped search: returns items whose title, subtitle, any
-  // detail-field label or value, or any tag contains the query
-  // (case-insensitive). Scoped to the items belonging to the categories of the
-  // given position. Returns sorted by categoryId then sortOrder.
   public func searchItemsInPosition(
     categories : List.List<Category>,
     items : List.List<LibraryItem>,
     positionId : Nat,
     searchText : Text,
   ) : [LibraryItem] {
+    // Case-insensitive contains over title / subtitle / detail fieldLabel +
+    // value / tags, scoped to the position's categories, sorted by categoryId
+    // then sortOrder.
     let needle = searchText.toLower();
-    // Collect the category ids belonging to this position.
-    let positionCategoryIds : Map.Map<Nat, Bool> = Map.empty();
-    categories
-      .filter(func(c) { c.positionId == positionId })
-      .forEach(func(c) { positionCategoryIds.add(c.id, true) });
-    // Filter items in those categories whose searchable text contains needle.
-    let matches = items.filter(func(i) {
-      switch (positionCategoryIds.get(i.categoryId)) {
-        case (?_) {
-          i.title.toLower().contains(#text needle)
-          or (
-            switch (i.subtitle) {
-              case null false;
-              case (?s) s.toLower().contains(#text needle);
-            }
-          )
-          or (
-            switch (i.details.find(func(d) {
-              d.fieldLabel.toLower().contains(#text needle)
-              or d.value.toLower().contains(#text needle);
-            })) {
-              case null false;
-              case (?_) true;
-            }
-          )
-          or (
-            switch (i.tags.find(func(t) {
-              t.toLower().contains(#text needle);
-            })) {
-              case null false;
-              case (?_) true;
-            }
-          );
+    let positionCategoryIds = categories.filter(func(c) { c.positionId == positionId }).map<Category, Nat>(func(c) { c.id });
+    let matching = items.filter(func(i) {
+      let inPosition = positionCategoryIds.contains(i.categoryId);
+      if (not inPosition) { false } else {
+        let titleHit = i.title.toLower().contains(#text needle);
+        let subtitleHit = switch (i.subtitle) {
+          case null false;
+          case (?s) s.toLower().contains(#text needle);
         };
-        case null false;
+        let detailHit = i.details.vals().find(func(d) {
+          d.fieldLabel.toLower().contains(#text needle) or d.value.toLower().contains(#text needle);
+        }) != null;
+        let tagHit = i.tags.vals().find(func(t) { t.toLower().contains(#text needle) }) != null;
+        titleHit or subtitleHit or detailHit or tagHit;
       };
     });
-    matches
-      .toArray()
-      .sort(func(a, b) {
-        switch (Nat.compare(a.categoryId, b.categoryId)) {
+    let sorted = matching.toArray();
+    // Sort by categoryId then sortOrder (stable for equal keys).
+    let byCategoryThenOrder = sorted.sort(
+      func(a, b) {
+        let catCmp = Nat.compare(a.categoryId, b.categoryId);
+        switch (catCmp) {
           case (#equal) Nat.compare(a.sortOrder, b.sortOrder);
-          case order order;
+          case _ catCmp;
         };
-      });
+      }
+    );
+    byCategoryThenOrder;
   };
 };

@@ -1,7 +1,13 @@
 import { ActivityType } from "@/backend";
 import type {
+  ActivityContent,
+  DrinksBuilderSettings as CandidDrinksBuilderSettings,
+} from "@/backend";
+import type { DrinksBuilderSettings } from "@/components/legendary/drinks-builder/types";
+import type {
   BuildLegendaryActivityInput,
   LegendaryActivity,
+  LegendaryActivityContent,
   UpdateLegendaryActivityInput,
 } from "@/types/legendary";
 import { toFrontendActivity } from "@/types/legendary";
@@ -28,6 +34,57 @@ import { useBackend } from "./useBackend";
  */
 
 // --- Reads -----------------------------------------------------------------
+
+/**
+ * Translates a frontend LegendaryActivityContent to the Candid ActivityContent
+ * tagged-union shape expected by the backend. Only drinksBuilder content is
+ * sent from the frontend (quiz / flashcard content is generated server-side
+ * from the source categories, so it is passed through as-is when present).
+ *
+ * The frontend DrinksBuilderSettings keeps ergonomic number fields
+ * (decoyCount, pointsPerCorrect, roundsPerSession); the Candid shape expects
+ * bigint, so they are wrapped with BigInt() here at the boundary.
+ */
+function toCandidActivityContent(
+  content: LegendaryActivityContent,
+): ActivityContent {
+  if (content.kind === "drinksBuilderContent") {
+    return {
+      __kind__: "drinksBuilderContent",
+      drinksBuilderContent: {
+        settings: toCandidDrinksBuilderSettings(content.settings),
+      },
+    };
+  }
+  if (content.kind === "quizContent") {
+    return {
+      __kind__: "quizContent",
+      quizContent: [],
+    };
+  }
+  return {
+    __kind__: "flashcardContent",
+    flashcardContent: [],
+  };
+}
+
+/** Translates the frontend DrinksBuilderSettings to the Candid shape. */
+function toCandidDrinksBuilderSettings(
+  s: DrinksBuilderSettings,
+): CandidDrinksBuilderSettings {
+  return {
+    includedCategories: s.includedCategories,
+    excludedDrinkTitles: s.excludedDrinkTitles,
+    decoyCount: BigInt(s.decoyCount),
+    requireExactAmounts: s.requireExactAmounts,
+    enforceAssemblyOrder: s.enforceAssemblyOrder,
+    showScoring: s.showScoring,
+    streakMultiplier: s.streakMultiplier,
+    pointsPerCorrect: BigInt(s.pointsPerCorrect),
+    roundsPerSession: BigInt(s.roundsPerSession),
+    soundDefault: s.soundDefault,
+  };
+}
 
 /**
  * Reads every Be Legendary activity built for a position. The backend
@@ -80,15 +137,20 @@ export function useBuildLegendaryActivity() {
       if (!actor) throw new Error("Backend not ready");
       // Candid: buildLegendaryActivity(input: BuildActivityInput) -> Activity
       // BuildActivityInput = { positionId: bigint, activityType: ActivityType,
-      //   name: string, sourceCategoryIds: Array<bigint> }
+      //   name: string, sourceCategoryIds: Array<bigint>, content?: ActivityContent }
       const result = await actor.buildLegendaryActivity({
         positionId: BigInt(input.positionId),
         activityType:
           input.activityType === "quiz"
             ? ActivityType.quiz
-            : ActivityType.flashcards,
+            : input.activityType === "drinksBuilder"
+              ? ActivityType.drinksBuilder
+              : ActivityType.flashcards,
         name: input.name,
         sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id)),
+        content: input.content
+          ? toCandidActivityContent(input.content)
+          : undefined,
       });
       return toFrontendActivity(result);
     },
@@ -146,11 +208,14 @@ export function useUpdateLegendaryActivity() {
       if (!actor) throw new Error("Backend not ready");
       // Candid: updateLegendaryActivity(input: UpdateActivityInput) -> Activity
       // UpdateActivityInput = { id: bigint, name: string,
-      //   sourceCategoryIds: Array<bigint> }
+      //   sourceCategoryIds: Array<bigint>, content?: ActivityContent }
       const result = await actor.updateLegendaryActivity({
         id: BigInt(input.id),
         name: input.name,
         sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id)),
+        content: input.content
+          ? toCandidActivityContent(input.content)
+          : undefined,
       });
       return toFrontendActivity(result);
     },

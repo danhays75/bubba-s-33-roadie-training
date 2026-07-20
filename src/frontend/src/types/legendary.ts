@@ -15,11 +15,13 @@
 // (`{ __kind__: "quiz" }` etc.). The frontend mirrors them as discriminated
 // unions keyed on `kind` so the page components can switch cleanly.
 
+import type { DrinksBuilderSettings } from "../components/legendary/drinks-builder/types";
+
 /**
  * The kind of Be Legendary activity a position can practice.
  * Mirrors the backend ActivityType enum.
  */
-export type LegendaryActivityType = "quiz" | "flashcards";
+export type LegendaryActivityType = "quiz" | "flashcards" | "drinksBuilder";
 
 /**
  * A multiple-choice question. `correctIndex` is the number form of the
@@ -66,14 +68,32 @@ export type LegendaryQuestion =
 export type LegendaryQuizContent = LegendaryQuestion[];
 
 /**
+ * A flashcard recipe payload — a subset of the full foundation Recipe shape
+ * (glassware, specs, assembly, garnish). Mirrors the agreed backend
+ * Flashcard.recipe field. Variants, equipment, yield, shelfLife, and
+ * qualityIdentifier are intentionally NOT included — the flashcard back
+ * shows the base build only.
+ */
+export interface LegendaryFlashcardRecipe {
+  glassware: string;
+  specs: Array<{ amount: string; ingredient: string }>;
+  assembly: string[];
+  garnish: string[];
+}
+
+/**
  * A single flashcard. The front shows the item title (and photo when
- * present); the back shows the detail fields. `itemPhoto` is null when the
- * backend omits the optional ?Text.
+ * present); the back shows the detail fields, OR — when `recipe` is
+ * non-null — the structured recipe (glassware, specs, assembly, garnish)
+ * in a dark-roadhouse-themed layout. `itemPhoto` is null when the backend
+ * omits the optional ?Text. `recipe` is null when the backend omits the
+ * optional ?Recipe (non-recipe cards keep the detailFields rendering).
  */
 export interface LegendaryFlashcard {
   itemTitle: string;
   itemPhoto: string | null;
   detailFields: Array<{ fieldLabel: string; value: string }>;
+  recipe: LegendaryFlashcardRecipe | null;
 }
 
 /** The content of a flashcard activity — an ordered list of flashcards. */
@@ -86,7 +106,8 @@ export type LegendaryFlashcardContent = LegendaryFlashcard[];
  */
 export type LegendaryActivityContent =
   | { kind: "quizContent"; questions: LegendaryQuizContent }
-  | { kind: "flashcardContent"; flashcards: LegendaryFlashcardContent };
+  | { kind: "flashcardContent"; flashcards: LegendaryFlashcardContent }
+  | { kind: "drinksBuilderContent"; settings: DrinksBuilderSettings };
 
 /**
  * A Be Legendary activity built for a position.
@@ -118,6 +139,15 @@ export interface BuildLegendaryActivityInput {
   activityType: LegendaryActivityType;
   name: string;
   sourceCategoryIds: string[];
+  /**
+   * Optional activity content. Currently only sent for drinksBuilder
+   * activities (carries the DrinksBuilderSettings). The hook layer
+   * translates the frontend DrinksBuilderSettings (number fields) to the
+   * Candid shape (bigint fields) at the boundary. Omitted for quiz /
+   * flashcards — the backend generates that content from the source
+   * categories.
+   */
+  content?: LegendaryActivityContent;
 }
 
 /**
@@ -134,12 +164,38 @@ export interface UpdateLegendaryActivityInput {
   name: string;
   sourceCategoryIds: string[];
   positionId: string;
+  /**
+   * Optional activity content. Currently only sent for drinksBuilder
+   * activities (carries the updated DrinksBuilderSettings). The hook layer
+   * translates the frontend DrinksBuilderSettings (number fields) to the
+   * Candid shape (bigint fields) at the boundary. Omitted for quiz /
+   * flashcards — the backend regenerates that content via rebuild.
+   */
+  content?: LegendaryActivityContent;
 }
 
 // --- Translators -----------------------------------------------------------
 
 /** Candid ActivityType enum shape from backend.d.ts. */
-type CandidActivityType = "quiz" | "flashcards";
+type CandidActivityType = "quiz" | "flashcards" | "drinksBuilder";
+
+/**
+ * Candid DrinksBuilderSettings shape from backend.d.ts. bigint fields
+ * (decoyCount, pointsPerCorrect, roundsPerSession) are translated to number
+ * in toFrontendActivityContent.
+ */
+type CandidDrinksBuilderSettings = {
+  includedCategories: string[];
+  excludedDrinkTitles: string[];
+  decoyCount: bigint;
+  requireExactAmounts: boolean;
+  enforceAssemblyOrder: boolean;
+  showScoring: boolean;
+  streakMultiplier: boolean;
+  pointsPerCorrect: bigint;
+  roundsPerSession: bigint;
+  soundDefault: boolean;
+};
 
 /** Candid Question tagged-union shape from backend.d.ts. */
 type CandidQuestion =
@@ -163,11 +219,25 @@ type CandidQuestion =
       trueFalse: { statement: string; isTrue: boolean };
     };
 
-/** Candid Flashcard shape from backend.d.ts (itemPhoto is optional). */
+/**
+ * Candid Flashcard recipe shape from backend.d.ts — the optional ?Recipe
+ * payload appended after detailFields. Mirrors the agreed backend shape
+ * (glassware, specs, assembly, garnish only — no variants/equipment/yield/
+ * shelfLife/qualityIdentifier).
+ */
+type CandidFlashcardRecipe = {
+  glassware: string;
+  specs: Array<{ amount: string; ingredient: string }>;
+  assembly: string[];
+  garnish: string[];
+};
+
+/** Candid Flashcard shape from backend.d.ts (itemPhoto + recipe are optional). */
 type CandidFlashcard = {
   itemTitle: string;
   detailFields: Array<{ fieldLabel: string; value: string }>;
   itemPhoto?: string;
+  recipe?: CandidFlashcardRecipe;
 };
 
 /** Candid ActivityContent tagged-union shape from backend.d.ts. */
@@ -176,6 +246,10 @@ type CandidActivityContent =
   | {
       __kind__: "flashcardContent";
       flashcardContent: CandidFlashcard[];
+    }
+  | {
+      __kind__: "drinksBuilderContent";
+      drinksBuilderContent: { settings: CandidDrinksBuilderSettings };
     };
 
 /** Candid Activity shape from backend.d.ts (bigint ids, Principal createdBy). */
@@ -214,12 +288,43 @@ export function toFrontendQuestion(q: CandidQuestion): LegendaryQuestion {
   };
 }
 
-/** Translates a Candid Flashcard (optional itemPhoto) to the local shape. */
+/**
+ * Translates a Candid Flashcard (optional itemPhoto + optional recipe) to
+ * the local shape. `itemPhoto` and `recipe` become null when the backend
+ * omits the optionals, so non-recipe cards keep the detailFields rendering
+ * path on the back face.
+ */
 export function toFrontendFlashcard(f: CandidFlashcard): LegendaryFlashcard {
   return {
     itemTitle: f.itemTitle,
     itemPhoto: f.itemPhoto ?? null,
     detailFields: f.detailFields,
+    recipe: f.recipe
+      ? {
+          glassware: f.recipe.glassware,
+          specs: f.recipe.specs,
+          assembly: f.recipe.assembly,
+          garnish: f.recipe.garnish,
+        }
+      : null,
+  };
+}
+
+/** Translates a Candid DrinksBuilderSettings (bigint fields) to the local shape. */
+function toFrontendDrinksBuilderSettings(
+  s: CandidDrinksBuilderSettings,
+): DrinksBuilderSettings {
+  return {
+    includedCategories: s.includedCategories,
+    excludedDrinkTitles: s.excludedDrinkTitles,
+    decoyCount: Number(s.decoyCount),
+    requireExactAmounts: s.requireExactAmounts,
+    enforceAssemblyOrder: s.enforceAssemblyOrder,
+    showScoring: s.showScoring,
+    streakMultiplier: s.streakMultiplier,
+    pointsPerCorrect: Number(s.pointsPerCorrect),
+    roundsPerSession: Number(s.roundsPerSession),
+    soundDefault: s.soundDefault,
   };
 }
 
@@ -233,9 +338,15 @@ export function toFrontendActivityContent(
       questions: c.quizContent.map(toFrontendQuestion),
     };
   }
+  if (c.__kind__ === "flashcardContent") {
+    return {
+      kind: "flashcardContent",
+      flashcards: c.flashcardContent.map(toFrontendFlashcard),
+    };
+  }
   return {
-    kind: "flashcardContent",
-    flashcards: c.flashcardContent.map(toFrontendFlashcard),
+    kind: "drinksBuilderContent",
+    settings: toFrontendDrinksBuilderSettings(c.drinksBuilderContent.settings),
   };
 }
 

@@ -1,3 +1,8 @@
+import {
+  DEFAULT_DRINKS_BUILDER_SETTINGS,
+  DrinksBuilderSettingsForm,
+} from "@/components/legendary/drinks-builder/DrinksBuilderSettingsForm";
+import type { DrinksBuilderSettings } from "@/components/legendary/drinks-builder/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -15,7 +20,7 @@ import { useBuildLegendaryActivity } from "@/hooks/useLegendary";
 import { useCategoriesByPosition } from "@/hooks/useLibrary";
 import { cn } from "@/lib/utils";
 import type { LegendaryActivityType } from "@/types/legendary";
-import { Brain, Layers, Loader2, Sparkles, Zap } from "lucide-react";
+import { Brain, Layers, Loader2, Sparkles, Wine, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import { toast } from "sonner";
@@ -55,6 +60,8 @@ export function ActivityBuilderDialog({
   const [activityType, setActivityType] =
     useState<LegendaryActivityType | null>(null);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [drinksBuilderSettings, setDrinksBuilderSettings] =
+    useState<DrinksBuilderSettings>(DEFAULT_DRINKS_BUILDER_SETTINGS);
   const [error, setError] = useState<string | null>(null);
 
   // Reset all form state whenever the dialog opens.
@@ -63,6 +70,7 @@ export function ActivityBuilderDialog({
       setName("");
       setActivityType(null);
       setSelectedCategoryIds([]);
+      setDrinksBuilderSettings(DEFAULT_DRINKS_BUILDER_SETTINGS);
       setError(null);
     }
   }, [open]);
@@ -94,6 +102,13 @@ export function ActivityBuilderDialog({
         activityType,
         name: trimmedName,
         sourceCategoryIds: selectedCategoryIds,
+        content:
+          activityType === "drinksBuilder"
+            ? {
+                kind: "drinksBuilderContent",
+                settings: drinksBuilderSettings,
+              }
+            : undefined,
       });
       toast.success("Activity built", {
         description: `"${trimmedName}" is now available for all staff.`,
@@ -126,127 +141,164 @@ export function ActivityBuilderDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleBuild} className="grid gap-5">
-          {/* Activity name */}
-          <div className="grid gap-2">
-            <Label
-              htmlFor="legendary-activity-name"
-              className="font-heading uppercase text-xs tracking-wider text-foreground"
-            >
-              Activity name
-            </Label>
-            <Input
-              id="legendary-activity-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Menu Knowledge Quiz"
-              autoComplete="off"
-              maxLength={80}
-              disabled={buildMutation.isPending}
-              data-ocid="legendary.builder.dialog.name_input"
-            />
-          </div>
+        <form onSubmit={handleBuild} className="flex min-h-0 flex-col gap-5">
+          <div className="min-h-0 -mr-2 overflow-y-auto pr-2">
+            <div className="grid gap-5">
+              {/* Activity name */}
+              <div className="grid gap-2">
+                <Label
+                  htmlFor="legendary-activity-name"
+                  className="font-heading uppercase text-xs tracking-wider text-foreground"
+                >
+                  Activity name
+                </Label>
+                <Input
+                  id="legendary-activity-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Menu Knowledge Quiz"
+                  autoComplete="off"
+                  maxLength={80}
+                  disabled={buildMutation.isPending}
+                  data-ocid="legendary.builder.dialog.name_input"
+                />
+              </div>
 
-          {/* Activity type selector */}
-          <div className="grid gap-2">
-            <Label className="font-heading uppercase text-xs tracking-wider text-foreground">
-              Activity type
-            </Label>
-            <div
-              className="grid grid-cols-2 gap-2"
-              role="radiogroup"
-              aria-label="Activity type"
-              data-ocid="legendary.builder.dialog.type.toggle"
-            >
-              <ActivityTypeOption
-                value="quiz"
-                label="Quiz"
-                description="Multiple choice questions"
-                icon={<Brain className="size-5" />}
-                selected={activityType === "quiz"}
-                onSelect={() => setActivityType("quiz")}
-                disabled={buildMutation.isPending}
-              />
-              <ActivityTypeOption
-                value="flashcards"
-                label="Flashcards"
-                description="Flip cards to study"
-                icon={<Layers className="size-5" />}
-                selected={activityType === "flashcards"}
-                onSelect={() => setActivityType("flashcards")}
-                disabled={buildMutation.isPending}
-              />
+              {/* Activity type selector */}
+              <div className="grid gap-2">
+                <Label className="font-heading uppercase text-xs tracking-wider text-foreground">
+                  Activity type
+                </Label>
+                <div
+                  className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+                  role="radiogroup"
+                  aria-label="Activity type"
+                  data-ocid="legendary.builder.dialog.type.toggle"
+                >
+                  <ActivityTypeOption
+                    value="quiz"
+                    label="Quiz"
+                    description="Multiple choice questions"
+                    icon={<Brain className="size-5" />}
+                    selected={activityType === "quiz"}
+                    onSelect={() => setActivityType("quiz")}
+                    disabled={buildMutation.isPending}
+                  />
+                  <ActivityTypeOption
+                    value="flashcards"
+                    label="Flashcards"
+                    description="Flip cards to study"
+                    icon={<Layers className="size-5" />}
+                    selected={activityType === "flashcards"}
+                    onSelect={() => setActivityType("flashcards")}
+                    disabled={buildMutation.isPending}
+                  />
+                  <ActivityTypeOption
+                    value="drinksBuilder"
+                    label="Drinks Builder"
+                    description="Build drinks by tapping"
+                    icon={<Wine className="size-5" />}
+                    selected={activityType === "drinksBuilder"}
+                    onSelect={() => setActivityType("drinksBuilder")}
+                    disabled={buildMutation.isPending}
+                  />
+                </div>
+              </div>
+
+              {/* Drinks Builder settings — only when drinksBuilder selected */}
+              {activityType === "drinksBuilder" && (
+                <div className="grid gap-2">
+                  <Label className="font-heading uppercase text-xs tracking-wider text-foreground">
+                    Drinks Builder settings
+                  </Label>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Configure the tap-based drink construction game. Source
+                    categories above seed the global decoy pool.
+                  </p>
+                  <DrinksBuilderSettingsForm
+                    value={drinksBuilderSettings}
+                    onChange={setDrinksBuilderSettings}
+                    categories={categories.map((c) => ({
+                      id: c.id,
+                      name: c.name,
+                    }))}
+                    disabled={buildMutation.isPending}
+                  />
+                </div>
+              )}
+
+              {/* Category selection */}
+              <div className="grid gap-2">
+                <Label className="font-heading uppercase text-xs tracking-wider text-foreground">
+                  Source categories
+                </Label>
+                <p className="font-body text-xs text-muted-foreground">
+                  Items from these categories generate the activity content.
+                </p>
+                {categoriesQuery.isLoading ? (
+                  <CategoryListSkeleton />
+                ) : categories.length === 0 ? (
+                  <div
+                    className="rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center"
+                    data-ocid="legendary.builder.dialog.categories.empty_state"
+                  >
+                    <p className="font-body text-sm text-muted-foreground">
+                      No categories exist for this position yet. Add library
+                      categories first.
+                    </p>
+                  </div>
+                ) : (
+                  <ul
+                    className="max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1"
+                    data-ocid="legendary.builder.dialog.categories.list"
+                  >
+                    {categories.map((category, index) => {
+                      const checked = selectedCategoryIds.includes(category.id);
+                      return (
+                        <li key={category.id}>
+                          <label
+                            htmlFor={`legendary-cat-${category.id}`}
+                            className={cn(
+                              "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
+                              checked
+                                ? "border-primary/60 bg-primary/10"
+                                : "border-border bg-library-card hover:bg-muted/40",
+                            )}
+                          >
+                            <Checkbox
+                              id={`legendary-cat-${category.id}`}
+                              checked={checked}
+                              onCheckedChange={() =>
+                                toggleCategory(category.id)
+                              }
+                              disabled={buildMutation.isPending}
+                              data-ocid={`legendary.builder.dialog.categories.item.${index + 1}`}
+                            />
+                            <span className="flex min-w-0 flex-1 flex-col">
+                              <span className="truncate font-heading text-sm uppercase tracking-wide text-foreground">
+                                {category.name}
+                              </span>
+                            </span>
+                          </label>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+
+              {/* Inline error */}
+              {error && (
+                <p
+                  className="text-xs text-primary font-body"
+                  data-ocid="legendary.builder.dialog.error_state"
+                  role="alert"
+                >
+                  {error}
+                </p>
+              )}
             </div>
           </div>
-
-          {/* Category selection */}
-          <div className="grid gap-2">
-            <Label className="font-heading uppercase text-xs tracking-wider text-foreground">
-              Source categories
-            </Label>
-            <p className="font-body text-xs text-muted-foreground">
-              Items from these categories generate the activity content.
-            </p>
-            {categoriesQuery.isLoading ? (
-              <CategoryListSkeleton />
-            ) : categories.length === 0 ? (
-              <div
-                className="rounded-md border border-dashed border-border bg-library-card px-4 py-6 text-center"
-                data-ocid="legendary.builder.dialog.categories.empty_state"
-              >
-                <p className="font-body text-sm text-muted-foreground">
-                  No categories exist for this position yet. Add library
-                  categories first.
-                </p>
-              </div>
-            ) : (
-              <ul
-                className="max-h-[40vh] grid gap-1.5 overflow-y-auto pr-1"
-                data-ocid="legendary.builder.dialog.categories.list"
-              >
-                {categories.map((category, index) => {
-                  const checked = selectedCategoryIds.includes(category.id);
-                  return (
-                    <li key={category.id}>
-                      <label
-                        htmlFor={`legendary-cat-${category.id}`}
-                        className={cn(
-                          "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer transition-colors",
-                          checked
-                            ? "border-primary/60 bg-primary/10"
-                            : "border-border bg-library-card hover:bg-muted/40",
-                        )}
-                      >
-                        <Checkbox
-                          id={`legendary-cat-${category.id}`}
-                          checked={checked}
-                          onCheckedChange={() => toggleCategory(category.id)}
-                          disabled={buildMutation.isPending}
-                          data-ocid={`legendary.builder.dialog.categories.item.${index + 1}`}
-                        />
-                        <span className="flex min-w-0 flex-1 flex-col">
-                          <span className="truncate font-heading text-sm uppercase tracking-wide text-foreground">
-                            {category.name}
-                          </span>
-                        </span>
-                      </label>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-
-          {/* Inline error */}
-          {error && (
-            <p
-              className="text-xs text-primary font-body"
-              data-ocid="legendary.builder.dialog.error_state"
-              role="alert"
-            >
-              {error}
-            </p>
-          )}
 
           <DialogFooter className="pt-2">
             <Button

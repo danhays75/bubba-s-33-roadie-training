@@ -2,7 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLegendaryActivity } from "@/hooks/useLegendary";
 import { cn } from "@/lib/utils";
-import type { LegendaryActivity, LegendaryFlashcard } from "@/types/legendary";
+import type {
+  LegendaryActivity,
+  LegendaryFlashcard,
+  LegendaryFlashcardRecipe,
+} from "@/types/legendary";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -12,8 +16,8 @@ import {
   RotateCcw,
   Sparkles,
 } from "lucide-react";
-import { useRef, useState } from "react";
-import type { ReactElement } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 /**
  * FlashcardActivity — the Be Legendary flashcard practice flow.
@@ -37,6 +41,228 @@ import type { ReactElement } from "react";
 interface FlashcardActivityProps {
   /** The Be Legendary activity id (stringified bigint). */
   activityId: string;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Reading-wave gold glow sweep
+   ───────────────────────────────────────────────────────────────────────
+
+   When the card flips to the back, a gold glow wave flows through every
+    character on the back face in reading order over ~28s. Each character
+    briefly takes on the gold --legendary-glow color + a soft gold
+    text-shadow as the wave passes, then returns to normal. No font-size
+    or layout change — the effect is purely color + text-shadow per
+    character, so nothing reflows.
+
+    Mechanism:
+      - useReadingWave(active, totalChars) drives a requestAnimationFrame
+        loop that advances --wave-progress from 0 to 1 over WAVE_DURATION
+        (28s). It cancels on unmount or when `active` flips to false, and
+        restarts cleanly whenever `active` goes true (so flip-back-to-front
+        then flip-again starts the sweep from the beginning).
+     - The container (.flashcard-wave) gets --wave-progress and --wave-count
+       set inline; .is-active is toggled so the CSS only applies the glow
+       while the wave is running.
+     - Each character is a .flashcard-wave-char span with --wave-i set to
+       its reading-order index. CSS computes the distance from the current
+       wave position and blends the inherited color with the gold glow by
+       an intensity falloff (see index.css).
+     - prefers-reduced-motion: the CSS guard in index.css skips the glow
+       entirely; the hook still runs but the visual effect is a no-op, so
+       text just appears normally on flip.
+
+   Reading order is established by the order React renders the
+   WaveText / WaveHtml spans: title first, then (recipe) glassware,
+   specs, assembly, garnish top-to-bottom; (generic) each detailField's
+   label then value in document order. Each WaveText/WaveHtml mounts with
+   a starting index offset so the whole back face shares one continuous
+   character index space. The parent BackFace owns the running counter
+   via a ref and passes the start index to each child; children return
+   the count of characters they consumed so the next child continues.
+*/
+
+const WAVE_DURATION_MS = 55000;
+
+/**
+ * Drives the reading-wave progress custom property. Returns a ref to
+ * attach to the .flashcard-wave container; the hook writes --wave-progress
+ * and toggles the .is-active class on it directly.
+ *
+ * `active` should be true only while the back face is showing AND the
+ * total character count is known (> 0). When `active` transitions to
+ * false (flip back to front, or navigation), the loop cancels and the
+ * container is reset to inactive so the glow clears immediately.
+ */
+function useReadingWave(
+  active: boolean,
+  totalChars: number,
+): React.RefObject<HTMLDivElement | null> {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // No characters to sweep, or reduced motion: leave text normal.
+    if (totalChars <= 0) {
+      el.classList.remove("is-active");
+      el.style.setProperty("--wave-progress", "-1");
+      return;
+    }
+
+    if (!active) {
+      el.classList.remove("is-active");
+      el.style.setProperty("--wave-progress", "-1");
+      return;
+    }
+
+    // Start the sweep.
+    el.classList.add("is-active");
+    el.style.setProperty("--wave-count", String(totalChars));
+    el.style.setProperty("--wave-progress", "0");
+
+    let rafId = 0;
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / WAVE_DURATION_MS, 1);
+      el.style.setProperty("--wave-progress", progress.toFixed(6));
+      if (progress < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        // Wave complete: return all text to normal.
+        el.classList.remove("is-active");
+        el.style.setProperty("--wave-progress", "-1");
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      el.classList.remove("is-active");
+      el.style.setProperty("--wave-progress", "-1");
+    };
+  }, [active, totalChars]);
+
+  return containerRef;
+}
+
+/**
+ * Splits a plain string into per-character spans in reading order, each
+ * tagged with its sequential index starting at `startIndex`. Returns the
+ * rendered spans and the number of characters consumed (so the next
+ * WaveText/WaveHtml can continue the index space).
+ *
+ * Whitespace is preserved: spaces become .is-wave-space spans with
+ * white-space:pre so they keep their width without the glow.
+ */
+function WaveText({
+  text,
+  startIndex,
+  className,
+}: {
+  text: string;
+  startIndex: number;
+  className?: string;
+}): { node: ReactElement; count: number } {
+  const chars = Array.from(text);
+  const node = (
+    <>
+      {chars.map((ch, i) => {
+        const isSpace = /\s/.test(ch);
+        return (
+          <span
+            key={`w-${startIndex + i}`}
+            className={cn(
+              "flashcard-wave-char",
+              isSpace && "is-wave-space",
+              className,
+            )}
+            style={{ ["--wave-i" as string]: startIndex + i }}
+          >
+            {ch}
+          </span>
+        );
+      })}
+    </>
+  );
+  return { node, count: chars.length };
+}
+
+/**
+ * Wraps every text node inside an HTML-rendered container (e.g. a Quill
+ * value emitted via dangerouslySetInnerHTML) in per-character
+ * .flashcard-wave-char spans, preserving the original element structure
+ * (lists stay lists, bold stays bold, etc.) so the visual rendering is
+ * unchanged. Characters are indexed in document order starting at
+ * `startIndex`.
+ *
+ * This is done imperatively after the browser parses the HTML, using a
+ * TreeWalker to find text nodes and splitting each into spans. The
+ * container ref is returned for the parent to attach; the parent reads
+ * `count` (set on the element via a data attribute) to continue the
+ * index space.
+ */
+function useWaveHtml(
+  html: string,
+  startIndex: number,
+  active: boolean,
+): {
+  ref: React.RefObject<HTMLDivElement | null>;
+  count: number;
+} {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Reset to a clean slate, then set the HTML.
+    el.innerHTML = html;
+
+    // Walk all text nodes in document order and wrap each character.
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) =>
+        node.nodeValue && node.nodeValue.length > 0
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT,
+    });
+
+    let runningIndex = startIndex;
+    const textNodes: Text[] = [];
+    let current = walker.nextNode();
+    while (current) {
+      textNodes.push(current as Text);
+      current = walker.nextNode();
+    }
+
+    for (const textNode of textNodes) {
+      const text = textNode.nodeValue ?? "";
+      const chars = Array.from(text);
+      const frag = document.createDocumentFragment();
+      for (const ch of chars) {
+        const isSpace = /\s/.test(ch);
+        const span = document.createElement("span");
+        span.className = cn("flashcard-wave-char", isSpace && "is-wave-space");
+        span.style.setProperty("--wave-i", String(runningIndex));
+        span.textContent = ch;
+        frag.appendChild(span);
+        runningIndex += 1;
+      }
+      textNode.parentNode?.replaceChild(frag, textNode);
+    }
+
+    setCount(runningIndex - startIndex);
+    // The count does not depend on `active`; we only re-run when html or
+    // startIndex changes. `active` is referenced to satisfy lint without
+    // changing behavior — the wave CSS handles active/inactive.
+    void active;
+  }, [html, startIndex, active]);
+
+  return { ref, count };
 }
 
 export function FlashcardActivity({
@@ -270,42 +496,367 @@ function FrontFace({ card }: { card: LegendaryFlashcard }): ReactElement {
 }
 
 function BackFace({ card }: { card: LegendaryFlashcard }): ReactElement {
+  // Compute the flat reading-order list of text runs and their start
+  // indices so the whole back face shares one continuous character index
+  // space for the wave. The title is always first; then either the
+  // recipe sections (glassware/specs/assembly/garnish) or the generic
+  // detailFields (label + value each).
+  const runs = computeBackFaceRuns(card);
+  const totalChars = runs.reduce((sum, r) => sum + r.text.length, 0);
+
+  // The wave runs only while the back face is showing. BackFace is only
+  // mounted while flipped (the flipper shows the back face via CSS, but
+  // BackFace is always in the DOM). We drive the wave with a local
+  // `active` state toggled by an IntersectionObserver-style check: the
+  // flipper has the .is-flipped class while flipped. We observe it.
+  // Simpler: pass `flipped` down. But BackFace doesn't receive it.
+  // Instead, we observe the parent flipper's class via a MutationObserver
+  // on the closest .flashcard-flipper.
+  const [active, setActive] = useState(false);
+  const containerRef = useReadingWave(active, totalChars);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const flipper = el.closest(".flashcard-flipper");
+    if (!flipper) return;
+
+    const sync = () => {
+      setActive(flipper.classList.contains("is-flipped"));
+    };
+    sync();
+
+    const observer = new MutationObserver(sync);
+    observer.observe(flipper, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, [containerRef]);
+
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div
+      ref={containerRef}
+      className="flashcard-wave flex h-full flex-col gap-3"
+    >
       <div className="flex items-center justify-between border-b border-legendary-card-border pb-2">
-        <h3 className="font-heading text-base uppercase tracking-wide text-foreground">
-          {card.itemTitle}
-        </h3>
-        <span className="font-heading text-xs uppercase tracking-widest text-muted-foreground">
-          Details
+        <h2 className="font-heading text-base uppercase leading-tight tracking-wide text-foreground break-words text-balance">
+          {runs[0]
+            ? WaveText({ text: runs[0].text, startIndex: runs[0].start }).node
+            : null}
+        </h2>
+        <span className="font-heading text-xs uppercase tracking-widest text-muted-foreground shrink-0 ml-2">
+          {card.recipe ? "Recipe" : "Details"}
         </span>
       </div>
 
-      {card.detailFields.length === 0 ? (
+      {card.recipe ? (
+        <FlashcardRecipeBack recipe={card.recipe} runs={runs} />
+      ) : card.detailFields.length === 0 ? (
         <p className="font-body text-sm text-muted-foreground">
           No detail fields recorded for this item.
         </p>
       ) : (
         <dl className="flex flex-col gap-2.5">
-          {card.detailFields.map((field, i) => (
-            <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: duplicate fieldLabels within a card can collide, index is the stable key
-              key={`field-${i}`}
-              data-ocid={`flashcard.detail.${i + 1}`}
-              className="flex flex-col gap-0.5 border-b border-legendary-card-border/40 pb-2 last:border-b-0 last:pb-0"
-            >
-              <dt className="font-heading text-xs uppercase tracking-wide text-primary">
-                {field.fieldLabel}
-              </dt>
-              <dd
-                className="font-body text-sm text-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4"
-                /* biome-ignore lint/security/noDangerouslySetInnerHtml: admin-authored Quill HTML from restricted toolbar, same pattern as RecipeCardPage */
-                dangerouslySetInnerHTML={{ __html: field.value }}
-              />
-            </div>
-          ))}
+          {card.detailFields.map((field, i) => {
+            const labelRun = runs.find(
+              (r) => r.source === "detailLabel" && r.index === i,
+            );
+            const valueRun = runs.find(
+              (r) => r.source === "detailValue" && r.index === i,
+            );
+            return (
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: duplicate fieldLabels within a card can collide, index is the stable key
+                key={`field-${i}`}
+                data-ocid={`flashcard.detail.${i + 1}`}
+                className="flex flex-col gap-0.5 border-b border-legendary-card-border/40 pb-2 last:border-b-0 last:pb-0"
+              >
+                <dt className="font-heading text-xs uppercase tracking-wide text-primary">
+                  {labelRun
+                    ? WaveText({
+                        text: labelRun.text,
+                        startIndex: labelRun.start,
+                      }).node
+                    : field.fieldLabel}
+                </dt>
+                <dd className="font-body text-sm text-foreground [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4">
+                  {valueRun ? (
+                    <WaveHtmlValue
+                      html={valueRun.text}
+                      startIndex={valueRun.start}
+                      active={active}
+                    />
+                  ) : (
+                    <span
+                      /* biome-ignore lint/security/noDangerouslySetInnerHtml: admin-authored Quill HTML from restricted toolbar, same pattern as RecipeCardPage */
+                      dangerouslySetInnerHTML={{ __html: field.value }}
+                    />
+                  )}
+                </dd>
+              </div>
+            );
+          })}
         </dl>
       )}
+    </div>
+  );
+}
+
+/**
+ * A single back-face text run in reading order, with its sequential
+ * character start index. `source` + `index` let the renderer find the
+ * run for a given section/field.
+ */
+type WaveRun = {
+  text: string;
+  start: number;
+  source:
+    | "title"
+    | "glassware"
+    | "spec"
+    | "assembly"
+    | "garnish"
+    | "detailLabel"
+    | "detailValue";
+  index: number;
+};
+
+/**
+ * Builds the flat reading-order list of text runs for the back face and
+ * assigns each a sequential character start index. Title is always run 0.
+ */
+function computeBackFaceRuns(card: LegendaryFlashcard): WaveRun[] {
+  const runs: WaveRun[] = [];
+  let cursor = 0;
+  const push = (
+    text: string,
+    source: WaveRun["source"],
+    index: number,
+  ): void => {
+    if (text.length === 0) return;
+    runs.push({ text, start: cursor, source, index });
+    cursor += Array.from(text).length;
+  };
+
+  push(card.itemTitle, "title", 0);
+
+  if (card.recipe) {
+    const r = card.recipe;
+    push(r.glassware, "glassware", 0);
+    r.specs.forEach((spec, i) =>
+      push(`${spec.amount} ${spec.ingredient}`, "spec", i),
+    );
+    r.assembly.forEach((step, i) => push(step, "assembly", i));
+    r.garnish.forEach((g, i) => push(g, "garnish", i));
+  } else {
+    card.detailFields.forEach((field, i) => {
+      push(field.fieldLabel, "detailLabel", i);
+      // For the value, strip HTML tags to get a plain-text character count
+      // that matches what WaveHtml will wrap. The actual rendered HTML is
+      // preserved by WaveHtml; we only need the character count for the
+      // index space.
+      push(htmlToPlainText(field.value), "detailValue", i);
+    });
+  }
+
+  return runs;
+}
+
+/**
+ * Converts a Quill HTML string to plain text in document order, matching
+ * the character sequence that WaveHtml will wrap (text nodes only, tags
+ * stripped, whitespace preserved). Used only for character counting so
+ * the index space stays continuous across the value.
+ */
+function htmlToPlainText(html: string): string {
+  if (typeof document === "undefined") return html.replace(/<[^>]+>/g, "");
+  const tpl = document.createElement("template");
+  tpl.innerHTML = html;
+  let out = "";
+  const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) =>
+      node.nodeValue && node.nodeValue.length > 0
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT,
+  });
+  let current = walker.nextNode();
+  while (current) {
+    out += current.nodeValue ?? "";
+    current = walker.nextNode();
+  }
+  return out;
+}
+
+/**
+ * Renders a Quill HTML value with every text-node character wrapped in a
+ * .flashcard-wave-char span (preserving the original element structure),
+ * starting at `startIndex` in the back face's reading order.
+ */
+function WaveHtmlValue({
+  html,
+  startIndex,
+  active,
+}: {
+  html: string;
+  startIndex: number;
+  active: boolean;
+}): ReactElement {
+  const { ref } = useWaveHtml(html, startIndex, active);
+  return <div ref={ref} />;
+}
+
+/**
+ * Renders the structured recipe on the flashcard back face, themed for the
+ * dark roadhouse card. Mirrors the section order and content semantics of
+ * RecipeCardPage's RecipeContent (Glassware -> Specs -> Assembly -> Garnish)
+ * but uses the flashcard's dark tokens (text-foreground, text-primary,
+ * border-legendary-card-border) instead of the light-blue print-card classes.
+ *
+ * Each section's text is split into per-character .flashcard-wave-char spans
+ * (via WaveText) using the precomputed reading-order start indices from
+ * `runs` so the whole back face shares one continuous wave index space.
+ */
+function FlashcardRecipeBack({
+  recipe,
+  runs,
+}: {
+  recipe: LegendaryFlashcardRecipe;
+  runs: WaveRun[];
+}): ReactElement {
+  const glasswareRun = runs.find((r) => r.source === "glassware");
+  const specRuns = runs.filter((r) => r.source === "spec");
+  const assemblyRuns = runs.filter((r) => r.source === "assembly");
+  const garnishRuns = runs.filter((r) => r.source === "garnish");
+
+  return (
+    <div className="flex flex-col gap-3.5">
+      {/* Glassware */}
+      {recipe.glassware.trim().length > 0 && glasswareRun ? (
+        <section data-ocid="flashcard.recipe.glassware">
+          <h3 className="font-heading text-xs uppercase tracking-widest text-primary">
+            Glassware
+          </h3>
+          <p className="mt-1 font-body text-sm text-foreground">
+            {
+              WaveText({
+                text: glasswareRun.text,
+                startIndex: glasswareRun.start,
+              }).node
+            }
+          </p>
+        </section>
+      ) : null}
+
+      {/* Specs */}
+      {recipe.specs.length > 0 ? (
+        <section data-ocid="flashcard.recipe.specs">
+          <h3 className="font-heading text-xs uppercase tracking-widest text-primary">
+            Specs
+          </h3>
+          <ul className="mt-1 flex flex-col gap-1">
+            {recipe.specs.map((spec, i) => {
+              const run = specRuns[i];
+              if (!run) return null;
+              // The run text is "amount ingredient"; split on the first
+              // space to preserve the amount/ingredient layout while still
+              // waving the whole run in reading order.
+              const sepIdx = run.text.indexOf(" ");
+              const amountText =
+                sepIdx >= 0 ? run.text.slice(0, sepIdx) : run.text;
+              const ingredientText =
+                sepIdx >= 0 ? run.text.slice(sepIdx + 1) : "";
+              const amountWave = WaveText({
+                text: amountText,
+                startIndex: run.start,
+              });
+              const ingredientWave = WaveText({
+                text: ingredientText,
+                startIndex: run.start + Array.from(amountText).length + 1,
+              });
+              return (
+                <li
+                  key={`fspec-${spec.amount}-${spec.ingredient}`}
+                  data-ocid={`flashcard.recipe.spec.${i + 1}`}
+                  className="flex items-baseline gap-2 font-body text-sm text-foreground"
+                >
+                  <span className="shrink-0 whitespace-nowrap font-mono text-xs text-muted-foreground">
+                    {amountWave.node}
+                  </span>
+                  <span className="min-w-0 break-words">
+                    {ingredientWave.node}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* Assembly */}
+      {recipe.assembly.length > 0 ? (
+        <section data-ocid="flashcard.recipe.assembly">
+          <h3 className="font-heading text-xs uppercase tracking-widest text-primary">
+            Assembly
+          </h3>
+          <ol className="mt-1 flex flex-col gap-1.5">
+            {recipe.assembly.map((step, i) => {
+              const run = assemblyRuns[i];
+              if (!run) return null;
+              return (
+                <li
+                  key={`fasm-${step}`}
+                  data-ocid={`flashcard.recipe.assembly_step.${i + 1}`}
+                  className="flex items-baseline gap-2 font-body text-sm leading-relaxed text-foreground"
+                >
+                  <span className="shrink-0 font-heading text-xs text-primary">
+                    {i + 1}.
+                  </span>
+                  <span className="min-w-0 break-words">
+                    {
+                      WaveText({
+                        text: run.text,
+                        startIndex: run.start,
+                      }).node
+                    }
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ) : null}
+
+      {/* Garnish */}
+      {recipe.garnish.length > 0 ? (
+        <section data-ocid="flashcard.recipe.garnish">
+          <h3 className="font-heading text-xs uppercase tracking-widest text-primary">
+            Garnish
+          </h3>
+          <ul className="mt-1 flex flex-col gap-1">
+            {recipe.garnish.map((g, i) => {
+              const run = garnishRuns[i];
+              if (!run) return null;
+              return (
+                <li
+                  key={`fgar-${g}`}
+                  data-ocid={`flashcard.recipe.garnish_item.${i + 1}`}
+                  className="flex items-baseline gap-2 font-body text-sm text-foreground"
+                >
+                  <span className="shrink-0 text-primary" aria-hidden>
+                    &bull;
+                  </span>
+                  <span className="min-w-0 break-words">
+                    {
+                      WaveText({
+                        text: run.text,
+                        startIndex: run.start,
+                      }).node
+                    }
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
     </div>
   );
 }

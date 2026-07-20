@@ -98,6 +98,68 @@ const categories = [
   },
 ];
 
+// Recipes attached to cocktail items so the Drinks Builder game has a
+// playable pool (specs + assembly + glassware + garnish all non-empty).
+// Bulk-mix recipes (yield/equipment) are intentionally NOT included so the
+// in-scope filter keeps these drinks playable.
+const oldFashionedRecipe = {
+  glassware: "Rocks",
+  specs: [
+    { ingredient: "Bourbon", amount: "2 oz" },
+    { ingredient: "Sugar cube", amount: "1" },
+    { ingredient: "Angostura bitters", amount: "2 dashes" },
+  ],
+  assembly: [
+    "Muddle sugar with bitters and a splash of water",
+    "Add bourbon and a large ice cube",
+    "Stir until well chilled",
+  ],
+  garnish: ["Orange peel"],
+  variants: [],
+  equipment: [],
+  yield: null,
+  shelfLife: null,
+  qualityIdentifier: [],
+};
+
+const margaritaRecipe = {
+  glassware: "Coupe",
+  specs: [
+    { ingredient: "Tequila", amount: "2 oz" },
+    { ingredient: "Lime juice", amount: "1 oz" },
+    { ingredient: "Cointreau", amount: "1 oz" },
+  ],
+  assembly: [
+    "Shake all ingredients with ice",
+    "Strain into a salt-rimmed chilled coupe",
+  ],
+  garnish: ["Lime wheel"],
+  variants: [],
+  equipment: [],
+  yield: null,
+  shelfLife: null,
+  qualityIdentifier: [],
+};
+
+const negroniRecipe = {
+  glassware: "Rocks",
+  specs: [
+    { ingredient: "Gin", amount: "1 oz" },
+    { ingredient: "Campari", amount: "1 oz" },
+    { ingredient: "Sweet vermouth", amount: "1 oz" },
+  ],
+  assembly: [
+    "Stir all ingredients over a large ice cube",
+    "Express an orange peel over the top",
+  ],
+  garnish: ["Orange peel"],
+  variants: [],
+  equipment: [],
+  yield: null,
+  shelfLife: null,
+  qualityIdentifier: [],
+};
+
 const items = [
   {
     id: 100n,
@@ -114,6 +176,7 @@ const items = [
     tags: ["whiskey", "classic", "rocks"],
     seasonal: false,
     sortOrder: 0n,
+    recipe: oldFashionedRecipe,
   },
   {
     id: 101n,
@@ -130,6 +193,24 @@ const items = [
     tags: ["tequila", "citrus", "classic"],
     seasonal: false,
     sortOrder: 1n,
+    recipe: margaritaRecipe,
+  },
+  {
+    id: 103n,
+    categoryId: 21n,
+    title: "Negroni",
+    subtitle: "Italian bitter classic",
+    photo: undefined,
+    details: [
+      { fieldLabel: "SPIRIT", value: "Gin" },
+      { fieldLabel: "BUILD", value: "<ul><li>1 oz gin</li><li>1 oz Campari</li><li>1 oz sweet vermouth</li></ul>" },
+      { fieldLabel: "GLASS", value: "Rocks" },
+    ],
+    notes: undefined,
+    tags: ["gin", "bitter", "classic"],
+    seasonal: false,
+    sortOrder: 2n,
+    recipe: negroniRecipe,
   },
   {
     id: 102n,
@@ -210,6 +291,12 @@ const flashcardActivity = {
           { fieldLabel: "BUILD", value: "<ul><li>2 oz bourbon</li><li>1 sugar cube</li><li>2 dashes Angostura bitters</li><li>Orange peel garnish</li></ul>" },
           { fieldLabel: "GLASS", value: "Rocks" },
         ],
+        recipe: {
+          glassware: oldFashionedRecipe.glassware,
+          specs: oldFashionedRecipe.specs,
+          assembly: oldFashionedRecipe.assembly,
+          garnish: oldFashionedRecipe.garnish,
+        },
       },
       {
         itemTitle: "Margarita",
@@ -219,6 +306,12 @@ const flashcardActivity = {
           { fieldLabel: "BUILD", value: "<ul><li>2 oz tequila</li><li>1 oz lime juice</li><li>1 oz Cointreau</li><li>Salt rim</li></ul>" },
           { fieldLabel: "GLASS", value: "Coupe" },
         ],
+        recipe: {
+          glassware: margaritaRecipe.glassware,
+          specs: margaritaRecipe.specs,
+          assembly: margaritaRecipe.assembly,
+          garnish: margaritaRecipe.garnish,
+        },
       },
     ],
   },
@@ -453,20 +546,39 @@ export const mockBackend: backendInterface = {
   buildLegendaryActivity: async (input) => {
     // Mirror the real backend's generateFlashcardContent: map every library
     // item in the selected source categories to a flashcard with itemTitle,
-    // itemPhoto (if available), and detailFields. This ensures local testing
-    // shows all flashcards, not just the hardcoded ones in flashcardActivity.
+    // itemPhoto (if available), and detailFields. When the source item has a
+    // non-null recipe, populate the recipe field (glassware/specs/assembly/
+    // garnish) so the flashcard back renders the structured recipe; otherwise
+    // emit null and keep detailFields from it.details. This ensures local
+    // testing shows all flashcards, not just the hardcoded ones in
+    // flashcardActivity, and keeps mock parity with the real backend.
     const sourceItems = items.filter((it) =>
       input.sourceCategoryIds.includes(it.categoryId),
     );
 
-    const flashcardContent = sourceItems.map((it) => ({
-      itemTitle: it.title,
-      itemPhoto: it.photo,
-      detailFields: it.details.map((d) => ({
-        fieldLabel: d.fieldLabel,
-        value: d.value,
-      })),
-    }));
+    const flashcardContent = sourceItems.map((it) => {
+      const recipe = it.recipe
+        ? {
+            glassware: it.recipe.glassware,
+            specs: it.recipe.specs.map((s) => ({
+              amount: s.amount,
+              ingredient: s.ingredient,
+            })),
+            assembly: [...it.recipe.assembly],
+            garnish: [...it.recipe.garnish],
+          }
+        : undefined;
+
+      return {
+        itemTitle: it.title,
+        itemPhoto: it.photo,
+        detailFields: it.details.map((d) => ({
+          fieldLabel: d.fieldLabel,
+          value: d.value,
+        })),
+        recipe,
+      };
+    });
 
     return {
       id: 3000n,

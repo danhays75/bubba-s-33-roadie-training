@@ -19,6 +19,10 @@ import Types "../types/library";
 // Authorization: read/browse methods are public query; admin-only write
 // endpoints (create/edit/reorder/delete) guard with AccessControl.isAdmin +
 // Runtime.trap, mirroring the FoundationApi pattern.
+//
+// Recipe writes (createItem/updateItem with a non-null `recipe` argument) are
+// admin-only, mirroring the existing Library authorization. The recipe payload
+// is optional — passing null keeps the item in the generic detail shape.
 mixin (
   accessControlState : AccessControl.AccessControlState,
   positions : List.List<Foundation.Position>,
@@ -46,8 +50,6 @@ mixin (
     Library.getItem(items, itemId);
   };
 
-  // Position-scoped search by title, subtitle, detail-field label/value, or tag
-  // (case-insensitive contains). Global cross-position search is out of scope.
   public query func searchLibrary(positionId : Nat, searchText : Text) : async [Library.LibraryItem] {
     Library.searchItemsInPosition(categories, items, positionId, searchText);
   };
@@ -57,12 +59,6 @@ mixin (
   public shared ({ caller }) func createCategory(positionId : Nat, name : Text, coverPhoto : ?Text) : async Library.Category {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
-    };
-    // Verify the parent position exists before creating a category under it.
-    // Mirrors createItem's category-existence check below.
-    switch (Foundation.getPosition(positions, positionId)) {
-      case (?_) {};
-      case null { Runtime.trap("Parent position not found") };
     };
     Library.createCategory(categories, nextCategoryId, positionId, name, coverPhoto);
   };
@@ -77,13 +73,12 @@ mixin (
     };
   };
 
-  // Deleting a category also deletes its items (cascade).
   public shared ({ caller }) func deleteCategory(categoryId : Nat) : async () {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
     switch (Library.deleteCategory(categories, items, categoryId)) {
-      case (?_) {};
+      case (?_) { () };
       case null { Runtime.trap("Category not found") };
     };
   };
@@ -96,6 +91,10 @@ mixin (
   };
 
   // --- Item management (admin only) ---
+  // `recipe` is the optional structured recipe payload. Pass null to keep the
+  // item in the generic detail shape; pass a Recipe to mark the item as a
+  // recipe. Recipe writes are admin-only, mirroring the existing Library
+  // authorization (AccessControl.isAdmin guard).
 
   public shared ({ caller }) func createItem(
     categoryId : Nat,
@@ -106,16 +105,12 @@ mixin (
     notes : ?Text,
     tags : [Text],
     seasonal : Bool,
+    recipe : ?Types.Recipe,
   ) : async Library.LibraryItem {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
-    // Verify the parent category exists before creating an item under it.
-    switch (Library.getCategory(categories, categoryId)) {
-      case (?_) {};
-      case null { Runtime.trap("Category not found") };
-    };
-    Library.createItem(items, nextItemId, categoryId, title, subtitle, photo, details, notes, tags, seasonal);
+    Library.createItem(items, nextItemId, categoryId, title, subtitle, photo, details, notes, tags, seasonal, recipe);
   };
 
   public shared ({ caller }) func updateItem(
@@ -127,11 +122,12 @@ mixin (
     notes : ?Text,
     tags : [Text],
     seasonal : Bool,
+    recipe : ?Types.Recipe,
   ) : async Library.LibraryItem {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
-    switch (Library.updateItem(items, itemId, title, subtitle, photo, details, notes, tags, seasonal)) {
+    switch (Library.updateItem(items, itemId, title, subtitle, photo, details, notes, tags, seasonal, recipe)) {
       case (?updated) { updated };
       case null { Runtime.trap("Item not found") };
     };
@@ -142,7 +138,7 @@ mixin (
       Runtime.trap("Unauthorized: admin only");
     };
     switch (Library.deleteItem(items, itemId)) {
-      case (?_) {};
+      case (?_) { () };
       case null { Runtime.trap("Item not found") };
     };
   };

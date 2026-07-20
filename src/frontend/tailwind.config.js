@@ -94,6 +94,7 @@ export default {
         heading: ["var(--font-heading)", "sans-serif"],
         body: ["var(--font-body)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
+        slab: ["Zilla Slab", "Roboto Slab", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -161,6 +162,71 @@ export default {
           "0%": { transform: "rotateY(0deg)" },
           "100%": { transform: "rotateY(180deg)" },
         },
+        /* ── Reading-wave gold glow sweep (flashcard back face) ──
+           ADDITIVE. The wave itself is driven by a requestAnimationFrame
+           loop in useReadingWave (sets --wave-progress 0..1 over 12s);
+           no keyframe is needed for the progress. This placeholder
+           keyframe is kept for symmetry with the other additive blocks
+           and in case a CSS-only fallback is added later. It is not
+           referenced by any utility today. */
+        "flashcard-wave": {
+          "0%": { "--wave-progress": "0" },
+          "100%": { "--wave-progress": "1" },
+        },
+        /* ── Drinks Builder — ADDITIVE game keyframes (do not alter existing).
+            Mirrors the @keyframes blocks in index.css so the animations are
+            usable as Tailwind utility classes (animate-drinks-*). The CSS
+            versions remain the source of truth for the .animate-drinks-*
+            utility classes used by the game screen. */
+        "drinks-green-pop": {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "40%": { transform: "scale(1.18)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "drinks-red-shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "15%": { transform: "translateX(-8px)" },
+          "30%": { transform: "translateX(7px)" },
+          "45%": { transform: "translateX(-6px)" },
+          "60%": { transform: "translateX(5px)" },
+          "75%": { transform: "translateX(-3px)" },
+          "90%": { transform: "translateX(2px)" },
+        },
+        "drinks-rising-points": {
+          "0%": { transform: "translateY(0) scale(0.8)", opacity: "0" },
+          "20%": { transform: "translateY(-6px) scale(1.1)", opacity: "1" },
+          "100%": { transform: "translateY(-44px) scale(1)", opacity: "0" },
+        },
+        "drinks-glass-fill": {
+          "0%": { transform: "scaleY(0)" },
+          "100%": { transform: "scaleY(1)" },
+        },
+        "drinks-foam-appear": {
+          "0%": { opacity: "0", transform: "translateY(8px) scale(0.85)" },
+          "60%": { opacity: "1", transform: "translateY(-2px) scale(1.05)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+        "drinks-confetti-burst": {
+          "0%": { transform: "translate(0, 0) scale(0)", opacity: "1" },
+          "100%": {
+            transform: "translate(var(--drinks-confetti-x, 0), var(--drinks-confetti-y, -120px)) scale(1)",
+            opacity: "0",
+          },
+        },
+        "drinks-legendary-banner": {
+          "0%": { transform: "scale(0.6) translateY(20px)", opacity: "0" },
+          "60%": { transform: "scale(1.08) translateY(-4px)", opacity: "1" },
+          "100%": { transform: "scale(1) translateY(0)", opacity: "1" },
+        },
+        "drinks-streak-flame": {
+          "0%, 100%": { transform: "scale(1) rotate(-2deg)", opacity: "0.9" },
+          "50%": { transform: "scale(1.15) rotate(2deg)", opacity: "1" },
+        },
+        "drinks-star-pop": {
+          "0%": { transform: "scale(0) rotate(-30deg)", opacity: "0" },
+          "60%": { transform: "scale(1.25) rotate(8deg)", opacity: "1" },
+          "100%": { transform: "scale(1) rotate(0deg)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -180,6 +246,16 @@ export default {
         "legendary-sweep": "legendary-sweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
         "legendary-flash": "legendary-flash 3.5s ease-in-out infinite",
         "flashcard-flip": "flashcard-flip 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+        /* ── Drinks Builder — ADDITIVE animations (one per keyframe above) ── */
+        "drinks-green-pop": "drinks-green-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "drinks-red-shake": "drinks-red-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97)",
+        "drinks-rising-points": "drinks-rising-points 0.9s ease-out forwards",
+        "drinks-glass-fill": "drinks-glass-fill 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+        "drinks-foam-appear": "drinks-foam-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "drinks-confetti-burst": "drinks-confetti-burst 1.1s ease-out forwards",
+        "drinks-legendary-banner": "drinks-legendary-banner 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "drinks-streak-flame": "drinks-streak-flame 0.6s ease-in-out infinite",
+        "drinks-star-pop": "drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
       },
     },
   },

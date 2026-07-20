@@ -12,12 +12,19 @@ import LibraryTypes "../types/library";
 // flashcard payload. No state mutation, no randomness source beyond the order
 // of the input items — quizzes are deterministic so an admin can regenerate the
 // same activity and get the same content.
+//
+// #drinksBuilder activities do NOT derive content from items at build time —
+// the admin supplies DrinksBuilderSettings and the playable drink pool is
+// derived at play time from the Library. The lib helpers for drinksBuilder
+// are stubs in this contract pass; the develop agent will implement them.
 module {
   public type Activity = Types.Activity;
   public type ActivityType = Types.ActivityType;
   public type ActivityContent = Types.ActivityContent;
   public type BuildActivityInput = Types.BuildActivityInput;
   public type UpdateActivityInput = Types.UpdateActivityInput;
+  public type DrinksBuilderSettings = Types.DrinksBuilderSettings;
+  public type DrinksBuilderContent = Types.DrinksBuilderContent;
 
   // List activities belonging to a position (filter by positionId).
   public func listActivitiesByPosition(activities : List.List<Activity>, positionId : Nat) : [Activity] {
@@ -81,11 +88,16 @@ module {
   // regenerating content. Finds the activity by id and replaces it in the list,
   // preserving id/positionId/activityType/content/createdAt/createdBy. Traps if
   // the activity is not found.
+  //
+  // For #drinksBuilder activities, the caller may also pass a replacement
+  // DrinksBuilderContent via `newContent`; for #quiz/#flashcards the caller
+  // passes the existing content unchanged (use rebuildActivity to regenerate).
   public func updateActivity(
     activities : List.List<Activity>,
     id : Nat,
     newName : Text,
     newSourceCategoryIds : [Nat],
+    newContent : ActivityContent,
   ) : Activity {
     switch (activities.find(func(a) { a.id == id })) {
       case (?existing) {
@@ -93,6 +105,7 @@ module {
           existing with
           name = newName;
           sourceCategoryIds = newSourceCategoryIds;
+          content = newContent;
         };
         let kept = activities.filter(func(a) { a.id != id });
         activities.clear();
@@ -304,14 +317,116 @@ module {
     questions;
   };
 
-  // Generate flashcard content — one flashcard per item.
+  // Generate flashcard content — one flashcard per item. Populates the
+  // optional recipe field when item.recipe is non-null (mapping glassware,
+  // specs, assembly, garnish into the flashcard recipe shape); emits null for
+  // the recipe field when item.recipe is null. detailFields behavior is
+  // unchanged — no regression for non-recipe items.
   public func generateFlashcardContent(items : [LibraryTypes.LibraryItem]) : Types.FlashcardContent {
-    items.map(func(item) {
+    items.map(func(item) : Types.Flashcard {
+      let recipe : ?Types.FlashcardRecipe = switch (item.recipe) {
+        case (?r) {
+          ?{
+            glassware = r.glassware;
+            specs = r.specs.map(func(s) = { amount = s.amount; ingredient = s.ingredient });
+            assembly = r.assembly;
+            garnish = r.garnish;
+          };
+        };
+        case null null;
+      };
       {
         itemTitle = item.title;
         itemPhoto = item.photo;
         detailFields = item.details.map(func(d) = { fieldLabel = d.fieldLabel; value = d.value });
+        recipe;
       };
     });
+  };
+
+  // --- Drinks Builder helpers ---
+  // The Drinks Builder game is practice-only with session-only scores. The
+  // backend does NOT generate a playable drink pool at build time — it
+  // persists the admin's DrinksBuilderSettings as the activity's content, and
+  // the playable pool + decoys are derived at play time from the Library.
+  // Bulk-mix recipes (non-null yield OR non-empty equipment) are excluded
+  // from the playable pool; the global decoy pool is drawn from ALL other
+  // in-scope recipes across all categories.
+
+  // Build the DrinksBuilderContent to persist for a #drinksBuilder activity.
+  // The settings are admin-provided; this helper just wraps them into the
+  // content record the mixin stores on the Activity. No content generation —
+  // the playable pool is derived at play time from the Library.
+  public func buildDrinksBuilderContent(settings : DrinksBuilderSettings) : Types.DrinksBuilderContent {
+    { settings };
+  };
+
+  // A Library item is a playable drink when it has a recipe with non-empty
+  // specs AND non-empty assembly AND non-empty glassware, AND it is NOT a
+  // bulk-mix recipe (yield non-null OR equipment non-empty). Bulk mixes have
+  // no glassware/garnish and are excluded from the playable drink pool.
+  func isPlayableDrink(item : LibraryTypes.LibraryItem) : Bool {
+    switch (item.recipe) {
+      case (?r) {
+        let hasSpecs = r.specs.size() > 0;
+        let hasAssembly = r.assembly.size() > 0;
+        let hasGlassware = r.glassware.size() > 0;
+        let isBulkMix = switch (r.yield) { case null r.equipment.size() > 0; case (?_) true };
+        hasSpecs and hasAssembly and hasGlassware and (not isBulkMix);
+      };
+      case null false;
+    };
+  };
+
+  // Apply the admin's includedCategories (empty = all categories) and
+  // excludedDrinkTitles filters to an item. includedCategories holds category
+  // ids encoded as text (e.g. "12") so the lib helper can match against
+  // item.categoryId without a separate categories lookup; empty means all
+  // categories are in scope.
+  func matchesSettings(
+    item : LibraryTypes.LibraryItem,
+    settings : DrinksBuilderSettings,
+  ) : Bool {
+    // excludedDrinkTitles: drop the item if its title is in the list.
+    let excluded = settings.excludedDrinkTitles.vals().find(func(t) { t == item.title }) != null;
+    if (excluded) { return false };
+    // includedCategories: empty = all categories; otherwise the item's
+    // category id (as text) must be in the list.
+    if (settings.includedCategories.size() == 0) { return true };
+    let idText = item.categoryId.toText();
+    settings.includedCategories.vals().find(func(c) { c == idText }) != null;
+  };
+
+  // Resolve the playable drink pool for a #drinksBuilder activity at play
+  // time. Reads the Library items, applies includedCategories (empty = all)
+  // and excludedDrinkTitles, and excludes bulk-mix recipes (non-null yield OR
+  // non-empty equipment). Returns the in-scope Library items the learner can
+  // be quizzed on.
+  public func resolvePlayableDrinks(
+    items : List.List<LibraryTypes.LibraryItem>,
+    settings : DrinksBuilderSettings,
+  ) : [LibraryTypes.LibraryItem] {
+    items
+      .filter(func(item) {
+        isPlayableDrink(item) and matchesSettings(item, settings);
+      })
+      .toArray();
+  };
+
+  // Resolve the global decoy pool for a #drinksBuilder activity at play
+  // time. Returns ALL in-scope recipes (the global decoy pool) using the same
+  // filtering as resolvePlayableDrinks — the frontend draws per-drink decoys
+  // from this pool, excluding the drink currently being quizzed on. Same
+  // filtering keeps the decoy pool in sync with the playable pool as the
+  // Library changes.
+  public func resolveDecoyPool(
+    items : List.List<LibraryTypes.LibraryItem>,
+    settings : DrinksBuilderSettings,
+  ) : [LibraryTypes.LibraryItem] {
+    items
+      .filter(func(item) {
+        isPlayableDrink(item) and matchesSettings(item, settings);
+      })
+      .toArray();
   };
 };

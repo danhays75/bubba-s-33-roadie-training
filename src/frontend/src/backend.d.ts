@@ -9,8 +9,25 @@ export interface None {
 export type Option<T> = Some<T> | None;
 export interface UpdateActivityInput {
     id: bigint;
+    content?: ActivityContent;
     name: string;
     sourceCategoryIds: Array<bigint>;
+}
+export interface DrinksBuilderSettings {
+    includedCategories: Array<string>;
+    enforceAssemblyOrder: boolean;
+    pointsPerCorrect: bigint;
+    excludedDrinkTitles: Array<string>;
+    showScoring: boolean;
+    requireExactAmounts: boolean;
+    soundDefault: boolean;
+    decoyCount: bigint;
+    streakMultiplier: boolean;
+    roundsPerSession: bigint;
+}
+export interface RecipeSpec {
+    ingredient: string;
+    amount: string;
 }
 export type QuizContent = Array<Question>;
 export interface Task {
@@ -31,6 +48,15 @@ export type Result__1 = {
     __kind__: "err";
     err: Error_;
 };
+export interface FlashcardRecipe {
+    glassware: string;
+    garnish: Array<string>;
+    specs: Array<{
+        ingredient: string;
+        amount: string;
+    }>;
+    assembly: Array<string>;
+}
 export interface Phase {
     id: bigint;
     sortOrder: bigint;
@@ -55,6 +81,12 @@ export interface LibraryItem {
     details: Array<DetailField>;
     photo?: string;
     subtitle?: string;
+    recipe?: Recipe;
+}
+export interface RecipeVariant {
+    variantLabel: string;
+    specs: Array<RecipeSpec>;
+    assembly: Array<string>;
 }
 export type Value = {
     __kind__: "int";
@@ -136,13 +168,20 @@ export type Error_ = {
         expected: Array<string>;
     };
 };
+export interface DrinksBuilderContent {
+    settings: DrinksBuilderSettings;
+}
 export interface BuildActivityInput {
     activityType: ActivityType;
+    content?: ActivityContent;
     name: string;
     positionId: bigint;
     sourceCategoryIds: Array<bigint>;
 }
 export type ActivityContent = {
+    __kind__: "drinksBuilderContent";
+    drinksBuilderContent: DrinksBuilderContent;
+} | {
     __kind__: "quizContent";
     quizContent: QuizContent;
 } | {
@@ -196,6 +235,18 @@ export interface Flashcard {
         fieldLabel: string;
     }>;
     itemPhoto?: string;
+    recipe?: FlashcardRecipe;
+}
+export interface Recipe {
+    equipment: Array<string>;
+    glassware: string;
+    variants: Array<RecipeVariant>;
+    garnish: Array<string>;
+    qualityIdentifier: Array<string>;
+    specs: Array<RecipeSpec>;
+    shelfLife?: string;
+    assembly: Array<string>;
+    yield?: string;
 }
 export type Question = {
     __kind__: "multipleChoice";
@@ -227,6 +278,7 @@ export interface UserProfile {
     storeLocation: string;
 }
 export enum ActivityType {
+    drinksBuilder = "drinksBuilder",
     quiz = "quiz",
     flashcards = "flashcards"
 }
@@ -254,7 +306,7 @@ export interface backendInterface {
     assignPosition(userId: Principal, positionId: bigint): Promise<PositionAssignment>;
     buildLegendaryActivity(input: BuildActivityInput): Promise<Activity>;
     createCategory(positionId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
-    createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean): Promise<LibraryItem>;
+    createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null): Promise<LibraryItem>;
     createMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     createNsoPhase(name: string): Promise<Phase>;
     createNsoTask(phaseId: bigint, text: string, section: string | null, assignedTo: Principal | null): Promise<Task>;
@@ -271,6 +323,8 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCategoriesByPosition(positionId: bigint): Promise<Array<Category>>;
     getCategory(categoryId: bigint): Promise<Category | null>;
+    getDrinksBuilderDecoyPool(activityId: bigint): Promise<Array<LibraryItem>>;
+    getDrinksBuilderPlayablePool(activityId: bigint): Promise<Array<LibraryItem>>;
     getItem(itemId: bigint): Promise<LibraryItem | null>;
     getItemsByCategory(categoryId: bigint): Promise<Array<LibraryItem>>;
     getLegendaryActivitiesByPosition(positionId: bigint): Promise<Array<Activity>>;
@@ -307,7 +361,7 @@ export interface backendInterface {
     toggleNsoTask(id: bigint, done: boolean, completionDate: string | null): Promise<void>;
     unassignPosition(userId: Principal, positionId: bigint): Promise<void>;
     updateCategory(categoryId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
-    updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean): Promise<LibraryItem>;
+    updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null): Promise<LibraryItem>;
     updateLegendaryActivity(input: UpdateActivityInput): Promise<Activity>;
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     updateNsoPhase(id: bigint, name: string): Promise<void>;
