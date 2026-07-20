@@ -208,7 +208,7 @@ function LegendaryBanner(): ReactElement {
           Layered on top of the near-black roadhouse backdrop, below the
           legibility scrim. Non-interactive (display only). */}
       <img
-        src="/assets/generated/bartender-hero.png"
+        src="/assets/generated/bartender-hero.webp"
         alt=""
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover"

@@ -129,8 +129,9 @@ export interface SessionState {
   muted: boolean;
 }
 
-/** Empty-state reason when the playable pool is too small. */
-export type EmptyReason = "noPlayable" | "tooFew";
+/** Empty-state reason when the playable pool is too small, or the
+ *  fetched activity isn't a Drinks Builder game at all. */
+export type EmptyReason = "noPlayable" | "tooFew" | "wrongActivityKind";
 
 /** Result of building the playable pool from LibraryItems. */
 export interface PlayablePoolResult {

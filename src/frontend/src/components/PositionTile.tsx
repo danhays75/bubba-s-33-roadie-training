@@ -4,11 +4,41 @@ import type { Position, StatusTone } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
 
 /**
+ * Static placeholder headshot photos for each position, keyed by a slug
+ * derived from the position name. These are placeholder Roadie photos —
+ * swap in real Roadie photos later by replacing the files in
+ * public/assets/positions/ (keep the same filenames). An admin-uploaded
+ * `position.coverPhoto` always takes precedence over this fallback.
+ */
+const POSITION_HEADSHOTS: Record<string, string> = {
+  bartender: "/assets/positions/bartender.webp",
+  server: "/assets/positions/server.webp",
+  host: "/assets/positions/host.webp",
+  "server-support": "/assets/positions/server-support.webp",
+};
+
+/**
+ * Build a stable slug from a position name: lowercase, trim, collapse
+ * whitespace/hyphens into a single hyphen. e.g. "Server Support" ->
+ * "server-support", "Bartender" -> "bartender".
+ */
+function positionHeadshotSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[\s-]+/g, "-");
+}
+
+/**
  * A single position tile in the home grid.
  *
  * Dark card (#1E1E1B) with the position name in Oswald and an optional cover
  * photo. The signed-in user's status badge for this position sits on the
  * tile. Tapping navigates to /position/$id.
+ *
+ * Cover photo precedence: admin-uploaded `position.coverPhoto` wins; otherwise
+ * the matching static headshot in /assets/positions/ is used; if no headshot
+ * matches, the single-letter placeholder is shown.
  *
  * Mobile-first: full-width on small screens, multi-column on larger.
  */
@@ -21,6 +51,8 @@ export function PositionTile({
   tone: StatusTone;
   index: number;
 }) {
+  const headshot = POSITION_HEADSHOTS[positionHeadshotSlug(position.name)];
+
   return (
     <Link
       to="/position/$id"
@@ -40,7 +72,17 @@ export function PositionTile({
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
           <img
             src={position.coverPhoto}
-            alt=""
+            alt={`${position.name} Roadie at work`}
+            loading="lazy"
+            className="size-full object-cover transition-smooth group-hover:opacity-90"
+          />
+          <div className="absolute inset-0 bg-black/30" aria-hidden />
+        </div>
+      ) : headshot ? (
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+          <img
+            src={headshot}
+            alt={`${position.name} Roadie at work`}
             loading="lazy"
             className="size-full object-cover transition-smooth group-hover:opacity-90"
           />

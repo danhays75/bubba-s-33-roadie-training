@@ -27,7 +27,7 @@ import type { DrinksBuilderSettings } from "./types";
  *   - showScoring (checkbox, default true)
  *   - streakMultiplier (checkbox, default true)
  *   - pointsPerCorrect (number, default 50)
- *   - roundsPerSession (number, 0=endless, default 0)
+ *   - roundsPerSession (number, 0=whole pool once, default 0)
  *   - soundDefault (checkbox, default true)
  */
 export interface DrinksBuilderSettingsFormProps {
@@ -228,7 +228,7 @@ export function DrinksBuilderSettingsForm({
         <NumberField
           id="db-rounds-per-session"
           label="Rounds per session"
-          hint="0 = endless practice."
+          hint="0 = whole pool once."
           value={value.roundsPerSession}
           min={0}
           max={1000}

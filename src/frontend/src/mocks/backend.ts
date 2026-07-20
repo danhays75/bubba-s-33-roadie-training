@@ -36,23 +36,39 @@ const positions = [
   {
     id: 1n,
     sortOrder: 0n,
-    name: "Roadie",
-    description:
-      "The backbone of the roadhouse. Setup, teardown, and everything in between.",
-    coverPhoto: undefined,
-  },
-  {
-    id: 2n,
-    sortOrder: 1n,
     name: "Bartender",
     description:
       "Craft cocktails, cold beer, and the personality that keeps the bar alive.",
     coverPhoto: undefined,
   },
+  {
+    id: 2n,
+    sortOrder: 1n,
+    name: "Server",
+    description:
+      "Front-of-house hospitality — taking orders, serving food, and creating great guest experiences.",
+    coverPhoto: undefined,
+  },
+  {
+    id: 3n,
+    sortOrder: 2n,
+    name: "Host",
+    description:
+      "First impression of the roadhouse — greeting guests, managing the wait, and setting the tone.",
+    coverPhoto: undefined,
+  },
+  {
+    id: 4n,
+    sortOrder: 3n,
+    name: "Server Support",
+    description:
+      "The backbone of the floor — running food, refilling drinks, and keeping the team moving.",
+    coverPhoto: undefined,
+  },
 ];
 
 const categories = [
-  // Position 1 — Roadie
+  // Position 1 — Bartender
   {
     id: 10n,
     sortOrder: 0n,
@@ -74,7 +90,7 @@ const categories = [
     positionId: 1n,
     coverPhoto: undefined,
   },
-  // Position 2 — Bartender
+  // Position 2 — Server
   {
     id: 20n,
     sortOrder: 0n,
@@ -319,11 +335,11 @@ const flashcardActivity = {
 
 const legendaryActivities = [quizActivity, flashcardActivity];
 
-// Roadie position: one quiz activity so the banner + page have content there too.
+// Bartender position: one quiz activity so the banner + page have content there too.
 const roadieQuiz = {
   id: 2000n,
   activityType: "quiz" as const,
-  name: "Roadie Safety Quiz",
+  name: "Bartender Safety Quiz",
   positionId: 1n,
   sourceCategoryIds: [12n],
   createdAt: 1700000002n,

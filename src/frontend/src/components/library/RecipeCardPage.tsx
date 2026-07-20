@@ -1,7 +1,9 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { SeasonalBadge } from "@/components/library/SeasonalBadge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCategory, useItem } from "@/hooks/useLibrary";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import type { Recipe, RecipeSpec, RecipeVariant } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
@@ -34,7 +36,11 @@ export function RecipeCardPage({
   const itemQuery = useItem(itemId);
   const item = itemQuery.data ?? null;
   const isLoading = itemQuery.isLoading;
-  const notFound = !isLoading && !item;
+  const isError = itemQuery.isError;
+  // Only treat as "not found" when the read succeeded and returned null — a
+  // transient fetch error must surface as a retryable error state, not a
+  // terminal "this item doesn't exist" message.
+  const notFound = !isLoading && !isError && !item;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6">
@@ -42,6 +48,13 @@ export function RecipeCardPage({
 
       {isLoading ? (
         <RecipeCardSkeleton />
+      ) : isError ? (
+        <QueryErrorState
+          title="Couldn't load this item"
+          description="We couldn't load this recipe right now. Please try again."
+          error={itemQuery.error}
+          onRetry={() => itemQuery.refetch()}
+        />
       ) : notFound ? (
         <ItemNotFound positionId={positionId} categoryId={categoryId} />
       ) : item!.recipe ? (
@@ -158,12 +171,16 @@ function PrintRecipeCard({
 /* --------------------------- Bulk mix recipe card ----------------------- */
 
 /**
- * Detects whether a recipe should render as a Bulk Mix card. An item is a bulk
- * mix when it carries bulk-mix metadata: a non-empty `yield` OR a non-empty
- * `equipment` array. Drink recipes (no bulk-mix data) fall through to the
- * existing PrintRecipeCard path and render unchanged.
+ * Detects whether a recipe should render as a Bulk Mix card. A real drink
+ * always has a glass; a bulk mix never does. So the discriminator requires
+ * the ABSENCE of glassware together with bulk-mix metadata (a non-empty
+ * `yield` OR a non-empty `equipment` array). A drink that happens to carry
+ * an equipment note still renders as a drink card (glassware/garnish/variants
+ * visible). Kept in sync with BulkImportDialog's validator.
  */
 function isBulkMix(recipe: Recipe): boolean {
+  const hasGlassware = recipe.glassware.trim().length > 0;
+  if (hasGlassware) return false;
   const hasYield = recipe.yield != null && recipe.yield.trim().length > 0;
   const hasEquipment = recipe.equipment.length > 0;
   return hasYield || hasEquipment;
@@ -394,7 +411,7 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
           <ul className="recipe-print-card-square-bullet mt-1 pl-5">
             {recipe.specs.map((spec, i) => (
               <SpecsRow
-                key={`spec-${spec.amount}-${spec.ingredient}`}
+                key={`spec-${i}-${spec.amount}-${spec.ingredient}`}
                 spec={spec}
                 index={i}
               />
@@ -410,7 +427,7 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
           <ul className="recipe-print-card-square-bullet mt-1 pl-5">
             {recipe.assembly.map((step, i) => (
               <li
-                key={`asm-${step}`}
+                key={`asm-${i}-${step}`}
                 className="leading-relaxed"
                 data-ocid={`library.item.print_assembly_step.${i + 1}`}
               >
@@ -428,7 +445,7 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
           <ul className="recipe-print-card-square-bullet mt-1 pl-5">
             {recipe.garnish.map((g, i) => (
               <li
-                key={`gar-${g}`}
+                key={`gar-${i}-${g}`}
                 className="leading-relaxed"
                 data-ocid={`library.item.print_garnish_step.${i + 1}`}
               >
@@ -439,14 +456,18 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
         </section>
       ) : null}
 
-      {/* Variants — each gets its own slab small-caps divider + Specs/Assembly */}
-      {recipe.variants.map((variant, i) => (
-        <VariantBlock
-          key={`var-${variant.variantLabel}`}
-          variant={variant}
-          index={i}
-        />
-      ))}
+      {/* Variants — each gets its own slab small-caps divider + Specs/Assembly.
+          Blank/empty variantLabel variants are skipped so an empty heading is
+          never rendered. */}
+      {recipe.variants.map((variant, i) =>
+        variant.variantLabel.trim().length > 0 ? (
+          <VariantBlock
+            key={`var-${i}-${variant.variantLabel}`}
+            variant={variant}
+            index={i}
+          />
+        ) : null,
+      )}
     </div>
   );
 }
@@ -591,8 +612,10 @@ function RecipeCard({
                   <dd
                     className="font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0"
                     data-ocid={`library.item.field_value.${index + 1}`}
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: value is admin-authored HTML from a restricted Quill toolbar (bold/italic/underline/lists only — no links, images, or scripts), so XSS risk is not applicable.
-                    dangerouslySetInnerHTML={{ __html: field.value }}
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: value is sanitized at render time via sanitizeHtml, which strips every tag outside the minimal safe set (b, i, u, strong, em, ul, ol, li, p, br) and every on* handler / javascript: URL / style attribute. Defense in depth — the bulk importer also sanitizes at write time.
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeHtml(field.value),
+                    }}
                   />
                 </div>
               ))}

@@ -1,3 +1,4 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { DetailFieldEditor } from "@/components/admin/library/DetailFieldEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,7 +130,9 @@ export function ItemEditorPage({
   const isCreate = itemId === "new";
 
   const { data: profile } = useMyProfile();
-  const { data: existing, isLoading } = useItem(isCreate ? "" : itemId);
+  const itemQuery = useItem(isCreate ? "" : itemId);
+  const existing = itemQuery.data;
+  const isLoading = itemQuery.isLoading;
   const createMutation = useCreateItem();
   const updateMutation = useUpdateItem();
   const navigate = useNavigate();
@@ -595,6 +598,23 @@ export function ItemEditorPage({
 
   if (!isCreate && isLoading) {
     return <ItemEditorSkeleton />;
+  }
+
+  // A transient fetch error must surface as a retryable error state, not a
+  // blank form (the editor would otherwise render with empty state and let
+  // the admin "edit" a missing record). Only show "Item not found" when the
+  // read succeeded and returned null.
+  if (!isCreate && itemQuery.isError) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-4 py-6">
+        <QueryErrorState
+          title="Couldn't load this item"
+          description="We couldn't load this item right now. Please try again."
+          error={itemQuery.error}
+          onRetry={() => itemQuery.refetch()}
+        />
+      </div>
+    );
   }
 
   if (!isCreate && !isLoading && hydrated && !existing) {

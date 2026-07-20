@@ -153,6 +153,10 @@ export function DrinksBuilderActivity({
     );
   }
 
+  if (emptyReason === "wrongActivityKind") {
+    return <DrinksBuilderWrongKind positionId={positionId} />;
+  }
+
   if (emptyReason === "noPlayable") {
     return (
       <DrinksBuilderEmptyPool
@@ -717,7 +721,7 @@ function ChipButton({
   // applied by the hook and reflected in the header score). This keeps the
   // popup meaningful without duplicating the hook's scoring logic.
   const popupValue = streakMultiplier
-    ? pointsPerCorrect * Math.max(1, streak)
+    ? pointsPerCorrect * Math.min(5, Math.max(1, streak))
     : pointsPerCorrect;
 
   return (
@@ -1134,6 +1138,40 @@ function DrinksBuilderError({
           size="sm"
           asChild
           data-ocid="drinks.error_state.back_button"
+        >
+          <Link to="/position/$id/legendary" params={{ id: positionId }}>
+            <ArrowLeft className="size-4" />
+            Back to Be Legendary
+          </Link>
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+function DrinksBuilderWrongKind({
+  positionId,
+}: {
+  positionId: string | null;
+}): ReactElement {
+  return (
+    <div
+      className="mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center"
+      data-ocid="drinks.empty_state"
+    >
+      <h2 className="font-display text-2xl uppercase tracking-wide text-foreground">
+        Not a Drinks Builder game
+      </h2>
+      <p className="max-w-xs font-body text-sm text-muted-foreground">
+        This activity isn't a Drinks Builder game. Head back to Be Legendary to
+        pick a Drinks Builder activity.
+      </p>
+      {positionId ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          data-ocid="drinks.empty_state.back_button"
         >
           <Link to="/position/$id/legendary" params={{ id: positionId }}>
             <ArrowLeft className="size-4" />

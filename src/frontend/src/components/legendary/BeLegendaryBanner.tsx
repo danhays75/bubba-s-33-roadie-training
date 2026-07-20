@@ -54,7 +54,7 @@ export function BeLegendaryBanner({
     >
       {/* Bartender hero image — background layer over the roadhouse stage. */}
       <img
-        src="/assets/generated/bartender-hero.png"
+        src="/assets/generated/bartender-hero.webp"
         alt=""
         aria-hidden
         className={cn(

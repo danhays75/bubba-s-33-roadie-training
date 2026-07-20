@@ -25,6 +25,7 @@
 import type { LibraryItem as BackendLibraryItem } from "@/backend";
 import { useBackend } from "@/hooks/useBackend";
 import { useLegendaryActivity } from "@/hooks/useLegendary";
+import { useCategoriesByPosition } from "@/hooks/useLibrary";
 import type { DetailField, LibraryItem, Recipe } from "@/types/foundation";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -205,12 +206,44 @@ export function formatSpecLabel(
 }
 
 /**
- * Builds the global decoy pool from ALL in-scope recipes across all
- * categories (excluding the current round's drink). Returns four arrays:
- * glassware options, spec strings, assembly steps, and garnish options.
- * Spec strings are formatted via formatSpecLabel so decoys match the
- * requireExactAmounts-controlled chip format. Used to fill each section's
- * chips with decoys.
+ * Dedupes a list of correct-answer labels within a single section, keeping
+ * the first occurrence of each label so order is preserved (matters for
+ * assembly-order enforcement, which grades against the recipe's first-seen
+ * sequence). Empty labels are dropped. Returns a new array — the input is
+ * not mutated.
+ *
+ * Used by buildRound so identical correct chips collapse to a single chip
+ * requiring a single tap (e.g. when requireExactAmounts is off and two
+ * specs share the same ingredient, or a recipe lists a duplicate assembly
+ * step / garnish).
+ */
+function dedupeLabels(labels: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const label of labels) {
+    if (label.length === 0) continue;
+    if (seen.has(label)) continue;
+    seen.add(label);
+    out.push(label);
+  }
+  return out;
+}
+
+/**
+ * Builds the decoy pool for a single round, with same-category preference.
+ *
+ * Decoys are drawn from ALL in-scope recipes EXCEPT the current round's
+ * drink, but recipes in the SAME categoryId as the current drink are
+ * preferred — they tend to share glassware styles, ingredient families,
+ * and assembly techniques, which makes the decoys feel plausible. The
+ * returned arrays preserve insertion order so same-category entries come
+ * first; pickDecoys then seeds-shuffles within that ordering, giving
+ * in-category decoys a higher chance of being selected before the pool
+ * is exhausted.
+ *
+ * Returns four arrays: glassware options, spec strings, assembly steps,
+ * and garnish options. Spec strings are formatted via formatSpecLabel so
+ * decoys match the requireExactAmounts-controlled chip format.
  */
 export function buildDecoyPool(
   allDrinks: PlayableDrink[],
@@ -222,27 +255,64 @@ export function buildDecoyPool(
   assembly: string[];
   garnish: string[];
 } {
-  const glassware = new Set<string>();
-  const specs = new Set<string>();
-  const assembly = new Set<string>();
-  const garnish = new Set<string>();
+  const current = allDrinks.find((d) => d.id === currentDrinkId);
+  const currentCategoryId = current?.categoryId ?? null;
+
+  // Partition the other drinks into same-category first, then the rest.
+  // Same-category entries are pushed first so they appear earlier in the
+  // arrays; pickDecoys seeds-shuffles the filtered pool, so earlier
+  // entries have a higher probability of being selected before the pool
+  // is exhausted.
+  const sameCategory: PlayableDrink[] = [];
+  const others: PlayableDrink[] = [];
   for (const d of allDrinks) {
     if (d.id === currentDrinkId) continue;
-    if (d.glassware) glassware.add(d.glassware);
-    for (const s of d.specs) {
-      specs.add(formatSpecLabel(s.amount, s.ingredient, requireExactAmounts));
-    }
-    for (const a of d.assembly) assembly.add(a);
-    for (const g of d.garnish) {
-      if (g) garnish.add(g);
+    if (currentCategoryId !== null && d.categoryId === currentCategoryId) {
+      sameCategory.push(d);
+    } else {
+      others.push(d);
     }
   }
-  return {
-    glassware: [...glassware],
-    specs: [...specs],
-    assembly: [...assembly],
-    garnish: [...garnish],
-  };
+  const ordered = [...sameCategory, ...others];
+
+  const glassware: string[] = [];
+  const specs: string[] = [];
+  const assembly: string[] = [];
+  const garnish: string[] = [];
+  const seenGlassware = new Set<string>();
+  const seenSpecs = new Set<string>();
+  const seenAssembly = new Set<string>();
+  const seenGarnish = new Set<string>();
+  for (const d of ordered) {
+    if (d.glassware && !seenGlassware.has(d.glassware)) {
+      seenGlassware.add(d.glassware);
+      glassware.push(d.glassware);
+    }
+    for (const s of d.specs) {
+      const label = formatSpecLabel(
+        s.amount,
+        s.ingredient,
+        requireExactAmounts,
+      );
+      if (!seenSpecs.has(label)) {
+        seenSpecs.add(label);
+        specs.push(label);
+      }
+    }
+    for (const a of d.assembly) {
+      if (!seenAssembly.has(a)) {
+        seenAssembly.add(a);
+        assembly.push(a);
+      }
+    }
+    for (const g of d.garnish) {
+      if (g && !seenGarnish.has(g)) {
+        seenGarnish.add(g);
+        garnish.push(g);
+      }
+    }
+  }
+  return { glassware, specs, assembly, garnish };
 }
 
 /** Deterministic seeded PRNG (mulberry32) for stable shuffle per round. */
@@ -326,11 +396,23 @@ function buildRound(
   roundSeed: number,
   requireExactAmounts: boolean,
 ): GameRound {
-  const correctSpecs = drink.specs.map((s) =>
-    formatSpecLabel(s.amount, s.ingredient, requireExactAmounts),
+  // Dedupe correct labels WITHIN a section. When requireExactAmounts is off,
+  // multiple specs sharing the same ingredient produce identical correct
+  // chips the player would otherwise have to tap multiple times. Deduping
+  // collapses identical labels to a single chip requiring a single tap. The
+  // same dedup is applied to repeated assembly and garnish strings so a
+  // recipe with duplicate steps/garnishes does not force duplicate taps.
+  // Order is preserved (first occurrence wins) so the assembly-order
+  // enforcement still grades against the recipe's first-seen sequence.
+  const correctSpecs = dedupeLabels(
+    drink.specs.map((s) =>
+      formatSpecLabel(s.amount, s.ingredient, requireExactAmounts),
+    ),
   );
-  const correctAssembly = [...drink.assembly];
-  const correctGarnish = drink.garnish.filter((g) => g.length > 0);
+  const correctAssembly = dedupeLabels([...drink.assembly]);
+  const correctGarnish = dedupeLabels(
+    drink.garnish.filter((g) => g.length > 0),
+  );
 
   const makeChips = (
     correctLabels: string[],
@@ -550,20 +632,36 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
     enabled: !!actor && !isFetching && !!activityId,
   });
 
-  // Build the category-name lookup from the playable + decoy items (their
-  // categoryId is enough; we don't have category names from these methods,
-  // so we fall back to "" — the page can resolve names via a separate
-  // useCategoriesByPosition call if needed). For now, names are best-effort.
+  // Resolve the position id from the activity so we can fetch the
+  // position's categories and map categoryId -> category.name. The
+  // playable/decoy pool methods only return categoryId on each item, so
+  // without this lookup the hero badge would always fall back to
+  // "Classic" in the page (see DrinksBuilderActivity.tsx).
+  const positionId = activityQuery.data?.positionId ?? null;
+  const categoriesQuery = useCategoriesByPosition(positionId ?? "");
+
+  // Build the category-name lookup. The playable/decoy pool methods
+  // return categoryId on each item but NOT the category name, so we
+  // populate the names from useCategoriesByPosition(positionId). Items
+  // whose categoryId isn't in the position's category list fall back to
+  // "" (the page renders "Classic" for empty names).
   const categoryNameById = useMemo(() => {
     const map = new Map<string, string>();
+    // Seed every categoryId we've seen so the map has a key for each
+    // (defensive — keeps buildPlayablePool's `?? ""` fallback working
+    // even if a category was deleted after items were assigned to it).
     for (const item of [
       ...(playableQuery.data ?? []),
       ...(decoyQuery.data ?? []),
     ]) {
       if (!map.has(item.categoryId)) map.set(item.categoryId, "");
     }
+    // Overlay real names from the position's categories.
+    for (const c of categoriesQuery.data ?? []) {
+      map.set(c.id, c.name);
+    }
     return map;
-  }, [playableQuery.data, decoyQuery.data]);
+  }, [playableQuery.data, decoyQuery.data, categoriesQuery.data]);
 
   // Build the playable pool (client-side filter on top of the backend's
   // pre-filtered list, for defense + decoy-pool consistency).
@@ -622,12 +720,28 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
   // state — building it is a side effect, so this lives in useEffect, not
   // useMemo (useMemo must stay pure).
   const [session, setSession] = useState<SessionState | null>(null);
-  const [sessionKey, setSessionKey] = useState(0); // bump to restart
+  // Initialize sessionKey with a random integer so the first shuffle
+  // (seededShuffle(..., sessionKey + 1)) is non-deterministic on a fresh
+  // page load — every fresh visit produces a different drink order. The
+  // restart() handler below increments this value, so each "Play again"
+  // also produces a new different order. No persistence — a new visit
+  // re-rolls the seed.
+  const [sessionKey, setSessionKey] = useState(() =>
+    Math.floor(Math.random() * 1_000_000),
+  );
   const builtFromRef = useRef<string>("");
 
   useEffect(() => {
     if (!settings) return;
     if (playablePool.emptyReason === "noPlayable") return;
+    // Early-return guard: do not build the session until BOTH the
+    // playable pool and the decoy pool have resolved. Without this, a
+    // slow decoy query could let the session build from an empty
+    // allInScopeDrinks (decoys missing), so every round's chips would
+    // have only the correct answers and no decoys. The fingerprint
+    // below also includes the decoy query state so a late decoy
+    // resolution triggers a rebuild with the full decoy pool.
+    if (!playableQuery.data || !decoyQuery.data) return;
     // roundsPerSession=0 means endless practice (the default). Treat 0 as
     // "use the full pool" so the session builds and is playable with the
     // default settings — Math.min(0, poolSize) would otherwise return 0 and
@@ -640,10 +754,15 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
 
     // Fingerprint the inputs so we only rebuild when they meaningfully
     // change. sessionKey is included so a restart forces a rebuild even
-    // when the underlying data is identical.
+    // when the underlying data is identical. The decoy query's data
+    // identity is included so a late decoy resolution (after the
+    // playable pool resolved) triggers a rebuild with the full decoy
+    // pool — without it the session could be built with empty decoys and
+    // never rebuilt once decoys arrive.
+    const decoyFingerprint = (decoyQuery.data ?? []).map((d) => d.id).join(",");
     const fingerprint = `${sessionKey}|${roundsCount}|${settings.requireExactAmounts}|${playablePool.drinks
       .map((d) => d.id)
-      .join(",")}`;
+      .join(",")}|${decoyFingerprint}`;
     if (fingerprint === builtFromRef.current) return;
     builtFromRef.current = fingerprint;
 
@@ -680,6 +799,11 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
     playablePool.emptyReason,
     allInScopeDrinks,
     sessionKey,
+    // The early-return guard checks `!playableQuery.data || !decoyQuery.data`,
+    // so the effect must re-evaluate when those queries resolve. Without
+    // these deps the session would never rebuild once the pools arrive.
+    playableQuery.data,
+    decoyQuery.data,
   ]);
 
   // tapChip — handle a tap on a chip in the current round's section.
@@ -841,19 +965,20 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
           i === prev.currentIndex ? newRound : r,
         );
 
-        // Scoring — single pass. A correct tap that completes the round
-        // awards pointsPerCorrect plus a streak bonus when streakMultiplier
-        // is on. The streak used for the bonus is the streak BEFORE this
-        // tap (the just-completed correct tap is the (streak+1)th in a row).
-        let scoreDelta = 0;
+        // Scoring — single pass. Per the user's per-correct-tap scoring
+        // preference, points are awarded on EVERY correct tap, not just
+        // round-completing taps. The streak used for the bonus is the
+        // streak BEFORE this tap (the just-completed correct tap is the
+        // (streak+1)th in a row). When streakMultiplier is on, the per-tap
+        // award scales with the new streak, capped at 5 so a long streak
+        // doesn't inflate the score unboundedly. completedDrinksDelta
+        // still only fires on round completion (below).
         const newStreak = prev.streak + 1;
-        if (newComplete && !round.complete) {
-          const basePoints = settings ? settings.pointsPerCorrect : 0;
-          const streakBonus = settings?.streakMultiplier
-            ? settings.pointsPerCorrect * Math.max(0, prev.streak)
-            : 0;
-          scoreDelta = basePoints + streakBonus;
-        }
+        const basePoints = settings ? settings.pointsPerCorrect : 0;
+        const perTapMultiplier = settings?.streakMultiplier
+          ? Math.min(5, newStreak)
+          : 1;
+        const scoreDelta = basePoints * perTapMultiplier;
 
         const completedDrinksDelta = newComplete && !round.complete ? 1 : 0;
         result = "correct";
@@ -880,7 +1005,9 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
       if (nextIndex >= prev.rounds.length) {
         return { ...prev, finished: true };
       }
-      return { ...prev, currentIndex: nextIndex };
+      // Reset the streak at the start of each drink per the user's
+      // learning-feel preference: a fresh drink starts the streak over.
+      return { ...prev, currentIndex: nextIndex, streak: 0 };
     });
   }, []);
 
@@ -899,11 +1026,26 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
     setSession((prev) => (prev ? { ...prev, muted: next } : prev));
   }, []);
 
+  // Detect the bug-3 case: the activity query resolved successfully but
+  // the fetched activity isn't a Drinks Builder game (e.g. a quiz or
+  // flashcard activity id was opened on the drinks-builder route). This
+  // is not a query error and settings is null, so without an explicit
+  // flag the `(!settings && !activityQuery.isError)` clause in isLoading
+  // would stay true forever and the page would render an endless skeleton.
+  const wrongActivityKind =
+    !activityQuery.isLoading &&
+    !activityQuery.isError &&
+    !!activityQuery.data &&
+    activityQuery.data.content.kind !== "drinksBuilderContent";
+
   const isLoading =
     activityQuery.isLoading ||
     playableQuery.isLoading ||
     decoyQuery.isLoading ||
-    (!settings && !activityQuery.isError);
+    // Still loading while we wait for the activity query and don't yet
+    // know whether it's the right kind. Once the query resolves, the
+    // wrongActivityKind flag takes over and clears loading.
+    (!settings && !activityQuery.isError && !wrongActivityKind);
   const isError =
     activityQuery.isError || playableQuery.isError || decoyQuery.isError;
 
@@ -914,7 +1056,9 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
     positionId: activityQuery.data?.positionId ?? null,
     settings,
     session,
-    emptyReason: playablePool.emptyReason,
+    emptyReason: wrongActivityKind
+      ? "wrongActivityKind"
+      : playablePool.emptyReason,
     tapChip,
     nextDrink,
     restart,

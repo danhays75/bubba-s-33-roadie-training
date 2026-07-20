@@ -57,14 +57,34 @@ export function Home() {
 
 function HeroSection() {
   return (
-    <section className="pt-2 pb-6" data-ocid="home.hero.section">
-      <h1
-        className="font-display text-4xl uppercase leading-none tracking-wide text-foreground sm:text-5xl"
-        data-ocid="home.hero.title"
-      >
-        Pick your position
-      </h1>
-      <HeroStripe className="mt-3 w-full max-w-xs" />
+    <section
+      className="relative mt-2 mb-6 overflow-hidden border border-border bg-card"
+      data-ocid="home.hero.section"
+    >
+      {/* Cinematic roadhouse hero banner — smiling bartender with Bubba's 33
+          eye-black. Swap the file at public/assets/generated/bartender-hero-eyeblack.png
+          to update the hero photo. */}
+      <img
+        src="/assets/generated/bartender-hero-eyeblack.webp"
+        alt="Bartender with Bubba's 33 eye-black under her eyes, smiling behind the bar"
+        loading="eager"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover object-center"
+      />
+      {/* Legibility scrim so the white heading stays readable over the photo. */}
+      <div
+        className="absolute inset-0 z-0 bg-gradient-to-t from-background via-background/85 to-background/55"
+        aria-hidden
+      />
+
+      <div className="relative z-10 flex min-h-[18rem] flex-col justify-end px-5 pb-5 pt-16 sm:min-h-[22rem] sm:px-8 sm:pb-7">
+        <h1
+          className="font-display text-4xl uppercase leading-none tracking-wide text-foreground drop-shadow-[0_2px_8px_oklch(0.12_0.005_95/0.85)] sm:text-5xl"
+          data-ocid="home.hero.title"
+        >
+          Pick your position
+        </h1>
+        <HeroStripe className="mt-3 w-full max-w-xs" />
+      </div>
     </section>
   );
 }

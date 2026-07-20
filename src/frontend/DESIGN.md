@@ -111,3 +111,61 @@ eye black visible, just without motion.
   tokens (`.bg-legendary-banner`, `.legendary-glow-layer`,
   `.bg-legendary-card`, `.bg-legendary-correct/incorrect`, `flashcard-*`)
   are unchanged.
+
+## Home Hero & Position Tile Photos (additive)
+
+Generated placeholder Roadie photos in the dark roadhouse photographic style
+(cinematic, low-key, warm amber key light, shallow depth of field, smiling
+subjects having fun at work), matching the existing
+`bartender-hero.png` baseline. All paths are absolute `/assets/...` references
+in `<img src>`, the established pattern.
+
+### Home hero banner
+
+- **Intent:** a smiling bartender behind the bar, having fun working, with
+  "BUBBA'S 33" written in eye-black style under the eyes (the roadhouse brand
+  look, like sports eye-black). Wide/landscape framing for a cinematic hero
+  banner.
+- **File:** `public/assets/generated/bartender-hero-eyeblack.png`
+- **Wiring:** `src/frontend/src/routes/index.tsx` `HeroSection` — the image
+  is layered as `absolute inset-0 z-0 object-cover object-center` with a
+  bottom-up `from-background via-background/85 to-background/55` legibility
+  scrim on top (z-0), and the "Pick your position" heading + `HeroStripe`
+  sit at z-10. The red/white/navy `HeroStripe` accent line is preserved
+  beneath the heading. The nav, the 2x2 grid, the `max-w-3xl` container, and
+  the `StatusBadge` are unchanged.
+
+### Position tile headshots
+
+Four headshot-style photos of smiling Roadies having fun working in their
+environment, framed to crop cleanly into the 16/9 tile with the existing
+`bg-black/30` overlay. Wired into `src/frontend/src/components/PositionTile.tsx`
+as a static-asset fallback map keyed by a slug derived from the position
+name (lowercase, hyphenated; "Server Support" -> "server-support"). The
+admin-uploaded `position.coverPhoto` branch is unchanged and still wins;
+the headshot fallback only renders when `coverPhoto` is undefined. The
+single-letter placeholder remains as the final fallback when no headshot
+matches.
+
+- **Bartender** — bartender behind the bar, smiling, pouring or holding a
+  drink. `public/assets/positions/bartender.png`
+- **Server** — server holding a tray of food/drinks, smiling, in the dining
+  room. `public/assets/positions/server.png`
+- **Host** — host at the host stand/door, smiling, welcoming.
+  `public/assets/positions/host.png`
+- **Server Support** — server support in the back/server area, smiling,
+  carrying supplies or bussing a table.
+  `public/assets/positions/server-support.png`
+
+### Swap convention
+
+These are placeholder photos. To swap in real Roadie photos later:
+
+- **Hero:** replace `public/assets/generated/bartender-hero-eyeblack.png`
+  (keep the same filename).
+- **Tiles:** replace the matching file in `public/assets/positions/`
+  (`bartender.png`, `server.png`, `host.png`, `server-support.png`). No code
+  changes are needed — the slug map resolves by position name.
+
+Admin-uploaded `position.coverPhoto` (managed in the admin position editor)
+always takes precedence over the static fallback for an individual position.

@@ -3,6 +3,7 @@ import List "mo:core/List";
 import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
 import AccessControl "mo:caffeineai-authorization/access-control";
+import Foundation "../lib/foundation";
 import Legendary "../lib/legendary";
 import Library "../lib/library";
 import Types "../types/legendary";
@@ -33,12 +34,9 @@ import Types "../types/legendary";
 // also applies an optional replacement DrinksBuilderContent; for
 // #quiz/#flashcards the content field is ignored (use rebuildLegendaryActivity
 // to regenerate).
-//
-// The drinksBuilder-specific paths (buildDrinksBuilderContent, content
-// resolution in build/update/rebuild) are stubs in this contract pass; the
-// develop agent will implement them.
 mixin (
   accessControlState : AccessControl.AccessControlState,
+  positions : List.List<Foundation.Position>,
   categories : List.List<Library.Category>,
   items : List.List<Library.LibraryItem>,
   legendaryActivities : List.List<Legendary.Activity>,
@@ -66,6 +64,21 @@ mixin (
   public shared ({ caller }) func buildLegendaryActivity(input : Types.BuildActivityInput) : async Legendary.Activity {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
+    };
+    // Parent-existence + input validation: refuse to persist an empty or
+    // orphaned activity. The positionId MUST refer to an existing Foundation
+    // position, sourceCategoryIds MUST be non-empty, and every source
+    // category id MUST refer to an existing Library category.
+    if (Foundation.getPosition(positions, input.positionId) == null) {
+      Runtime.trap("buildLegendaryActivity: position not found");
+    };
+    if (input.sourceCategoryIds.size() == 0) {
+      Runtime.trap("buildLegendaryActivity: sourceCategoryIds is empty");
+    };
+    for (categoryId in input.sourceCategoryIds.values()) {
+      if (Library.getCategory(categories, categoryId) == null) {
+        Runtime.trap("buildLegendaryActivity: source category not found");
+      };
     };
     // Fetch items from each selected source category and flatten into a single
     // array. Items are drawn from the Library via the existing lib helper.
@@ -208,9 +221,12 @@ mixin (
   };
 
   // Resolve the global decoy pool for a #drinksBuilder activity by id.
-  // Returns up to decoyCount decoy items drawn from ALL other in-scope
-  // recipes across all categories (distinct from the playable pool). Traps if
-  // the activity is not found or is not a #drinksBuilder activity.
+  // Returns ALL in-scope recipes (filtered by isPlayableDrink +
+  // matchesSettings) — the frontend draws per-drink decoys from this pool,
+  // excluding the drink currently being quizzed on. The backend does NOT cap
+  // to decoyCount or dedupe against the playable pool; that capping is done
+  // client-side. Traps if the activity is not found or is not a
+  // #drinksBuilder activity.
   public query func getDrinksBuilderDecoyPool(activityId : Nat) : async [Library.LibraryItem] {
     let activity = switch (Legendary.getActivity(legendaryActivities, activityId)) {
       case (?a) a;

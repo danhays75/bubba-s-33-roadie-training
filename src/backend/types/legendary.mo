@@ -70,9 +70,12 @@ module {
   // scores (no server persistence, no leaderboard). Settings control which
   // drinks are in scope, how decoys are drawn, and how scoring behaves.
   //
-  //   includedCategories    : category titles to draw drinks from. Empty = all
-  //                           in-scope categories (bulk-mix recipes excluded
-  //                           by the lib helper).
+  //   includedCategories    : category IDS (as text, e.g. "12") to draw drinks
+  //                           from. Empty = all in-scope categories (bulk-mix
+  //                           recipes excluded by the lib helper). The lib
+  //                           helper matches each entry against
+  //                           item.categoryId.toText(), so ids — not titles —
+  //                           must be stored here.
   //   excludedDrinkTitles   : drink titles to exclude from the playable pool
   //                           (by title, since recipes are matched by title).
   //   decoyCount            : number of decoy ingredients/drinks drawn from

@@ -60,6 +60,11 @@ mixin (
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
+    // Parent-existence validation: refuse to create an orphan category. The
+    // positionId MUST refer to an existing Foundation position.
+    if (Foundation.getPosition(positions, positionId) == null) {
+      Runtime.trap("createCategory: position not found");
+    };
     Library.createCategory(categories, nextCategoryId, positionId, name, coverPhoto);
   };
 
@@ -109,6 +114,11 @@ mixin (
   ) : async Library.LibraryItem {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
+    };
+    // Parent-existence validation: refuse to create an orphan item. The
+    // categoryId MUST refer to an existing Library category.
+    if (Library.getCategory(categories, categoryId) == null) {
+      Runtime.trap("createItem: category not found");
     };
     Library.createItem(items, nextItemId, categoryId, title, subtitle, photo, details, notes, tags, seasonal, recipe);
   };

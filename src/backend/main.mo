@@ -73,7 +73,7 @@ actor {
   include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId);
   include LibraryApi(accessControlState, positions, categories, items, nextCategoryId, nextItemId);
   include NsoApi(accessControlState, profiles, nsoPhases, nsoTasks, nextPhaseId, nextTaskId);
-  include LegendaryApi(accessControlState, categories, items, legendaryActivities, nextLegendaryActivityId);
+  include LegendaryApi(accessControlState, positions, categories, items, legendaryActivities, nextLegendaryActivityId);
 
   // --- OQL (Data Intelligence) ---
   // Expose the Library collections to the Caffeine Data Intelligence agent.

@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-CBmc0JVE.js"(exports, module) {
+  "assets/index-KfSBs1C_.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -50115,6 +50115,78 @@ variant ${k2} -> ${e.message}`, {
         }
       });
     }
+    const SAFE_TAGS = /* @__PURE__ */ new Set([
+      "b",
+      "i",
+      "u",
+      "strong",
+      "em",
+      "ul",
+      "ol",
+      "li",
+      "p",
+      "br"
+    ]);
+    const URL_ATTRS = /* @__PURE__ */ new Set([
+      "href",
+      "src",
+      "action",
+      "formaction",
+      "xlink:href"
+    ]);
+    function sanitizeHtml(input) {
+      if (typeof input !== "string" || input.length === 0) return "";
+      if (typeof document === "undefined") {
+        return input.replace(/<[^>]+>/g, "");
+      }
+      const doc = new DOMParser().parseFromString(input, "text/html");
+      cleanNode(doc.body);
+      return doc.body.innerHTML;
+    }
+    function cleanNode(node) {
+      const children = Array.from(node.childNodes);
+      for (const child of children) {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          const el = child;
+          const tag = el.tagName.toLowerCase();
+          if (!SAFE_TAGS.has(tag)) {
+            const fragment = document.createDocumentFragment();
+            const grandkids = Array.from(el.childNodes);
+            for (const gk of grandkids) {
+              fragment.appendChild(gk);
+            }
+            cleanNode(fragment);
+            node.replaceChild(fragment, el);
+            continue;
+          }
+          stripUnsafeAttributes(el);
+          cleanNode(el);
+        } else if (child.nodeType === Node.COMMENT_NODE) {
+          node.removeChild(child);
+        }
+      }
+    }
+    function stripUnsafeAttributes(el) {
+      const attrs = Array.from(el.attributes);
+      for (const attr of attrs) {
+        const name = attr.name.toLowerCase();
+        const value = attr.value.trim().toLowerCase();
+        if (name.startsWith("on")) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+        if (name === "style") {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+        if (URL_ATTRS.has(name) && isScriptUrl(value)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    }
+    function isScriptUrl(value) {
+      return value.startsWith("javascript:") || value.startsWith("vbscript:");
+    }
     function BulkImportDialog({
       open,
       onOpenChange,
@@ -50214,7 +50286,11 @@ variant ${k2} -> ${e.message}`, {
                 const details2 = item.fields.map((f2) => ({
                   id: makeDetailFieldId(),
                   fieldLabel: f2.label,
-                  value: f2.value
+                  // Sanitize at write time as defense in depth — the read path
+                  // (RecipeCardPage / FlashcardActivity) also sanitizes before
+                  // rendering, but storing clean HTML means a future read surface
+                  // that forgets to sanitize is still safe.
+                  value: sanitizeHtml(f2.value)
                 }));
                 await updateItem.mutateAsync({
                   itemId: existing.id,
@@ -50234,7 +50310,11 @@ variant ${k2} -> ${e.message}`, {
               const details = item.fields.map((f2) => ({
                 id: makeDetailFieldId(),
                 fieldLabel: f2.label,
-                value: f2.value
+                // Sanitize at write time as defense in depth — mirrors the
+                // update-mode branch above. The read path also sanitizes before
+                // rendering, but storing clean HTML means a future read surface
+                // that forgets to sanitize is still safe.
+                value: sanitizeHtml(f2.value)
               }));
               const created = await createItem.mutateAsync({
                 categoryId,
@@ -50350,9 +50430,11 @@ variant ${k2} -> ${e.message}`, {
                 }
                 setProgress(`Updating recipe: ${recipe.title} (${categoryName})`);
                 const payload2 = buildRecipePayload(recipe);
-                const tags2 = buildRecipeTags(recipe);
+                const importedTags = buildRecipeTags(recipe);
                 const subtitle2 = recipe.subtitle && recipe.subtitle.length > 0 ? recipe.subtitle : existing.subtitle;
                 const photo2 = recipe.photoUrl && recipe.photoUrl.length > 0 ? recipe.photoUrl : existing.photo;
+                const notes = recipe.notes === null || recipe.notes === void 0 ? existing.notes : recipe.notes;
+                const tags2 = importedTags.length === 0 ? existing.tags : importedTags;
                 await updateItem.mutateAsync({
                   itemId: existing.id,
                   categoryId,
@@ -50360,7 +50442,7 @@ variant ${k2} -> ${e.message}`, {
                   subtitle: subtitle2,
                   photo: photo2,
                   details: [],
-                  notes: null,
+                  notes,
                   tags: tags2,
                   seasonal: recipe.lto === true,
                   recipe: payload2
@@ -50619,7 +50701,8 @@ variant ${k2} -> ${e.message}`, {
                   " ",
                   "or",
                   " ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, recipes: [{ title, variantLabel?, categoryId, fields: [{ label, value }], tags?, seasonal?, notes? }] }" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, recipes: [{ title, category, glassware, specs: [{ amount, ingredient }], assembly: [string], garnish?: [string], variants?: [{ label, specs: [{ amount, ingredient }], assembly: [string] }], equipment?: [string], yield?: string, shelfLife?: string, qualityIdentifier?: [string] }] }" }),
+                  ". A recipe is a bulk mix when glassware is empty and either yield or equipment is set; bulk mixes omit glassware (or send an empty string) and the drink-only glassware requirement is waived."
                 ] })
               ] }),
               error && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -50888,7 +50971,7 @@ variant ${k2} -> ${e.message}`, {
         const glassware = typeof r2.glassware === "string" ? r2.glassware.trim() : "";
         const yieldValue = typeof r2.yield === "string" ? r2.yield.trim() : "";
         const equipmentValue = Array.isArray(r2.equipment) ? r2.equipment : [];
-        const isBulkMix2 = yieldValue.length > 0 || equipmentValue.length > 0;
+        const isBulkMix2 = glassware.length === 0 && (yieldValue.length > 0 || equipmentValue.length > 0);
         const rowErrors = [];
         if (title.length === 0) rowErrors.push("title is required");
         if (category.length === 0) rowErrors.push("category is required");
@@ -51014,6 +51097,7 @@ variant ${k2} -> ${e.message}`, {
           photoUrl: typeof r2.photoUrl === "string" && r2.photoUrl.length > 0 ? r2.photoUrl : void 0,
           lto: r2.lto === true,
           tags: Array.isArray(r2.tags) ? r2.tags.filter((t) => typeof t === "string") : void 0,
+          notes: typeof r2.notes === "string" ? r2.notes : void 0,
           glassware,
           specs,
           assembly,
@@ -51062,6 +51146,58 @@ variant ${k2} -> ${e.message}`, {
           "notes": "Stirred, never shaken."
         }
       ]
+    }
+  ]
+}
+
+// Or import recipes directly (auto-detected by the "recipes" key):
+{
+  "position": "Bartender",
+  "recipes": [
+    {
+      "title": "Old Fashioned",
+      "category": "Cocktails",
+      "glassware": "Rocks",
+      "specs": [
+        { "amount": "2 oz", "ingredient": "Bourbon" },
+        { "amount": "0.25 oz", "ingredient": "Simple Syrup" },
+        { "amount": "2 dashes", "ingredient": "Angostura Bitters" }
+      ],
+      "assembly": [
+        "Stir all ingredients over ice.",
+        "Express orange peel over the glass."
+      ],
+      "garnish": ["Orange peel"],
+      "variants": [
+        {
+          "label": "Oaxacan",
+          "specs": [
+            { "amount": "1.5 oz", "ingredient": "Mezcal" },
+            { "amount": "0.5 oz", "ingredient": "Reposado Tequila" },
+            { "amount": "0.25 oz", "ingredient": "Agave Syrup" },
+            { "amount": "2 dashes", "ingredient": "Angostura Bitters" }
+          ],
+          "assembly": ["Stir over ice and strain into a rocks glass."]
+        }
+      ]
+    },
+    {
+      "title": "House Sour Mix",
+      "category": "Bulk Mixes",
+      "glassware": "",
+      "specs": [
+        { "amount": "750 ml", "ingredient": "Fresh Lemon Juice" },
+        { "amount": "750 ml", "ingredient": "Simple Syrup" },
+        { "amount": "375 ml", "ingredient": "Egg White" }
+      ],
+      "assembly": [
+        "Combine all ingredients in a sealed container.",
+        "Refrigerate and shake before use."
+      ],
+      "equipment": ["Cambro", "Whisk"],
+      "yield": "1.875 L",
+      "shelfLife": "48 hours refrigerated",
+      "qualityIdentifier": ["batch-number"]
     }
   ]
 }`;
@@ -63641,7 +63777,9 @@ ${escapeText(this.code(index2, length))}
     }) {
       const isCreate = itemId === "new";
       const { data: profile } = useMyProfile();
-      const { data: existing, isLoading } = useItem(isCreate ? "" : itemId);
+      const itemQuery = useItem(isCreate ? "" : itemId);
+      const existing = itemQuery.data;
+      const isLoading = itemQuery.isLoading;
       const createMutation = useCreateItem();
       const updateMutation = useUpdateItem();
       const navigate = useNavigate();
@@ -63922,6 +64060,17 @@ ${escapeText(this.code(index2, length))}
       }
       if (!isCreate && isLoading) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(ItemEditorSkeleton, {});
+      }
+      if (!isCreate && itemQuery.isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load this item",
+            description: "We couldn't load this item right now. Please try again.",
+            error: itemQuery.error,
+            onRetry: () => itemQuery.refetch()
+          }
+        ) });
       }
       if (!isCreate && !isLoading && hydrated && !existing) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound$1, { positionId });
@@ -69841,11 +69990,21 @@ ${escapeText(this.code(index2, length))}
         classes: "bg-muted text-muted-foreground"
       }
     };
+    const POSITION_HEADSHOTS = {
+      bartender: "/assets/positions/bartender.webp",
+      server: "/assets/positions/server.webp",
+      host: "/assets/positions/host.webp",
+      "server-support": "/assets/positions/server-support.webp"
+    };
+    function positionHeadshotSlug(name) {
+      return name.toLowerCase().trim().replace(/[\s-]+/g, "-");
+    }
     function PositionTile({
       position,
       tone,
       index: index2
     }) {
+      const headshot = POSITION_HEADSHOTS[positionHeadshotSlug(position.name)];
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Link$1,
         {
@@ -69867,7 +70026,18 @@ ${escapeText(this.code(index2, length))}
                 "img",
                 {
                   src: position.coverPhoto,
-                  alt: "",
+                  alt: `${position.name} Roadie at work`,
+                  loading: "lazy",
+                  className: "size-full object-cover transition-smooth group-hover:opacity-90"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/30", "aria-hidden": true })
+            ] }) : headshot ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[16/9] w-full overflow-hidden bg-muted", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: headshot,
+                  alt: `${position.name} Roadie at work`,
                   loading: "lazy",
                   className: "size-full object-cover transition-smooth group-hover:opacity-90"
                 }
@@ -69917,17 +70087,42 @@ ${escapeText(this.code(index2, length))}
       ] });
     }
     function HeroSection() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "pt-2 pb-6", "data-ocid": "home.hero.section", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "h1",
-          {
-            className: "font-display text-4xl uppercase leading-none tracking-wide text-foreground sm:text-5xl",
-            "data-ocid": "home.hero.title",
-            children: "Pick your position"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(HeroStripe, { className: "mt-3 w-full max-w-xs" })
-      ] });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "relative mt-2 mb-6 overflow-hidden border border-border bg-card",
+          "data-ocid": "home.hero.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: "/assets/generated/bartender-hero-eyeblack.webp",
+                alt: "Bartender with Bubba's 33 eye-black under her eyes, smiling behind the bar",
+                loading: "eager",
+                className: "pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover object-center"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "absolute inset-0 z-0 bg-gradient-to-t from-background via-background/85 to-background/55",
+                "aria-hidden": true
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 flex min-h-[18rem] flex-col justify-end px-5 pb-5 pt-16 sm:min-h-[22rem] sm:px-8 sm:pb-7", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h1",
+                {
+                  className: "font-display text-4xl uppercase leading-none tracking-wide text-foreground drop-shadow-[0_2px_8px_oklch(0.12_0.005_95/0.85)] sm:text-5xl",
+                  "data-ocid": "home.hero.title",
+                  children: "Pick your position"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(HeroStripe, { className: "mt-3 w-full max-w-xs" })
+            ] })
+          ]
+        }
+      );
     }
     function PositionGrid({
       positions,
@@ -72630,7 +72825,7 @@ Defaulting to \`null\`.`;
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/assets/generated/bartender-hero.png",
+                src: "/assets/generated/bartender-hero.webp",
                 alt: "",
                 "aria-hidden": true,
                 className: cn(
@@ -73670,7 +73865,7 @@ Defaulting to \`null\`.`;
                 {
                   id: "db-rounds-per-session",
                   label: "Rounds per session",
-                  hint: "0 = endless practice.",
+                  hint: "0 = whole pool once.",
                   value: value.roundsPerSession,
                   min: 0,
                   max: 1e3,
@@ -74789,7 +74984,7 @@ Defaulting to \`null\`.`;
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                src: "/assets/generated/bartender-hero.png",
+                src: "/assets/generated/bartender-hero.webp",
                 alt: "",
                 "aria-hidden": true,
                 className: "pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover"
@@ -75365,28 +75560,69 @@ Defaulting to \`null\`.`;
     function formatSpecLabel(amount, ingredient, requireExactAmounts) {
       return requireExactAmounts ? `${amount} ${ingredient}`.trim() : ingredient.trim();
     }
+    function dedupeLabels(labels) {
+      const seen = /* @__PURE__ */ new Set();
+      const out = [];
+      for (const label of labels) {
+        if (label.length === 0) continue;
+        if (seen.has(label)) continue;
+        seen.add(label);
+        out.push(label);
+      }
+      return out;
+    }
     function buildDecoyPool(allDrinks, currentDrinkId, requireExactAmounts) {
-      const glassware = /* @__PURE__ */ new Set();
-      const specs = /* @__PURE__ */ new Set();
-      const assembly = /* @__PURE__ */ new Set();
-      const garnish = /* @__PURE__ */ new Set();
+      const current = allDrinks.find((d2) => d2.id === currentDrinkId);
+      const currentCategoryId = (current == null ? void 0 : current.categoryId) ?? null;
+      const sameCategory = [];
+      const others = [];
       for (const d2 of allDrinks) {
         if (d2.id === currentDrinkId) continue;
-        if (d2.glassware) glassware.add(d2.glassware);
-        for (const s of d2.specs) {
-          specs.add(formatSpecLabel(s.amount, s.ingredient, requireExactAmounts));
-        }
-        for (const a2 of d2.assembly) assembly.add(a2);
-        for (const g2 of d2.garnish) {
-          if (g2) garnish.add(g2);
+        if (currentCategoryId !== null && d2.categoryId === currentCategoryId) {
+          sameCategory.push(d2);
+        } else {
+          others.push(d2);
         }
       }
-      return {
-        glassware: [...glassware],
-        specs: [...specs],
-        assembly: [...assembly],
-        garnish: [...garnish]
-      };
+      const ordered = [...sameCategory, ...others];
+      const glassware = [];
+      const specs = [];
+      const assembly = [];
+      const garnish = [];
+      const seenGlassware = /* @__PURE__ */ new Set();
+      const seenSpecs = /* @__PURE__ */ new Set();
+      const seenAssembly = /* @__PURE__ */ new Set();
+      const seenGarnish = /* @__PURE__ */ new Set();
+      for (const d2 of ordered) {
+        if (d2.glassware && !seenGlassware.has(d2.glassware)) {
+          seenGlassware.add(d2.glassware);
+          glassware.push(d2.glassware);
+        }
+        for (const s of d2.specs) {
+          const label = formatSpecLabel(
+            s.amount,
+            s.ingredient,
+            requireExactAmounts
+          );
+          if (!seenSpecs.has(label)) {
+            seenSpecs.add(label);
+            specs.push(label);
+          }
+        }
+        for (const a2 of d2.assembly) {
+          if (!seenAssembly.has(a2)) {
+            seenAssembly.add(a2);
+            assembly.push(a2);
+          }
+        }
+        for (const g2 of d2.garnish) {
+          if (g2 && !seenGarnish.has(g2)) {
+            seenGarnish.add(g2);
+            garnish.push(g2);
+          }
+        }
+      }
+      return { glassware, specs, assembly, garnish };
     }
     function mulberry32$1(seed) {
       let a2 = seed >>> 0;
@@ -75428,11 +75664,15 @@ Defaulting to \`null\`.`;
       garnish: "Garnish"
     };
     function buildRound(drink, decoyPool, decoyCount, roundSeed, requireExactAmounts) {
-      const correctSpecs = drink.specs.map(
-        (s) => formatSpecLabel(s.amount, s.ingredient, requireExactAmounts)
+      const correctSpecs = dedupeLabels(
+        drink.specs.map(
+          (s) => formatSpecLabel(s.amount, s.ingredient, requireExactAmounts)
+        )
       );
-      const correctAssembly = [...drink.assembly];
-      const correctGarnish = drink.garnish.filter((g2) => g2.length > 0);
+      const correctAssembly = dedupeLabels([...drink.assembly]);
+      const correctGarnish = dedupeLabels(
+        drink.garnish.filter((g2) => g2.length > 0)
+      );
       const makeChips = (correctLabels, pool, sectionSeed, orderIndices) => {
         const correct = correctLabels.filter((l2) => l2.length > 0);
         if (correct.length === 0) return [];
@@ -75509,7 +75749,7 @@ Defaulting to \`null\`.`;
       };
     }
     function useDrinksBuilder(activityId) {
-      var _a2, _b2;
+      var _a2, _b2, _c2;
       const { actor, isFetching } = useBackend();
       const activityQuery = useLegendaryActivity(activityId);
       const settings = reactExports.useMemo(() => {
@@ -75550,6 +75790,8 @@ Defaulting to \`null\`.`;
         },
         enabled: !!actor && !isFetching && !!activityId
       });
+      const positionId = ((_a2 = activityQuery.data) == null ? void 0 : _a2.positionId) ?? null;
+      const categoriesQuery = useCategoriesByPosition(positionId ?? "");
       const categoryNameById = reactExports.useMemo(() => {
         const map = /* @__PURE__ */ new Map();
         for (const item of [
@@ -75558,8 +75800,11 @@ Defaulting to \`null\`.`;
         ]) {
           if (!map.has(item.categoryId)) map.set(item.categoryId, "");
         }
+        for (const c2 of categoriesQuery.data ?? []) {
+          map.set(c2.id, c2.name);
+        }
         return map;
-      }, [playableQuery.data, decoyQuery.data]);
+      }, [playableQuery.data, decoyQuery.data, categoriesQuery.data]);
       const playablePool = reactExports.useMemo(() => {
         if (!settings) {
           return { drinks: [], categoryNameById, emptyReason: null };
@@ -75603,16 +75848,20 @@ Defaulting to \`null\`.`;
         return out;
       }, [playablePool.drinks, decoyQuery.data]);
       const [session, setSession] = reactExports.useState(null);
-      const [sessionKey, setSessionKey] = reactExports.useState(0);
+      const [sessionKey, setSessionKey] = reactExports.useState(
+        () => Math.floor(Math.random() * 1e6)
+      );
       const builtFromRef = reactExports.useRef("");
       reactExports.useEffect(() => {
         if (!settings) return;
         if (playablePool.emptyReason === "noPlayable") return;
+        if (!playableQuery.data || !decoyQuery.data) return;
         const poolSize = playablePool.drinks.length;
         const requestedRounds = settings.roundsPerSession === 0 ? poolSize : settings.roundsPerSession;
         const roundsCount = Math.min(requestedRounds, poolSize);
         if (roundsCount === 0) return;
-        const fingerprint = `${sessionKey}|${roundsCount}|${settings.requireExactAmounts}|${playablePool.drinks.map((d2) => d2.id).join(",")}`;
+        const decoyFingerprint = (decoyQuery.data ?? []).map((d2) => d2.id).join(",");
+        const fingerprint = `${sessionKey}|${roundsCount}|${settings.requireExactAmounts}|${playablePool.drinks.map((d2) => d2.id).join(",")}|${decoyFingerprint}`;
         if (fingerprint === builtFromRef.current) return;
         builtFromRef.current = fingerprint;
         const shuffled = seededShuffle$1(playablePool.drinks, sessionKey + 1);
@@ -75646,7 +75895,12 @@ Defaulting to \`null\`.`;
         playablePool.drinks,
         playablePool.emptyReason,
         allInScopeDrinks,
-        sessionKey
+        sessionKey,
+        // The early-return guard checks `!playableQuery.data || !decoyQuery.data`,
+        // so the effect must re-evaluate when those queries resolve. Without
+        // these deps the session would never rebuild once the pools arrive.
+        playableQuery.data,
+        decoyQuery.data
       ]);
       const tapChip = reactExports.useCallback(
         (sectionKind, chipId) => {
@@ -75745,13 +75999,10 @@ Defaulting to \`null\`.`;
             const newRounds = prev.rounds.map(
               (r2, i) => i === prev.currentIndex ? newRound : r2
             );
-            let scoreDelta = 0;
             const newStreak = prev.streak + 1;
-            if (newComplete && !round2.complete) {
-              const basePoints = settings ? settings.pointsPerCorrect : 0;
-              const streakBonus = (settings == null ? void 0 : settings.streakMultiplier) ? settings.pointsPerCorrect * Math.max(0, prev.streak) : 0;
-              scoreDelta = basePoints + streakBonus;
-            }
+            const basePoints = settings ? settings.pointsPerCorrect : 0;
+            const perTapMultiplier = (settings == null ? void 0 : settings.streakMultiplier) ? Math.min(5, newStreak) : 1;
+            const scoreDelta = basePoints * perTapMultiplier;
             const completedDrinksDelta = newComplete && !round2.complete ? 1 : 0;
             result = "correct";
             return {
@@ -75775,7 +76026,7 @@ Defaulting to \`null\`.`;
           if (nextIndex >= prev.rounds.length) {
             return { ...prev, finished: true };
           }
-          return { ...prev, currentIndex: nextIndex };
+          return { ...prev, currentIndex: nextIndex, streak: 0 };
         });
       }, []);
       const restart = reactExports.useCallback(() => {
@@ -75788,16 +76039,20 @@ Defaulting to \`null\`.`;
       const setMuted = reactExports.useCallback((next) => {
         setSession((prev) => prev ? { ...prev, muted: next } : prev);
       }, []);
-      const isLoading = activityQuery.isLoading || playableQuery.isLoading || decoyQuery.isLoading || !settings && !activityQuery.isError;
+      const wrongActivityKind = !activityQuery.isLoading && !activityQuery.isError && !!activityQuery.data && activityQuery.data.content.kind !== "drinksBuilderContent";
+      const isLoading = activityQuery.isLoading || playableQuery.isLoading || decoyQuery.isLoading || // Still loading while we wait for the activity query and don't yet
+      // know whether it's the right kind. Once the query resolves, the
+      // wrongActivityKind flag takes over and clears loading.
+      !settings && !activityQuery.isError && !wrongActivityKind;
       const isError = activityQuery.isError || playableQuery.isError || decoyQuery.isError;
       return {
         isLoading,
         isError,
-        activityName: ((_a2 = activityQuery.data) == null ? void 0 : _a2.name) ?? null,
-        positionId: ((_b2 = activityQuery.data) == null ? void 0 : _b2.positionId) ?? null,
+        activityName: ((_b2 = activityQuery.data) == null ? void 0 : _b2.name) ?? null,
+        positionId: ((_c2 = activityQuery.data) == null ? void 0 : _c2.positionId) ?? null,
         settings,
         session,
-        emptyReason: playablePool.emptyReason,
+        emptyReason: wrongActivityKind ? "wrongActivityKind" : playablePool.emptyReason,
         tapChip,
         nextDrink,
         restart,
@@ -75961,6 +76216,9 @@ Defaulting to \`null\`.`;
             onRetry: () => window.location.reload()
           }
         );
+      }
+      if (emptyReason === "wrongActivityKind") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(DrinksBuilderWrongKind, { positionId });
       }
       if (emptyReason === "noPlayable") {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -76425,7 +76683,7 @@ Defaulting to \`null\`.`;
       const isCorrectFeedback = chip.feedback === "correct";
       const isIncorrectFeedback = chip.feedback === "incorrect";
       const isLocked = chip.selected;
-      const popupValue = streakMultiplier ? pointsPerCorrect * Math.max(1, streak) : pointsPerCorrect;
+      const popupValue = streakMultiplier ? pointsPerCorrect * Math.min(5, Math.max(1, streak)) : pointsPerCorrect;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
@@ -76816,6 +77074,34 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    function DrinksBuilderWrongKind({
+      positionId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 px-4 py-20 text-center",
+          "data-ocid": "drinks.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl uppercase tracking-wide text-foreground", children: "Not a Drinks Builder game" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-sm text-muted-foreground", children: "This activity isn't a Drinks Builder game. Head back to Be Legendary to pick a Drinks Builder activity." }),
+            positionId ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "sm",
+                asChild: true,
+                "data-ocid": "drinks.empty_state.back_button",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/position/$id/legendary", params: { id: positionId }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+                  "Back to Be Legendary"
+                ] })
+              }
+            ) : null
+          ]
+        }
+      );
+    }
     function DrinksBuilderEmptyPool({
       positionId,
       activityName
@@ -76958,6 +77244,17 @@ Defaulting to \`null\`.`;
       const activity = query.data ?? null;
       if (query.isLoading) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardSkeleton, {});
+      }
+      if (query.isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load flashcard deck",
+            description: "We couldn't load this flashcard deck right now. Please try again.",
+            error: query.error,
+            onRetry: () => query.refetch()
+          }
+        ) });
       }
       if (!activity) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(FlashcardNotFound, { activityId });
@@ -77192,7 +77489,9 @@ Defaulting to \`null\`.`;
                     ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
                       "span",
                       {
-                        dangerouslySetInnerHTML: { __html: field.value }
+                        dangerouslySetInnerHTML: {
+                          __html: sanitizeHtml(field.value)
+                        }
                       }
                     ) })
                   ]
@@ -78387,10 +78686,19 @@ Defaulting to \`null\`.`;
       const itemQuery = useItem(itemId);
       const item = itemQuery.data ?? null;
       const isLoading = itemQuery.isLoading;
-      const notFound = !isLoading && !item;
+      const isError = itemQuery.isError;
+      const notFound = !isLoading && !isError && !item;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-5xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(BackToCategory, { positionId, categoryId }),
-        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardSkeleton, {}) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : item.recipe ? isBulkMix(item.recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx(BulkMixRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(PrintRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCard, { item })
+        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardSkeleton, {}) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load this item",
+            description: "We couldn't load this recipe right now. Please try again.",
+            error: itemQuery.error,
+            onRetry: () => itemQuery.refetch()
+          }
+        ) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : item.recipe ? isBulkMix(item.recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx(BulkMixRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(PrintRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCard, { item })
       ] });
     }
     function PrintRecipeCard({
@@ -78474,6 +78782,8 @@ Defaulting to \`null\`.`;
       );
     }
     function isBulkMix(recipe) {
+      const hasGlassware = recipe.glassware.trim().length > 0;
+      if (hasGlassware) return false;
       const hasYield = recipe.yield != null && recipe.yield.trim().length > 0;
       const hasEquipment = recipe.equipment.length > 0;
       return hasYield || hasEquipment;
@@ -78648,7 +78958,7 @@ Defaulting to \`null\`.`;
               spec,
               index: i
             },
-            `spec-${spec.amount}-${spec.ingredient}`
+            `spec-${i}-${spec.amount}-${spec.ingredient}`
           )) })
         ] }) : null,
         recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_assembly", children: [
@@ -78660,7 +78970,7 @@ Defaulting to \`null\`.`;
               "data-ocid": `library.item.print_assembly_step.${i + 1}`,
               children: step
             },
-            `asm-${step}`
+            `asm-${i}-${step}`
           )) })
         ] }) : null,
         recipe.garnish.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_garnish", children: [
@@ -78672,17 +78982,19 @@ Defaulting to \`null\`.`;
               "data-ocid": `library.item.print_garnish_step.${i + 1}`,
               children: g2
             },
-            `gar-${g2}`
+            `gar-${i}-${g2}`
           )) })
         ] }) : null,
-        recipe.variants.map((variant, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          VariantBlock,
-          {
-            variant,
-            index: i
-          },
-          `var-${variant.variantLabel}`
-        ))
+        recipe.variants.map(
+          (variant, i) => variant.variantLabel.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            VariantBlock,
+            {
+              variant,
+              index: i
+            },
+            `var-${i}-${variant.variantLabel}`
+          ) : null
+        )
       ] });
     }
     function SpecsRow({
@@ -78807,7 +79119,9 @@ Defaulting to \`null\`.`;
                         {
                           className: "font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
                           "data-ocid": `library.item.field_value.${index2 + 1}`,
-                          dangerouslySetInnerHTML: { __html: field.value }
+                          dangerouslySetInnerHTML: {
+                            __html: sanitizeHtml(field.value)
+                          }
                         }
                       )
                     ]

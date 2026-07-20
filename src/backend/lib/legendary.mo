@@ -15,8 +15,7 @@ import LibraryTypes "../types/library";
 //
 // #drinksBuilder activities do NOT derive content from items at build time —
 // the admin supplies DrinksBuilderSettings and the playable drink pool is
-// derived at play time from the Library. The lib helpers for drinksBuilder
-// are stubs in this contract pass; the develop agent will implement them.
+// derived at play time from the Library.
 module {
   public type Activity = Types.Activity;
   public type ActivityType = Types.ActivityType;

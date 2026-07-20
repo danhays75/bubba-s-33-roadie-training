@@ -1,6 +1,8 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLegendaryActivity } from "@/hooks/useLegendary";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { cn } from "@/lib/utils";
 import type {
   LegendaryActivity,
@@ -273,6 +275,19 @@ export function FlashcardActivity({
 
   if (query.isLoading) {
     return <FlashcardSkeleton />;
+  }
+
+  if (query.isError) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-4 py-6">
+        <QueryErrorState
+          title="Couldn't load flashcard deck"
+          description="We couldn't load this flashcard deck right now. Please try again."
+          error={query.error}
+          onRetry={() => query.refetch()}
+        />
+      </div>
+    );
   }
 
   if (!activity) {
@@ -586,8 +601,10 @@ function BackFace({ card }: { card: LegendaryFlashcard }): ReactElement {
                     />
                   ) : (
                     <span
-                      /* biome-ignore lint/security/noDangerouslySetInnerHtml: admin-authored Quill HTML from restricted toolbar, same pattern as RecipeCardPage */
-                      dangerouslySetInnerHTML={{ __html: field.value }}
+                      /* biome-ignore lint/security/noDangerouslySetInnerHtml: field.value is sanitized via sanitizeHtml before rendering — admin-authored Quill HTML from restricted toolbar, same pattern as RecipeCardPage */
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeHtml(field.value),
+                      }}
                     />
                   )}
                 </dd>

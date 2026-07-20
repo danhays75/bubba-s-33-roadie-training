@@ -17,6 +17,7 @@ import {
   useCreateItem,
   useUpdateItem,
 } from "@/hooks/useLibrary";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import type {
   Category,
   DetailField,
@@ -239,7 +240,11 @@ export function BulkImportDialog({
             const details: DetailField[] = item.fields.map((f) => ({
               id: makeDetailFieldId(),
               fieldLabel: f.label,
-              value: f.value,
+              // Sanitize at write time as defense in depth — the read path
+              // (RecipeCardPage / FlashcardActivity) also sanitizes before
+              // rendering, but storing clean HTML means a future read surface
+              // that forgets to sanitize is still safe.
+              value: sanitizeHtml(f.value),
             }));
 
             await updateItem.mutateAsync({
@@ -263,7 +268,11 @@ export function BulkImportDialog({
           const details: DetailField[] = item.fields.map((f) => ({
             id: makeDetailFieldId(),
             fieldLabel: f.label,
-            value: f.value,
+            // Sanitize at write time as defense in depth — mirrors the
+            // update-mode branch above. The read path also sanitizes before
+            // rendering, but storing clean HTML means a future read surface
+            // that forgets to sanitize is still safe.
+            value: sanitizeHtml(f.value),
           }));
 
           // useCreateItem returns toItem(result) — a LibraryItem with a real
@@ -448,7 +457,7 @@ export function BulkImportDialog({
             setProgress(`Updating recipe: ${recipe.title} (${categoryName})`);
 
             const payload = buildRecipePayload(recipe);
-            const tags = buildRecipeTags(recipe);
+            const importedTags = buildRecipeTags(recipe);
             const subtitle =
               recipe.subtitle && recipe.subtitle.length > 0
                 ? recipe.subtitle
@@ -457,6 +466,17 @@ export function BulkImportDialog({
               recipe.photoUrl && recipe.photoUrl.length > 0
                 ? recipe.photoUrl
                 : existing.photo;
+            // Preserve the existing recipe's notes and tags when the imported
+            // blob omits them — mirrors the item-update branch's preservation
+            // pattern (item.notes / item.tags). Only overwrite when the blob
+            // explicitly provides them, so re-importing a recipe that lacks
+            // notes/tags does not destroy existing notes or non-imported tags.
+            const notes =
+              recipe.notes === null || recipe.notes === undefined
+                ? existing.notes
+                : recipe.notes;
+            const tags =
+              importedTags.length === 0 ? existing.tags : importedTags;
 
             await updateItem.mutateAsync({
               itemId: existing.id,
@@ -465,7 +485,7 @@ export function BulkImportDialog({
               subtitle,
               photo,
               details: [],
-              notes: null,
+              notes,
               tags,
               seasonal: recipe.lto === true,
               recipe: payload,
@@ -789,9 +809,12 @@ export function BulkImportDialog({
               or{" "}
               <code className="font-mono">
                 {
-                  "{ position, recipes: [{ title, variantLabel?, categoryId, fields: [{ label, value }], tags?, seasonal?, notes? }] }"
+                  "{ position, recipes: [{ title, category, glassware, specs: [{ amount, ingredient }], assembly: [string], garnish?: [string], variants?: [{ label, specs: [{ amount, ingredient }], assembly: [string] }], equipment?: [string], yield?: string, shelfLife?: string, qualityIdentifier?: [string] }] }"
                 }
               </code>
+              . A recipe is a bulk mix when glassware is empty and either yield
+              or equipment is set; bulk mixes omit glassware (or send an empty
+              string) and the drink-only glassware requirement is waived.
             </p>
           </div>
 
@@ -1257,6 +1280,13 @@ interface ImportRecipe {
   lto?: boolean;
   tags?: string[];
   /**
+   * Optional notes for the recipe item. When absent (or null/undefined) the
+   * update path preserves the existing recipe's notes — mirroring the
+   * item-update branch's preservation pattern. Only overwrite when the blob
+   * explicitly provides a value.
+   */
+  notes?: string;
+  /**
    * Glassware. Required for drinks; optional for bulk mixes (a recipe is a
    * bulk mix when its `yield` is non-empty OR its `equipment` array is
    * non-empty). For bulk mixes without glassware, send an empty string —
@@ -1328,11 +1358,15 @@ function validateRecipesBlob(rawRecipes: unknown[]): RecipesValidationResult {
     const glassware = typeof r.glassware === "string" ? r.glassware.trim() : "";
 
     // Bulk-mix detection (local, identical to RecipeCardPage.isBulkMix):
-    // yield non-empty OR equipment non-empty. Kept inline to avoid a
-    // cross-module dependency. Bulk mixes do not require glassware.
+    // a real drink always has a glass; a bulk mix never does. So the
+    // discriminator requires empty glassware AND (yield non-empty OR equipment
+    // non-empty). Kept inline to avoid a cross-module dependency. A drink with
+    // an equipment note still validates as a drink (glassware required).
     const yieldValue = typeof r.yield === "string" ? r.yield.trim() : "";
     const equipmentValue = Array.isArray(r.equipment) ? r.equipment : [];
-    const isBulkMix = yieldValue.length > 0 || equipmentValue.length > 0;
+    const isBulkMix =
+      glassware.length === 0 &&
+      (yieldValue.length > 0 || equipmentValue.length > 0);
 
     // Collect row-level errors for this recipe without aborting the blob.
     const rowErrors: string[] = [];
@@ -1488,6 +1522,7 @@ function validateRecipesBlob(rawRecipes: unknown[]): RecipesValidationResult {
       tags: Array.isArray(r.tags)
         ? r.tags.filter((t): t is string => typeof t === "string")
         : undefined,
+      notes: typeof r.notes === "string" ? r.notes : undefined,
       glassware,
       specs,
       assembly,
@@ -1563,6 +1598,58 @@ const PLACEHOLDER = `{
           "notes": "Stirred, never shaken."
         }
       ]
+    }
+  ]
+}
+
+// Or import recipes directly (auto-detected by the "recipes" key):
+{
+  "position": "Bartender",
+  "recipes": [
+    {
+      "title": "Old Fashioned",
+      "category": "Cocktails",
+      "glassware": "Rocks",
+      "specs": [
+        { "amount": "2 oz", "ingredient": "Bourbon" },
+        { "amount": "0.25 oz", "ingredient": "Simple Syrup" },
+        { "amount": "2 dashes", "ingredient": "Angostura Bitters" }
+      ],
+      "assembly": [
+        "Stir all ingredients over ice.",
+        "Express orange peel over the glass."
+      ],
+      "garnish": ["Orange peel"],
+      "variants": [
+        {
+          "label": "Oaxacan",
+          "specs": [
+            { "amount": "1.5 oz", "ingredient": "Mezcal" },
+            { "amount": "0.5 oz", "ingredient": "Reposado Tequila" },
+            { "amount": "0.25 oz", "ingredient": "Agave Syrup" },
+            { "amount": "2 dashes", "ingredient": "Angostura Bitters" }
+          ],
+          "assembly": ["Stir over ice and strain into a rocks glass."]
+        }
+      ]
+    },
+    {
+      "title": "House Sour Mix",
+      "category": "Bulk Mixes",
+      "glassware": "",
+      "specs": [
+        { "amount": "750 ml", "ingredient": "Fresh Lemon Juice" },
+        { "amount": "750 ml", "ingredient": "Simple Syrup" },
+        { "amount": "375 ml", "ingredient": "Egg White" }
+      ],
+      "assembly": [
+        "Combine all ingredients in a sealed container.",
+        "Refrigerate and shake before use."
+      ],
+      "equipment": ["Cambro", "Whisk"],
+      "yield": "1.875 L",
+      "shelfLife": "48 hours refrigerated",
+      "qualityIdentifier": ["batch-number"]
     }
   ]
 }`;
