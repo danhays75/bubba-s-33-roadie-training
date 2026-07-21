@@ -21,6 +21,7 @@
 //     actions render on the Be Legendary page.
 //   - One assignment (inTraining) so the StatusBadge shows a non-default tone.
 
+import { LayoutStyle } from "../backend";
 import type { backendInterface } from "../backend";
 
 // A stable fake Principal text. The hooks call `.toString()` on it.
@@ -40,6 +41,7 @@ const positions = [
     description:
       "Craft cocktails, cold beer, and the personality that keeps the bar alive.",
     coverPhoto: undefined,
+    layoutStyle: LayoutStyle.library,
   },
   {
     id: 2n,
@@ -48,6 +50,7 @@ const positions = [
     description:
       "Front-of-house hospitality — taking orders, serving food, and creating great guest experiences.",
     coverPhoto: undefined,
+    layoutStyle: LayoutStyle.library,
   },
   {
     id: 3n,
@@ -56,6 +59,7 @@ const positions = [
     description:
       "First impression of the roadhouse — greeting guests, managing the wait, and setting the tone.",
     coverPhoto: undefined,
+    layoutStyle: LayoutStyle.library,
   },
   {
     id: 4n,
@@ -64,6 +68,23 @@ const positions = [
     description:
       "The backbone of the floor — running food, refilling drinks, and keeping the team moving.",
     coverPhoto: undefined,
+    layoutStyle: LayoutStyle.library,
+  },
+  // "Legendary Starts Here" — the orientation-layout position. layoutStyle
+  // is "orientation" so position.$id.tsx renders OrientationLayout instead
+  // of the generic library tile grid. Carries the full set of categories
+  // the OrientationLayout maps by name (Mission Statement, Core Values,
+  // Our Story, Operational Goals, Service Priorities, Food Priorities) plus
+  // the "Rules of the Road" policy categories that fall through to the
+  // compact reference grid.
+  {
+    id: 5n,
+    sortOrder: 4n,
+    name: "Legendary Starts Here",
+    description:
+      "Your first stop as a Roadie. Welcome to Roadie Nation — where legendary service starts with you.",
+    coverPhoto: undefined,
+    layoutStyle: LayoutStyle.orientation,
   },
 ];
 
@@ -110,6 +131,138 @@ const categories = [
     sortOrder: 2n,
     name: "Beer & Wine",
     positionId: 2n,
+    coverPhoto: undefined,
+  },
+  // Position 5 — Legendary Starts Here (orientation layout). Categories are
+  // mapped by NAME in OrientationLayout, so the names below must match the
+  // constants in OrientationLayout.tsx (Mission Statement, Core Values,
+  // Our Story, Operational Goals, Service Priorities, Food Priorities). Every
+  // category NOT in that hero set falls through to "The Rules of the Road".
+  {
+    id: 50n,
+    sortOrder: 0n,
+    name: "Mission Statement",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 51n,
+    sortOrder: 1n,
+    name: "Core Values",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 52n,
+    sortOrder: 2n,
+    name: "Our Story",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 53n,
+    sortOrder: 3n,
+    name: "Operational Goals",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 54n,
+    sortOrder: 4n,
+    name: "Service Priorities",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 55n,
+    sortOrder: 5n,
+    name: "Food Priorities",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  // Rules of the Road categories — these fall through to the compact grid.
+  {
+    id: 56n,
+    sortOrder: 6n,
+    name: "10-4 With Heart",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 57n,
+    sortOrder: 7n,
+    name: "The Roadie Mentality",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 58n,
+    sortOrder: 8n,
+    name: "Legendary For All",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 59n,
+    sortOrder: 9n,
+    name: "EEO & Harassment Prevention",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 60n,
+    sortOrder: 10n,
+    name: "Reporting a Concern",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 61n,
+    sortOrder: 11n,
+    name: "Work Performance & Behaviors",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 62n,
+    sortOrder: 12n,
+    name: "Reporting an Illness / Food Safety",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 63n,
+    sortOrder: 13n,
+    name: "Alcohol Awareness & Responsible Service",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 64n,
+    sortOrder: 14n,
+    name: "Attendance & Scheduling",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 65n,
+    sortOrder: 15n,
+    name: "Dress & Appearance",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 66n,
+    sortOrder: 16n,
+    name: "Internet & Social Media Use",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
+  {
+    id: 67n,
+    sortOrder: 17n,
+    name: "Employee Timekeeping",
+    positionId: 5n,
     coverPhoto: undefined,
   },
 ];
@@ -241,6 +394,357 @@ const items = [
     notes: undefined,
     tags: ["seasonal", "fall", "ale"],
     seasonal: true,
+    sortOrder: 0n,
+  },
+  // --- Position 5 (Legendary Starts Here) items ---
+  // Mission Statement — the item's "Mission" field drives the gold headline;
+  // notes becomes the subtitle.
+  {
+    id: 500n,
+    categoryId: 50n,
+    title: "Our Mission",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      {
+        fieldLabel: "Mission",
+        value: "To Create Legendary Experiences, One Guest at a Time.",
+      },
+    ],
+    notes:
+      "Every shift, every guest, every plate — we show up to be legendary. That's the Roadie way.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  // Core Values — overview + four value cards + the "All With Purpose" capstone.
+  {
+    id: 510n,
+    categoryId: 51n,
+    title: "Our Core Values",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes:
+      "Four values guide every Roadie. They're how we serve guests, support teammates, and build the brand.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 511n,
+    categoryId: 51n,
+    title: "Passion",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      {
+        fieldLabel: "Meaning",
+        value:
+          "We bring energy and pride to every shift. We love what we do and it shows.",
+      },
+    ],
+    notes: undefined,
+    tags: [],
+    seasonal: false,
+    sortOrder: 1n,
+  },
+  {
+    id: 512n,
+    categoryId: 51n,
+    title: "Partnership",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      {
+        fieldLabel: "Meaning",
+        value:
+          "We work as one team. We have each other's backs, on the floor and off.",
+      },
+    ],
+    notes: undefined,
+    tags: [],
+    seasonal: false,
+    sortOrder: 2n,
+  },
+  {
+    id: 513n,
+    categoryId: 51n,
+    title: "Integrity",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      {
+        fieldLabel: "Meaning",
+        value:
+          "We do the right thing, even when no one is watching. Honest, accountable, dependable.",
+      },
+    ],
+    notes: undefined,
+    tags: [],
+    seasonal: false,
+    sortOrder: 3n,
+  },
+  {
+    id: 514n,
+    categoryId: 51n,
+    title: "Fun",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      {
+        fieldLabel: "Meaning",
+        value:
+          "We keep the roadhouse spirit alive — smiles, laughter, and a great time for every guest.",
+      },
+    ],
+    notes: undefined,
+    tags: [],
+    seasonal: false,
+    sortOrder: 4n,
+  },
+  {
+    id: 515n,
+    categoryId: 51n,
+    title: "…All With Purpose",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: undefined,
+    tags: [],
+    seasonal: false,
+    sortOrder: 5n,
+  },
+  // Our Story — "Known for" + "This means we have" fields + emoji chips.
+  {
+    id: 520n,
+    categoryId: 52n,
+    title: "Our Story",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      { fieldLabel: "Known for", value: "Burgers. Beer. Bourbon. Good times." },
+      {
+        fieldLabel: "This means we have",
+        value:
+          "Hand-cut burgers, ice-cold beer, a full bourbon shelf, and a roadhouse vibe that keeps guests coming back. We're the place to kick back, dig in, and be legendary.",
+      },
+    ],
+    notes: undefined,
+    tags: ["🍔 Burgers", "🍺 Beer", "🥃 Bourbon", "🤠 Roadhouse"],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  // Operational Goals — one item with multiple detail fields; each field label
+  // becomes a goal card (with abbreviation).
+  {
+    id: 530n,
+    categoryId: 53n,
+    title: "Operational Goals",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      {
+        fieldLabel: "Manager in the Window (MIW)",
+        value: "A manager is visible at the host stand every shift.",
+      },
+      {
+        fieldLabel: "Maximize Guest Satisfaction (MGS)",
+        value: "Every guest leaves happy. Check in, follow up, follow through.",
+      },
+      {
+        fieldLabel: "Drive Sales Growth (DSG)",
+        value: "Suggest, upsell, and feature the right items every time.",
+      },
+      {
+        fieldLabel: "Maintain Cleanliness (MC)",
+        value: "A clean roadhouse is a legendary roadhouse. Walk the floor.",
+      },
+    ],
+    notes: undefined,
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  // Service Priorities + Food Priorities — the two "10" teaser cards. The
+  // OrientationLayout links these to the category detail route, so a single
+  // item each is enough to make the destination non-empty.
+  {
+    id: 540n,
+    categoryId: 54n,
+    title: "10 Steps to Service",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      { fieldLabel: "01", value: "Greet within 30 seconds." },
+      { fieldLabel: "02", value: "Suggest a drink." },
+      { fieldLabel: "03", value: "Take the order." },
+    ],
+    notes: "The ten steps every Roadie follows to deliver legendary service.",
+    tags: ["service", "standards"],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 550n,
+    categoryId: 55n,
+    title: "10 Daily Essentials",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      { fieldLabel: "01", value: "Quality check every plate." },
+      { fieldLabel: "02", value: "Fresh prep, every shift." },
+      { fieldLabel: "03", value: "Hold times honored." },
+    ],
+    notes: "The ten food priorities that keep our kitchen legendary.",
+    tags: ["food", "quality"],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  // Rules of the Road categories — one item each so the destination route
+  // has content. These render as the compact 2-column reference grid.
+  {
+    id: 560n,
+    categoryId: 56n,
+    title: "10-4 With Heart",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Acknowledge every guest and teammate. 10-4, we've got you.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 570n,
+    categoryId: 57n,
+    title: "The Roadie Mentality",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Hustle, heart, and a can-do attitude. That's the Roadie way.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 580n,
+    categoryId: 58n,
+    title: "Legendary For All",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Every guest, every team, every shift — legendary for all.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 590n,
+    categoryId: 59n,
+    title: "EEO & Harassment Prevention",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "We respect everyone. No exceptions. Report concerns immediately.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 600n,
+    categoryId: 60n,
+    title: "Reporting a Concern",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Speak up. Use the open-door policy or the anonymous hotline.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 610n,
+    categoryId: 61n,
+    title: "Work Performance & Behaviors",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Show up, work hard, be kind. The basics of being a Roadie.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 620n,
+    categoryId: 62n,
+    title: "Reporting an Illness / Food Safety",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "If you're sick, tell your manager. Food safety is non-negotiable.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 630n,
+    categoryId: 63n,
+    title: "Alcohol Awareness & Responsible Service",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Card everyone who looks under 40. Never over-serve. Always safe.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 640n,
+    categoryId: 64n,
+    title: "Attendance & Scheduling",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Show up on time for every shift. Trade shifts through the app.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 650n,
+    categoryId: 65n,
+    title: "Dress & Appearance",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Clean uniform, neat hair, roadhouse pride. Look the part.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 660n,
+    categoryId: 66n,
+    title: "Internet & Social Media Use",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Be kind online. You represent Roadie Nation, on and off the clock.",
+    tags: [],
+    seasonal: false,
+    sortOrder: 0n,
+  },
+  {
+    id: 670n,
+    categoryId: 67n,
+    title: "Employee Timekeeping",
+    subtitle: undefined,
+    photo: undefined,
+    details: [],
+    notes: "Clock in, clock out, every shift. Accurate timekeeping protects you.",
+    tags: [],
+    seasonal: false,
     sortOrder: 0n,
   },
 ];
@@ -449,19 +953,21 @@ export const mockBackend: backendInterface = {
   getMyAssignments: async () => myAssignments,
   getAllPositions: async () => positions,
   getPosition: async (id) => positions.find((p) => p.id === id) ?? null,
-  createPosition: async (name, description, coverPhoto) => ({
+  createPosition: async (name, description, coverPhoto, layoutStyle) => ({
     id: 10n,
     sortOrder: 10n,
     name,
     description: description ?? undefined,
     coverPhoto: coverPhoto ?? undefined,
+    layoutStyle: layoutStyle ?? LayoutStyle.library,
   }),
-  updatePosition: async (id, name, description, coverPhoto) => ({
+  updatePosition: async (id, name, description, coverPhoto, layoutStyle) => ({
     id,
     sortOrder: 0n,
     name,
     description: description ?? undefined,
     coverPhoto: coverPhoto ?? undefined,
+    layoutStyle: layoutStyle ?? LayoutStyle.library,
   }),
   deletePosition: async () => undefined,
   reorderPositions: async () => positions,

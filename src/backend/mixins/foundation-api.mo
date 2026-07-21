@@ -147,18 +147,18 @@ mixin (
     Foundation.getPosition(positions, id);
   };
 
-  public shared ({ caller }) func createPosition(name : Text, description : ?Text, coverPhoto : ?Text) : async Foundation.Position {
+  public shared ({ caller }) func createPosition(name : Text, description : ?Text, coverPhoto : ?Text, layoutStyle : Types.LayoutStyle) : async Foundation.Position {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
-    Foundation.createPosition(positions, nextPositionId, name, description, coverPhoto);
+    Foundation.createPosition(positions, nextPositionId, name, description, coverPhoto, layoutStyle);
   };
 
-  public shared ({ caller }) func updatePosition(id : Nat, name : Text, description : ?Text, coverPhoto : ?Text) : async Foundation.Position {
+  public shared ({ caller }) func updatePosition(id : Nat, name : Text, description : ?Text, coverPhoto : ?Text, layoutStyle : Types.LayoutStyle) : async Foundation.Position {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
-    switch (Foundation.updatePosition(positions, id, name, description, coverPhoto)) {
+    switch (Foundation.updatePosition(positions, id, name, description, coverPhoto, layoutStyle)) {
       case (?updated) { updated };
       case null { Runtime.trap("Position not found") };
     };

@@ -32,13 +32,24 @@ export interface UserProfile {
  * `id` is the stringified bigint (`position.id.toString()`) — set by the
  * hook layer when translating the Candid Position (which has `id: bigint`).
  * `sortOrder` is the number form of the bigint sortOrder.
+ *
+ * `layoutStyle` controls how the position's detail page renders its
+ * Library. The backend Candid variant is `{ #library; #orientation }`,
+ * surfaced as the `LayoutStyle` enum in backend.d.ts. The hook layer
+ * translates the enum to the plain string union here and back to the enum
+ * on the way in, so components stay in string-land. `'library'` is the
+ * default (search box + category tile grid); `'orientation'` renders the
+ * patriotic Orientation layout.
  */
+export type LayoutStyle = "library" | "orientation";
+
 export interface Position {
   id: string;
   name: string;
   description: string;
   coverPhoto: string | undefined;
   sortOrder: number;
+  layoutStyle: LayoutStyle;
 }
 
 /**

@@ -1,6 +1,8 @@
+import { LayoutStyle as BackendLayoutStyle } from "@/backend";
 import { QueryErrorState } from "@/components/QueryErrorState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { BeLegendaryBanner } from "@/components/legendary/BeLegendaryBanner";
+import { OrientationLayout } from "@/components/orientation/OrientationLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBackend } from "@/hooks/useBackend";
@@ -31,6 +33,12 @@ import type { ReactElement } from "react";
  * (via useSearchLibrary). When the search is empty, it shows the category
  * tile grid (via useCategoriesByPosition). Clicking a category navigates to
  * the category detail route (built in the pages wave).
+ *
+ * When position.layoutStyle === 'orientation', the page renders the patriotic
+ * OrientationLayout instead of the Library section. OrientationLayout is
+ * presentation-only — it reads the same categories/items and writes nothing.
+ * All existing navigation (item detail, Be Legendary, assignments/status)
+ * continues to work from either layout.
  */
 
 interface PositionDetailPageProps {
@@ -44,6 +52,29 @@ export function PositionDetailRoute(): ReactElement {
   return <PositionDetailPage positionId={String(id ?? "")} />;
 }
 
+/** Translates the raw backend Position (layoutStyle enum, optional fields)
+ *  to the local string-id + string-union shape. Mirrors useAllPositions. */
+function toPosition(p: {
+  id: bigint;
+  name: string;
+  description?: string;
+  coverPhoto?: string;
+  sortOrder: bigint;
+  layoutStyle: BackendLayoutStyle;
+}): Position {
+  return {
+    id: p.id.toString(),
+    name: p.name,
+    description: p.description ?? "",
+    coverPhoto: p.coverPhoto,
+    sortOrder: Number(p.sortOrder),
+    layoutStyle:
+      p.layoutStyle === BackendLayoutStyle.orientation
+        ? "orientation"
+        : "library",
+  };
+}
+
 export function PositionDetailPage({
   positionId,
 }: PositionDetailPageProps): ReactElement {
@@ -54,11 +85,8 @@ export function PositionDetailPage({
     queryKey: ["position", positionId],
     queryFn: async () => {
       if (!actor) return null;
-      const result = (await actor.getPosition(BigInt(positionId))) as
-        | Position
-        | null
-        | undefined;
-      return result ?? null;
+      const result = await actor.getPosition(BigInt(positionId));
+      return result ? toPosition(result) : null;
     },
     enabled: !!actor && !isFetching && !!positionId,
   });
@@ -100,6 +128,22 @@ export function PositionDetailPage({
       ? "certified"
       : "inTraining"
     : "notStarted";
+
+  // Orientation layout — patriotic onboarding page. Presentation-only; reads
+  // the same categories/items. All navigation (item detail, Be Legendary,
+  // status) continues to work from this layout.
+  if (position?.layoutStyle === "orientation") {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-4 py-6">
+        <OrientationLayout
+          positionId={positionId}
+          positionName={position.name}
+          positionDescription={position.description || undefined}
+        />
+        <StatusBadge tone={tone} className="mt-8" />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6">

@@ -15,6 +15,7 @@ const POSITION_HEADSHOTS: Record<string, string> = {
   server: "/assets/positions/server.webp",
   host: "/assets/positions/host.webp",
   "server-support": "/assets/positions/server-support.webp",
+  "legendary-starts-here": "/assets/positions/legendary-starts-here.webp",
 };
 
 /**
@@ -76,7 +77,6 @@ export function PositionTile({
             loading="lazy"
             className="size-full object-cover transition-smooth group-hover:opacity-90"
           />
-          <div className="absolute inset-0 bg-black/30" aria-hidden />
         </div>
       ) : headshot ? (
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
@@ -86,7 +86,6 @@ export function PositionTile({
             loading="lazy"
             className="size-full object-cover transition-smooth group-hover:opacity-90"
           />
-          <div className="absolute inset-0 bg-black/30" aria-hidden />
         </div>
       ) : (
         <div className="relative aspect-[16/9] w-full bg-muted">

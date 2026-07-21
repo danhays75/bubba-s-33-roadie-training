@@ -87,6 +87,8 @@ export interface FlashcardRecipe {
   'specs' : Array<{ 'ingredient' : string, 'amount' : string }>,
   'assembly' : Array<string>,
 }
+export type LayoutStyle = { 'library' : null } |
+  { 'orientation' : null };
 export interface LibraryItem {
   'id' : bigint,
   'categoryId' : bigint,
@@ -126,6 +128,7 @@ export interface NsoPhaseProgressCount {
 export interface Phase { 'id' : bigint, 'sortOrder' : bigint, 'name' : string }
 export interface Position {
   'id' : bigint,
+  'layoutStyle' : LayoutStyle,
   'sortOrder' : bigint,
   'name' : string,
   'description' : [] | [string],
@@ -289,7 +292,7 @@ export interface _SERVICE {
     Task
   >,
   'createPosition' : ActorMethod<
-    [string, [] | [string], [] | [string]],
+    [string, [] | [string], [] | [string], LayoutStyle],
     Position
   >,
   'deleteCategory' : ActorMethod<[bigint], undefined>,
@@ -381,7 +384,7 @@ export interface _SERVICE {
     undefined
   >,
   'updatePosition' : ActorMethod<
-    [bigint, string, [] | [string], [] | [string]],
+    [bigint, string, [] | [string], [] | [string], LayoutStyle],
     Position
   >,
 }

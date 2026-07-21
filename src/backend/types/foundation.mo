@@ -26,16 +26,28 @@ module {
     role : Role;
   };
 
+  // Per-position presentation hint for the "Legendary Starts Here" area.
+  // #library (default) renders the generic library-tile list; #orientation
+  // renders the patriotic Orientation layout. Additive and position-scoped —
+  // no other data model change.
+  public type LayoutStyle = {
+    #library;
+    #orientation;
+  };
+
   // A job position that users can be trained and certified for.
   // sortOrder is per-parent (positions are a flat list, so each position's
   // own sequence starts at 1 and increments by 1 — NOT a global running count).
   // coverPhoto is optional — never required to save a position.
+  // layoutStyle selects the Orientation presentation when set to
+  // #orientation; defaults to #library.
   public type Position = {
     id : Nat;
     name : Text;
     description : ?Text;
     coverPhoto : ?Text;
     sortOrder : Nat;
+    layoutStyle : LayoutStyle;
   };
 
   // A user's assignment to a position, with a training status.

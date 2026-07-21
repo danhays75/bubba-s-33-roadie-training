@@ -144,8 +144,13 @@ export const Task = IDL.Record({
   'notes' : IDL.Opt(IDL.Text),
   'phaseId' : IDL.Nat,
 });
+export const LayoutStyle = IDL.Variant({
+  'library' : IDL.Null,
+  'orientation' : IDL.Null,
+});
 export const Position = IDL.Record({
   'id' : IDL.Nat,
+  'layoutStyle' : LayoutStyle,
   'sortOrder' : IDL.Nat,
   'name' : IDL.Text,
   'description' : IDL.Opt(IDL.Text),
@@ -363,7 +368,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'createPosition' : IDL.Func(
-      [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+      [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text), LayoutStyle],
       [Position],
       [],
     ),
@@ -502,7 +507,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'updatePosition' : IDL.Func(
-      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text), LayoutStyle],
       [Position],
       [],
     ),
@@ -647,8 +652,13 @@ export const idlFactory = ({ IDL }) => {
     'notes' : IDL.Opt(IDL.Text),
     'phaseId' : IDL.Nat,
   });
+  const LayoutStyle = IDL.Variant({
+    'library' : IDL.Null,
+    'orientation' : IDL.Null,
+  });
   const Position = IDL.Record({
     'id' : IDL.Nat,
+    'layoutStyle' : LayoutStyle,
     'sortOrder' : IDL.Nat,
     'name' : IDL.Text,
     'description' : IDL.Opt(IDL.Text),
@@ -866,7 +876,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'createPosition' : IDL.Func(
-        [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+        [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text), LayoutStyle],
         [Position],
         [],
       ),
@@ -1017,7 +1027,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'updatePosition' : IDL.Func(
-        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text), LayoutStyle],
         [Position],
         [],
       ),

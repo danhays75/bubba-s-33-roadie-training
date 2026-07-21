@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-KfSBs1C_.js"(exports, module) {
+  "assets/index-DoJRkE21.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33278,8 +33278,13 @@ variant ${k2} -> ${e.message}`, {
       "notes": Opt(Text$2),
       "phaseId": Nat
     });
+    const LayoutStyle$1 = Variant({
+      "library": Null,
+      "orientation": Null
+    });
     const Position = Record({
       "id": Nat,
+      "layoutStyle": LayoutStyle$1,
       "sortOrder": Nat,
       "name": Text$2,
       "description": Opt(Text$2),
@@ -33496,7 +33501,7 @@ variant ${k2} -> ${e.message}`, {
         []
       ),
       "createPosition": Func(
-        [Text$2, Opt(Text$2), Opt(Text$2)],
+        [Text$2, Opt(Text$2), Opt(Text$2), LayoutStyle$1],
         [Position],
         []
       ),
@@ -33635,7 +33640,7 @@ variant ${k2} -> ${e.message}`, {
         []
       ),
       "updatePosition": Func(
-        [Nat, Text$2, Opt(Text$2), Opt(Text$2)],
+        [Nat, Text$2, Opt(Text$2), Opt(Text$2), LayoutStyle$1],
         [Position],
         []
       )
@@ -33777,8 +33782,13 @@ variant ${k2} -> ${e.message}`, {
         "notes": IDL2.Opt(IDL2.Text),
         "phaseId": IDL2.Nat
       });
+      const LayoutStyle2 = IDL2.Variant({
+        "library": IDL2.Null,
+        "orientation": IDL2.Null
+      });
       const Position2 = IDL2.Record({
         "id": IDL2.Nat,
+        "layoutStyle": LayoutStyle2,
         "sortOrder": IDL2.Nat,
         "name": IDL2.Text,
         "description": IDL2.Opt(IDL2.Text),
@@ -33995,7 +34005,7 @@ variant ${k2} -> ${e.message}`, {
           []
         ),
         "createPosition": IDL2.Func(
-          [IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text)],
+          [IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text), LayoutStyle2],
           [Position2],
           []
         ),
@@ -34146,7 +34156,7 @@ variant ${k2} -> ${e.message}`, {
           []
         ),
         "updatePosition": IDL2.Func(
-          [IDL2.Nat, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text)],
+          [IDL2.Nat, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text), LayoutStyle2],
           [Position2],
           []
         )
@@ -34169,6 +34179,11 @@ variant ${k2} -> ${e.message}`, {
       ActivityType2["flashcards"] = "flashcards";
       return ActivityType2;
     })(ActivityType || {});
+    var LayoutStyle = /* @__PURE__ */ ((LayoutStyle2) => {
+      LayoutStyle2["library"] = "library";
+      LayoutStyle2["orientation"] = "orientation";
+      return LayoutStyle2;
+    })(LayoutStyle || {});
     var Variant_up_down = /* @__PURE__ */ ((Variant_up_down2) => {
       Variant_up_down2["up"] = "up";
       Variant_up_down2["down"] = "down";
@@ -34380,15 +34395,15 @@ variant ${k2} -> ${e.message}`, {
       async __profiles(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n40(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.__profiles(to_candid_opt_n42(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n43(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n40(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.__profiles(to_candid_opt_n42(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n43(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageBlobsAreLive(arg0) {
@@ -34450,15 +34465,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n47(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n50(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n49(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n52(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n47(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n50(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n49(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n52(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34493,14 +34508,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n54(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n56(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n54(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n56(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34520,14 +34535,14 @@ variant ${k2} -> ${e.message}`, {
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n58(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n60(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n58(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n60(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34548,42 +34563,42 @@ variant ${k2} -> ${e.message}`, {
       async buildLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n60(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n62(this._uploadFile, this._downloadFile, arg0));
             return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n60(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n62(this._uploadFile, this._downloadFile, arg0));
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34591,14 +34606,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async createNsoPhase(arg0) {
@@ -34618,28 +34633,28 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n40(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n42(this._uploadFile, this._downloadFile, arg3));
             return from_candid_Task_n34(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n40(this._uploadFile, this._downloadFile, arg3));
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n42(this._uploadFile, this._downloadFile, arg3));
           return from_candid_Task_n34(this._uploadFile, this._downloadFile, result);
         }
       }
-      async createPosition(arg0, arg1, arg2) {
+      async createPosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg3));
             return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg3));
           return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34731,14 +34746,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n78(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n82(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n78(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n82(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
@@ -34759,28 +34774,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n87(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n91(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n87(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n91(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -34801,14 +34816,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n89(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n89(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
         }
       }
       async getDrinksBuilderDecoyPool(arg0) {
@@ -34843,14 +34858,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n90(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n90(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -34885,14 +34900,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivity(arg0);
-            return from_candid_opt_n91(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivity(arg0);
-          return from_candid_opt_n91(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -34913,28 +34928,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n92(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n92(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n86(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -34955,14 +34970,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -34997,14 +35012,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
@@ -35025,14 +35040,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -35053,27 +35068,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n97(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n101(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n97(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n101(this._uploadFile, this._downloadFile, arg0));
           return result;
         }
       }
@@ -35136,28 +35151,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n105(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35206,70 +35221,70 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n106(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n110(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n106(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n110(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n108(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n112(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n108(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n112(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35290,42 +35305,42 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n75(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n110(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n114(this._uploadFile, this._downloadFile, arg0));
             return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n110(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n114(this._uploadFile, this._downloadFile, arg0));
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35333,14 +35348,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n43(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateNsoPhase(arg0, arg1) {
@@ -35360,28 +35375,28 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n40(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
-      async updatePosition(arg0, arg1, arg2, arg3) {
+      async updatePosition(arg0, arg1, arg2, arg3, arg4) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg4));
             return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n74(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n74(this._uploadFile, this._downloadFile, arg3));
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg4));
           return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35401,17 +35416,20 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n82(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n83(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n86(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n87(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n56(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n57(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n58(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n59(_uploadFile, _downloadFile, value);
     }
     function from_candid_FlashcardContent_n28(_uploadFile, _downloadFile, value) {
       return from_candid_vec_n29(_uploadFile, _downloadFile, value);
     }
     function from_candid_Flashcard_n30(_uploadFile, _downloadFile, value) {
       return from_candid_record_n31(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_LayoutStyle_n40(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n41(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -35431,32 +35449,35 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Recipe_n15(_uploadFile, _downloadFile, value) {
       return from_candid_record_n16(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n54(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n55(_uploadFile, _downloadFile, value);
+    function from_candid_Result__1_n56(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n57(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n78(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n79(_uploadFile, _downloadFile, value);
+    function from_candid_Result_n82(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n83(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Role_n45(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n46(_uploadFile, _downloadFile, value);
+    function from_candid_Role_n47(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n48(_uploadFile, _downloadFile, value);
     }
     function from_candid_Task_n34(_uploadFile, _downloadFile, value) {
       return from_candid_record_n35(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserProfile_n43(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n44(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n45(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n46(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserRole_n87(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n88(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n91(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n92(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Value_n84(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n85(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n88(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n89(_uploadFile, _downloadFile, value);
     }
-    function from_candid__ImmutableObjectStorageRefillResult_n50(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n51(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n52(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n53(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
+    }
+    function from_candid_opt_n100(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n47(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n14(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_Recipe_n15(_uploadFile, _downloadFile, value[0]);
@@ -35467,35 +35488,32 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_opt_n36(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n52(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n54(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n53(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n55(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
-    }
-    function from_candid_opt_n89(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n90(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n91(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n92(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n43(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n93(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : value[0];
+      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n94(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n34(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n95(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n38(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n96(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n45(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_UserProfile_n45(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n97(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : value[0];
+    }
+    function from_candid_opt_n98(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n34(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n99(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n38(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
       return {
@@ -35561,6 +35579,7 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_record_n39(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
+        layoutStyle: from_candid_LayoutStyle_n40(_uploadFile, _downloadFile, value.layoutStyle),
         sortOrder: value.sortOrder,
         name: value.name,
         description: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.description)),
@@ -35574,29 +35593,29 @@ variant ${k2} -> ${e.message}`, {
         positionId: value.positionId
       };
     }
-    function from_candid_record_n44(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n46(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         name: value.name,
-        role: from_candid_Role_n45(_uploadFile, _downloadFile, value.role),
+        role: from_candid_Role_n47(_uploadFile, _downloadFile, value.role),
         storeLocation: value.storeLocation
       };
     }
-    function from_candid_record_n51(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n53(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n52(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n53(_uploadFile, _downloadFile, value.topped_up_amount))
-      };
-    }
-    function from_candid_record_n79(_uploadFile, _downloadFile, value) {
-      return {
-        hasMore: value.hasMore,
-        rows: from_candid_vec_n80(_uploadFile, _downloadFile, value.rows)
+        success: record_opt_to_undefined(from_candid_opt_n54(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n55(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
     function from_candid_record_n83(_uploadFile, _downloadFile, value) {
       return {
-        value: from_candid_Value_n84(_uploadFile, _downloadFile, value.value),
+        hasMore: value.hasMore,
+        rows: from_candid_vec_n84(_uploadFile, _downloadFile, value.rows)
+      };
+    }
+    function from_candid_record_n87(_uploadFile, _downloadFile, value) {
+      return {
+        value: from_candid_Value_n88(_uploadFile, _downloadFile, value.value),
         name: value.name
       };
     }
@@ -35609,10 +35628,10 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_tuple_n42(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n44(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n43(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n45(_uploadFile, _downloadFile, value[1])
       ];
     }
     function from_candid_variant_n21(_uploadFile, _downloadFile, value) {
@@ -35642,19 +35661,22 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function from_candid_variant_n46(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n41(_uploadFile, _downloadFile, value) {
+      return "library" in value ? "library" : "orientation" in value ? "orientation" : value;
+    }
+    function from_candid_variant_n48(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n55(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n57(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n56(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n58(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n57(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n59(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -35690,7 +35712,7 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
       return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
     }
-    function from_candid_variant_n85(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n89(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -35711,7 +35733,7 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n88(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n92(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
     }
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
@@ -35735,120 +35757,129 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_vec_n37(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Position_n38(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n41(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n42(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n43(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n44(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n80(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n81(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n84(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n85(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n81(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n82(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n85(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n86(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n86(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n43(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n90(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n45(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_ActivityContent_n64(_uploadFile, _downloadFile, value) {
+    function to_candid_ActivityContent_n66(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n67(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_ActivityType_n64(_uploadFile, _downloadFile, value) {
       return to_candid_variant_n65(_uploadFile, _downloadFile, value);
     }
-    function to_candid_ActivityType_n62(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n63(_uploadFile, _downloadFile, value);
+    function to_candid_AssignmentStatus_n110(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n111(_uploadFile, _downloadFile, value);
     }
-    function to_candid_AssignmentStatus_n106(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n107(_uploadFile, _downloadFile, value);
+    function to_candid_BuildActivityInput_n62(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n63(_uploadFile, _downloadFile, value);
     }
-    function to_candid_BuildActivityInput_n60(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n61(_uploadFile, _downloadFile, value);
+    function to_candid_FlashcardContent_n68(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n69(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FlashcardContent_n66(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n67(_uploadFile, _downloadFile, value);
+    function to_candid_Flashcard_n70(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n71(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Flashcard_n68(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n69(_uploadFile, _downloadFile, value);
+    function to_candid_LayoutStyle_n80(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n81(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportInput_n97(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n98(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportInput_n101(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n102(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportPhase_n100(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n101(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportPhase_n104(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n105(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportTask_n103(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n104(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportTask_n107(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n108(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Question_n72(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n73(_uploadFile, _downloadFile, value);
+    function to_candid_Question_n74(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n75(_uploadFile, _downloadFile, value);
     }
-    function to_candid_QuizContent_n70(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n71(_uploadFile, _downloadFile, value);
+    function to_candid_QuizContent_n72(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n73(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Recipe_n76(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n77(_uploadFile, _downloadFile, value);
+    function to_candid_Recipe_n78(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n79(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n108(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n109(_uploadFile, _downloadFile, value);
+    function to_candid_Role_n112(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n113(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UpdateActivityInput_n110(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n111(_uploadFile, _downloadFile, value);
+    function to_candid_UpdateActivityInput_n114(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n115(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n58(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n59(_uploadFile, _downloadFile, value);
+    function to_candid_UserRole_n60(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n61(_uploadFile, _downloadFile, value);
     }
-    function to_candid__ImmutableObjectStorageRefillInformation_n48(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n49(_uploadFile, _downloadFile, value);
+    function to_candid__ImmutableObjectStorageRefillInformation_n50(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n51(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n40(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n42(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n47(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n48(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n49(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n50(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n74(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n76(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n75(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid_Recipe_n76(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n77(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_Recipe_n78(_uploadFile, _downloadFile, value));
     }
-    function to_candid_record_n101(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n102(_uploadFile, _downloadFile, value) {
       return {
-        tasks: to_candid_vec_n102(_uploadFile, _downloadFile, value.tasks),
+        moduleName: value.moduleName,
+        phases: to_candid_vec_n103(_uploadFile, _downloadFile, value.phases)
+      };
+    }
+    function to_candid_record_n105(_uploadFile, _downloadFile, value) {
+      return {
+        tasks: to_candid_vec_n106(_uploadFile, _downloadFile, value.tasks),
         name: value.name
       };
     }
-    function to_candid_record_n104(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n108(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         section: value.section ? candid_some(value.section) : candid_none(),
         notes: value.notes ? candid_some(value.notes) : candid_none()
       };
     }
-    function to_candid_record_n111(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n115(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        content: value.content ? candid_some(to_candid_ActivityContent_n64(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        content: value.content ? candid_some(to_candid_ActivityContent_n66(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         sourceCategoryIds: value.sourceCategoryIds
       };
     }
-    function to_candid_record_n49(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n51(_uploadFile, _downloadFile, value) {
       return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
       };
     }
-    function to_candid_record_n61(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n63(_uploadFile, _downloadFile, value) {
       return {
-        activityType: to_candid_ActivityType_n62(_uploadFile, _downloadFile, value.activityType),
-        content: value.content ? candid_some(to_candid_ActivityContent_n64(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        activityType: to_candid_ActivityType_n64(_uploadFile, _downloadFile, value.activityType),
+        content: value.content ? candid_some(to_candid_ActivityContent_n66(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds
       };
     }
-    function to_candid_record_n69(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n71(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
@@ -35856,7 +35887,7 @@ variant ${k2} -> ${e.message}`, {
         recipe: value.recipe ? candid_some(value.recipe) : candid_none()
       };
     }
-    function to_candid_record_n77(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n79(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         glassware: value.glassware,
@@ -35869,27 +35900,21 @@ variant ${k2} -> ${e.message}`, {
         yield: value.yield ? candid_some(value.yield) : candid_none()
       };
     }
-    function to_candid_record_n98(_uploadFile, _downloadFile, value) {
-      return {
-        moduleName: value.moduleName,
-        phases: to_candid_vec_n99(_uploadFile, _downloadFile, value.phases)
-      };
-    }
-    function to_candid_variant_n105(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n109(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n107(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n111(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n109(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n113(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -35900,7 +35925,7 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_variant_n59(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n61(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -35909,7 +35934,7 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n63(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n65(_uploadFile, _downloadFile, value) {
       return value == "drinksBuilder" ? {
         drinksBuilder: null
       } : value == "quiz" ? {
@@ -35918,16 +35943,16 @@ variant ${k2} -> ${e.message}`, {
         flashcards: null
       } : value;
     }
-    function to_candid_variant_n65(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n67(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "drinksBuilderContent" ? {
         drinksBuilderContent: value.drinksBuilderContent
       } : value.__kind__ === "quizContent" ? {
-        quizContent: to_candid_QuizContent_n70(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: to_candid_QuizContent_n72(_uploadFile, _downloadFile, value.quizContent)
       } : value.__kind__ === "flashcardContent" ? {
-        flashcardContent: to_candid_FlashcardContent_n66(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: to_candid_FlashcardContent_n68(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function to_candid_variant_n73(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n75(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "multipleChoice" ? {
         multipleChoice: value.multipleChoice
       } : value.__kind__ === "matching" ? {
@@ -35936,17 +35961,24 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function to_candid_vec_n102(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n103(_uploadFile, _downloadFile, x2));
+    function to_candid_variant_n81(_uploadFile, _downloadFile, value) {
+      return value == "library" ? {
+        library: null
+      } : value == "orientation" ? {
+        orientation: null
+      } : value;
     }
-    function to_candid_vec_n67(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Flashcard_n68(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n103(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n104(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n71(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Question_n72(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n106(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n107(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n99(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n100(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n69(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Flashcard_n70(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_vec_n73(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Question_n74(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -38915,11 +38947,33 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$H = [
+    const __iconNode$J = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$H);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$J);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$I = [
+      ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+      ["path", { d: "M19 12H5", key: "x3x0zl" }]
+    ];
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$I);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$H = [
+      ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+      ["path", { d: "M12 19V5", key: "x0mq9r" }]
+    ];
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$H);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -38927,28 +38981,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$G = [
-      ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-      ["path", { d: "M19 12H5", key: "x3x0zl" }]
-    ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$G);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$F = [
-      ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-      ["path", { d: "M12 19V5", key: "x0mq9r" }]
-    ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$F);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$E = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -38958,14 +38990,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$E);
+    const BookOpen = createLucideIcon("book-open", __iconNode$G);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$D = [
+    const __iconNode$F = [
       [
         "path",
         {
@@ -38988,73 +39020,73 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
       ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
     ];
-    const Brain = createLucideIcon("brain", __iconNode$D);
+    const Brain = createLucideIcon("brain", __iconNode$F);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$C = [
+    const __iconNode$E = [
       ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
       ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
     ];
-    const CheckCheck = createLucideIcon("check-check", __iconNode$C);
+    const CheckCheck = createLucideIcon("check-check", __iconNode$E);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$B = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$B);
+    const __iconNode$D = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$D);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$A = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$A);
+    const __iconNode$C = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$C);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$z = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$z);
+    const __iconNode$B = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$y = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-    const ChevronRight = createLucideIcon("chevron-right", __iconNode$y);
+    const __iconNode$A = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$x = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$x);
+    const __iconNode$z = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$z);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$w = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$w);
+    const __iconNode$y = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$y);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$v = [
+    const __iconNode$x = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -39068,14 +39100,31 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$v);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$x);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$u = [
+    const __iconNode$w = [
+      [
+        "path",
+        {
+          d: "m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z",
+          key: "9ktpf1"
+        }
+      ],
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+    ];
+    const Compass = createLucideIcon("compass", __iconNode$w);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$v = [
       [
         "path",
         {
@@ -39084,14 +39133,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Flame = createLucideIcon("flame", __iconNode$u);
+    const Flame = createLucideIcon("flame", __iconNode$v);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$t = [
+    const __iconNode$u = [
       ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
       ["path", { d: "m18 15 4-4", key: "16gjal" }],
       [
@@ -39102,7 +39151,24 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Hammer = createLucideIcon("hammer", __iconNode$t);
+    const Hammer = createLucideIcon("hammer", __iconNode$u);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$t = [
+      [
+        "path",
+        {
+          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+          key: "c3ymky"
+        }
+      ],
+      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+    ];
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$t);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39116,10 +39182,9 @@ variant ${k2} -> ${e.message}`, {
           d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
           key: "c3ymky"
         }
-      ],
-      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+      ]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$s);
+    const Heart = createLucideIcon("heart", __iconNode$s);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39127,22 +39192,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$r = [
-      [
-        "path",
-        {
-          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
-          key: "c3ymky"
-        }
-      ]
-    ];
-    const Heart = createLucideIcon("heart", __iconNode$r);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$q = [
       ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
       ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
       ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
@@ -39156,14 +39205,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
     ];
-    const ImageOff = createLucideIcon("image-off", __iconNode$q);
+    const ImageOff = createLucideIcon("image-off", __iconNode$r);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$p = [
+    const __iconNode$q = [
       [
         "path",
         {
@@ -39186,7 +39235,20 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$p);
+    const Layers = createLucideIcon("layers", __iconNode$q);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$p = [
+      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
+      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+    ];
+    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$p);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -47806,14 +47868,18 @@ variant ${k2} -> ${e.message}`, {
       );
     }
     const QUERY_KEY$2 = ["all-positions"];
-    function toPosition(p2) {
+    function toPosition$1(p2) {
       return {
         id: p2.id.toString(),
         name: p2.name,
         description: p2.description ?? "",
         coverPhoto: p2.coverPhoto,
-        sortOrder: Number(p2.sortOrder)
+        sortOrder: Number(p2.sortOrder),
+        layoutStyle: p2.layoutStyle === LayoutStyle.orientation ? "orientation" : "library"
       };
+    }
+    function toBackendLayoutStyle(value) {
+      return value === "orientation" ? LayoutStyle.orientation : LayoutStyle.library;
     }
     function useAllPositions() {
       const { actor, isFetching } = useBackend();
@@ -47822,7 +47888,7 @@ variant ${k2} -> ${e.message}`, {
         queryFn: async () => {
           if (!actor) return [];
           const result = await actor.getAllPositions();
-          return result.map(toPosition);
+          return result.map(toPosition$1);
         },
         enabled: !!actor && !isFetching
       });
@@ -47836,9 +47902,10 @@ variant ${k2} -> ${e.message}`, {
           const result = await actor.createPosition(
             input.name,
             input.description.length > 0 ? input.description : null,
-            input.coverPhoto && input.coverPhoto.length > 0 ? input.coverPhoto : null
+            input.coverPhoto && input.coverPhoto.length > 0 ? input.coverPhoto : null,
+            toBackendLayoutStyle(input.layoutStyle)
           );
-          return toPosition(result);
+          return toPosition$1(result);
         },
         onSuccess: () => {
           queryClient2.invalidateQueries({ queryKey: QUERY_KEY$2 });
@@ -47855,9 +47922,10 @@ variant ${k2} -> ${e.message}`, {
             BigInt(input.id),
             input.name,
             input.description.length > 0 ? input.description : null,
-            input.coverPhoto && input.coverPhoto.length > 0 ? input.coverPhoto : null
+            input.coverPhoto && input.coverPhoto.length > 0 ? input.coverPhoto : null,
+            toBackendLayoutStyle(input.layoutStyle)
           );
-          return toPosition(result);
+          return toPosition$1(result);
         },
         onSuccess: () => {
           queryClient2.invalidateQueries({ queryKey: QUERY_KEY$2 });
@@ -48313,6 +48381,20 @@ variant ${k2} -> ${e.message}`, {
         );
       }
     );
+    const LAYOUT_OPTIONS = [
+      {
+        value: "library",
+        label: "Library",
+        description: "Search box + category tile grid",
+        icon: LayoutGrid
+      },
+      {
+        value: "orientation",
+        label: "Orientation",
+        description: "Patriotic onboarding layout",
+        icon: Compass
+      }
+    ];
     function PositionFormDialog({
       open,
       onOpenChange,
@@ -48323,6 +48405,7 @@ variant ${k2} -> ${e.message}`, {
       const [name, setName] = reactExports.useState("");
       const [description, setDescription] = reactExports.useState("");
       const [coverPhoto, setCoverPhoto] = reactExports.useState("");
+      const [layoutStyle, setLayoutStyle] = reactExports.useState("library");
       const [touched, setTouched] = reactExports.useState(false);
       const createMutation = useCreatePosition();
       const updateMutation = useUpdatePosition();
@@ -48331,6 +48414,7 @@ variant ${k2} -> ${e.message}`, {
           setName((position == null ? void 0 : position.name) ?? "");
           setDescription((position == null ? void 0 : position.description) ?? "");
           setCoverPhoto((position == null ? void 0 : position.coverPhoto) ?? "");
+          setLayoutStyle((position == null ? void 0 : position.layoutStyle) ?? "library");
           setTouched(false);
         }
       }, [open, position]);
@@ -48350,14 +48434,16 @@ variant ${k2} -> ${e.message}`, {
               id: position.id,
               name: trimmedName,
               description: trimmedDesc,
-              coverPhoto: trimmedPhoto.length > 0 ? trimmedPhoto : void 0
+              coverPhoto: trimmedPhoto.length > 0 ? trimmedPhoto : void 0,
+              layoutStyle
             });
             ue.success("Position updated");
           } else {
             await createMutation.mutateAsync({
               name: trimmedName,
               description: trimmedDesc,
-              coverPhoto: trimmedPhoto.length > 0 ? trimmedPhoto : void 0
+              coverPhoto: trimmedPhoto.length > 0 ? trimmedPhoto : void 0,
+              layoutStyle
             });
             ue.success("Position created");
           }
@@ -48455,6 +48541,59 @@ variant ${k2} -> ${e.message}`, {
                   onChange: (v2) => setCoverPhoto(v2 ?? "")
                 }
               ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    className: "font-heading uppercase text-xs tracking-wider",
+                    "data-ocid": "position.layout_style.label",
+                    children: "Layout"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    "aria-label": "Position layout",
+                    className: "grid grid-cols-2 gap-2",
+                    "data-ocid": "position.layout_style.toggle",
+                    children: LAYOUT_OPTIONS.map((opt) => {
+                      const selected = layoutStyle === opt.value;
+                      const Icon2 = opt.icon;
+                      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "button",
+                        {
+                          type: "button",
+                          "aria-pressed": selected,
+                          onClick: () => setLayoutStyle(opt.value),
+                          "data-ocid": `position.layout_style.${opt.value}.toggle`,
+                          className: cn(
+                            "flex items-start gap-2.5 rounded-md border p-3 text-left transition-smooth",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                            selected ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                          ),
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              Icon2,
+                              {
+                                className: cn(
+                                  "mt-0.5 size-4 shrink-0",
+                                  selected ? "text-primary" : "text-muted-foreground"
+                                ),
+                                "aria-hidden": "true"
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "grid gap-0.5", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wider", children: opt.label }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs normal-case text-muted-foreground", children: opt.description })
+                            ] })
+                          ]
+                        },
+                        opt.value
+                      );
+                    })
+                  }
+                )
+              ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Button,
@@ -69994,7 +70133,8 @@ ${escapeText(this.code(index2, length))}
       bartender: "/assets/positions/bartender.webp",
       server: "/assets/positions/server.webp",
       host: "/assets/positions/host.webp",
-      "server-support": "/assets/positions/server-support.webp"
+      "server-support": "/assets/positions/server-support.webp",
+      "legendary-starts-here": "/assets/positions/legendary-starts-here.webp"
     };
     function positionHeadshotSlug(name) {
       return name.toLowerCase().trim().replace(/[\s-]+/g, "-");
@@ -70021,29 +70161,23 @@ ${escapeText(this.code(index2, length))}
           "data-ocid": `position.tile.${index2 + 1}`,
           "aria-label": `${position.name} — ${toneLabel(tone)}`,
           children: [
-            position.coverPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[16/9] w-full overflow-hidden bg-muted", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "img",
-                {
-                  src: position.coverPhoto,
-                  alt: `${position.name} Roadie at work`,
-                  loading: "lazy",
-                  className: "size-full object-cover transition-smooth group-hover:opacity-90"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/30", "aria-hidden": true })
-            ] }) : headshot ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[16/9] w-full overflow-hidden bg-muted", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "img",
-                {
-                  src: headshot,
-                  alt: `${position.name} Roadie at work`,
-                  loading: "lazy",
-                  className: "size-full object-cover transition-smooth group-hover:opacity-90"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/30", "aria-hidden": true })
-            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative aspect-[16/9] w-full bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-5xl uppercase leading-none text-muted-foreground/40", children: position.name.slice(0, 1) }) }) }),
+            position.coverPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative aspect-[16/9] w-full overflow-hidden bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: position.coverPhoto,
+                alt: `${position.name} Roadie at work`,
+                loading: "lazy",
+                className: "size-full object-cover transition-smooth group-hover:opacity-90"
+              }
+            ) }) : headshot ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative aspect-[16/9] w-full overflow-hidden bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: headshot,
+                alt: `${position.name} Roadie at work`,
+                loading: "lazy",
+                className: "size-full object-cover transition-smooth group-hover:opacity-90"
+              }
+            ) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative aspect-[16/9] w-full bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-5xl uppercase leading-none text-muted-foreground/40", children: position.name.slice(0, 1) }) }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 items-center justify-between gap-3 px-4 py-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase leading-tight tracking-wide text-foreground", children: position.name }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBadge, { tone })
@@ -72898,9 +73032,805 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    const MISSION_NAME = "Mission Statement";
+    const CORE_VALUES_NAME = "Core Values";
+    const OUR_STORY_NAME = "Our Story";
+    const OPERATIONAL_GOALS_NAME = "Operational Goals";
+    const SERVICE_PRIORITIES_NAME = "Service Priorities";
+    const FOOD_PRIORITIES_NAME = "Food Priorities";
+    function findField(item, needle) {
+      const lower = needle.toLowerCase();
+      const hit = item.details.find(
+        (d2) => d2.fieldLabel.toLowerCase().includes(lower)
+      );
+      return hit && hit.value.trim().length > 0 ? hit.value : null;
+    }
+    function decodeHtmlEntities(s) {
+      return s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    }
+    function isCapstoneItem(item) {
+      return item.title.toLowerCase().includes("all with purpose");
+    }
+    function isOverviewItem(item) {
+      const t = item.title.toLowerCase();
+      return t === "our core values" || t === "core values";
+    }
+    function abbreviate(name) {
+      return name.split(/\s+/).map((w2) => w2.charAt(0).toUpperCase()).join("").slice(0, 4);
+    }
+    function OrientationLayout({
+      positionId,
+      positionName,
+      positionDescription
+    }) {
+      const categoriesQuery = useCategoriesByPosition(positionId);
+      const categories = reactExports.useMemo(
+        () => [...categoriesQuery.data ?? []].sort(
+          (a2, b2) => a2.sortOrder - b2.sortOrder
+        ),
+        [categoriesQuery.data]
+      );
+      const nameIndex = reactExports.useMemo(() => {
+        const idx = /* @__PURE__ */ new Map();
+        for (const c2 of categories) {
+          const key = c2.name.trim().toLowerCase();
+          if (!idx.has(key)) idx.set(key, c2);
+        }
+        return idx;
+      }, [categories]);
+      const findCategory = (name) => nameIndex.get(name.trim().toLowerCase()) ?? null;
+      const missionCategory = findCategory(MISSION_NAME);
+      const coreValuesCategory = findCategory(CORE_VALUES_NAME);
+      const ourStoryCategory = findCategory(OUR_STORY_NAME);
+      const operationalGoalsCategory = findCategory(OPERATIONAL_GOALS_NAME);
+      const servicePrioritiesCategory = findCategory(SERVICE_PRIORITIES_NAME);
+      const foodPrioritiesCategory = findCategory(FOOD_PRIORITIES_NAME);
+      const heroCategoryIds = new Set(
+        [
+          missionCategory,
+          coreValuesCategory,
+          ourStoryCategory,
+          operationalGoalsCategory,
+          servicePrioritiesCategory,
+          foodPrioritiesCategory
+        ].filter((c2) => c2 !== null).map((c2) => c2.id)
+      );
+      const rulesCategories = categories.filter((c2) => !heroCategoryIds.has(c2.id));
+      if (categoriesQuery.isLoading) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(OrientationSkeleton, {});
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-8", "data-ocid": "orientation.page", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BackLink$1, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BuntingStrip, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Hero,
+          {
+            positionName,
+            positionDescription
+          }
+        ),
+        missionCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(MissionBand, { positionId, category: missionCategory }) : null,
+        coreValuesCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CoreValuesSection,
+          {
+            positionId,
+            category: coreValuesCategory
+          }
+        ) : null,
+        ourStoryCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(OurStorySection, { positionId, category: ourStoryCategory }) : null,
+        operationalGoalsCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OperationalGoalsSection,
+          {
+            positionId,
+            category: operationalGoalsCategory
+          }
+        ) : null,
+        servicePrioritiesCategory || foodPrioritiesCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          PrioritiesSection,
+          {
+            positionId,
+            serviceCategory: servicePrioritiesCategory,
+            foodCategory: foodPrioritiesCategory
+          }
+        ) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(BeLegendaryCta, { positionId }),
+        rulesCategories.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(RulesOfTheRoad, { positionId, categories: rulesCategories }) : null
+      ] });
+    }
+    function BackLink$1() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          variant: "ghost",
+          size: "sm",
+          asChild: true,
+          "data-ocid": "orientation.back_button",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+            "Back to positions"
+          ] })
+        }
+      );
+    }
+    function BuntingStrip() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "orientation-bunting",
+          role: "presentation",
+          "aria-hidden": true,
+          "data-ocid": "orientation.bunting"
+        }
+      );
+    }
+    function Hero({
+      positionName,
+      positionDescription
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "orientation-hero px-5 py-8 sm:px-8 sm:py-10",
+          "data-ocid": "orientation.hero.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "orientation-hero-kicker text-xs sm:text-sm",
+                "data-ocid": "orientation.hero.kicker",
+                children: "★ Your First Stop · Roadie Nation ★"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "orientation-hero-title mt-3 text-5xl sm:text-6xl md:text-7xl",
+                "data-ocid": "orientation.hero.title",
+                children: positionName
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "orientation-flag-bar mt-4 max-w-md",
+                "aria-hidden": true,
+                "data-ocid": "orientation.hero.flag_bar",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+                ]
+              }
+            ),
+            positionDescription && positionDescription.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mt-4 max-w-2xl font-body text-base leading-relaxed text-patriotic-cream/90 sm:text-lg",
+                "data-ocid": "orientation.hero.description",
+                children: positionDescription
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function MissionBand({
+      positionId,
+      category
+    }) {
+      const itemsQuery = useItemsByCategory(category.id);
+      const items = itemsQuery.data ?? [];
+      const missionItem = items.find((i) => findField(i, "Mission")) ?? null;
+      const missionText = missionItem ? findField(missionItem, "Mission") : null;
+      const missionSubtitle = (missionItem == null ? void 0 : missionItem.notes) ?? null;
+      if (!missionText) return null;
+      const itemTo = missionItem ? `/position/${positionId}/library/${category.id}/item/${missionItem.id}` : `/position/${positionId}/library/${category.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "orientation-mission",
+          "data-ocid": "orientation.mission.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-tri-stripe-top", "aria-hidden": true, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "orientation-mission-label text-sm sm:text-base",
+                "data-ocid": "orientation.mission.label",
+                children: "★ Our Mission ★"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Link$1,
+              {
+                to: itemTo,
+                className: "mt-4 block rounded-md transition-smooth hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "data-ocid": "orientation.mission.headline_link",
+                "aria-label": "Open mission item",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "h2",
+                  {
+                    className: "orientation-mission-headline text-4xl sm:text-5xl md:text-6xl",
+                    "data-ocid": "orientation.mission.headline",
+                    children: missionText
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "orientation-star-row mt-4 text-xl",
+                "aria-hidden": true,
+                "data-ocid": "orientation.mission.stars",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "★" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "★" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "★" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "★" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "★" })
+                ]
+              }
+            ),
+            missionSubtitle ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mx-auto mt-4 max-w-2xl font-body text-base leading-relaxed text-patriotic-cream/80 sm:text-lg",
+                "data-ocid": "orientation.mission.subtitle",
+                children: missionSubtitle
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function CoreValuesSection({
+      positionId,
+      category
+    }) {
+      const itemsQuery = useItemsByCategory(category.id);
+      const items = itemsQuery.data ?? [];
+      const overview = items.find(isOverviewItem) ?? null;
+      const capstone = items.find(isCapstoneItem) ?? null;
+      const valueItems = items.filter(
+        (i) => !isOverviewItem(i) && !isCapstoneItem(i)
+      );
+      if (valueItems.length === 0 && !capstone) return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.core_values.section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "01", heading: "Our Core Values" }),
+        (overview == null ? void 0 : overview.notes) ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "mt-4 max-w-2xl font-body text-base text-patriotic-cream/80",
+            "data-ocid": "orientation.core_values.intro",
+            children: overview.notes
+          }
+        ) : null,
+        valueItems.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2",
+            "data-ocid": "orientation.core_values.grid",
+            children: valueItems.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ValueCard,
+              {
+                item,
+                positionId,
+                categoryId: category.id,
+                index: index2
+              },
+              item.id
+            ))
+          }
+        ) : null,
+        capstone ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CapstoneBar,
+          {
+            item: capstone,
+            positionId,
+            categoryId: category.id
+          }
+        ) : null
+      ] });
+    }
+    function ValueCard({
+      item,
+      positionId,
+      categoryId,
+      index: index2
+    }) {
+      const meaning = findField(item, "Meaning") ?? item.notes ?? "";
+      const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Link$1,
+        {
+          to,
+          className: cn(
+            "orientation-value-card group block py-4 pr-4 transition-smooth",
+            "hover:border-patriotic-blue/60",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": `orientation.core_values.card.${index2 + 1}`,
+          "aria-label": `Open ${item.title}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Star,
+                {
+                  className: "orientation-value-star size-4",
+                  fill: "currentColor",
+                  "aria-hidden": true
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "orientation-value-name text-lg", children: item.title })
+            ] }),
+            meaning ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body text-sm leading-relaxed text-patriotic-cream/80", children: meaning }) : null
+          ]
+        }
+      );
+    }
+    function CapstoneBar({
+      item,
+      positionId,
+      categoryId
+    }) {
+      const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Link$1,
+        {
+          to,
+          className: "orientation-capstone mt-4 block px-5 py-4 text-center transition-smooth hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "data-ocid": "orientation.core_values.capstone",
+          "aria-label": `Open ${item.title}`,
+          children: item.title
+        }
+      );
+    }
+    function OurStorySection({
+      positionId,
+      category
+    }) {
+      const itemsQuery = useItemsByCategory(category.id);
+      const items = itemsQuery.data ?? [];
+      const item = items[0] ?? null;
+      const knownFor = item ? findField(item, "Known for") : null;
+      const thisMeans = item ? findField(item, "This means we have") : null;
+      const thisMeansItems = reactExports.useMemo(() => {
+        if (!thisMeans) return [];
+        return decodeHtmlEntities(thisMeans).split(";").map((s) => s.trim()).filter((s) => s.length > 0);
+      }, [thisMeans]);
+      if (!item) return null;
+      const to = `/position/${positionId}/library/${category.id}/item/${item.id}`;
+      const knownForText = knownFor ? decodeHtmlEntities(knownFor) : null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.our_story.section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "02", heading: "Our Story" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "mt-5 rounded-lg border border-border bg-card p-6 sm:p-8",
+            "data-ocid": "orientation.our_story.card",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "bubba-poster-frame",
+                "data-ocid": "orientation.our_story.frame",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "bubba-poster-field",
+                    "data-ocid": "orientation.our_story.field",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "orientation.our_story.logo", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          className: "bubba-poster-logo text-4xl sm:text-5xl",
+                          "aria-label": "Bubba's 33",
+                          children: "Bubba's 33"
+                        }
+                      ) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "bubba-poster-hero",
+                          "data-ocid": "orientation.our_story.hero",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-hero-img", "aria-hidden": true })
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "bubba-poster-banner text-sm sm:text-base",
+                          "data-ocid": "orientation.our_story.banner",
+                          children: "Scratch-Made"
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "bubba-poster-headline",
+                          "data-ocid": "orientation.our_story.headline",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-headline-script text-5xl sm:text-6xl", children: "Food" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-headline-block text-3xl sm:text-4xl", children: "FOR" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-headline-script text-5xl sm:text-6xl", children: "All" })
+                          ]
+                        }
+                      ),
+                      knownForText ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { "data-ocid": "orientation.our_story.known_for", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "p",
+                          {
+                            className: "bubba-poster-knownfor-kicker",
+                            "data-ocid": "orientation.our_story.known_for.label",
+                            children: "Known For"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "p",
+                          {
+                            className: "bubba-poster-knownfor-body text-sm sm:text-base",
+                            "data-ocid": "orientation.our_story.known_for.value",
+                            children: knownForText
+                          }
+                        )
+                      ] }) : null,
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "bubba-poster-cluster",
+                          "data-ocid": "orientation.our_story.cluster",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-cluster-img", "aria-hidden": true })
+                        }
+                      ),
+                      thisMeansItems.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "p",
+                          {
+                            className: "bubba-poster-list-label text-xl sm:text-2xl",
+                            "data-ocid": "orientation.our_story.list_label",
+                            children: "This means we have:"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "ul",
+                          {
+                            className: "bubba-poster-list text-sm sm:text-base",
+                            "data-ocid": "orientation.our_story.list",
+                            children: thisMeansItems.map((line, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              "li",
+                              {
+                                className: "bubba-poster-list-item",
+                                "data-ocid": `orientation.our_story.list.item.${index2 + 1}`,
+                                children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: line })
+                              },
+                              line
+                            ))
+                          }
+                        )
+                      ] }) : null,
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "bubba-poster-footer",
+                          "data-ocid": "orientation.our_story.footer",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Button,
+                            {
+                              variant: "ghost",
+                              size: "sm",
+                              asChild: true,
+                              className: "text-patriotic-cream/80 hover:text-patriotic-cream",
+                              "data-ocid": "orientation.our_story.back_button",
+                              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to, children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+                                "Back to category"
+                              ] })
+                            }
+                          )
+                        }
+                      )
+                    ]
+                  }
+                )
+              }
+            )
+          }
+        )
+      ] });
+    }
+    function OperationalGoalsSection({
+      positionId,
+      category
+    }) {
+      const itemsQuery = useItemsByCategory(category.id);
+      const items = itemsQuery.data ?? [];
+      const item = items[0] ?? null;
+      if (!item || item.details.length === 0) return null;
+      const to = `/position/${positionId}/library/${category.id}/item/${item.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.operational_goals.section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "03", heading: "Operational Goals" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2",
+            "data-ocid": "orientation.operational_goals.grid",
+            children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              GoalCard,
+              {
+                label: field.fieldLabel,
+                value: field.value,
+                to,
+                index: index2
+              },
+              field.id
+            ))
+          }
+        )
+      ] });
+    }
+    function GoalCard({
+      label,
+      value,
+      to,
+      index: index2
+    }) {
+      const abbr = abbreviate(label);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Link$1,
+        {
+          to,
+          className: cn(
+            "orientation-goal-card group block p-4 transition-smooth hover:brightness-110",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": `orientation.operational_goals.card.${index2 + 1}`,
+          "aria-label": `Open ${label} goal`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Star,
+              {
+                className: "orientation-goal-star size-4",
+                fill: "currentColor",
+                "aria-hidden": true
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "orientation-goal-tag",
+                "data-ocid": `orientation.operational_goals.tag.${index2 + 1}`,
+                children: abbr
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "orientation-goal-name mt-3 text-lg", children: label }),
+            value ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 font-body text-sm leading-relaxed text-patriotic-cream/75", children: value }) : null
+          ]
+        }
+      );
+    }
+    function PrioritiesSection({
+      positionId,
+      serviceCategory,
+      foodCategory
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.priorities.section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "04", heading: "Service & Food Priorities" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2",
+            "data-ocid": "orientation.priorities.grid",
+            children: [
+              serviceCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                PriorityCard,
+                {
+                  category: serviceCategory,
+                  positionId,
+                  tone: "red",
+                  label: "10 Steps to Service"
+                }
+              ) : null,
+              foodCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                PriorityCard,
+                {
+                  category: foodCategory,
+                  positionId,
+                  tone: "blue",
+                  label: "10 Daily Essentials"
+                }
+              ) : null
+            ]
+          }
+        )
+      ] });
+    }
+    function PriorityCard({
+      category,
+      positionId,
+      tone,
+      label
+    }) {
+      const to = `/position/${positionId}/library/${category.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Link$1,
+        {
+          to,
+          className: cn(
+            "orientation-priority-card group block p-5 transition-smooth hover:brightness-110",
+            tone === "red" ? "is-red" : "is-blue",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": `orientation.priorities.card.${tone}`,
+          "aria-label": `Open ${category.name}`,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "orientation-priority-number text-7xl sm:text-8xl",
+                "data-ocid": `orientation.priorities.number.${tone}`,
+                children: "10"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h3",
+              {
+                className: "mt-2 font-heading text-lg uppercase tracking-wide text-patriotic-cream",
+                "data-ocid": `orientation.priorities.label.${tone}`,
+                children: label
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 font-body text-sm text-patriotic-cream/70", children: category.name })
+          ] })
+        }
+      );
+    }
+    function BeLegendaryCta({ positionId }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "orientation-cta px-5 py-8 sm:px-8",
+          "data-ocid": "orientation.cta.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-tri-stripe-top", "aria-hidden": true, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "orientation-cta-label mt-4 text-sm sm:text-base",
+                "data-ocid": "orientation.cta.label",
+                children: "★ Be Legendary"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h2",
+              {
+                className: "mt-2 font-display text-4xl uppercase text-patriotic-cream sm:text-5xl",
+                "data-ocid": "orientation.cta.title",
+                children: "Prove Your Mastery"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Link$1,
+              {
+                to: "/position/$id/legendary",
+                params: { id: positionId },
+                className: "orientation-cta-enter mt-5 inline-block text-sm sm:text-base",
+                "data-ocid": "orientation.cta.enter_button",
+                "aria-label": "Enter Be Legendary practice area",
+                children: "Enter"
+              }
+            )
+          ]
+        }
+      );
+    }
+    function RulesOfTheRoad({
+      positionId,
+      categories
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.rules.section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "05", heading: "The Rules of the Road" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "orientation-rules-grid mt-5",
+            "data-ocid": "orientation.rules.grid",
+            children: categories.map((category, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              RuleTile,
+              {
+                category,
+                positionId,
+                index: index2
+              },
+              category.id
+            ))
+          }
+        )
+      ] });
+    }
+    function RuleTile({
+      category,
+      positionId,
+      index: index2
+    }) {
+      const to = `/position/${positionId}/library/${category.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Link$1,
+        {
+          to,
+          className: cn(
+            "orientation-rule-tile group block transition-smooth hover:border-patriotic-blue/60",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": `orientation.rules.tile.${index2 + 1}`,
+          "aria-label": `Open ${category.name} category`,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide text-patriotic-cream", children: category.name })
+        }
+      );
+    }
+    function SectionDivider({
+      number,
+      heading
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "orientation-divider",
+          "data-ocid": `orientation.divider.${number}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "orientation-divider-number text-3xl", "aria-hidden": true, children: number }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h2",
+                {
+                  className: "orientation-divider-heading text-xl sm:text-2xl",
+                  "data-ocid": `orientation.divider.${number}.heading`,
+                  children: heading
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Star,
+                {
+                  className: "orientation-value-star size-4",
+                  fill: "currentColor",
+                  "aria-hidden": true
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "orientation-divider-rule", "aria-hidden": true })
+          ]
+        }
+      );
+    }
+    function OrientationSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-6", "data-ocid": "orientation.loading_state", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-8 w-36" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "orientation-bunting", "aria-hidden": true }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-64 w-full rounded-md" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-40 w-full rounded-md" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-32 w-full rounded-md" })
+      ] });
+    }
     function PositionDetailRoute() {
       const { id } = useParams({ strict: false });
       return /* @__PURE__ */ jsxRuntimeExports.jsx(PositionDetailPage, { positionId: String(id ?? "") });
+    }
+    function toPosition(p2) {
+      return {
+        id: p2.id.toString(),
+        name: p2.name,
+        description: p2.description ?? "",
+        coverPhoto: p2.coverPhoto,
+        sortOrder: Number(p2.sortOrder),
+        layoutStyle: p2.layoutStyle === LayoutStyle.orientation ? "orientation" : "library"
+      };
     }
     function PositionDetailPage({
       positionId
@@ -72912,7 +73842,7 @@ Defaulting to \`null\`.`;
         queryFn: async () => {
           if (!actor) return null;
           const result = await actor.getPosition(BigInt(positionId));
-          return result ?? null;
+          return result ? toPosition(result) : null;
         },
         enabled: !!actor && !isFetching && !!positionId
       });
@@ -72949,6 +73879,19 @@ Defaulting to \`null\`.`;
       }
       const assignment = assignments == null ? void 0 : assignments.find((a2) => a2.positionId === positionId);
       const tone = assignment ? assignment.status === "certified" ? "certified" : "inTraining" : "notStarted";
+      if ((position == null ? void 0 : position.layoutStyle) === "orientation") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OrientationLayout,
+            {
+              positionId,
+              positionName: position.name,
+              positionDescription: position.description || void 0
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBadge, { tone, className: "mt-8" })
+        ] });
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(BackLink, {}),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "mt-4", children: [

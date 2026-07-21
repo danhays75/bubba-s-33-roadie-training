@@ -11,8 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreatePosition, useUpdatePosition } from "@/hooks/useAllPositions";
-import type { Position } from "@/types/foundation";
-import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { LayoutStyle, Position } from "@/types/foundation";
+import { Compass, LayoutGrid, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PhotoField } from "./PhotoField";
@@ -20,17 +21,39 @@ import { PhotoField } from "./PhotoField";
 /**
  * Shared create/edit dialog for a Position.
  *
- * Fields: name (required), description (optional), cover photo URL (optional).
+ * Fields: name (required), description (optional), cover photo URL (optional),
+ * and layoutStyle (Library / Orientation, defaults to Library).
  * The cover photo is OPTIONAL — the save button is enabled as soon as a name
  * is entered. Never block saving on a missing photo.
  *
  * On submit:
- *   - create mode → useCreatePosition({ name, description, coverPhoto })
- *   - edit mode   → useUpdatePosition({ id, name, description, coverPhoto })
+ *   - create mode → useCreatePosition({ name, description, coverPhoto, layoutStyle })
+ *   - edit mode   → useUpdatePosition({ id, name, description, coverPhoto, layoutStyle })
  *
  * The hooks translate ergonomic inputs to the backend's positional args +
- * bigint IDs internally, so this component stays in string-land.
+ * bigint IDs + LayoutStyle enum internally, so this component stays in
+ * string-land.
  */
+const LAYOUT_OPTIONS: ReadonlyArray<{
+  value: LayoutStyle;
+  label: string;
+  description: string;
+  icon: typeof LayoutGrid;
+}> = [
+  {
+    value: "library",
+    label: "Library",
+    description: "Search box + category tile grid",
+    icon: LayoutGrid,
+  },
+  {
+    value: "orientation",
+    label: "Orientation",
+    description: "Patriotic onboarding layout",
+    icon: Compass,
+  },
+];
+
 export function PositionFormDialog({
   open,
   onOpenChange,
@@ -47,6 +70,7 @@ export function PositionFormDialog({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [coverPhoto, setCoverPhoto] = useState("");
+  const [layoutStyle, setLayoutStyle] = useState<LayoutStyle>("library");
   const [touched, setTouched] = useState(false);
 
   const createMutation = useCreatePosition();
@@ -58,6 +82,7 @@ export function PositionFormDialog({
       setName(position?.name ?? "");
       setDescription(position?.description ?? "");
       setCoverPhoto(position?.coverPhoto ?? "");
+      setLayoutStyle(position?.layoutStyle ?? "library");
       setTouched(false);
     }
   }, [open, position]);
@@ -83,6 +108,7 @@ export function PositionFormDialog({
           name: trimmedName,
           description: trimmedDesc,
           coverPhoto: trimmedPhoto.length > 0 ? trimmedPhoto : undefined,
+          layoutStyle,
         });
         toast.success("Position updated");
       } else {
@@ -90,6 +116,7 @@ export function PositionFormDialog({
           name: trimmedName,
           description: trimmedDesc,
           coverPhoto: trimmedPhoto.length > 0 ? trimmedPhoto : undefined,
+          layoutStyle,
         });
         toast.success("Position created");
       }
@@ -187,6 +214,58 @@ export function PositionFormDialog({
               value={coverPhoto}
               onChange={(v) => setCoverPhoto(v ?? "")}
             />
+          </div>
+
+          {/* Layout style — Library (default) / Orientation */}
+          <div className="grid gap-2">
+            <Label
+              className="font-heading uppercase text-xs tracking-wider"
+              data-ocid="position.layout_style.label"
+            >
+              Layout
+            </Label>
+            <div
+              aria-label="Position layout"
+              className="grid grid-cols-2 gap-2"
+              data-ocid="position.layout_style.toggle"
+            >
+              {LAYOUT_OPTIONS.map((opt) => {
+                const selected = layoutStyle === opt.value;
+                const Icon = opt.icon;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => setLayoutStyle(opt.value)}
+                    data-ocid={`position.layout_style.${opt.value}.toggle`}
+                    className={cn(
+                      "flex items-start gap-2.5 rounded-md border p-3 text-left transition-smooth",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      selected
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "mt-0.5 size-4 shrink-0",
+                        selected ? "text-primary" : "text-muted-foreground",
+                      )}
+                      aria-hidden="true"
+                    />
+                    <span className="grid gap-0.5">
+                      <span className="font-heading text-xs uppercase tracking-wider">
+                        {opt.label}
+                      </span>
+                      <span className="font-body text-xs normal-case text-muted-foreground">
+                        {opt.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <DialogFooter className="pt-2">

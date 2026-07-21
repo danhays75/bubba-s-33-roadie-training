@@ -204,6 +204,7 @@ export interface Result {
 }
 export interface Position {
     id: bigint;
+    layoutStyle: LayoutStyle;
     sortOrder: bigint;
     name: string;
     description?: string;
@@ -286,6 +287,10 @@ export enum AssignmentStatus {
     inTraining = "inTraining",
     certified = "certified"
 }
+export enum LayoutStyle {
+    library = "library",
+    orientation = "orientation"
+}
 export enum Role {
     manager = "manager",
     admin = "admin",
@@ -310,7 +315,7 @@ export interface backendInterface {
     createMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     createNsoPhase(name: string): Promise<Phase>;
     createNsoTask(phaseId: bigint, text: string, section: string | null, assignedTo: Principal | null): Promise<Task>;
-    createPosition(name: string, description: string | null, coverPhoto: string | null): Promise<Position>;
+    createPosition(name: string, description: string | null, coverPhoto: string | null, layoutStyle: LayoutStyle): Promise<Position>;
     deleteCategory(categoryId: bigint): Promise<void>;
     deleteItem(itemId: bigint): Promise<void>;
     deleteLegendaryActivity(id: bigint): Promise<void>;
@@ -366,5 +371,5 @@ export interface backendInterface {
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     updateNsoPhase(id: bigint, name: string): Promise<void>;
     updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;
-    updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null): Promise<Position>;
+    updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null, layoutStyle: LayoutStyle): Promise<Position>;
 }

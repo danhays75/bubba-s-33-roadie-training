@@ -1,18 +1,19 @@
 {
-  "overview": "A roadie training app for Bubba's 33 bartenders with a Be Legendary practice hub featuring quizzes, flashcards, and an interactive Drinks Builder game.",
+  "overview": "Bubba's 33 Roadie Training app with a patriotic Orientation layout for the Legendary Starts Here position.",
   "features": [
-    "Be Legendary practice hub with quizzes and flashcards",
-    "Interactive Drinks Builder game with filling glass, streaks, and instant feedback",
-    "Admin-configurable game settings per position",
-    "Dark roadhouse theme throughout the game",
-    "Recipe library with structured drink data"
+    "Patriotic Orientation layout for the Legendary Starts Here position",
+    "Admin toggle to switch a position between Library and Orientation layouts",
+    "Hero sections for Mission, Core Values, Our Story, Operational Goals, and Priorities",
+    "Rules of the Road reference grid for remaining policy categories",
+    "Reads existing Library content — no data changes beyond a small layoutStyle field"
   ],
   "category": "training",
   "tags": [
-    "hospitality",
-    "bartender-training",
-    "practice-games",
-    "be-legendary"
+    "orientation",
+    "patriotic",
+    "library",
+    "positions",
+    "bubbas-33"
   ],
-  "last_updated": "2026-07-20T01:03:16.897Z"
+  "last_updated": "2026-07-20T20:31:15.310Z"
 }

@@ -76,14 +76,97 @@ actor {
   include LegendaryApi(accessControlState, positions, categories, items, legendaryActivities, nextLegendaryActivityId);
 
   // --- OQL (Data Intelligence) ---
-  // Expose the Library collections to the Caffeine Data Intelligence agent.
-  // Both entities use manual mode: Category has an optional ?Text field and
-  // LibraryItem has nested [DetailField] / [Text] collection fields, neither
-  // of which auto-derive cleanly. Authorization is the default #controllerOnly
-  // — the agent reads everything; end users browse via the explicit
-  // getCategoriesByPosition / getItemsByCategory query methods above.
+  // Expose every persisted queryable collection to the Caffeine Data
+  // Intelligence agent. Per-table authorization mirrors the existing public
+  // API: positions are public-read, profiles are controller-only (admin PII),
+  // assignments are scoped per-user (a caller sees only their own rows;
+  // controllers see all). End users keep browsing via the explicit query
+  // methods above; OQL is the agent's read path.
   include Expose({
     entities = [
+      // UserProfile: keyed by Principal. Contains user PII (name,
+      // storeLocation, role) so it stays #controllerOnly — the agent reads
+      // everything; end users read their own profile via getMyProfile.
+      // id is the Principal rendered as text (canonical form).
+      OQL.Entity.manual<Foundation.UserProfile>(
+        "userProfile",
+        func () = profiles.values(),
+        "UserProfile",
+        "id",
+      )
+        .payload("id", func (p) = p.id.toText())
+        .payload("name", func (p) = p.name)
+        .payload("storeLocation", func (p) = p.storeLocation)
+        .payload("role", func (p) = switch (p.role) {
+          case (#trainee) "trainee";
+          case (#trainer) "trainer";
+          case (#manager) "manager";
+          case (#admin) "admin";
+        })
+        .sample({
+          id = Principal.fromText("aaaaa-aa");
+          name = "";
+          storeLocation = "";
+          role = #trainee;
+        })
+        .build(),
+      // Position: public-read (matches getAllPositions / getPosition query
+        // methods). layoutStyle is the LayoutStyle variant exposed as text
+        // ("library" / "orientation"). description and coverPhoto are
+        // optional ?Text exposed as empty text when null (mirrors the
+        // coverPhoto/photo handling on category/libraryItem).
+      OQL.Entity.manual<Foundation.Position>(
+        "position",
+        func () = positions.values(),
+        "Position",
+        "id",
+      )
+        .public_()
+        .payload("id", func (p) = p.id)
+        .payload("name", func (p) = p.name)
+        .payload("description", func (p) = switch (p.description) { case null ""; case (?t) t })
+        .payload("coverPhoto", func (p) = switch (p.coverPhoto) { case null ""; case (?t) t })
+        .payload("sortOrder", func (p) = p.sortOrder)
+        .payload("layoutStyle", func (p) = switch (p.layoutStyle) {
+          case (#library) "library";
+          case (#orientation) "orientation";
+        })
+        .sample({
+          id = 0;
+          name = "";
+          description = null;
+          coverPhoto = null;
+          sortOrder = 0;
+          layoutStyle = #library;
+        })
+        .build(),
+      // PositionAssignment: scoped per-user. A non-anonymous caller sees only
+        // rows whose userId equals their own principal (mirrors
+        // getMyAssignments); controllers see every row (mirrors
+        // getUserAssignments admin endpoint). userId is the owner column,
+        // rendered as text and tagged #owner in schema(). status is the
+        // AssignmentStatus variant exposed as text ("inTraining" /
+        // "certified").
+      OQL.Entity.manual<Foundation.PositionAssignment>(
+        "positionAssignment",
+        func () = assignments.values(),
+        "PositionAssignment",
+        "userId",
+      )
+        .controllerOrScoped()
+        .ownedBy("userId")
+        .payload("userId", func (a) = a.userId.toText())
+        .payload("positionId", func (a) = a.positionId)
+        .payload("status", func (a) = switch (a.status) {
+          case (#inTraining) "inTraining";
+          case (#certified) "certified";
+        })
+        .sample({
+          userId = Principal.fromText("aaaaa-aa");
+          positionId = 0;
+          status = #inTraining;
+        })
+        .build(),
       // Category: belongs to a position. positionId is an edge to the
       // foundation "position" entity (declared elsewhere); kept as a plain
       // payload here since the foundation entity is outside this domain's

@@ -512,6 +512,7 @@ video {
     --font-heading: "Oswald", sans-serif;
     --font-body: "Barlow", sans-serif;
     --font-mono: "JetBrains Mono", monospace;
+    --font-script: "Pacifico", "Great Vibes", cursive;
     --radius: 0.25rem;
 
     /* Bubba's 33 dark roadhouse palette — dark is the only theme */
@@ -1786,6 +1787,9 @@ video {
 .block {
   display: block;
 }
+.inline-block {
+  display: inline-block;
+}
 .inline {
   display: inline;
 }
@@ -1937,8 +1941,14 @@ video {
 .h-3\.5 {
   height: 0.875rem;
 }
+.h-32 {
+  height: 8rem;
+}
 .h-4 {
   height: 1rem;
+}
+.h-40 {
+  height: 10rem;
 }
 .h-5 {
   height: 1.25rem;
@@ -1948,6 +1958,9 @@ video {
 }
 .h-60 {
   height: 15rem;
+}
+.h-64 {
+  height: 16rem;
 }
 .h-7 {
   height: 1.75rem;
@@ -2236,6 +2249,9 @@ video {
 }
 .flex-1 {
   flex: 1 1 0%;
+}
+.flex-shrink {
+  flex-shrink: 1;
 }
 .shrink-0 {
   flex-shrink: 0;
@@ -2902,9 +2918,6 @@ video {
 .bg-background {
   background-color: oklch(var(--background));
 }
-.bg-black\/30 {
-  background-color: rgb(0 0 0 / 0.3);
-}
 .bg-black\/50 {
   background-color: rgb(0 0 0 / 0.5);
 }
@@ -3215,6 +3228,9 @@ video {
 .pr-3 {
   padding-right: 0.75rem;
 }
+.pr-4 {
+  padding-right: 1rem;
+}
 .pr-8 {
   padding-right: 2rem;
 }
@@ -3280,6 +3296,10 @@ video {
 }
 .text-5xl {
   font-size: 3rem;
+  line-height: 1;
+}
+.text-7xl {
+  font-size: 4.5rem;
   line-height: 1;
 }
 .text-\[0\.55rem\] {
@@ -3749,6 +3769,12 @@ video {
 .font-heading {
     font-family: var(--font-heading);
   }
+/* Pacifico script — exposes the existing --font-script token so
+     components can opt into the handwritten look (Bubba poster logo,
+     'Food FOR All' script words, 'This means we have:' label). */
+.font-script {
+    font-family: var(--font-script);
+  }
 .text-in-training {
     color: oklch(var(--in-training));
   }
@@ -4121,12 +4147,28 @@ video {
     pointer-events: none;
   }
 /* (2) Chrome/silver-to-red/white/blue metallic wordmark — patriotic
-      multi-stop gradient clipped to the text glyphs, chiseled text-shadow
-      for 3D depth, outer red glow. Tuned to pop over a busy flag background:
-      brighter near-white top sheen, a cool blue accent stop, and a stronger
-      chiseled shadow + red glow so the glyphs lift off the flag stripes.
-      Use on the "BE LEGENDARY" Anton wordmark. The static gradient remains
-      visible even when sweep/flash are paused by prefers-reduced-motion. */
+      multi-stop gradient clipped to the text glyphs, chiseled depth via
+      filter: drop-shadow (NOT text-shadow), outer red glow. Tuned to pop
+      over a busy flag background: brighter near-white top sheen, a cool
+      blue accent stop, and a stronger chiseled shadow + red glow so the
+      glyphs lift off the flag stripes. Use on the "BE LEGENDARY" Anton
+      wordmark. The static gradient remains visible even when sweep/flash
+      are paused by prefers-reduced-motion.
+
+      IMPORTANT — why drop-shadow and NOT text-shadow:
+      text-shadow renders a SOLID COPY of each glyph in the shadow color,
+      offset by the shadow's position. When background-clip:text makes the
+      glyph fill transparent (so the gradient shows through), a text-shadow
+      like "0 1px 0 <near-white>" paints a near-white duplicate of the
+      glyph 1px below the gradient-filled original — so "BE" appears TWICE
+      (the gradient BE on top, the shadow BE peeking out below it). Stacked
+      shadows at 0 2px / 0 4px / 0 8px compound the doubling.
+
+      filter: drop-shadow() instead shadows the element's ALPHA CHANNEL —
+      the already-clipped gradient glyphs — so it shadows the visible
+      shape without painting a solid glyph copy. No doubling. The chiseled
+      depth is rebuilt as stacked drop-shadow layers (bright top edge,
+      deep underside, lateral cast) plus the existing outer red glow. */
 .legendary-hero-wordmark {
     position: relative;
     z-index: 3;
@@ -4143,28 +4185,53 @@ video {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    /* chiseled 3D depth: bright top edge + deep underside + lateral cast.
-       Strengthened so the wordmark reads clearly over the flag stripes. */
-    text-shadow: 0 1px 0 oklch(var(--legendary-metallic-highlight) / 0.7), 0 2px
-      1px oklch(var(--legendary-metallic-shadow) / 0.75), 0 4px 3px
-      oklch(0.12 0.005 75 / 0.8), 0 8px 10px oklch(0.1 0.004 75 / 0.65);
+    /* NO text-shadow — it would paint solid glyph copies behind the
+        transparent-fill gradient text and double the wordmark. Chiseled
+        3D depth + outer red glow are all done with filter: drop-shadow,
+        which shadows the clipped gradient's alpha channel (the visible
+        glyph shape) and never produces a duplicate glyph. */
     filter: drop-shadow(
-      0 0 16px
-        oklch(
-          var(--legendary-metallic-glow) /
-          var(--legendary-metallic-glow-strength)
-        )
-    );
+        0 1px 0 oklch(var(--legendary-metallic-highlight) / 0.7)
+      )
+      drop-shadow(0 2px 1px oklch(var(--legendary-metallic-shadow) / 0.75))
+      drop-shadow(0 4px 3px oklch(0.12 0.005 75 / 0.8))
+      drop-shadow(0 8px 10px oklch(0.1 0.004 75 / 0.65))
+      drop-shadow(
+        0 0 16px
+          oklch(
+            var(--legendary-metallic-glow) /
+            var(--legendary-metallic-glow-strength)
+          )
+      );
     /* the sweep pseudo-element anchors to the wordmark so the beam crosses
-       the patriotic glyphs specifically, not just the banner surface */
+        the patriotic glyphs specifically, not just the banner surface */
   }
-/* fallback for browsers without background-clip:text — solid white fill
-      so the wordmark never disappears into the backdrop */
+/* Fallback for browsers without background-clip:text — solid metallic
+      highlight fill so the wordmark never disappears into the backdrop.
+      Wrapped in @supports not (...) so it ONLY applies when clipping is
+      unsupported. When clipping IS supported, the block above runs and
+      the fallback never applies — so the fallback color can never layer
+      behind the clipped gradient text and double the wordmark. */
 @supports not (((-webkit-background-clip: text) or (background-clip: text)) or (-webkit-background-clip: text)) {
     .legendary-hero-wordmark {
       color: oklch(var(--legendary-metallic-highlight));
       background: none;
       -webkit-text-fill-color: initial;
+      /* drop-shadow still works on solid-fill text, so keep the depth +
+          glow. No text-shadow here either, for the same reason. */
+      filter: drop-shadow(
+          0 1px 0 oklch(var(--legendary-metallic-highlight) / 0.7)
+        )
+        drop-shadow(0 2px 1px oklch(var(--legendary-metallic-shadow) / 0.75))
+        drop-shadow(0 4px 3px oklch(0.12 0.005 75 / 0.8))
+        drop-shadow(0 8px 10px oklch(0.1 0.004 75 / 0.65))
+        drop-shadow(
+          0 0 16px
+            oklch(
+              var(--legendary-metallic-glow) /
+              var(--legendary-metallic-glow-strength)
+            )
+        );
     }
   }
 /* (3) Light-sweep — diagonal semi-transparent white beam sweeping across
@@ -4793,6 +4860,972 @@ video {
   color: #1477be;
   text-align: right;
 }
+
+/* =====================================================================
+   Patriotic Orientation Layout (additive — Legendary Starts Here)
+   ADDITIVE only — no existing token altered. Rendered when a position's
+   layoutStyle === 'orientation'. Sits on the dark roadhouse base
+   (#121218 page, #191922 card) and adds tasteful patriotic accents
+   (red/cream/blue, stars & stripes) — NOT a full flag wallpaper.
+   All tokens + utilities prefixed `orientation-` / `patriotic-` so they
+   never collide with existing classes (incl. legendary-hero-*).
+   Gradients/glow are permitted ONLY inside Orientation surfaces (hero,
+   mission headline, goal cards, CTA), matching the Be Legendary rule.
+   ===================================================================== */
+:root {
+  /* Patriotic palette — additive. Patriotic blue is brighter than the
+     brand navy (#0A2A5E / --secondary) for pop; red reuses brand primary;
+     gold reuses in-training gold; cream reuses foreground. */
+  --patriotic-red: 0.595 0.232 27; /* #E4002B — same as primary */
+  --patriotic-blue: 0.42 0.16 264; /* #123A8A — brighter than brand navy */
+  --patriotic-cream: 0.948 0.012 90; /* #F5F1E8 — same as foreground */
+  --patriotic-gold: 0.801 0.171 75; /* #F2A900 — same as in-training */
+
+  /* Hero — dark red→navy gradient stage. Distinct from the cinematic
+     legendary-hero-backdrop; this is a flat presentation panel, not a
+     photographic stage. Tuned so the diagonal flag-light stripes and
+     star field read as subtle texture, not a flag wallpaper. */
+  --orientation-hero-from: 0.46 0.21 25; /* deep red (primary-hover family) */
+  --orientation-hero-to: 0.32 0.11 264; /* deep patriotic blue */
+  --orientation-hero-stripe: 0.948 0.012 90; /* cream flag-light stripe */
+  --orientation-hero-stripe-strength: 0.06; /* very faint diagonal stripes */
+  --orientation-hero-star: 0.948 0.012 90; /* cream star field */
+  --orientation-hero-star-strength: 0.08; /* subtle star scatter */
+
+  /* Mission headline — giant gold Anton with soft glow. Reuses patriotic
+     gold; glow is the only place a shadow halo is permitted here. */
+  --orientation-mission-glow: 0.801 0.171 75; /* gold glow */
+  --orientation-mission-glow-strength: 0.45;
+
+  /* Goal cards — glowing navy surface with gold ★ corner. */
+  --orientation-goal-card: 0.3 0.06 264; /* patriotic-blue-tinted card */
+  --orientation-goal-card-border: 0.42 0.16 264; /* brighter blue edge */
+  --orientation-goal-glow: 0.42 0.16 264; /* blue glow halo */
+  --orientation-goal-glow-strength: 0.35;
+
+  /* CTA — red ENTER button reuses primary; gold label reuses patriotic gold. */
+  --orientation-cta-stripe-strength: 1; /* tri-stripe top edge, full opacity */
+}
+.dark {
+  --patriotic-red: 0.595 0.232 27;
+  --patriotic-blue: 0.42 0.16 264;
+  --patriotic-cream: 0.948 0.012 90;
+  --patriotic-gold: 0.801 0.171 75;
+
+  --orientation-hero-from: 0.46 0.21 25;
+  --orientation-hero-to: 0.32 0.11 264;
+  --orientation-hero-stripe: 0.948 0.012 90;
+  --orientation-hero-stripe-strength: 0.06;
+  --orientation-hero-star: 0.948 0.012 90;
+  --orientation-hero-star-strength: 0.08;
+
+  --orientation-mission-glow: 0.801 0.171 75;
+  --orientation-mission-glow-strength: 0.45;
+
+  --orientation-goal-card: 0.3 0.06 264;
+  --orientation-goal-card-border: 0.42 0.16 264;
+  --orientation-goal-glow: 0.42 0.16 264;
+  --orientation-goal-glow-strength: 0.35;
+
+  --orientation-cta-stripe-strength: 1;
+}
+
+/* Color utilities — patriotic palette (additive, prefixed) */
+.text-patriotic-red {
+  color: oklch(var(--patriotic-red));
+}
+.bg-patriotic-red {
+  background-color: oklch(var(--patriotic-red));
+}
+.border-patriotic-red {
+  border-color: oklch(var(--patriotic-red));
+}
+.text-patriotic-blue {
+  color: oklch(var(--patriotic-blue));
+}
+.bg-patriotic-blue {
+  background-color: oklch(var(--patriotic-blue));
+}
+.border-patriotic-blue {
+  border-color: oklch(var(--patriotic-blue));
+}
+.text-patriotic-cream {
+  color: oklch(var(--patriotic-cream));
+}
+.bg-patriotic-cream {
+  background-color: oklch(var(--patriotic-cream));
+}
+.border-patriotic-cream {
+  border-color: oklch(var(--patriotic-cream));
+}
+.text-patriotic-gold {
+  color: oklch(var(--patriotic-gold));
+}
+.bg-patriotic-gold {
+  background-color: oklch(var(--patriotic-gold));
+}
+.border-patriotic-gold {
+  border-color: oklch(var(--patriotic-gold));
+}
+
+/* ── (1) Bunting strip ──────────────────────────────────────────────
+   Row of red/cream/blue half-round scallops rendered under the nav /
+   above the hero. Pure CSS — repeating-radial-gradient scallops on a
+   thin band; no images. The three colors rotate per scallop via the
+   gradient stops. Mobile-first: scallop size scales down on small
+   screens via the 16px base; the band is 14px tall. */
+.orientation-bunting {
+  height: 14px;
+  background-color: oklch(var(--patriotic-red));
+  background-image: repeating-linear-gradient(
+    90deg,
+    oklch(var(--patriotic-red)) 0,
+    oklch(var(--patriotic-red)) 16px,
+    oklch(var(--patriotic-cream)) 16px,
+    oklch(var(--patriotic-cream)) 32px,
+    oklch(var(--patriotic-blue)) 32px,
+    oklch(var(--patriotic-blue)) 48px
+  );
+  /* scallop the bottom edge with cream half-rounds that punch up into
+     the band, then mask so only the bottom half shows */
+  -webkit-mask-image: radial-gradient(
+    circle 8px at 8px 14px,
+    transparent 0,
+    transparent 7px,
+    black 8px
+  );
+  mask-image: radial-gradient(
+    circle 8px at 8px 14px,
+    transparent 0,
+    transparent 7px,
+    black 8px
+  );
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: 16px 14px;
+  mask-size: 16px 14px;
+}
+
+/* ── (2) Hero panel ──────────────────────────────────────────────────
+   Rounded panel, dark red→navy gradient, faint diagonal flag-light
+   stripes + subtle star field. Composed from two pseudo-layers over the
+   gradient base. Mobile-first: full-width on phone, max-width on larger
+   screens; content stacks single-column. */
+.orientation-hero {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+  background-color: oklch(var(--orientation-hero-to));
+  background-image: linear-gradient(
+    135deg,
+    oklch(var(--orientation-hero-from)) 0%,
+    oklch(var(--orientation-hero-to)) 100%
+  );
+}
+/* faint diagonal flag-light stripes — cream, very low opacity, repeating */
+.orientation-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    45deg,
+    oklch(
+        var(--orientation-hero-stripe) /
+        var(--orientation-hero-stripe-strength)
+      )
+      0,
+    oklch(
+        var(--orientation-hero-stripe) /
+        var(--orientation-hero-stripe-strength)
+      )
+      2px,
+    transparent 2px,
+    transparent 22px
+  );
+}
+/* subtle star field — tiny cream dots scattered via radial-gradient repeat */
+.orientation-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(
+      circle 1px at 12% 18%,
+      oklch(
+          var(--orientation-hero-star) /
+          var(--orientation-hero-star-strength)
+        )
+        0,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle 1px at 78% 12%,
+      oklch(
+          var(--orientation-hero-star) /
+          var(--orientation-hero-star-strength)
+        )
+        0,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle 1px at 42% 32%,
+      oklch(
+          var(--orientation-hero-star) /
+          var(--orientation-hero-star-strength)
+        )
+        0,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle 1px at 88% 38%,
+      oklch(
+          var(--orientation-hero-star) /
+          var(--orientation-hero-star-strength)
+        )
+        0,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle 1px at 22% 62%,
+      oklch(
+          var(--orientation-hero-star) /
+          var(--orientation-hero-star-strength)
+        )
+        0,
+      transparent 1.5px
+    );
+  background-repeat: no-repeat;
+}
+.orientation-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero kicker — Oswald uppercase, gold stars flanking, tracked wide */
+.orientation-hero-kicker {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: oklch(var(--patriotic-cream));
+}
+/* Hero title — huge Anton display, cream */
+.orientation-hero-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 0.95;
+  color: oklch(var(--patriotic-cream));
+}
+/* Hero flag-bar underline — three solid segments red/cream/blue */
+.orientation-flag-bar {
+  display: flex;
+  height: 4px;
+  width: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.orientation-flag-bar > span:nth-child(1) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-red));
+}
+.orientation-flag-bar > span:nth-child(2) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-cream));
+}
+.orientation-flag-bar > span:nth-child(3) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-blue));
+}
+
+/* ── (3) Mission band ───────────────────────────────────────────────
+   Red/cream/blue tri-stripe top edge; centered Oswald "★ Our Mission ★"
+   label; giant gold Anton headline with soft glow; ★★★★★ row; subtitle. */
+.orientation-mission {
+  position: relative;
+  text-align: center;
+  padding-top: 2rem;
+}
+.orientation-tri-stripe-top {
+  display: flex;
+  height: 6px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.orientation-tri-stripe-top > span:nth-child(1) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-red));
+}
+.orientation-tri-stripe-top > span:nth-child(2) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-cream));
+}
+.orientation-tri-stripe-top > span:nth-child(3) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-blue));
+}
+.orientation-mission-label {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-mission-headline {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 0.98;
+  color: oklch(var(--patriotic-gold));
+  text-shadow: 0 0 14px
+    oklch(
+      var(--orientation-mission-glow) /
+      var(--orientation-mission-glow-strength)
+    ), 0 0 28px
+    oklch(
+      var(--orientation-mission-glow) /
+      calc(var(--orientation-mission-glow-strength) * 0.6)
+    );
+}
+.orientation-star-row {
+  display: inline-flex;
+  gap: 0.25rem;
+  color: oklch(var(--patriotic-gold));
+  letter-spacing: 0.1em;
+}
+
+/* ── (4) Section divider ────────────────────────────────────────────
+   Number + Oswald uppercase heading + gold ★ + repeating red/cream/blue
+   stripe rule. Mobile-first: number sits above heading on phone,
+   inline on larger screens. */
+.orientation-divider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.orientation-divider-rule {
+  height: 4px;
+  width: 100%;
+  border-radius: 2px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    oklch(var(--patriotic-red)) 0,
+    oklch(var(--patriotic-red)) 12px,
+    oklch(var(--patriotic-cream)) 12px,
+    oklch(var(--patriotic-cream)) 24px,
+    oklch(var(--patriotic-blue)) 24px,
+    oklch(var(--patriotic-blue)) 36px
+  );
+}
+.orientation-divider-number {
+  font-family: var(--font-display);
+  color: oklch(var(--patriotic-gold));
+  line-height: 1;
+}
+.orientation-divider-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: oklch(var(--patriotic-cream));
+}
+
+/* ── (5) Core Value cards ───────────────────────────────────────────
+   Card with tricolor left edge (red/cream/blue stacked), gold ★, value
+   name, meaning. Then a red "…All With Purpose" capstone bar. */
+.orientation-value-card {
+  position: relative;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  padding-left: 1rem;
+  overflow: hidden;
+}
+.orientation-value-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(
+    180deg,
+    oklch(var(--patriotic-red)) 0 33.33%,
+    oklch(var(--patriotic-cream)) 33.33% 66.66%,
+    oklch(var(--patriotic-blue)) 66.66% 100%
+  );
+}
+.orientation-value-star {
+  color: oklch(var(--patriotic-gold));
+}
+.orientation-value-name {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-capstone {
+  background-color: oklch(var(--patriotic-red));
+  color: oklch(var(--patriotic-cream));
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: var(--radius);
+}
+
+/* ── (6) Our Story ──────────────────────────────────────────────────
+   Copy + emoji chips + a red "FOOD FOR ALL" poster with a star row and
+   cream border. */
+.orientation-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-poster {
+  background-color: oklch(var(--patriotic-red));
+  border: 2px solid oklch(var(--patriotic-cream));
+  border-radius: var(--radius);
+  color: oklch(var(--patriotic-cream));
+  text-align: center;
+}
+.orientation-poster-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+/* ── (7) Operational Goals ──────────────────────────────────────────
+   Glowing navy cards, gold ★ corner, goal name + tag. */
+.orientation-goal-card {
+  position: relative;
+  background-color: oklch(var(--orientation-goal-card));
+  border: 1px solid oklch(var(--orientation-goal-card-border));
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px oklch(var(--orientation-goal-glow) / 0.15), 0 0 18px
+    oklch(var(--orientation-goal-glow) / var(--orientation-goal-glow-strength));
+}
+.orientation-goal-star {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: oklch(var(--patriotic-gold));
+}
+.orientation-goal-name {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-goal-tag {
+  display: inline-block;
+  background-color: oklch(var(--patriotic-blue));
+  color: oklch(var(--patriotic-cream));
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 2px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+}
+
+/* ── (8) Priorities ─────────────────────────────────────────────────
+   Two big "10" teaser cards — one red-topped, one blue-topped. */
+.orientation-priority-card {
+  position: relative;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.orientation-priority-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+.orientation-priority-card.is-red::before {
+  background-color: oklch(var(--patriotic-red));
+}
+.orientation-priority-card.is-blue::before {
+  background-color: oklch(var(--patriotic-blue));
+}
+.orientation-priority-number {
+  font-family: var(--font-display);
+  line-height: 0.9;
+  color: oklch(var(--patriotic-cream));
+}
+
+/* ── (9) BE LEGENDARY CTA ───────────────────────────────────────────
+   Tri-stripe top + gold "★ Be Legendary" label + red ENTER button. */
+.orientation-cta {
+  position: relative;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-align: center;
+}
+.orientation-cta-label {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: oklch(var(--patriotic-gold));
+}
+.orientation-cta-enter {
+  display: inline-block;
+  background-color: oklch(var(--patriotic-red));
+  color: oklch(var(--patriotic-cream));
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.orientation-cta-enter:hover {
+  background-color: oklch(var(--primary-hover));
+}
+
+/* ── (10) Rules of the Road ─────────────────────────────────────────
+   2-column grid (1-col on mobile) of small star-bulleted tiles. */
+.orientation-rules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+@media (min-width: 640px) {
+  .orientation-rules-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.orientation-rule-tile {
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+.orientation-rule-tile::before {
+  content: "★ ";
+  color: oklch(var(--patriotic-gold));
+  font-family: var(--font-body);
+}
+
+/* Reduced motion — Orientation has no animations by design (doNotBuild:
+   star-twinkle / waving-flag). Hover transition on ENTER is the only
+   motion and is short enough to leave intact. */
+
+/* =====================================================================
+   Bubba's 33 'Food For All' poster — Our Story interior (additive)
+   ADDITIVE only — no existing token altered. The poster look is the
+   INTERIOR of the existing dark Orientation card (bg-card + border-border
+   + '02 / Our Story' divider stay). The dark card wrapper frames the
+   poster; the poster styles the card's inner content. All classes
+   prefixed `bubba-poster-*` so they never collide. Gradients/textures
+   are permitted here (poster is a print-style surface, like the recipe
+   print card and Be Legendary banner). Mobile-first: poster zones stack
+   vertically on phone with no horizontal overflow.
+   ===================================================================== */
+:root {
+  /* Weathered blue wood-grain frame — painted-plank grain on a faded
+     patriotic blue, with distressed lighter streaks. Sits as the
+     outermost poster layer inside the dark card. */
+  --bubba-frame-blue: 0.42 0.16 264; /* patriotic blue base */
+  --bubba-frame-blue-light: 0.52 0.14 264; /* lighter grain streak */
+  --bubba-frame-blue-dark: 0.32 0.12 264; /* darker plank shadow */
+  --bubba-frame-distress: 0.78 0.02 264; /* near-white distressed edge */
+
+  /* Red-to-orange radial poster field — the warm background filling the
+     framed area behind all poster content. */
+  --bubba-field-red: 0.595 0.232 27; /* patriotic red (center) */
+  --bubba-field-orange: 0.68 0.19 50; /* warm orange (outer edge) */
+  --bubba-field-deep: 0.46 0.21 25; /* deep red vignette corners */
+
+  /* Script logo wordmark — red Pacifico, with a subtle dark drop shadow
+     so it lifts off the warm field. */
+  --bubba-logo-red: 0.595 0.232 27;
+  --bubba-logo-shadow: 0.18 0.02 25;
+
+  /* Navy SCRATCH-MADE banner — solid patriotic blue bar, white block
+     caps text. */
+  --bubba-banner-blue: 0.32 0.11 264;
+  --bubba-banner-cream: 0.948 0.012 90;
+
+  /* 'Food FOR All' headline — script words in deep red, block 'FOR' in
+     cream block caps. */
+  --bubba-headline-script: 0.46 0.21 25;
+  --bubba-headline-block: 0.948 0.012 90;
+
+  /* Food photo placeholder slots — warm gradient fills evoking the
+     poster's food tones (burger/pizza golden browns, beer/cocktail
+     ambers). No images; reserved <img> slot drops in later. */
+  --bubba-photo-hero-from: 0.55 0.12 55; /* golden-brown hero top */
+  --bubba-photo-hero-to: 0.42 0.14 35; /* deeper burger brown */
+  --bubba-photo-cluster-from: 0.6 0.13 70; /* amber cluster top */
+  --bubba-photo-cluster-to: 0.45 0.12 45; /* deeper amber base */
+  --bubba-photo-frame: 0.948 0.012 90; /* cream inner border on slots */
+
+  /* Feature list — cream body text on the warm field, red bullet stars. */
+  --bubba-list-cream: 0.948 0.012 90;
+  --bubba-list-star: 0.948 0.012 90;
+}
+.dark {
+  --bubba-frame-blue: 0.42 0.16 264;
+  --bubba-frame-blue-light: 0.52 0.14 264;
+  --bubba-frame-blue-dark: 0.32 0.12 264;
+  --bubba-frame-distress: 0.78 0.02 264;
+
+  --bubba-field-red: 0.595 0.232 27;
+  --bubba-field-orange: 0.68 0.19 50;
+  --bubba-field-deep: 0.46 0.21 25;
+
+  --bubba-logo-red: 0.595 0.232 27;
+  --bubba-logo-shadow: 0.18 0.02 25;
+
+  --bubba-banner-blue: 0.32 0.11 264;
+  --bubba-banner-cream: 0.948 0.012 90;
+
+  --bubba-headline-script: 0.46 0.21 25;
+  --bubba-headline-block: 0.948 0.012 90;
+
+  --bubba-photo-hero-from: 0.55 0.12 55;
+  --bubba-photo-hero-to: 0.42 0.14 35;
+  --bubba-photo-cluster-from: 0.6 0.13 70;
+  --bubba-photo-cluster-to: 0.45 0.12 45;
+  --bubba-photo-frame: 0.948 0.012 90;
+
+  --bubba-list-cream: 0.948 0.012 90;
+  --bubba-list-star: 0.948 0.012 90;
+}
+
+/* ── (1) Wood-grain frame ───────────────────────────────────────────
+   Outermost poster layer. Painted-plank grain on a faded patriotic blue
+   via stacked repeating-linear-gradients (vertical planks + horizontal
+   grain streaks), plus a distressed lighter edge via inset box-shadow.
+   No images. Sits inside the dark card; the card's bg-card + border
+   remain visible as a thin dark reveal around the frame. Mobile-first:
+   full-width on phone, padding scales down. */
+.bubba-poster-frame {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  background-color: oklch(var(--bubba-frame-blue));
+  /* Vertical plank seams (every ~64px) + horizontal grain streaks +
+     a soft top-light wash. Three layered gradients = painted wood. */
+  /* vertical plank seams — darker thin lines every 64px */
+  background-image: repeating-linear-gradient(
+      90deg,
+      oklch(var(--bubba-frame-blue-dark) / 0.55) 0,
+      oklch(var(--bubba-frame-blue-dark) / 0.55) 1px,
+      transparent 1px,
+      transparent 64px
+    ), /* horizontal grain streaks — light + dark alternating every few px */
+    repeating-linear-gradient(
+      0deg,
+      oklch(var(--bubba-frame-blue-light) / 0.18) 0,
+      oklch(var(--bubba-frame-blue-light) / 0.18) 2px,
+      transparent 2px,
+      transparent 5px,
+      oklch(var(--bubba-frame-blue-dark) / 0.22) 5px,
+      oklch(var(--bubba-frame-blue-dark) / 0.22) 6px,
+      transparent 6px,
+      transparent 11px
+    ), /* soft top-light wash so the grain reads as lit from above */
+    linear-gradient(
+      180deg,
+      oklch(var(--bubba-frame-blue-light) / 0.35) 0%,
+      oklch(var(--bubba-frame-blue) / 0) 40%,
+      oklch(var(--bubba-frame-blue-dark) / 0.3) 100%
+    );
+  /* distressed lighter edge — inset cream-tinted ring, uneven via two
+     stacked shadows of different blur/offset. */
+  box-shadow:
+    inset 0 0 0 2px oklch(var(--bubba-frame-distress) / 0.4),
+    inset 0 2px 6px oklch(var(--bubba-frame-distress) / 0.25),
+    inset 0 -3px 8px oklch(var(--bubba-frame-blue-dark) / 0.6),
+    0 1px 3px oklch(0 0 0 / 0.4);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── (2) Red-to-orange radial poster field ──────────────────────────
+   Fills the framed area. Radial red center fading to warm orange at the
+   edges, with a deep-red vignette in the corners for poster depth. */
+.bubba-poster-field {
+  position: relative;
+  border-radius: calc(var(--radius) - 1px);
+  padding: 1.25rem 1rem 1.5rem;
+  background-color: oklch(var(--bubba-field-red));
+  /* radial red→orange — warm poster glow from center out */
+  background-image: radial-gradient(
+      ellipse 80% 70% at 50% 40%,
+      oklch(var(--bubba-field-red)) 0%,
+      oklch(var(--bubba-field-orange)) 70%,
+      oklch(var(--bubba-field-deep)) 100%
+    ), /* corner vignette — deeper red in all four corners */
+    radial-gradient(
+      ellipse 60% 60% at 50% 50%,
+      transparent 60%,
+      oklch(var(--bubba-field-deep) / 0.55) 100%
+    );
+  color: oklch(var(--bubba-list-cream));
+  text-align: center;
+  overflow: hidden;
+}
+
+/* ── (3) Red Pacifico script logo wordmark ──────────────────────────
+   "Bubba's 33" in red Pacifico script at the top of the poster. Slight
+   drop shadow lifts it off the warm field. Reuses --font-script. */
+.bubba-poster-logo {
+  font-family: var(--font-script);
+  color: oklch(var(--bubba-logo-red));
+  line-height: 1;
+  text-shadow: 0 2px 0 oklch(var(--bubba-logo-shadow) / 0.5), 0 3px 6px
+    oklch(var(--bubba-logo-shadow) / 0.4);
+  /* slight tilt for the hand-painted poster feel */
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+
+/* ── (4) Navy SCRATCH-MADE banner ───────────────────────────────────
+   Solid patriotic-blue bar across the upper poster area, white block
+   caps text in Oswald. Full-width inside the field, slight negative
+   margin so it bleeds to the field edges like a real poster banner. */
+.bubba-poster-banner {
+  background-color: oklch(var(--bubba-banner-blue));
+  color: oklch(var(--bubba-banner-cream));
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  /* bleed to field edges */
+  margin: 0.5rem -1rem 0.75rem;
+  padding: 0.3rem 1rem;
+  /* subtle top/bottom inner highlight for the printed-bar look */
+  box-shadow: inset 0 1px 0 oklch(var(--bubba-banner-cream) / 0.18), inset 0
+    -1px 0 oklch(0 0 0 / 0.25);
+}
+
+/* ── (5) 'Food FOR All' headline ────────────────────────────────────
+   Single line mixing Pacifico script ('Food' and 'All') with bold block
+   caps ('FOR'). Script words in deep red, block word in cream Oswald.
+   Inline-flex so the three words sit on one line and wrap cleanly on
+   phone (each word is its own inline element). */
+.bubba-poster-headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  line-height: 1;
+  margin: 0.25rem 0 0.75rem;
+}
+.bubba-poster-headline-script {
+  font-family: var(--font-script);
+  color: oklch(var(--bubba-headline-script));
+  text-shadow: 0 2px 0 oklch(var(--bubba-logo-shadow) / 0.45), 0 3px 5px
+    oklch(var(--bubba-logo-shadow) / 0.35);
+  line-height: 0.9;
+}
+.bubba-poster-headline-block {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: oklch(var(--bubba-headline-block));
+  line-height: 0.9;
+  /* slight outline so the block caps read over the warm field */
+  text-shadow: 0 1px 0 oklch(var(--bubba-logo-shadow) / 0.4), 0 2px 3px
+    oklch(var(--bubba-logo-shadow) / 0.35);
+}
+
+/* ── (6) Hero food photo slot (burger + fries) ──────────────────────
+   Warm CSS/gradient placeholder evoking golden-brown burger tones.
+   Container carries the gradient; an empty .bubba-poster-hero-img slot
+   inside lets a real <img> drop in later without layout shift. The
+   slot is empty by default (no broken-image icon). Cream inner border
+   frames the photo like the poster. Mobile-first: full-width, 16:9-ish
+   aspect via aspect-ratio. */
+.bubba-poster-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border: 3px solid oklch(var(--bubba-photo-frame));
+  border-radius: 2px;
+  background-color: oklch(var(--bubba-photo-hero-to));
+  background-image: linear-gradient(
+    160deg,
+    oklch(var(--bubba-photo-hero-from)) 0%,
+    oklch(var(--bubba-photo-hero-to)) 100%
+  );
+  /* faint warm radial glow center, like a food photo hotspot */
+  box-shadow: inset 0 0 24px oklch(var(--bubba-photo-hero-from) / 0.35), 0 1px
+    4px oklch(0 0 0 / 0.4);
+  overflow: hidden;
+  margin: 0.5rem 0 0.75rem;
+}
+.bubba-poster-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  /* empty by default — no broken-image icon. When a real <img src>
+     drops in, it fills the slot cleanly. */
+}
+
+/* ── (7) 'This means we have:' Pacifico label ───────────────────────
+   Handwritten-style label in Pacifico script above the feature list,
+   replacing the old uppercase 'This Means We Have' label. Deep red on
+   the warm field. */
+.bubba-poster-list-label {
+  font-family: var(--font-script);
+  color: oklch(var(--bubba-headline-script));
+  text-align: left;
+  line-height: 1;
+  margin: 0.5rem 0 0.4rem;
+  text-shadow: 0 1px 0 oklch(var(--bubba-logo-shadow) / 0.4), 0 2px 3px
+    oklch(var(--bubba-logo-shadow) / 0.3);
+}
+
+/* ── (8) Feature list ───────────────────────────────────────────────
+   Cream body text on the warm field, cream ★ bullets. Left-aligned,
+   Oswald semibold for the poster-print look. Bound to the Library
+   'This means we have' field via the existing data pipeline. */
+.bubba-poster-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.bubba-poster-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: oklch(var(--bubba-list-cream));
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+.bubba-poster-list-item::before {
+  content: "★";
+  color: oklch(var(--bubba-list-star));
+  font-size: 0.85em;
+  flex-shrink: 0;
+}
+
+/* ── (9) Lower food cluster slot (pizza / beer / cocktails) ─────────
+   Warm amber gradient placeholder for the lower cluster photo. Same
+   slot pattern as the hero — empty .bubba-poster-cluster-img inside
+   for a future <img>. Slightly wider aspect (21/9) to read as a strip
+   of three food/drink items. */
+.bubba-poster-cluster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  border: 3px solid oklch(var(--bubba-photo-frame));
+  border-radius: 2px;
+  background-color: oklch(var(--bubba-photo-cluster-to));
+  background-image: linear-gradient(
+    160deg,
+    oklch(var(--bubba-photo-cluster-from)) 0%,
+    oklch(var(--bubba-photo-cluster-to)) 100%
+  );
+  box-shadow: inset 0 0 24px oklch(var(--bubba-photo-cluster-from) / 0.35), 0
+    1px 4px oklch(0 0 0 / 0.4);
+  overflow: hidden;
+  margin: 0.75rem 0 0.5rem;
+}
+.bubba-poster-cluster-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+/* ── (10) Known-for supporting copy ─────────────────────────────────
+   Poster-style tagline area where the poster's tagline sits. Bound to
+   the Library 'Known for' field. Oswald uppercase kicker + cream body. */
+.bubba-poster-knownfor-kicker {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: oklch(var(--bubba-banner-cream));
+  font-size: 0.7rem;
+  text-align: left;
+  margin-top: 0.25rem;
+}
+.bubba-poster-knownfor-body {
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: oklch(var(--bubba-list-cream));
+  text-align: left;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+
+/* ── (11) Card footer Back link zone ───────────────────────────────
+   The Back-to-category link stays inside the card footer (not floating
+   above). This wrapper sits at the bottom of the field, separated by a
+   thin cream rule, so the link reads as part of the poster card. */
+.bubba-poster-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid oklch(var(--bubba-photo-frame) / 0.4);
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* ── Mobile-first responsive ────────────────────────────────────────
+   On phone, the poster zones stack vertically and the banner bleeds to
+   the field edges. No horizontal overflow: all zones are width:100%
+   and the field padding is 1rem on phone. Larger screens get slightly
+   more generous padding and a max-width on the headline words so the
+   script doesn't get oversized. */
+@media (min-width: 640px) {
+  .bubba-poster-frame {
+    padding: 1rem;
+  }
+  .bubba-poster-field {
+    padding: 1.75rem 1.5rem 2rem;
+  }
+  .bubba-poster-banner {
+    margin: 0.75rem -1.5rem 1rem;
+    padding: 0.4rem 1.5rem;
+  }
+}
+
+/* Reduced motion — the poster is static by design (doNotBuild:
+   distressed-texture overlay animation). No animations to pause; this
+   block exists for symmetry with the other additive sections. */
+@media (prefers-reduced-motion: reduce) {
+  .bubba-poster-logo,
+  .bubba-poster-headline-script,
+  .bubba-poster-headline-block {
+    transform: none;
+  }
+}
 .selection\:bg-primary *::-moz-selection {
   --tw-bg-opacity: 1;
   background-color: oklch(var(--primary) / var(--tw-bg-opacity, 1));
@@ -4914,6 +5947,9 @@ video {
 .hover\:border-primary\/40:hover {
   border-color: oklch(var(--primary) / 0.4);
 }
+.hover\:border-primary\/50:hover {
+  border-color: oklch(var(--primary) / 0.5);
+}
 .hover\:border-primary\/60:hover {
   border-color: oklch(var(--primary) / 0.6);
 }
@@ -4990,6 +6026,9 @@ video {
 }
 .hover\:opacity-100:hover {
   opacity: 1;
+}
+.hover\:opacity-90:hover {
+  opacity: 0.9;
 }
 .hover\:shadow-\[0_0_0_1px_hsl\(var\(--sidebar-accent\)\)\]:hover {
   --tw-shadow: 0 0 0 1px hsl(var(--sidebar-accent));
@@ -6167,6 +7206,11 @@ video {
     padding-right: 2rem;
   }
 
+  .sm\:py-10 {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
   .sm\:py-12 {
     padding-top: 3rem;
     padding-bottom: 3rem;
@@ -6208,8 +7252,23 @@ video {
     line-height: 1;
   }
 
+  .sm\:text-6xl {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .sm\:text-8xl {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
   .sm\:text-\[0\.65rem\] {
     font-size: 0.65rem;
+  }
+
+  .sm\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 
   .sm\:text-lg {
@@ -6280,6 +7339,11 @@ video {
 
   .md\:text-6xl {
     font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .md\:text-7xl {
+    font-size: 4.5rem;
     line-height: 1;
   }
 

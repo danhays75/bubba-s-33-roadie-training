@@ -104,6 +104,11 @@ export default {
       boxShadow: {
         xs: "0 1px 2px 0 rgba(0,0,0,0.05)",
         roadie: "0 2px 0 0 rgba(0,0,0,0.6)",
+        /* Patriotic Orientation — ADDITIVE glow for goal cards + mission
+           headline. Tuned to the Orientation blue/gold tokens; does NOT
+           alter existing shadows. */
+        "orientation-goal": "0 0 0 1px oklch(0.42 0.16 264 / 0.15), 0 0 18px oklch(0.42 0.16 264 / 0.35)",
+        "orientation-mission": "0 0 14px oklch(0.801 0.171 75 / 0.45), 0 0 28px oklch(0.801 0.171 75 / 0.27)",
       },
       keyframes: {
         "accordion-down": {

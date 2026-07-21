@@ -124,6 +124,7 @@ type Position =
    coverPhoto: opt text;
    description: opt text;
    id: nat;
+   layoutStyle: LayoutStyle;
    name: text;
    sortOrder: nat;
  };
@@ -174,6 +175,11 @@ type LibraryItem =
    subtitle: opt text;
    tags: vec text;
    title: text;
+ };
+type LayoutStyle = 
+ variant {
+   library;
+   orientation;
  };
 type FlashcardRecipe = 
  record {
@@ -333,8 +339,8 @@ service : {
   createNsoPhase: (name: text) -> (Phase);
   createNsoTask: (phaseId: nat, "text": text, section: opt text, assignedTo:
    opt principal) -> (Task);
-  createPosition: (name: text, description: opt text, coverPhoto:
-   opt text) -> (Position);
+  createPosition: (name: text, description: opt text, coverPhoto: opt text,
+   layoutStyle: LayoutStyle) -> (Position);
   deleteCategory: (categoryId: nat) -> ();
   deleteItem: (itemId: nat) -> ();
   deleteLegendaryActivity: (id: nat) -> ();
@@ -407,5 +413,5 @@ service : {
    assignedTo: opt principal, completionDate: opt text, notes: opt text) ->
    ();
   updatePosition: (id: nat, name: text, description: opt text, coverPhoto:
-   opt text) -> (Position);
+   opt text, layoutStyle: LayoutStyle) -> (Position);
 }

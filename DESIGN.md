@@ -202,3 +202,97 @@ Premium, motivational, celebratory. Condensed Anton marquee type over a glowing 
 
 ### Reduced Motion
 - All `drinks-*` animations pause under `prefers-reduced-motion`; glass fills instantly, confetti/banner/star/flame disabled.
+
+## Patriotic Orientation Layout (additive — Legendary Starts Here)
+
+> ADDITIVE only — no existing token altered. Rendered when a position's `layoutStyle === 'orientation'`. A presentation layer that reads existing Library content; sits on the dark roadhouse base (#121218 page, #191922 card) and adds tasteful patriotic accents (red/cream/blue, stars & stripes) — NOT a full flag wallpaper. All tokens + classes prefixed `orientation-` / `patriotic-` so they never collide with existing classes (incl. `legendary-hero-*`).
+
+### Direction
+Americana roadhouse onboarding — bold condensed poster type, tricolor stripes, gold ★ accents, scalloped bunting. Tasteful patriotic accents on the dark base, never a flag wallpaper. Mobile-first; sections stack single-column on phone.
+
+### Patriotic Palette (additive)
+| Token | OKLCH (L C H) | Hex | Use |
+|---|---|---|---|
+| patriotic-red | 0.595 0.232 27 | #E4002B | red — reuses primary |
+| patriotic-blue | 0.42 0.16 264 | #123A8A | brighter than brand navy, for pop |
+| patriotic-cream | 0.948 0.012 90 | #F5F1E8 | reuses foreground |
+| patriotic-gold | 0.801 0.171 75 | #F2A900 | reuses in-training gold |
+| orientation-hero-from/to | 0.46 0.21 25 / 0.32 0.11 264 | — | hero red→navy gradient |
+| orientation-goal-card | 0.30 0.06 264 | — | glowing navy goal card |
+
+### Orientation Zones
+| Zone | Class | Treatment |
+|---|---|---|
+| Bunting strip | `.orientation-bunting` | red/cream/blue scalloped half-rounds under nav |
+| Hero | `.orientation-hero` | rounded panel, red→navy gradient, faint diagonal flag-light stripes + star field |
+| Mission band | `.orientation-mission` + `.orientation-tri-stripe-top` | tri-stripe top, gold headline + glow, ★★★★★ row |
+| Section divider | `.orientation-divider` + `.orientation-divider-rule` | number + Oswald heading + gold ★ + tri-stripe rule |
+| Value cards | `.orientation-value-card` + `.orientation-capstone` | tricolor left edge, gold ★, red capstone bar |
+| Our Story | `.orientation-chip` + `.orientation-poster` | emoji chips, red "FOOD FOR ALL" poster, cream border |
+| Goal cards | `.orientation-goal-card` + `.orientation-goal-star` | glowing navy, gold ★ corner, name + abbreviation tag |
+| Priorities | `.orientation-priority-card.is-red/.is-blue` | two big "10" teaser cards, red/blue top edge |
+| CTA | `.orientation-cta` + `.orientation-cta-enter` | tri-stripe top, gold "★ Be Legendary", red ENTER button |
+| Rules grid | `.orientation-rules-grid` + `.orientation-rule-tile` | 2-col (1-col mobile) star-bulleted tiles |
+
+### Orientation Constraints
+- Additive only — never alter existing tokens, keyframes, or the flat roadhouse rules.
+- Gradients/glow permitted ONLY inside Orientation surfaces (hero gradient, mission headline glow, goal-card glow, CTA).
+- No star-twinkle or waving-flag animation (doNotBuild); only the ENTER hover transition moves.
+- No photographic patriotic hero image (doNotBuild); hero is pure CSS gradient + stripes + star field.
+- No store-specific fill-in fields (doNotBuild); reads existing Library content only.
+- Mobile-first: hero stacks single-column, rules grid collapses to 1-col on phone.
+- Reuses Anton (display), Oswald (uppercase headings), Barlow (body) — no new fonts.
+
+## Bubba 'Food For All' Poster — Our Story Interior (additive)
+
+> ADDITIVE only — no existing token altered. The poster look is the INTERIOR of the existing dark Orientation card (bg-card + border-border + '02 / Our Story' divider stay). Dark card wrapper frames the poster; poster styles the card's inner content. All classes prefixed `bubba-poster-*`. Gradients/textures permitted (poster is a print-style surface, like the recipe print card and Be Legendary banner).
+
+### Direction
+Faithful Bubba's 33 'Food For All' poster restyle — weathered blue wood-grain frame, red-to-orange radial field, red Pacifico script logo, navy SCRATCH-MADE banner, mixed-script 'Food FOR All' headline, warm gradient photo slots, Pacifico 'This means we have:' label. Mobile-first vertical stack, no horizontal overflow.
+
+### Poster Palette (additive)
+| Token | OKLCH (L C H) | Use |
+|---|---|---|
+| bubba-frame-blue | 0.42 0.16 264 | wood-grain frame base (patriotic blue) |
+| bubba-frame-blue-light | 0.52 0.14 264 | lighter grain streak |
+| bubba-frame-blue-dark | 0.32 0.12 264 | darker plank shadow |
+| bubba-frame-distress | 0.78 0.02 264 | distressed near-white edge |
+| bubba-field-red | 0.595 0.232 27 | radial field center (patriotic red) |
+| bubba-field-orange | 0.68 0.19 50 | warm orange field edge |
+| bubba-field-deep | 0.46 0.21 25 | deep red corner vignette |
+| bubba-logo-red | 0.595 0.232 27 | Pacifico script logo |
+| bubba-banner-blue | 0.32 0.11 264 | navy SCRATCH-MADE bar |
+| bubba-banner-cream | 0.948 0.012 90 | white block caps on banner |
+| bubba-headline-script | 0.46 0.21 25 | 'Food'/'All' script words |
+| bubba-headline-block | 0.948 0.012 90 | 'FOR' block caps |
+| bubba-photo-hero-from/to | 0.55 0.12 55 / 0.42 0.14 35 | burger+fries slot gradient |
+| bubba-photo-cluster-from/to | 0.6 0.13 70 / 0.45 0.12 45 | pizza/beer/cocktails slot gradient |
+| bubba-photo-frame | 0.948 0.012 90 | cream inner border on photo slots |
+| bubba-list-cream | 0.948 0.012 90 | feature list body text |
+| bubba-list-star | 0.948 0.012 90 | ★ bullet |
+
+### Poster Zones (interior of dark card, top→bottom)
+| Zone | Class | Treatment |
+|---|---|---|
+| Wood-grain frame | `.bubba-poster-frame` | patriotic-blue base, vertical plank seams + horizontal grain streaks (layered repeating-linear-gradients), distressed inset cream edge |
+| Red-orange field | `.bubba-poster-field` | radial red→orange + corner vignette, cream text, centered |
+| Script logo | `.bubba-poster-logo` | red Pacifico, -2° tilt, dark drop shadow |
+| SCRATCH-MADE banner | `.bubba-poster-banner` | navy bar, white Oswald block caps, bleeds to field edges |
+| 'Food FOR All' headline | `.bubba-poster-headline` + `-script` / `-block` | flex row: red Pacifico 'Food' + cream Anton 'FOR' + red Pacifico 'All' |
+| Hero photo slot | `.bubba-poster-hero` + `.bubba-poster-hero-img` | 16:10 golden-brown gradient placeholder, cream border, empty `<img>` slot |
+| 'This means we have:' label | `.bubba-poster-list-label` | red Pacifico script, left-aligned |
+| Feature list | `.bubba-poster-list` + `.bubba-poster-list-item` | cream ★ bullets, cream Oswald semibold (bound to Library 'This means we have') |
+| Known-for copy | `.bubba-poster-knownfor-kicker` + `-body` | Oswald uppercase kicker + Barlow body (bound to Library 'Known for') |
+| Cluster photo slot | `.bubba-poster-cluster` + `.bubba-poster-cluster-img` | 21:9 amber gradient placeholder, cream border, empty `<img>` slot |
+| Card footer | `.bubba-poster-footer` | thin cream rule + Back-to-category ghost link (inside card) |
+
+### Poster Constraints
+- Additive only — never alter existing tokens, keyframes, or the flat roadhouse rules.
+- Poster is the INTERIOR of the existing dark card; bg-card + border-border + '02 / Our Story' divider stay unchanged.
+- Gradients/textures permitted ONLY inside `.bubba-poster-*` surfaces (frame, field, photo slots).
+- No real food photography in slots (doNotBuild) — warm CSS/gradient placeholders with empty `<img>` slots for future drop-in.
+- No distressed-texture overlay animation (doNotBuild) — frame is static.
+- Mobile-first: all zones width:100%, field padding 1rem on phone, banner bleeds to edges; stacks single-column, no horizontal overflow.
+- Reuses Anton (display), Oswald (headings), Barlow (body) + Pacifico via `--font-script` (`.font-script` utility); no new fonts.
+- Data binding intact: useItemsByCategory + findField 'Known for' / 'This means we have' + decodeHtmlEntities.
+- Back-to-category link stays inside the card footer (`.bubba-poster-footer`), routes to /position/${positionId}/library/${category.id}/item/${item.id}.

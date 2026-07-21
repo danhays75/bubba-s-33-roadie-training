@@ -10,6 +10,7 @@ module {
   public type PositionAssignment = Types.PositionAssignment;
   public type Role = Types.Role;
   public type AssignmentStatus = Types.AssignmentStatus;
+  public type LayoutStyle = Types.LayoutStyle;
 
   // --- UserProfile helpers ---
 
@@ -66,7 +67,7 @@ module {
     positions.toArray();
   };
 
-  public func createPosition(positions : List.List<Position>, nextId : { var value : Nat }, name : Text, description : ?Text, coverPhoto : ?Text) : Position {
+  public func createPosition(positions : List.List<Position>, nextId : { var value : Nat }, name : Text, description : ?Text, coverPhoto : ?Text, layoutStyle : LayoutStyle) : Position {
     let id = nextId.value;
     nextId.value := nextId.value + 1;
     // sortOrder = current size + 1, so the new position appends to the end of
@@ -78,16 +79,17 @@ module {
       description;
       coverPhoto;
       sortOrder;
+      layoutStyle;
     };
     positions.add(position);
     position;
   };
 
-  public func updatePosition(positions : List.List<Position>, id : Nat, name : Text, description : ?Text, coverPhoto : ?Text) : ?Position {
+  public func updatePosition(positions : List.List<Position>, id : Nat, name : Text, description : ?Text, coverPhoto : ?Text, layoutStyle : LayoutStyle) : ?Position {
     let found = positions.find(func(p) { p.id == id });
     switch (found) {
       case (?existing) {
-        let updated : Position = { existing with name; description; coverPhoto };
+        let updated : Position = { existing with name; description; coverPhoto; layoutStyle };
         positions.mapInPlace(
           func(p) {
             if (p.id == id) { updated } else { p };
