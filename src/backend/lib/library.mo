@@ -20,6 +20,56 @@ module {
   public type RecipeSpec = Types.RecipeSpec;
   public type RecipeVariant = Types.RecipeVariant;
 
+  // Auto-tag upsell ingredients in the recipe import path. The admin supplies
+  // the Recipe with `upsell` already on each RecipeSpec, so the field is
+  // always accepted and persisted. This helper upgrades `upsell=false` to
+  // `upsell=true` when the ingredient name signals a premium liquor upgrade
+  // (keywords like "top shelf", "premium", "reserve", "single barrel",
+  // "anejo", "añejo", "vsop", "x.o", "luxury"). It NEVER downgrades an
+  // explicit `upsell=true` — the admin's explicit tag always wins. Applied
+  // in both createItem and updateItem so the import path tags upsells
+  // consistently. Degrades gracefully: ingredients without a premium signal
+  // keep the admin-supplied upsell value (typically false).
+  //
+  // Case-insensitive substring match against the lowercased ingredient name.
+  func isUpsellSignal(ingredient : Text) : Bool {
+    let name = ingredient.toLower();
+    let signals = ["top shelf", "top-shelf", "premium", "reserve", "single barrel", "anejo", "añejo", "vsop", "x.o", "x.o.", "luxury"];
+    signals.vals().find(func(s) { name.contains(#text s) }) != null;
+  };
+
+  func tagSpecs(specs : [RecipeSpec]) : [RecipeSpec] {
+    specs.map(func(s) : RecipeSpec {
+      if (s.upsell) {
+        // Admin's explicit upsell=true always wins.
+        s;
+      } else if (isUpsellSignal(s.ingredient)) {
+        { s with upsell = true };
+      } else {
+        s;
+      };
+    });
+  };
+
+  // Apply auto-tagging to a recipe's specs and each variant's specs. Returns
+  // the recipe with upsell flags set on premium-liquor ingredients. Glassware,
+  // assembly, garnish, equipment, yield, shelfLife, and qualityIdentifier are
+  // unchanged.
+  func tagRecipeUpsells(recipe : ?Recipe) : ?Recipe {
+    switch (recipe) {
+      case (?r) {
+        ?{
+          r with
+          specs = tagSpecs(r.specs);
+          variants = r.variants.map(func(v) : RecipeVariant {
+            { v with specs = tagSpecs(v.specs) };
+          });
+        };
+      };
+      case null null;
+    };
+  };
+
   // --- Category helpers ---
 
   public func getCategory(categories : List.List<Category>, id : Nat) : ?Category {
@@ -187,6 +237,11 @@ module {
     // category and add 1 — mirrors the createPosition pattern in foundation.mo.
     let sameCategoryCount = items.filter(func(i) { i.categoryId == categoryId }).size();
     let sortOrder = sameCategoryCount + 1;
+    // Auto-tag upsell ingredients on the recipe import path before persisting.
+    // Premium-liquor signals (top shelf, premium, reserve, single barrel,
+    // anejo, añejo, vsop, x.o, luxury) flip upsell=false → upsell=true;
+    // explicit upsell=true is never downgraded. null recipe passes through.
+    let taggedRecipe = tagRecipeUpsells(recipe);
     let item : LibraryItem = {
       id;
       categoryId;
@@ -198,7 +253,7 @@ module {
       tags;
       seasonal;
       sortOrder;
-      recipe;
+      recipe = taggedRecipe;
     };
     items.add(item);
     item;
@@ -223,6 +278,9 @@ module {
         // id / categoryId / sortOrder are preserved (not part of the update
         // payload); recipe is carried through so the item can be promoted to
         // or demoted from a recipe. Mirrors updatePosition in foundation.mo.
+        // Auto-tag upsell ingredients on the recipe import path before
+        // persisting — same tagging as createItem so updates stay consistent.
+        let taggedRecipe = tagRecipeUpsells(recipe);
         let updated : LibraryItem = {
           existing with
           title;
@@ -232,7 +290,7 @@ module {
           notes;
           tags;
           seasonal;
-          recipe;
+          recipe = taggedRecipe;
         };
         items.mapInPlace(
           func(i) {

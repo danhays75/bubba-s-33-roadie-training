@@ -282,9 +282,9 @@ const categories = [
 const oldFashionedRecipe = {
   glassware: "Rocks",
   specs: [
-    { ingredient: "Bourbon", amount: "2 oz" },
-    { ingredient: "Sugar cube", amount: "1" },
-    { ingredient: "Angostura bitters", amount: "2 dashes" },
+    { ingredient: "Bourbon", amount: "2 oz", upsell: false },
+    { ingredient: "Sugar cube", amount: "1", upsell: false },
+    { ingredient: "Angostura bitters", amount: "2 dashes", upsell: false },
   ],
   assembly: [
     "Muddle sugar with bitters and a splash of water",
@@ -302,9 +302,9 @@ const oldFashionedRecipe = {
 const margaritaRecipe = {
   glassware: "Coupe",
   specs: [
-    { ingredient: "Tequila", amount: "2 oz" },
-    { ingredient: "Lime juice", amount: "1 oz" },
-    { ingredient: "Cointreau", amount: "1 oz" },
+    { ingredient: "Tequila", amount: "2 oz", upsell: false },
+    { ingredient: "Lime juice", amount: "1 oz", upsell: false },
+    { ingredient: "Cointreau", amount: "1 oz", upsell: false },
   ],
   assembly: [
     "Shake all ingredients with ice",
@@ -321,9 +321,9 @@ const margaritaRecipe = {
 const negroniRecipe = {
   glassware: "Rocks",
   specs: [
-    { ingredient: "Gin", amount: "1 oz" },
-    { ingredient: "Campari", amount: "1 oz" },
-    { ingredient: "Sweet vermouth", amount: "1 oz" },
+    { ingredient: "Gin", amount: "1 oz", upsell: false },
+    { ingredient: "Campari", amount: "1 oz", upsell: false },
+    { ingredient: "Sweet vermouth", amount: "1 oz", upsell: false },
   ],
   assembly: [
     "Stir all ingredients over a large ice cube",

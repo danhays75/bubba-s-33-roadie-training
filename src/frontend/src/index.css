@@ -1146,6 +1146,11 @@
   .animate-drinks-star-pop {
     animation: drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
+  /* green-throb: gentle infinite green glow + subtle scale pulse for
+     correct-tap emphasis. Box-shadow + transform only (no layout animation). */
+  .animate-drinks-green-throb {
+    animation: drinks-green-throb 1.6s ease-in-out infinite;
+  }
 
   /* ── Keyframes (also mirrored in tailwind.config.js) ──────────────── */
   @keyframes drinks-green-pop {
@@ -1275,6 +1280,20 @@
       opacity: 1;
     }
   }
+  @keyframes drinks-green-throb {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 oklch(var(--drinks-correct) / 0.55);
+    }
+    50% {
+      transform: scale(1.03);
+      box-shadow: 0 0 0 0.5rem oklch(var(--drinks-correct) / 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 oklch(var(--drinks-correct) / 0.55);
+    }
+  }
 
   /* Reduced motion — game animations shorten to instant state changes */
   @media (prefers-reduced-motion: reduce) {
@@ -1289,6 +1308,13 @@
     .animate-drinks-star-pop {
       animation-duration: 0.01ms;
       animation-iteration-count: 1;
+    }
+    /* green-throb — falls back to a STATIC green glow (no scale/pulse).
+       Box-shadow only, no transform, no animation. */
+    .animate-drinks-green-throb {
+      animation: none;
+      transform: none;
+      box-shadow: 0 0 0 0.25rem oklch(var(--drinks-correct) / 0.45);
     }
     .drinks-glass-fill,
     .drinks-glass-foam {

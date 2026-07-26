@@ -604,12 +604,17 @@ export function BulkImportDialog({
     const specs: RecipeSpec[] = recipe.specs.map((s) => ({
       amount: s.amount,
       ingredient: s.ingredient,
+      // upsell tagging is built into the recipe import path, but the import
+      // JSON does not carry an upsell flag — default to false here. The
+      // admin can tag upsell ingredients through a separate flow.
+      upsell: false,
     }));
     const variants: RecipeVariant[] = (recipe.variants ?? []).map((v) => ({
       variantLabel: v.label,
       specs: v.specs.map((s) => ({
         amount: s.amount,
         ingredient: s.ingredient,
+        upsell: false,
       })),
       assembly: v.assembly,
     }));
@@ -918,7 +923,11 @@ function toItem(i: {
   sortOrder: bigint;
   recipe?: {
     glassware: string;
-    specs: Array<{ amount: string; ingredient: string }>;
+    specs: Array<{
+      amount: string;
+      ingredient: string;
+      upsell: boolean;
+    }>;
     assembly: Array<string>;
     garnish: Array<string>;
     equipment: string[];
@@ -927,7 +936,11 @@ function toItem(i: {
     qualityIdentifier: string[];
     variants: Array<{
       variantLabel: string;
-      specs: Array<{ amount: string; ingredient: string }>;
+      specs: Array<{
+        amount: string;
+        ingredient: string;
+        upsell: boolean;
+      }>;
       assembly: Array<string>;
     }>;
   };
@@ -954,6 +967,7 @@ function toItem(i: {
           specs: i.recipe.specs.map((s) => ({
             amount: s.amount,
             ingredient: s.ingredient,
+            upsell: s.upsell,
           })),
           assembly: i.recipe.assembly,
           garnish: i.recipe.garnish,
@@ -966,6 +980,7 @@ function toItem(i: {
             specs: v.specs.map((s) => ({
               amount: s.amount,
               ingredient: s.ingredient,
+              upsell: s.upsell,
             })),
             assembly: v.assembly,
           })),

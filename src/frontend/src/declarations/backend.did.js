@@ -30,6 +30,7 @@ export const DetailField = IDL.Record({
 });
 export const RecipeSpec = IDL.Record({
   'ingredient' : IDL.Text,
+  'upsell' : IDL.Bool,
   'amount' : IDL.Text,
 });
 export const RecipeVariant = IDL.Record({
@@ -67,14 +68,18 @@ export const ActivityType = IDL.Variant({
   'flashcards' : IDL.Null,
 });
 export const DrinksBuilderSettings = IDL.Record({
+  'garnishPrompts' : IDL.Vec(IDL.Text),
   'includedCategories' : IDL.Vec(IDL.Text),
   'enforceAssemblyOrder' : IDL.Bool,
   'pointsPerCorrect' : IDL.Nat,
   'excludedDrinkTitles' : IDL.Vec(IDL.Text),
   'showScoring' : IDL.Bool,
+  'assemblyPrompts' : IDL.Vec(IDL.Text),
   'requireExactAmounts' : IDL.Bool,
+  'glasswarePrompts' : IDL.Vec(IDL.Text),
   'soundDefault' : IDL.Bool,
   'decoyCount' : IDL.Nat,
+  'specsPrompts' : IDL.Vec(IDL.Text),
   'streakMultiplier' : IDL.Bool,
   'roundsPerSession' : IDL.Nat,
 });
@@ -118,6 +123,11 @@ export const ActivityContent = IDL.Variant({
   'quizContent' : QuizContent,
   'flashcardContent' : FlashcardContent,
 });
+export const QuizSettings = IDL.Record({
+  'includeTrueFalse' : IDL.Bool,
+  'includeMatching' : IDL.Bool,
+  'includeMultipleChoice' : IDL.Bool,
+});
 export const Activity = IDL.Record({
   'id' : IDL.Nat,
   'activityType' : ActivityType,
@@ -127,6 +137,7 @@ export const Activity = IDL.Record({
   'createdBy' : IDL.Principal,
   'positionId' : IDL.Nat,
   'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+  'quizSettings' : IDL.Opt(QuizSettings),
 });
 export const Phase = IDL.Record({
   'id' : IDL.Nat,
@@ -220,6 +231,7 @@ export const BuildActivityInput = IDL.Record({
   'name' : IDL.Text,
   'positionId' : IDL.Nat,
   'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+  'quizSettings' : IDL.Opt(QuizSettings),
 });
 export const Value = IDL.Variant({
   'int' : IDL.Int,
@@ -263,6 +275,7 @@ export const UpdateActivityInput = IDL.Record({
   'content' : IDL.Opt(ActivityContent),
   'name' : IDL.Text,
   'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+  'quizSettings' : IDL.Opt(QuizSettings),
 });
 
 export const idlService = IDL.Service({
@@ -566,6 +579,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const RecipeSpec = IDL.Record({
     'ingredient' : IDL.Text,
+    'upsell' : IDL.Bool,
     'amount' : IDL.Text,
   });
   const RecipeVariant = IDL.Record({
@@ -603,14 +617,18 @@ export const idlFactory = ({ IDL }) => {
     'flashcards' : IDL.Null,
   });
   const DrinksBuilderSettings = IDL.Record({
+    'garnishPrompts' : IDL.Vec(IDL.Text),
     'includedCategories' : IDL.Vec(IDL.Text),
     'enforceAssemblyOrder' : IDL.Bool,
     'pointsPerCorrect' : IDL.Nat,
     'excludedDrinkTitles' : IDL.Vec(IDL.Text),
     'showScoring' : IDL.Bool,
+    'assemblyPrompts' : IDL.Vec(IDL.Text),
     'requireExactAmounts' : IDL.Bool,
+    'glasswarePrompts' : IDL.Vec(IDL.Text),
     'soundDefault' : IDL.Bool,
     'decoyCount' : IDL.Nat,
+    'specsPrompts' : IDL.Vec(IDL.Text),
     'streakMultiplier' : IDL.Bool,
     'roundsPerSession' : IDL.Nat,
   });
@@ -654,6 +672,11 @@ export const idlFactory = ({ IDL }) => {
     'quizContent' : QuizContent,
     'flashcardContent' : FlashcardContent,
   });
+  const QuizSettings = IDL.Record({
+    'includeTrueFalse' : IDL.Bool,
+    'includeMatching' : IDL.Bool,
+    'includeMultipleChoice' : IDL.Bool,
+  });
   const Activity = IDL.Record({
     'id' : IDL.Nat,
     'activityType' : ActivityType,
@@ -663,6 +686,7 @@ export const idlFactory = ({ IDL }) => {
     'createdBy' : IDL.Principal,
     'positionId' : IDL.Nat,
     'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+    'quizSettings' : IDL.Opt(QuizSettings),
   });
   const Phase = IDL.Record({
     'id' : IDL.Nat,
@@ -756,6 +780,7 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'positionId' : IDL.Nat,
     'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+    'quizSettings' : IDL.Opt(QuizSettings),
   });
   const Value = IDL.Variant({
     'int' : IDL.Int,
@@ -799,6 +824,7 @@ export const idlFactory = ({ IDL }) => {
     'content' : IDL.Opt(ActivityContent),
     'name' : IDL.Text,
     'sourceCategoryIds' : IDL.Vec(IDL.Nat),
+    'quizSettings' : IDL.Opt(QuizSettings),
   });
   
   return IDL.Service({

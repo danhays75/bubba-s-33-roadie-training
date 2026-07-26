@@ -79,6 +79,7 @@ function toFrontendItem(i: BackendLibraryItem): LibraryItem {
           specs: i.recipe.specs.map((s) => ({
             amount: s.amount,
             ingredient: s.ingredient,
+            upsell: s.upsell,
           })),
           assembly: i.recipe.assembly,
           garnish: i.recipe.garnish,
@@ -87,6 +88,7 @@ function toFrontendItem(i: BackendLibraryItem): LibraryItem {
             specs: v.specs.map((s) => ({
               amount: s.amount,
               ingredient: s.ingredient,
+              upsell: s.upsell,
             })),
             assembly: v.assembly,
           })),
@@ -371,6 +373,40 @@ const SECTION_LABELS: Record<GameSectionKind, string> = {
 };
 
 /**
+ * Picks one prompt from a section's prompt list using a seed derived from
+ * the round seed (the existing per-section seed: roundSeed+1/+2/+3/+4).
+ * The pick is driven by the hook's existing seeded RNG (mulberry32) so it
+ * is stable for the whole round (computed once at build time, never
+ * re-rolled on render) and differs across rounds. When the list is empty
+ * or every entry is blank, falls back to the default section label from
+ * SECTION_LABELS so the heading always has text.
+ *
+ * The seed is the SAME value used to seed-shuffle that section's chips,
+ * so the prompt pick and the chip order are both deterministic functions
+ * of the round seed — replaying a round with the same seed reproduces the
+ * same prompt AND the same chip layout.
+ */
+function pickSectionPrompt(
+  prompts: string[] | undefined,
+  fallback: string,
+  sectionSeed: number,
+): string {
+  if (!prompts || prompts.length === 0) return fallback;
+  // Trim + drop blanks so an admin's stray empty entry doesn't waste a
+  // pick. We index into the trimmed list so the chosen prompt is clean.
+  const cleaned = prompts.map((p) => p.trim()).filter((p) => p.length > 0);
+  if (cleaned.length === 0) return fallback;
+  if (cleaned.length === 1) return cleaned[0];
+  const rand = mulberry32(sectionSeed);
+  const idx = Math.floor(rand() * cleaned.length);
+  // Clamp to [0, length-1] in case rand() returns exactly 1.0 (it
+  // shouldn't for mulberry32, but the guard is cheap and avoids a
+  // potential out-of-bounds).
+  const safeIdx = Math.min(cleaned.length - 1, Math.max(0, idx));
+  return cleaned[safeIdx];
+}
+
+/**
  * Builds a single round for a drink: four sections, each with ALL of the
  * drink's correct answers for that section + decoys, shuffled.
  *
@@ -385,6 +421,15 @@ const SECTION_LABELS: Record<GameSectionKind, string> = {
  * chip. The combined set (correct + decoys) is seeded-shuffled so the
  * same roundSeed always produces the same chip order.
  *
+ * Each section's `label` is set to ONE prompt picked from that section's
+ * prompt list (glasswarePrompts / specsPrompts / assemblyPrompts /
+ * garnishPrompts), seeded by the same per-section seed used for the chip
+ * shuffle so the pick is stable for the whole round and differs across
+ * rounds. When a section's prompt list is empty, the label falls back to
+ * the default SECTION_LABELS value (Glassware/Specs/Assembly/Garnish).
+ * The page renders {label} as the section heading, so the heading
+ * naturally shows the selected prompt with no rendering change.
+ *
  * Grading is driven by the `isCorrect` flag set at chip-build time
  * (label is one of the correct labels), so tapChip just needs to check
  * whether every correct chip in a section has been tapped.
@@ -395,6 +440,12 @@ function buildRound(
   decoyCount: number,
   roundSeed: number,
   requireExactAmounts: boolean,
+  sectionPrompts: {
+    glassware: string[];
+    specs: string[];
+    assembly: string[];
+    garnish: string[];
+  },
 ): GameRound {
   // Dedupe correct labels WITHIN a section. When requireExactAmounts is off,
   // multiple specs sharing the same ingredient produce identical correct
@@ -464,7 +515,11 @@ function buildRound(
     [
       {
         kind: "glassware" as const,
-        label: SECTION_LABELS.glassware,
+        label: pickSectionPrompt(
+          sectionPrompts.glassware,
+          SECTION_LABELS.glassware,
+          roundSeed + 1,
+        ),
         chips: makeChips(
           drink.glassware ? [drink.glassware] : [],
           decoyPool.glassware,
@@ -474,13 +529,21 @@ function buildRound(
       },
       {
         kind: "specs" as const,
-        label: SECTION_LABELS.specs,
+        label: pickSectionPrompt(
+          sectionPrompts.specs,
+          SECTION_LABELS.specs,
+          roundSeed + 2,
+        ),
         chips: makeChips(correctSpecs, decoyPool.specs, roundSeed + 2),
         done: false,
       },
       {
         kind: "assembly" as const,
-        label: SECTION_LABELS.assembly,
+        label: pickSectionPrompt(
+          sectionPrompts.assembly,
+          SECTION_LABELS.assembly,
+          roundSeed + 3,
+        ),
         // Tag each correct assembly chip with its recipe array index
         // (0-based position in drink.assembly) BEFORE the shuffle so the
         // shuffle preserves orderIndex on each chip object. Only the
@@ -496,7 +559,11 @@ function buildRound(
       },
       {
         kind: "garnish" as const,
-        label: SECTION_LABELS.garnish,
+        label: pickSectionPrompt(
+          sectionPrompts.garnish,
+          SECTION_LABELS.garnish,
+          roundSeed + 4,
+        ),
         chips: makeChips(correctGarnish, decoyPool.garnish, roundSeed + 4),
         done: false,
       },
@@ -600,6 +667,15 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
       pointsPerCorrect: s.pointsPerCorrect,
       roundsPerSession: s.roundsPerSession,
       soundDefault: s.soundDefault,
+      // Per-section prompt lists. The DrinksBuilderSettings type is being
+      // updated in parallel to add these four string[] fields; read them
+      // defensively so the hook works whether or not the parallel type
+      // update has landed yet. Empty/missing lists fall back to the
+      // default SECTION_LABELS value inside buildRound.
+      glasswarePrompts: s.glasswarePrompts ?? [],
+      specsPrompts: s.specsPrompts ?? [],
+      assemblyPrompts: s.assemblyPrompts ?? [],
+      garnishPrompts: s.garnishPrompts ?? [],
     };
   }, [activityQuery.data]);
 
@@ -781,6 +857,12 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
         settings.decoyCount,
         i * 31 + sessionKey,
         settings.requireExactAmounts,
+        {
+          glassware: settings.glasswarePrompts,
+          specs: settings.specsPrompts,
+          assembly: settings.assemblyPrompts,
+          garnish: settings.garnishPrompts,
+        },
       );
     });
     setSession({

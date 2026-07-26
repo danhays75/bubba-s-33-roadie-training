@@ -267,6 +267,15 @@ actor {
         .payload("recipeVariantCount", func (i) = switch (i.recipe) { case null 0; case (?r) r.variants.size() })
         .payload("recipeEquipmentCount", func (i) = switch (i.recipe) { case null 0; case (?r) r.equipment.size() })
         .payload("recipeHasBulkMix", func (i) = switch (i.recipe) { case null false; case (?r) switch (r.yield) { case null r.equipment.size() > 0; case (?_) true } })
+        // recipeHasUpsell: true when the recipe has at least one spec tagged
+        // upsell=true (the new RecipeSpec.upsell flag added in the contract
+        // wave). Exposed so the upsell flag is queryable through OQL on the
+        // libraryItem entity, consistent with the recipeHasBulkMix pattern.
+        // False when the item has no recipe or no upsell-tagged specs.
+        .payload("recipeHasUpsell", func (i) = switch (i.recipe) {
+          case null false;
+          case (?r) r.specs.vals().find(func (s) = s.upsell) != null;
+        })
         .sample({
           id = 0;
           categoryId = 0;
@@ -356,6 +365,29 @@ actor {
           case (#flashcardContent f) f.size();
           case (#drinksBuilderContent _) 1;
         })
+        // QuizSettings — the admin's per-quiz question-type selection (which
+        // of #multipleChoice / #trueFalse / #matching the generator emits).
+        // Exposed as three booleans on the legendaryActivity entity so the
+        // new persisted QuizSettings fields are queryable through OQL. null
+        // quizSettings means all-three-on (the default, and the value for
+        // activities generated before this field existed) — exposed as true
+        // for all three so the default is queryable as "all on". Ignored for
+        // #flashcards and #drinksBuilder activities (quizSettings is always
+        // null for those — exposed as the all-true default, which is
+        // harmless since the fields are meaningless for those activity
+        // types).
+        .payload("includeMultipleChoice", func (a) = switch (a.quizSettings) {
+          case null true;
+          case (?s) s.includeMultipleChoice;
+        })
+        .payload("includeTrueFalse", func (a) = switch (a.quizSettings) {
+          case null true;
+          case (?s) s.includeTrueFalse;
+        })
+        .payload("includeMatching", func (a) = switch (a.quizSettings) {
+          case null true;
+          case (?s) s.includeMatching;
+        })
         .payload("createdAt", func (a) = a.createdAt)
         .payload("createdBy", func (a) = a.createdBy.toText())
         .sample({
@@ -365,6 +397,7 @@ actor {
           name = "";
           sourceCategoryIds = [];
           content = #quizContent([]);
+          quizSettings = null;
           createdAt = 0;
           createdBy = Principal.fromText("aaaaa-aa");
         })

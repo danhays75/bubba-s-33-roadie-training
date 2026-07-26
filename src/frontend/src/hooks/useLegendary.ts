@@ -2,12 +2,14 @@ import { ActivityType } from "@/backend";
 import type {
   ActivityContent,
   DrinksBuilderSettings as CandidDrinksBuilderSettings,
+  QuizSettings as CandidQuizSettings,
 } from "@/backend";
 import type { DrinksBuilderSettings } from "@/components/legendary/drinks-builder/types";
 import type {
   BuildLegendaryActivityInput,
   LegendaryActivity,
   LegendaryActivityContent,
+  QuizSettings,
   UpdateLegendaryActivityInput,
 } from "@/types/legendary";
 import { toFrontendActivity } from "@/types/legendary";
@@ -83,6 +85,24 @@ function toCandidDrinksBuilderSettings(
     pointsPerCorrect: BigInt(s.pointsPerCorrect),
     roundsPerSession: BigInt(s.roundsPerSession),
     soundDefault: s.soundDefault,
+    glasswarePrompts: s.glasswarePrompts,
+    specsPrompts: s.specsPrompts,
+    assemblyPrompts: s.assemblyPrompts,
+    garnishPrompts: s.garnishPrompts,
+  };
+}
+
+/**
+ * Translates the frontend QuizSettings to the Candid shape. All fields are
+ * booleans — no bigint translation needed. The Candid QuizSettings record is
+ * structurally identical to the frontend QuizSettings interface, so this is
+ * a 1:1 copy kept explicit for symmetry with toCandidDrinksBuilderSettings.
+ */
+function toCandidQuizSettings(s: QuizSettings): CandidQuizSettings {
+  return {
+    includeMultipleChoice: s.includeMultipleChoice,
+    includeTrueFalse: s.includeTrueFalse,
+    includeMatching: s.includeMatching,
   };
 }
 
@@ -151,6 +171,12 @@ export function useBuildLegendaryActivity() {
         content: input.content
           ? toCandidActivityContent(input.content)
           : undefined,
+        // quizSettings is optional on both sides. Pass through 1:1 when the
+        // admin has customized the selection; omit when undefined so the
+        // backend defaults to all three question types on.
+        quizSettings: input.quizSettings
+          ? toCandidQuizSettings(input.quizSettings)
+          : undefined,
       });
       return toFrontendActivity(result);
     },
@@ -215,6 +241,12 @@ export function useUpdateLegendaryActivity() {
         sourceCategoryIds: input.sourceCategoryIds.map((id) => BigInt(id)),
         content: input.content
           ? toCandidActivityContent(input.content)
+          : undefined,
+        // quizSettings is optional on both sides. Pass through 1:1 when the
+        // admin has customized the selection; omit when undefined so the
+        // backend defaults to all three question types on.
+        quizSettings: input.quizSettings
+          ? toCandidQuizSettings(input.quizSettings)
           : undefined,
       });
       return toFrontendActivity(result);

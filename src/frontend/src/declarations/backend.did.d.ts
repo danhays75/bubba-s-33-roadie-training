@@ -19,6 +19,7 @@ export interface Activity {
   'createdBy' : Principal,
   'positionId' : bigint,
   'sourceCategoryIds' : Array<bigint>,
+  'quizSettings' : [] | [QuizSettings],
 }
 export type ActivityContent = {
     'drinksBuilderContent' : DrinksBuilderContent
@@ -39,6 +40,7 @@ export interface BuildActivityInput {
   'name' : string,
   'positionId' : bigint,
   'sourceCategoryIds' : Array<bigint>,
+  'quizSettings' : [] | [QuizSettings],
 }
 export interface Category {
   'id' : bigint,
@@ -51,14 +53,18 @@ export interface Cell { 'value' : Value, 'name' : string }
 export interface DetailField { 'value' : string, 'fieldLabel' : string }
 export interface DrinksBuilderContent { 'settings' : DrinksBuilderSettings }
 export interface DrinksBuilderSettings {
+  'garnishPrompts' : Array<string>,
   'includedCategories' : Array<string>,
   'enforceAssemblyOrder' : boolean,
   'pointsPerCorrect' : bigint,
   'excludedDrinkTitles' : Array<string>,
   'showScoring' : boolean,
+  'assemblyPrompts' : Array<string>,
   'requireExactAmounts' : boolean,
+  'glasswarePrompts' : Array<string>,
   'soundDefault' : boolean,
   'decoyCount' : bigint,
+  'specsPrompts' : Array<string>,
   'streakMultiplier' : boolean,
   'roundsPerSession' : bigint,
 }
@@ -157,6 +163,11 @@ export type Question = {
   } |
   { 'trueFalse' : { 'statement' : string, 'isTrue' : boolean } };
 export type QuizContent = Array<Question>;
+export interface QuizSettings {
+  'includeTrueFalse' : boolean,
+  'includeMatching' : boolean,
+  'includeMultipleChoice' : boolean,
+}
 export interface Recipe {
   'equipment' : Array<string>,
   'glassware' : string,
@@ -168,7 +179,11 @@ export interface Recipe {
   'assembly' : Array<string>,
   'yield' : [] | [string],
 }
-export interface RecipeSpec { 'ingredient' : string, 'amount' : string }
+export interface RecipeSpec {
+  'ingredient' : string,
+  'upsell' : boolean,
+  'amount' : string,
+}
 export interface RecipeVariant {
   'variantLabel' : string,
   'specs' : Array<RecipeSpec>,
@@ -199,6 +214,7 @@ export interface UpdateActivityInput {
   'content' : [] | [ActivityContent],
   'name' : string,
   'sourceCategoryIds' : Array<bigint>,
+  'quizSettings' : [] | [QuizSettings],
 }
 export interface UserProfile {
   'id' : Principal,

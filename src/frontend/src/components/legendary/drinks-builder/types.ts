@@ -29,6 +29,10 @@ export interface DrinksBuilderSettings {
   pointsPerCorrect: number;
   roundsPerSession: number;
   soundDefault: boolean;
+  glasswarePrompts: string[];
+  specsPrompts: string[];
+  assemblyPrompts: string[];
+  garnishPrompts: string[];
 }
 
 /** Default amber/gold liquid fill when a recipe omits the optional color. */

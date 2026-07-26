@@ -21,10 +21,17 @@ module {
 
   // A single measured ingredient line in a recipe spec list. `amount` carries
   // the full measure (e.g. "2 oz", "3 dashes", "0.5 tsp") as free text so the
-  // admin controls the format; `ingredient` is the ingredient name.
+  // admin controls the format; `ingredient` is the ingredient name. `upsell`
+  // marks this ingredient as a premium upsell option (e.g. a top-shelf spirit
+  // the bartender can offer in place of the well pour). Defaults to false —
+  // most ingredients are not upsells. The flag is informational today; quiz
+  // generation may use it later to surface upsell questions only for
+  // ingredients tagged upsell=true (graceful degradation: untagged
+  // ingredients simply produce no upsell questions).
   public type RecipeSpec = {
     amount : Text;
     ingredient : Text;
+    upsell : Bool;
   };
 
   // A named variant of a recipe (e.g. "Smoked", "Spicy", "On the Rocks"). A

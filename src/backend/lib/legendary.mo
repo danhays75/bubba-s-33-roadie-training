@@ -1,3 +1,4 @@
+import Array "mo:core/Array";
 import List "mo:core/List";
 import Runtime "mo:core/Runtime";
 import Types "../types/legendary";
@@ -24,6 +25,7 @@ module {
   public type UpdateActivityInput = Types.UpdateActivityInput;
   public type DrinksBuilderSettings = Types.DrinksBuilderSettings;
   public type DrinksBuilderContent = Types.DrinksBuilderContent;
+  public type QuizSettings = Types.QuizSettings;
 
   // List activities belonging to a position (filter by positionId).
   public func listActivitiesByPosition(activities : List.List<Activity>, positionId : Nat) : [Activity] {
@@ -39,7 +41,12 @@ module {
 
   // Create a new activity. Assigns nextId, sets createdAt/createdBy, and
   // persists the Activity. `content` is the generated payload produced by the
-  // mixin from the source items.
+  // mixin from the source items. `quizSettings` is the admin's per-quiz
+  // question-type selection (which of #multipleChoice / #trueFalse / #matching
+  // the generator emits); null means all-three-on (the default, backward
+  // compatible with quizzes generated before this field existed). Ignored for
+  // #flashcards and #drinksBuilder activities (the mixin passes null for
+  // those).
   public func createActivity(
     activities : List.List<Activity>,
     nextId : { var value : Nat },
@@ -48,6 +55,7 @@ module {
     name : Text,
     sourceCategoryIds : [Nat],
     content : ActivityContent,
+    quizSettings : ?QuizSettings,
     createdBy : Principal,
     createdAt : Nat,
   ) : Activity {
@@ -60,6 +68,7 @@ module {
       name;
       sourceCategoryIds;
       content;
+      quizSettings;
       createdAt;
       createdBy;
     };
@@ -88,6 +97,13 @@ module {
   // preserving id/positionId/activityType/content/createdAt/createdBy. Traps if
   // the activity is not found.
   //
+  // `newQuizSettings` carries the admin's question-type selection for #quiz
+  // activities. null means "leave the existing quizSettings unchanged" (so an
+  // admin editing only the name does not silently reset the question-type
+  // selection); non-null replaces the stored selection. Ignored for
+  // #flashcards and #drinksBuilder activities (the mixin passes null for
+  // those, preserving the existing null).
+  //
   // For #drinksBuilder activities, the caller may also pass a replacement
   // DrinksBuilderContent via `newContent`; for #quiz/#flashcards the caller
   // passes the existing content unchanged (use rebuildActivity to regenerate).
@@ -97,14 +113,21 @@ module {
     newName : Text,
     newSourceCategoryIds : [Nat],
     newContent : ActivityContent,
+    newQuizSettings : ?QuizSettings,
   ) : Activity {
     switch (activities.find(func(a) { a.id == id })) {
       case (?existing) {
+        // null = keep existing quizSettings; non-null = replace.
+        let resolvedQuizSettings : ?QuizSettings = switch (newQuizSettings) {
+          case (?qs) ?qs;
+          case null existing.quizSettings;
+        };
         let updated : Activity = {
           existing with
           name = newName;
           sourceCategoryIds = newSourceCategoryIds;
           content = newContent;
+          quizSettings = resolvedQuizSettings;
         };
         let kept = activities.filter(func(a) { a.id != id });
         activities.clear();
@@ -179,6 +202,511 @@ module {
     labels;
   };
 
+  // Resolve the effective QuizSettings: null means all-three-on (the default,
+  // backward compatible with quizzes generated before this field existed).
+  func resolveQuizSettings(settings : ?QuizSettings) : QuizSettings {
+    switch (settings) {
+      case (?qs) qs;
+      case null { { includeMultipleChoice = true; includeTrueFalse = true; includeMatching = true } };
+    };
+  };
+
+  // --- Recipe-field quiz generation ---
+  // The primary quiz path: read item.recipe structured fields (glassware,
+  // specs/ingredients, assembly, garnish, variants) and build MC / TF /
+  // matching questions from them. Distractors and false-statement swaps are
+  // drawn from OTHER recipes in the same source set so wrong answers are
+  // plausible (e.g. a wrong glass is a real glass from a sibling recipe).
+  //
+  // Items without a recipe are skipped here — they fall through to the
+  // detail-text fallback path so non-drink categories keep working.
+  //
+  // All helpers are deterministic (no randomness source); ordering is driven
+  // by item index and field order so an admin regenerating the same activity
+  // gets the same content.
+
+  // Collect distinct glassware strings across the recipe items, preserving
+  // first-seen order. Returns (itemIndex, glassware) pairs.
+  func collectGlassware(items : [LibraryTypes.LibraryItem]) : [(Nat, Text)] {
+    var pairs : [(Nat, Text)] = [];
+    var seen : [Text] = [];
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          if (r.glassware.size() > 0) {
+            if (seen.find(func(v) { v == r.glassware }) == null) {
+              seen := seen.concat([r.glassware]);
+              pairs := pairs.concat([(index, r.glassware)]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    pairs;
+  };
+
+  // Collect distinct garnish strings across the recipe items. A recipe may
+  // carry more than one garnish; each distinct garnish string is one entry.
+  func collectGarnishes(items : [LibraryTypes.LibraryItem]) : [(Nat, Text)] {
+    var pairs : [(Nat, Text)] = [];
+    var seen : [Text] = [];
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          for (g in r.garnish.values()) {
+            if (g.size() > 0 and seen.find(func(v) { v == g }) == null) {
+              seen := seen.concat([g]);
+              pairs := pairs.concat([(index, g)]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    pairs;
+  };
+
+  // Collect distinct ingredient names across the recipe items' specs.
+  // Returns (itemIndex, ingredient) pairs.
+  func collectIngredients(items : [LibraryTypes.LibraryItem]) : [(Nat, Text)] {
+    var pairs : [(Nat, Text)] = [];
+    var seen : [Text] = [];
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          for (s in r.specs.values()) {
+            if (s.ingredient.size() > 0 and seen.find(func(v) { v == s.ingredient }) == null) {
+              seen := seen.concat([s.ingredient]);
+              pairs := pairs.concat([(index, s.ingredient)]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    pairs;
+  };
+
+  // Collect distinct upsell ingredient names across the recipe items' specs
+  // (only specs where upsell=true). Returns (itemIndex, ingredient) pairs.
+  func collectUpsellIngredients(items : [LibraryTypes.LibraryItem]) : [(Nat, Text)] {
+    var pairs : [(Nat, Text)] = [];
+    var seen : [Text] = [];
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          for (s in r.specs.values()) {
+            if (s.upsell and s.ingredient.size() > 0 and seen.find(func(v) { v == s.ingredient }) == null) {
+              seen := seen.concat([s.ingredient]);
+              pairs := pairs.concat([(index, s.ingredient)]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    pairs;
+  };
+
+  // Collect distinct variant labels across the recipe items. Returns
+  // (itemIndex, variantLabel) pairs.
+  func collectVariantLabels(items : [LibraryTypes.LibraryItem]) : [(Nat, Text)] {
+    var pairs : [(Nat, Text)] = [];
+    var seen : [Text] = [];
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          for (v in r.variants.values()) {
+            if (v.variantLabel.size() > 0 and seen.find(func(l) { l == v.variantLabel }) == null) {
+              seen := seen.concat([v.variantLabel]);
+              pairs := pairs.concat([(index, v.variantLabel)]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    pairs;
+  };
+
+  // Build a list of distractor strings for a given correct value, drawn from
+  // the supplied pool (a list of (itemIndex, value) pairs) excluding the
+  // correct value and the correct item's own values. Returns up to `max`
+  // distractors. Distractors are unique and never equal the correct value.
+  func buildDistractors(pool : [(Nat, Text)], correctItemIndex : Nat, correctValue : Text, max : Nat) : [Text] {
+    var distractors : [Text] = [];
+    for ((idx, v) in pool.values()) {
+      if (distractors.size() >= max) { break };
+      // Skip the correct value itself and any value from the correct item
+      // (so a recipe with two garnishes does not use its own other garnish
+      // as a distractor for the first).
+      if (v != correctValue and idx != correctItemIndex) {
+        if (distractors.find(func(x) { x == v }) == null) {
+          distractors := distractors.concat([v]);
+        };
+      };
+    };
+    distractors;
+  };
+
+  // Build a single multiple-choice question. Returns null when there are not
+  // enough distractors (need at least 1).
+  func buildMC(prompt : Text, correct : Text, distractors : [Text]) : ?Types.Question {
+    if (distractors.size() < 1) { return null };
+    let choices = [correct].concat(distractors);
+    ?#multipleChoice { prompt; choices; correctIndex = 0 };
+  };
+
+  // Generate the recipe-field multiple-choice bucket. One question per
+  // eligible (item, field) pair, drawing distractors from sibling recipes.
+  func generateRecipeMC(items : [LibraryTypes.LibraryItem]) : [Types.Question] {
+    var bucket : [Types.Question] = [];
+    let glasswarePool = collectGlassware(items);
+    let garnishPool = collectGarnishes(items);
+    let ingredientPool = collectIngredients(items);
+    let upsellPool = collectUpsellIngredients(items);
+    let variantPool = collectVariantLabels(items);
+
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          // Glassware: "What glass does the [recipe] use?"
+          if (r.glassware.size() > 0 and glasswarePool.size() >= 2) {
+            let distractors = buildDistractors(glasswarePool, index, r.glassware, 3);
+            switch (buildMC("What glass does the " # item.title # " use?", r.glassware, distractors)) {
+              case (?q) { bucket := bucket.concat([q]) };
+              case null {};
+            };
+          };
+
+          // Ingredient: "Which ingredient is in the [recipe]?" — use the
+          // first spec's ingredient as the correct answer.
+          if (r.specs.size() > 0 and ingredientPool.size() >= 2) {
+            let correct = r.specs[0].ingredient;
+            if (correct.size() > 0) {
+              let distractors = buildDistractors(ingredientPool, index, correct, 3);
+              switch (buildMC("Which ingredient is in the " # item.title # "?", correct, distractors)) {
+                case (?q) { bucket := bucket.concat([q]) };
+                case null {};
+              };
+            };
+          };
+
+          // Garnish: "What garnish does the [recipe] use?" — one question
+          // per distinct garnish on the recipe.
+          if (r.garnish.size() > 0 and garnishPool.size() >= 2) {
+            for (g in r.garnish.values()) {
+              if (g.size() > 0) {
+                let distractors = buildDistractors(garnishPool, index, g, 3);
+                switch (buildMC("What garnish does the " # item.title # " use?", g, distractors)) {
+                  case (?q) { bucket := bucket.concat([q]) };
+                  case null {};
+                };
+              };
+            };
+          };
+
+          // Upsell: "Which ingredient is the upsell in the [recipe]?" — only
+          // for ingredients tagged upsell=true. Distractors are other upsell
+          // ingredients from sibling recipes (plausible premium-liquor wrong
+          // answers). Degrades gracefully: no upsell ingredients means no
+          // upsell questions.
+          if (upsellPool.size() >= 2) {
+            for (s in r.specs.values()) {
+              if (s.upsell and s.ingredient.size() > 0) {
+                let distractors = buildDistractors(upsellPool, index, s.ingredient, 3);
+                switch (buildMC("Which ingredient is the upsell in the " # item.title # "?", s.ingredient, distractors)) {
+                  case (?q) { bucket := bucket.concat([q]) };
+                  case null {};
+                };
+              };
+            };
+          };
+
+          // Variants: "Which variant of the [recipe] uses [variantLabel]?"
+          // — alternate question source. The correct answer is the variant
+          // label; distractors are other variant labels from sibling
+          // recipes.
+          if (r.variants.size() > 0 and variantPool.size() >= 2) {
+            for (v in r.variants.values()) {
+              if (v.variantLabel.size() > 0) {
+                let distractors = buildDistractors(variantPool, index, v.variantLabel, 3);
+                switch (buildMC("Which variant of the " # item.title # " uses " # v.variantLabel # "?", v.variantLabel, distractors)) {
+                  case (?q) { bucket := bucket.concat([q]) };
+                  case null {};
+                };
+              };
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    bucket;
+  };
+
+  // Generate the recipe-field true/false bucket. True statements are built
+  // from real recipe facts; false statements swap in an incorrect value
+  // drawn from a sibling recipe.
+  func generateRecipeTF(items : [LibraryTypes.LibraryItem]) : [Types.Question] {
+    var bucket : [Types.Question] = [];
+    let glasswarePool = collectGlassware(items);
+    let garnishPool = collectGarnishes(items);
+    let upsellPool = collectUpsellIngredients(items);
+
+    for ((index, item) in items.enumerate()) {
+      switch (item.recipe) {
+        case (?r) {
+          // Glassware true/false: "The [recipe] is served in a [glass]."
+          if (r.glassware.size() > 0 and glasswarePool.size() >= 2) {
+            let trueStmt = "The " # item.title # " is served in a " # r.glassware # ".";
+            bucket := bucket.concat([#trueFalse { statement = trueStmt; isTrue = true }]);
+            // False variant: swap in another recipe's glass.
+            let distractors = buildDistractors(glasswarePool, index, r.glassware, 1);
+            switch (distractors.size()) {
+              case 0 {};
+              case _ {
+                let falseStmt = "The " # item.title # " is served in a " # distractors[0] # ".";
+                bucket := bucket.concat([#trueFalse { statement = falseStmt; isTrue = false }]);
+              };
+            };
+          };
+
+          // Garnish true/false: "The [recipe] uses a [garnish] as garnish."
+          if (r.garnish.size() > 0 and garnishPool.size() >= 2) {
+            let g = r.garnish[0];
+            if (g.size() > 0) {
+              let trueStmt = "The " # item.title # " uses a " # g # " as garnish.";
+              bucket := bucket.concat([#trueFalse { statement = trueStmt; isTrue = true }]);
+              let distractors = buildDistractors(garnishPool, index, g, 1);
+              switch (distractors.size()) {
+                case 0 {};
+                case _ {
+                  let falseStmt = "The " # item.title # " uses a " # distractors[0] # " as garnish.";
+                  bucket := bucket.concat([#trueFalse { statement = falseStmt; isTrue = false }]);
+                };
+              };
+            };
+          };
+
+          // Upsell true/false: "The upsell in the [recipe] is [ingredient]."
+          // — only for ingredients tagged upsell=true. False variant swaps in
+          // another recipe's upsell ingredient.
+          if (upsellPool.size() >= 2) {
+            for (s in r.specs.values()) {
+              if (s.upsell and s.ingredient.size() > 0) {
+                let trueStmt = "The upsell in the " # item.title # " is " # s.ingredient # ".";
+                bucket := bucket.concat([#trueFalse { statement = trueStmt; isTrue = true }]);
+                let distractors = buildDistractors(upsellPool, index, s.ingredient, 1);
+                switch (distractors.size()) {
+                  case 0 {};
+                  case _ {
+                    let falseStmt = "The upsell in the " # item.title # " is " # distractors[0] # ".";
+                    bucket := bucket.concat([#trueFalse { statement = falseStmt; isTrue = false }]);
+                  };
+                };
+              };
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    bucket;
+  };
+
+  // Generate the recipe-field matching bucket. Pair shapes:
+  //   - recipe-name to glassware
+  //   - recipe-name to garnish (first garnish)
+  //   - recipe-name to first ingredient (ingredient-to-recipe matching)
+  //   - recipe-name to its upsell ingredient (only recipes with an upsell)
+  //   - recipe-name to variant label
+  // Each matching question needs >= 2 unique pairs (a 1-pair matching
+  // question is trivial). The dedup guard on fieldValue prevents the
+  // frontend soft-lock where two pairs share a fieldValue.
+  func generateRecipeMatching(items : [LibraryTypes.LibraryItem]) : [Types.Question] {
+    var bucket : [Types.Question] = [];
+
+    // recipe-name -> glassware
+    var glassPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+    for (item in items.values()) {
+      switch (item.recipe) {
+        case (?r) {
+          if (r.glassware.size() > 0) {
+            if (glassPairs.find(func(p) { p.fieldValue == r.glassware }) == null) {
+              glassPairs := glassPairs.concat([{ itemTitle = item.title; fieldValue = r.glassware }]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    if (glassPairs.size() >= 2) {
+      let shuffledOptions = glassPairs.map(func(p) = p.fieldValue);
+      bucket := bucket.concat([#matching { pairs = glassPairs; shuffledOptions }]);
+    };
+
+    // recipe-name -> garnish (first garnish per recipe)
+    var garnishPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+    for (item in items.values()) {
+      switch (item.recipe) {
+        case (?r) {
+          if (r.garnish.size() > 0 and r.garnish[0].size() > 0) {
+            let g = r.garnish[0];
+            if (garnishPairs.find(func(p) { p.fieldValue == g }) == null) {
+              garnishPairs := garnishPairs.concat([{ itemTitle = item.title; fieldValue = g }]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    if (garnishPairs.size() >= 2) {
+      let shuffledOptions = garnishPairs.map(func(p) = p.fieldValue);
+      bucket := bucket.concat([#matching { pairs = garnishPairs; shuffledOptions }]);
+    };
+
+    // recipe-name -> first ingredient (ingredient-to-recipe matching).
+    var ingredientPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+    for (item in items.values()) {
+      switch (item.recipe) {
+        case (?r) {
+          if (r.specs.size() > 0 and r.specs[0].ingredient.size() > 0) {
+            let ing = r.specs[0].ingredient;
+            if (ingredientPairs.find(func(p) { p.fieldValue == ing }) == null) {
+              ingredientPairs := ingredientPairs.concat([{ itemTitle = item.title; fieldValue = ing }]);
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    if (ingredientPairs.size() >= 2) {
+      let shuffledOptions = ingredientPairs.map(func(p) = p.fieldValue);
+      bucket := bucket.concat([#matching { pairs = ingredientPairs; shuffledOptions }]);
+    };
+
+    // recipe-name -> upsell ingredient (only recipes with an upsell spec).
+    // Degrades gracefully: no upsell ingredients means no upsell matching.
+    var upsellPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+    for (item in items.values()) {
+      switch (item.recipe) {
+        case (?r) {
+          switch (r.specs.find(func(s) { s.upsell and s.ingredient.size() > 0 })) {
+            case (?s) {
+              if (upsellPairs.find(func(p) { p.fieldValue == s.ingredient }) == null) {
+                upsellPairs := upsellPairs.concat([{ itemTitle = item.title; fieldValue = s.ingredient }]);
+              };
+            };
+            case null {};
+          };
+        };
+        case null {};
+      };
+    };
+    if (upsellPairs.size() >= 2) {
+      let shuffledOptions = upsellPairs.map(func(p) = p.fieldValue);
+      bucket := bucket.concat([#matching { pairs = upsellPairs; shuffledOptions }]);
+    };
+
+    // recipe-name -> variant label. Dedup on variantLabel so the frontend
+    // does not soft-lock on duplicate fieldValues.
+    var variantPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+    for (item in items.values()) {
+      switch (item.recipe) {
+        case (?r) {
+          for (v in r.variants.values()) {
+            if (v.variantLabel.size() > 0) {
+              if (variantPairs.find(func(p) { p.fieldValue == v.variantLabel }) == null) {
+                variantPairs := variantPairs.concat([{ itemTitle = item.title; fieldValue = v.variantLabel }]);
+              };
+            };
+          };
+        };
+        case null {};
+      };
+    };
+    if (variantPairs.size() >= 2) {
+      let shuffledOptions = variantPairs.map(func(p) = p.fieldValue);
+      bucket := bucket.concat([#matching { pairs = variantPairs; shuffledOptions }]);
+    };
+
+    bucket;
+  };
+
+  // --- Detail-text fallback path ---
+  // For items without a recipe (non-drink categories), generate quiz content
+  // from the generic detail fields exactly as the previous implementation
+  // did. This preserves the existing behavior for non-recipe items so the
+  // rework does not regress non-drink categories.
+
+  func generateDetailMC(items : [LibraryTypes.LibraryItem]) : [Types.Question] {
+    var mcBucket : [Types.Question] = [];
+    for (item in items.values()) {
+      var made : Bool = false;
+      for (d in item.details.values()) {
+        if (made) { break };
+        let distinct = collectFieldValues(items, d.fieldLabel);
+        if (distinct.size() >= 2) {
+          let correct = d.value;
+          var distractors : [Text] = [];
+          for ((_, v) in distinct.values()) {
+            if (v != correct and distractors.find(func(x) { x == v }) == null) {
+              distractors := distractors.concat([v]);
+            };
+          };
+          if (distractors.size() >= 1) {
+            let choices = [correct].concat(distractors);
+            let prompt = "What " # d.fieldLabel # " does " # item.title # " use?";
+            mcBucket := mcBucket.concat([#multipleChoice { prompt; choices; correctIndex = 0 }]);
+            made := true;
+          };
+        };
+      };
+    };
+    mcBucket;
+  };
+
+  func generateDetailMatching(items : [LibraryTypes.LibraryItem]) : [Types.Question] {
+    var matchBucket : [Types.Question] = [];
+    for (fieldLabel in allFieldLabels(items).values()) {
+      let pairs = collectFieldValues(items, fieldLabel);
+      var matchPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
+      for ((idx, v) in pairs.values()) {
+        if (matchPairs.find(func(p) { p.fieldValue == v }) == null) {
+          matchPairs := matchPairs.concat([{ itemTitle = items[idx].title; fieldValue = v }]);
+        };
+      };
+      if (matchPairs.size() >= 2) {
+        let shuffledOptions = matchPairs.map(func(p) = p.fieldValue);
+        matchBucket := matchBucket.concat([#matching { pairs = matchPairs; shuffledOptions }]);
+      };
+    };
+    matchBucket;
+  };
+
+  func generateDetailTF(items : [LibraryTypes.LibraryItem]) : [Types.Question] {
+    var tfBucket : [Types.Question] = [];
+    for (item in items.values()) {
+      for (d in item.details.values()) {
+        let distinct = collectFieldValues(items, d.fieldLabel);
+        if (distinct.size() >= 2) {
+          let trueStmt = "The " # item.title # " uses a " # d.value # " for " # d.fieldLabel;
+          tfBucket := tfBucket.concat([#trueFalse { statement = trueStmt; isTrue = true }]);
+          switch (distinct.find(func(p) { p.1 != d.value })) {
+            case (?(_, swapped)) {
+              let falseStmt = "The " # item.title # " uses a " # swapped # " for " # d.fieldLabel;
+              tfBucket := tfBucket.concat([#trueFalse { statement = falseStmt; isTrue = false }]);
+            };
+            case null {};
+          };
+        };
+      };
+    };
+    tfBucket;
+  };
+
   // Generate quiz content (a balanced mix of #multipleChoice, #matching, and
   // #trueFalse questions) from the given items. Deterministic — no randomness
   // source; ordering is driven by item index and field order so an admin
@@ -196,107 +724,59 @@ module {
   // The three buckets are interleaved (MC, TF, MATCH, MC, TF, MATCH, ...) so
   // the frontend renders a real variety rather than all of one type followed
   // by all of another.
-  public func generateQuizContent(items : [LibraryTypes.LibraryItem]) : Types.QuizContent {
+  public func generateQuizContent(items : [LibraryTypes.LibraryItem], quizSettings : ?QuizSettings) : Types.QuizContent {
     if (items.size() < 2) {
       // Need at least two items to build distractors / swaps.
       return [];
     };
 
+    let settings = resolveQuizSettings(quizSettings);
+
+    // Split items into recipe items (drink recipes) and non-recipe items
+    // (non-drink categories). Recipe items go through the recipe-field path;
+    // non-recipe items go through the detail-text fallback.
+    var recipeItems : [LibraryTypes.LibraryItem] = [];
+    var detailItems : [LibraryTypes.LibraryItem] = [];
+    for (item in items.values()) {
+      switch (item.recipe) {
+        case (?_) { recipeItems := recipeItems.concat([item]) };
+        case null { detailItems := detailItems.concat([item]) };
+      };
+    };
+
     // --- Build the three buckets independently, then interleave. ---
-
-    // Multiple choice: one question per item (first eligible field). A field
-    // is eligible if it has >= 2 distinct values across items so we have at
-    // least one distractor. We do NOT require 4 distinct values — that gate
-    // starved quizzes of multiple choice when fields were sparse. Distractors
-    // are filled from other items' values for the same field; if fewer than 3
-    // distinct others exist, we reuse the available ones (still a valid MC
-    // question, just with fewer than 4 choices).
     var mcBucket : [Types.Question] = [];
-    for (item in items.values()) {
-      var made : Bool = false;
-      for (d in item.details.values()) {
-        if (made) { break };
-        let distinct = collectFieldValues(items, d.fieldLabel);
-        if (distinct.size() >= 2) {
-          let correct = d.value;
-          // Distractors: distinct values from other items for the same field,
-          // excluding the correct value. Take up to 3.
-          var distractors : [Text] = [];
-          for ((_, v) in distinct.values()) {
-            if (v != correct and distractors.find(func(x) { x == v }) == null) {
-              distractors := distractors.concat([v]);
-            };
-          };
-          if (distractors.size() >= 1) {
-            let choices = [correct].concat(distractors);
-            let prompt = "What " # d.fieldLabel # " does " # item.title # " use?";
-            mcBucket := mcBucket.concat([#multipleChoice { prompt; choices; correctIndex = 0 }]);
-            made := true;
-          };
-        };
-      };
-    };
-
-    // Matching: for each shared field label (>= 2 items have it), build pairs
-    // of (itemTitle, fieldValue). Cap at a reasonable number so the quiz does
-    // not become all-matching.
-    //
-    // Dedup guard: every pair in a matching question MUST have a unique
-    // fieldValue. If two pairs share the same fieldValue, the frontend
-    // soft-locks — once one is used, both read as "used" and the learner can
-    // never finish. collectFieldValues already dedupes by value within a
-    // field label, but we re-check here so the matching path stays safe even
-    // if that helper changes, and so duplicate values are dropped rather than
-    // producing an uncompletable question. A field label that yields fewer
-    // than 2 unique values is skipped (a 1-pair matching question is trivial
-    // and not worth emitting).
-    var matchBucket : [Types.Question] = [];
-    for (fieldLabel in allFieldLabels(items).values()) {
-      let pairs = collectFieldValues(items, fieldLabel);
-      var matchPairs : [{ itemTitle : Text; fieldValue : Text }] = [];
-      for ((idx, v) in pairs.values()) {
-        if (matchPairs.find(func(p) { p.fieldValue == v }) == null) {
-          matchPairs := matchPairs.concat([{ itemTitle = items[idx].title; fieldValue = v }]);
-        };
-      };
-      if (matchPairs.size() >= 2) {
-        // shuffledOptions: field values in first-seen order (frontend shuffles
-        // at render time). Unique by construction thanks to the guard above.
-        let shuffledOptions = matchPairs.map(func(p) = p.fieldValue);
-        matchBucket := matchBucket.concat([#matching { pairs = matchPairs; shuffledOptions }]);
-      };
-    };
-
-    // True/false: for each item, for each detail field, emit a true statement
-    // (item's actual value) and, if another item has a different value for the
-    // same field, a false statement (swapped value). Cap so the quiz stays
-    // balanced.
     var tfBucket : [Types.Question] = [];
-    for (item in items.values()) {
-      for (d in item.details.values()) {
-        let distinct = collectFieldValues(items, d.fieldLabel);
-        if (distinct.size() >= 2) {
-          // True statement: the item's actual value.
-          let trueStmt = "The " # item.title # " uses a " # d.value # " for " # d.fieldLabel;
-          tfBucket := tfBucket.concat([#trueFalse { statement = trueStmt; isTrue = true }]);
-          // False statement: swap in another item's value for the same field.
-          switch (distinct.find(func(p) { p.1 != d.value })) {
-            case (?(_, swapped)) {
-              let falseStmt = "The " # item.title # " uses a " # swapped # " for " # d.fieldLabel;
-              tfBucket := tfBucket.concat([#trueFalse { statement = falseStmt; isTrue = false }]);
-            };
-            case null {};
-          };
-        };
+    var matchBucket : [Types.Question] = [];
+
+    if (settings.includeMultipleChoice) {
+      if (recipeItems.size() >= 2) {
+        mcBucket := mcBucket.concat(generateRecipeMC(recipeItems));
+      };
+      if (detailItems.size() >= 2) {
+        mcBucket := mcBucket.concat(generateDetailMC(detailItems));
+      };
+    };
+
+    if (settings.includeTrueFalse) {
+      if (recipeItems.size() >= 2) {
+        tfBucket := tfBucket.concat(generateRecipeTF(recipeItems));
+      };
+      if (detailItems.size() >= 2) {
+        tfBucket := tfBucket.concat(generateDetailTF(detailItems));
+      };
+    };
+
+    if (settings.includeMatching) {
+      if (recipeItems.size() >= 2) {
+        matchBucket := matchBucket.concat(generateRecipeMatching(recipeItems));
+      };
+      if (detailItems.size() >= 2) {
+        matchBucket := matchBucket.concat(generateDetailMatching(detailItems));
       };
     };
 
     // --- Interleave the buckets round-robin so the mix is visible. ---
-    // Walk all three buckets in lockstep, taking one question from each in
-    // turn (MC, TF, MATCH, MC, TF, MATCH, ...). Buckets that run out early
-    // are simply skipped. This guarantees a real variety when data supports
-    // more than one type, while gracefully falling back when a type has no
-    // questions.
     var questions : [Types.Question] = [];
     var i : Nat = 0;
     let maxLen = mcBucket.size() + tfBucket.size() + matchBucket.size();
@@ -356,8 +836,36 @@ module {
   // The settings are admin-provided; this helper just wraps them into the
   // content record the mixin stores on the Activity. No content generation —
   // the playable pool is derived at play time from the Library.
+  //
+  // The four prompt lists (glasswarePrompts / specsPrompts /
+  // assemblyPrompts / garnishPrompts) are capped to their first 8 entries
+  // before being stored — see capDrinksBuilderPrompts. Longer lists are
+  // silently truncated, never rejected.
   public func buildDrinksBuilderContent(settings : DrinksBuilderSettings) : Types.DrinksBuilderContent {
-    { settings };
+    { settings = capDrinksBuilderPrompts(settings) };
+  };
+
+  // Cap each of the four DrinksBuilderSettings prompt lists to its first 8
+  // entries. Returns a new DrinksBuilderSettings record with the truncated
+  // lists; all other fields are carried forward verbatim via record spread.
+  // Used wherever DrinksBuilderSettings is constructed or updated from admin
+  // input (build / update / rebuild paths) so the persisted lists never
+  // exceed 8 entries. Silently truncates — does not reject longer lists.
+  public func capDrinksBuilderPrompts(settings : DrinksBuilderSettings) : DrinksBuilderSettings {
+    { settings with
+      glasswarePrompts = capPromptList(settings.glasswarePrompts);
+      specsPrompts = capPromptList(settings.specsPrompts);
+      assemblyPrompts = capPromptList(settings.assemblyPrompts);
+      garnishPrompts = capPromptList(settings.garnishPrompts);
+    };
+  };
+
+  // Truncate a prompt list to its first 8 entries. Returns the same array
+  // reference when it is already within the cap (no allocation); otherwise
+  // returns a new array containing only the first 8 entries.
+  func capPromptList(prompts : [Text]) : [Text] {
+    if (prompts.size() <= 8) { return prompts };
+    prompts.sliceToArray(0, 8);
   };
 
   // A Library item is a playable drink when it has a recipe with non-empty

@@ -303,7 +303,15 @@ export function ItemEditorPage({
     if (!isRecipe) return null;
     const cleanedSpecs = recipeSpecs
       .filter((s) => !isBlankSpec(s))
-      .map((s) => ({ amount: s.amount, ingredient: s.ingredient }));
+      .map((s) => ({
+        amount: s.amount,
+        ingredient: s.ingredient,
+        // upsell is not surfaced in the editor (the admin does not tag
+        // upsell ingredients here). Default to false on persist so the
+        // backend RecipeSpec is complete; the import path is where upsell
+        // tagging happens.
+        upsell: false,
+      }));
     const cleanedAssembly = recipeAssembly
       .filter((r) => r.value.trim().length > 0)
       .map((r) => r.value);
@@ -315,7 +323,11 @@ export function ItemEditorPage({
         variantLabel: v.variantLabel.trim(),
         specs: v.specs
           .filter((s) => !isBlankSpec(s))
-          .map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+          .map((s) => ({
+            amount: s.amount,
+            ingredient: s.ingredient,
+            upsell: false,
+          })),
         assembly: v.assembly
           .filter((r) => r.value.trim().length > 0)
           .map((r) => r.value),

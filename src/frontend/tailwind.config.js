@@ -232,6 +232,23 @@ export default {
           "60%": { transform: "scale(1.25) rotate(8deg)", opacity: "1" },
           "100%": { transform: "scale(1) rotate(0deg)", opacity: "1" },
         },
+        /* drinks-green-throb — ADDITIVE gentle infinite green glow + subtle
+           scale pulse for correct-tap emphasis. Mirrors the @keyframes block
+           in index.css. Box-shadow + transform only (no layout animation). */
+        "drinks-green-throb": {
+          "0%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 0 0 oklch(var(--drinks-correct) / 0.55)",
+          },
+          "50%": {
+            transform: "scale(1.03)",
+            boxShadow: "0 0 0 0.5rem oklch(var(--drinks-correct) / 0)",
+          },
+          "100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 0 0 oklch(var(--drinks-correct) / 0.55)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -261,6 +278,8 @@ export default {
         "drinks-legendary-banner": "drinks-legendary-banner 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
         "drinks-streak-flame": "drinks-streak-flame 0.6s ease-in-out infinite",
         "drinks-star-pop": "drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        /* drinks-green-throb — ADDITIVE gentle infinite green glow + scale */
+        "drinks-green-throb": "drinks-green-throb 1.6s ease-in-out infinite",
       },
     },
   },

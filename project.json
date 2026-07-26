@@ -1,17 +1,17 @@
 {
-  "overview": "Roadie Training app with admin user editing, photo cropping, and approval email resend.",
+  "overview": "Rework the quiz builder to generate questions from structured drink recipe fields, add true/false and matching question types, and let admins pick which question types a quiz includes.",
   "features": [
-    "Admin edit sheet to change a user's email and photo from the Users page",
-    "Photo cropping step in the profile photo upload flow",
-    "Resend approval notification emails from the admin Users page"
+    "Quiz questions generated from structured drink recipe fields",
+    "True/false and matching question types",
+    "Upsell ingredient tagging and questions",
+    "Admin question-type selector per quiz"
   ],
   "category": "productivity",
   "tags": [
-    "admin",
-    "user-management",
-    "photo-cropping",
-    "email-notifications",
-    "roadie-training"
+    "training",
+    "quiz",
+    "drinks",
+    "admin"
   ],
-  "last_updated": "2026-07-23T00:46:13.844Z"
+  "last_updated": "2026-07-26T19:39:05.096Z"
 }

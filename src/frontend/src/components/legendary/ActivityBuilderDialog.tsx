@@ -19,11 +19,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBuildLegendaryActivity } from "@/hooks/useLegendary";
 import { useCategoriesByPosition } from "@/hooks/useLibrary";
 import { cn } from "@/lib/utils";
-import type { LegendaryActivityType } from "@/types/legendary";
+import type { LegendaryActivityType, QuizSettings } from "@/types/legendary";
 import { Brain, Layers, Loader2, Sparkles, Wine, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import { toast } from "sonner";
+
+/**
+ * Default quiz question-type selection — all three on. The backend applies
+ * the same default when quizSettings is omitted, but we send it explicitly
+ * so the admin's toggles always round-trip through the form state.
+ */
+const DEFAULT_QUIZ_SETTINGS: QuizSettings = {
+  includeMultipleChoice: true,
+  includeTrueFalse: true,
+  includeMatching: true,
+};
 
 /**
  * ActivityBuilderDialog — admin-only modal for building a new Be Legendary
@@ -62,6 +73,9 @@ export function ActivityBuilderDialog({
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [drinksBuilderSettings, setDrinksBuilderSettings] =
     useState<DrinksBuilderSettings>(DEFAULT_DRINKS_BUILDER_SETTINGS);
+  const [quizSettings, setQuizSettings] = useState<QuizSettings>(
+    DEFAULT_QUIZ_SETTINGS,
+  );
   const [error, setError] = useState<string | null>(null);
 
   // Reset all form state whenever the dialog opens.
@@ -71,6 +85,7 @@ export function ActivityBuilderDialog({
       setActivityType(null);
       setSelectedCategoryIds([]);
       setDrinksBuilderSettings(DEFAULT_DRINKS_BUILDER_SETTINGS);
+      setQuizSettings(DEFAULT_QUIZ_SETTINGS);
       setError(null);
     }
   }, [open]);
@@ -109,6 +124,10 @@ export function ActivityBuilderDialog({
                 settings: drinksBuilderSettings,
               }
             : undefined,
+        // quizSettings is only meaningful for quiz activities. Pass through
+        // the admin's question-type selection; the hook layer translates it
+        // 1:1 (all booleans) via toCandidQuizSettings.
+        quizSettings: activityType === "quiz" ? quizSettings : undefined,
       });
       toast.success("Activity built", {
         description: `"${trimmedName}" is now available for all staff.`,
@@ -224,6 +243,71 @@ export function ActivityBuilderDialog({
                     }))}
                     disabled={buildMutation.isPending}
                   />
+                </div>
+              )}
+
+              {/* Quiz question-type selector — only when quiz selected.
+                  Three toggleable checkboxes, all default on. The admin can
+                  toggle freely (including all-off); the backend produces an
+                  empty quiz in that case. No min-one-on validation. */}
+              {activityType === "quiz" && (
+                <div className="grid gap-2">
+                  <Label className="font-heading uppercase text-xs tracking-wider text-foreground">
+                    Question types
+                  </Label>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Pick which question formats the quiz includes. All three are
+                    on by default. Toggle freely — the quiz generates from
+                    whatever is checked.
+                  </p>
+                  <fieldset
+                    className="grid gap-1.5 sm:grid-cols-3"
+                    disabled={buildMutation.isPending}
+                    data-ocid="legendary.builder.dialog.quiz_settings"
+                  >
+                    <QuizToggleRow
+                      id="quiz-multiple-choice"
+                      label="Multiple choice"
+                      hint="Pick the right answer."
+                      checked={quizSettings.includeMultipleChoice}
+                      onChange={(v) =>
+                        setQuizSettings((prev) => ({
+                          ...prev,
+                          includeMultipleChoice: v,
+                        }))
+                      }
+                      disabled={buildMutation.isPending}
+                      ocid="legendary.builder.dialog.quiz_settings.multiple_choice"
+                    />
+                    <QuizToggleRow
+                      id="quiz-true-false"
+                      label="True / False"
+                      hint="Statement is true or false."
+                      checked={quizSettings.includeTrueFalse}
+                      onChange={(v) =>
+                        setQuizSettings((prev) => ({
+                          ...prev,
+                          includeTrueFalse: v,
+                        }))
+                      }
+                      disabled={buildMutation.isPending}
+                      ocid="legendary.builder.dialog.quiz_settings.true_false"
+                    />
+                    <QuizToggleRow
+                      id="quiz-matching"
+                      label="Matching"
+                      hint="Match fields to items."
+                      checked={quizSettings.includeMatching}
+                      onChange={(v) =>
+                        setQuizSettings((prev) => ({
+                          ...prev,
+                          includeMatching: v,
+                        }))
+                      }
+                      disabled={buildMutation.isPending}
+                      ocid="legendary.builder.dialog.quiz_settings.matching"
+                    />
+                  </fieldset>
                 </div>
               )}
 
@@ -390,6 +474,58 @@ function CategoryListSkeleton(): ReactElement {
         <Skeleton key={k} className="h-12 w-full rounded-md" />
       ))}
     </div>
+  );
+}
+
+/**
+ * QuizToggleRow — a single question-type toggle for the quiz settings panel.
+ * Mirrors the ToggleRow visual style from DrinksBuilderSettingsForm
+ * (checkbox + label + hint in a bordered, primary-tinted card surface) so
+ * the quiz selector reads as the same admin-config-form pattern as the
+ * Drinks Builder toggles. Dark roadhouse theme.
+ */
+function QuizToggleRow({
+  id,
+  label,
+  hint,
+  checked,
+  onChange,
+  disabled,
+  ocid,
+}: {
+  id: string;
+  label: string;
+  hint: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled: boolean;
+  ocid: string;
+}): ReactElement {
+  return (
+    <label
+      htmlFor={id}
+      className={cn(
+        "flex items-start gap-3 rounded-md border px-3 py-2.5 transition-colors",
+        checked
+          ? "border-primary/60 bg-primary/10"
+          : "border-border bg-library-card hover:bg-muted/40",
+        disabled && "cursor-not-allowed opacity-60",
+      )}
+    >
+      <Checkbox
+        id={id}
+        checked={checked}
+        onCheckedChange={(v) => onChange(v === true)}
+        disabled={disabled}
+        data-ocid={ocid}
+      />
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="font-heading text-sm uppercase tracking-wide text-foreground">
+          {label}
+        </span>
+        <span className="font-body text-xs text-muted-foreground">{hint}</span>
+      </span>
+    </label>
   );
 }
 

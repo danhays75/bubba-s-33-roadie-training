@@ -110,13 +110,29 @@ export type LegendaryActivityContent =
   | { kind: "drinksBuilderContent"; settings: DrinksBuilderSettings };
 
 /**
+ * Admin-tunable quiz question-type selection. The backend persists this
+ * alongside the activity and the quiz generator only emits the enabled
+ * question variants. Defaults to all three on (the backend applies that
+ * default when quizSettings is omitted). Mirrors the backend Candid
+ * QuizSettings record (all booleans — no bigint translation needed).
+ */
+export interface QuizSettings {
+  includeMultipleChoice: boolean;
+  includeTrueFalse: boolean;
+  includeMatching: boolean;
+}
+
+/**
  * A Be Legendary activity built for a position.
  *
  * `id`, `positionId` are stringified bigints — set by the hook layer when
  * translating the Candid Activity (which has `id: bigint`, `positionId:
  * bigint`). `sourceCategoryIds` is the stringified form of the backend's
  * `Array<bigint>`. `createdAt` is the stringified bigint timestamp. `createdBy`
- * is the stringified Principal text.
+ * is the stringified Principal text. `quizSettings` is the optional
+ * admin-tunable quiz question-type selection (undefined when the backend
+ * omits the optional ?QuizSettings — the quiz generator then defaults to
+ * all three question types on).
  */
 export interface LegendaryActivity {
   id: string;
@@ -125,6 +141,7 @@ export interface LegendaryActivity {
   name: string;
   sourceCategoryIds: string[];
   content: LegendaryActivityContent;
+  quizSettings?: QuizSettings;
   createdAt: string;
   createdBy: string;
 }
@@ -148,6 +165,13 @@ export interface BuildLegendaryActivityInput {
    * categories.
    */
   content?: LegendaryActivityContent;
+  /**
+   * Optional admin-tunable quiz question-type selection. Only meaningful for
+   * quiz activities; the hook layer passes it through 1:1 (all booleans, no
+   * bigint translation). Omitted when the admin has not customized the
+   * selection — the backend then defaults to all three question types on.
+   */
+  quizSettings?: QuizSettings;
 }
 
 /**
@@ -172,6 +196,13 @@ export interface UpdateLegendaryActivityInput {
    * flashcards — the backend regenerates that content via rebuild.
    */
   content?: LegendaryActivityContent;
+  /**
+   * Optional admin-tunable quiz question-type selection. Only meaningful for
+   * quiz activities; the hook layer passes it through 1:1 (all booleans, no
+   * bigint translation). Omitted when the admin has not customized the
+   * selection — the backend then defaults to all three question types on.
+   */
+  quizSettings?: QuizSettings;
 }
 
 // --- Translators -----------------------------------------------------------
@@ -195,6 +226,10 @@ type CandidDrinksBuilderSettings = {
   pointsPerCorrect: bigint;
   roundsPerSession: bigint;
   soundDefault: boolean;
+  glasswarePrompts: string[];
+  specsPrompts: string[];
+  assemblyPrompts: string[];
+  garnishPrompts: string[];
 };
 
 /** Candid Question tagged-union shape from backend.d.ts. */
@@ -252,6 +287,16 @@ type CandidActivityContent =
       drinksBuilderContent: { settings: CandidDrinksBuilderSettings };
     };
 
+/**
+ * Candid QuizSettings shape from backend.d.ts. All booleans — no bigint
+ * translation needed. Mirrors the backend QuizSettings record.
+ */
+type CandidQuizSettings = {
+  includeMultipleChoice: boolean;
+  includeTrueFalse: boolean;
+  includeMatching: boolean;
+};
+
 /** Candid Activity shape from backend.d.ts (bigint ids, Principal createdBy). */
 type CandidActivity = {
   id: bigint;
@@ -260,6 +305,7 @@ type CandidActivity = {
   name: string;
   sourceCategoryIds: bigint[];
   content: CandidActivityContent;
+  quizSettings?: CandidQuizSettings;
   createdAt: bigint;
   createdBy: { toString(): string };
 };
@@ -325,6 +371,10 @@ function toFrontendDrinksBuilderSettings(
     pointsPerCorrect: Number(s.pointsPerCorrect),
     roundsPerSession: Number(s.roundsPerSession),
     soundDefault: s.soundDefault,
+    glasswarePrompts: s.glasswarePrompts,
+    specsPrompts: s.specsPrompts,
+    assemblyPrompts: s.assemblyPrompts,
+    garnishPrompts: s.garnishPrompts,
   };
 }
 
@@ -359,6 +409,17 @@ export function toFrontendActivity(a: CandidActivity): LegendaryActivity {
     name: a.name,
     sourceCategoryIds: a.sourceCategoryIds.map((id) => id.toString()),
     content: toFrontendActivityContent(a.content),
+    // quizSettings is an optional ?QuizSettings on the Candid side. The hook
+    // layer surfaces it as undefined when the backend omits the optional so
+    // the UI treats "no customization" uniformly. All fields are booleans —
+    // no bigint translation needed.
+    quizSettings: a.quizSettings
+      ? {
+          includeMultipleChoice: a.quizSettings.includeMultipleChoice,
+          includeTrueFalse: a.quizSettings.includeTrueFalse,
+          includeMatching: a.quizSettings.includeMatching,
+        }
+      : undefined,
     createdAt: a.createdAt.toString(),
     createdBy: a.createdBy.toString(),
   };

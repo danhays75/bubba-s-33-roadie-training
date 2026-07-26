@@ -99,14 +99,27 @@ mixin (
       let categoryItems = Library.listItemsByCategory(items, categoryId);
       sourceItems := sourceItems.concat(categoryItems);
     };
-    // Generate content based on the requested activity type.
+    // Generate content based on the requested activity type. quizSettings is
+    // threaded through to the quiz generator for #quiz activities; for
+    // #flashcards and #drinksBuilder it is normalized to null so a stray
+    // non-null value on a non-quiz input is ignored (the generator never
+    // sees it, and the stored Activity.quizSettings stays null for those
+    // types).
+    let normalizedQuizSettings : ?Types.QuizSettings = switch (input.activityType) {
+      case (#quiz) input.quizSettings;
+      case (#flashcards) null;
+      case (#drinksBuilder) null;
+    };
     let content : Legendary.ActivityContent = switch (input.activityType) {
-      case (#quiz) #quizContent(Legendary.generateQuizContent(sourceItems));
+      case (#quiz) #quizContent(Legendary.generateQuizContent(sourceItems, normalizedQuizSettings));
       case (#flashcards) #flashcardContent(Legendary.generateFlashcardContent(sourceItems));
       case (#drinksBuilder) {
         switch (input.content) {
           case (?(#drinksBuilderContent(dbContent))) {
-            #drinksBuilderContent(dbContent);
+            // Route through buildDrinksBuilderContent so the four prompt
+            // lists are capped to 8 entries before being persisted. The
+            // admin-supplied settings are re-wrapped with the cap enforced.
+            #drinksBuilderContent(Legendary.buildDrinksBuilderContent(dbContent.settings));
           };
           case _ { Runtime.trap("drinksBuilder activity requires #drinksBuilderContent in input.content") };
         };
@@ -120,6 +133,7 @@ mixin (
       input.name,
       input.sourceCategoryIds,
       content,
+      normalizedQuizSettings,
       caller,
       Int.abs(Time.now()),
     );
@@ -158,12 +172,27 @@ mixin (
     let newContent : Legendary.ActivityContent = switch (existing.activityType) {
       case (#drinksBuilder) {
         switch (input.content) {
-          case (?(#drinksBuilderContent(dbContent))) #drinksBuilderContent(dbContent);
+          // Route the replacement content through buildDrinksBuilderContent so
+          // the four prompt lists are capped to 8 entries before being
+          // persisted. The admin-supplied settings are re-wrapped with the
+          // cap enforced.
+          case (?(#drinksBuilderContent(dbContent))) {
+            #drinksBuilderContent(Legendary.buildDrinksBuilderContent(dbContent.settings));
+          };
           case _ existing.content;
         };
       };
       case (#quiz) existing.content;
       case (#flashcards) existing.content;
+    };
+    // Normalize quizSettings to null for #flashcards and #drinksBuilder so a
+    // stray non-null value on a non-quiz input is ignored. For #quiz, the
+    // lib helper treats null as "leave the existing quizSettings unchanged"
+    // and non-null as "replace the stored selection".
+    let normalizedQuizSettings : ?Types.QuizSettings = switch (existing.activityType) {
+      case (#quiz) input.quizSettings;
+      case (#flashcards) null;
+      case (#drinksBuilder) null;
     };
     Legendary.updateActivity(
       legendaryActivities,
@@ -171,6 +200,7 @@ mixin (
       input.name,
       input.sourceCategoryIds,
       newContent,
+      normalizedQuizSettings,
     );
   };
 
@@ -202,9 +232,11 @@ mixin (
     // Regenerate content based on the activity's existing activityType. For
     // #drinksBuilder there is nothing to regenerate (content is just the
     // admin's settings; the playable pool is derived at play time), so we
-    // return the activity unchanged.
+    // return the activity unchanged. For #quiz, the stored activity.quizSettings
+    // is threaded into the generator so the rebuild honors the admin's
+    // question-type selection.
     let newContent : Legendary.ActivityContent = switch (activity.activityType) {
-      case (#quiz) #quizContent(Legendary.generateQuizContent(sourceItems));
+      case (#quiz) #quizContent(Legendary.generateQuizContent(sourceItems, activity.quizSettings));
       case (#flashcards) #flashcardContent(Legendary.generateFlashcardContent(sourceItems));
       case (#drinksBuilder) activity.content;
     };

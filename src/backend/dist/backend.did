@@ -41,6 +41,7 @@ type UpdateActivityInput =
    content: opt ActivityContent;
    id: nat;
    name: text;
+   quizSettings: opt QuizSettings;
    sourceCategoryIds: vec nat;
  };
 type Task = 
@@ -87,6 +88,7 @@ type RecipeSpec =
  record {
    amount: text;
    ingredient: text;
+   upsell: bool;
  };
 type Recipe = 
  record {
@@ -99,6 +101,12 @@ type Recipe =
    specs: vec RecipeSpec;
    variants: vec RecipeVariant;
    yield: opt text;
+ };
+type QuizSettings = 
+ record {
+   includeMatching: bool;
+   includeMultipleChoice: bool;
+   includeTrueFalse: bool;
  };
 type QuizContent = vec Question;
 type Question = 
@@ -234,15 +242,19 @@ type Error =
  };
 type DrinksBuilderSettings = 
  record {
+   assemblyPrompts: vec text;
    decoyCount: nat;
    enforceAssemblyOrder: bool;
    excludedDrinkTitles: vec text;
+   garnishPrompts: vec text;
+   glasswarePrompts: vec text;
    includedCategories: vec text;
    pointsPerCorrect: nat;
    requireExactAmounts: bool;
    roundsPerSession: nat;
    showScoring: bool;
    soundDefault: bool;
+   specsPrompts: vec text;
    streakMultiplier: bool;
  };
 type DrinksBuilderContent = record {settings: DrinksBuilderSettings;};
@@ -270,6 +282,7 @@ type BuildActivityInput =
    content: opt ActivityContent;
    name: text;
    positionId: nat;
+   quizSettings: opt QuizSettings;
    sourceCategoryIds: vec nat;
  };
 type AssignmentStatus = 
@@ -304,6 +317,7 @@ type Activity =
    id: nat;
    name: text;
    positionId: nat;
+   quizSettings: opt QuizSettings;
    sourceCategoryIds: vec nat;
  };
 service : {

@@ -70,12 +70,20 @@ function toRecipe(
   r:
     | {
         glassware: string;
-        specs: Array<{ amount: string; ingredient: string }>;
+        specs: Array<{
+          amount: string;
+          ingredient: string;
+          upsell: boolean;
+        }>;
         assembly: Array<string>;
         garnish: Array<string>;
         variants: Array<{
           variantLabel: string;
-          specs: Array<{ amount: string; ingredient: string }>;
+          specs: Array<{
+            amount: string;
+            ingredient: string;
+            upsell: boolean;
+          }>;
           assembly: Array<string>;
         }>;
         equipment?: Array<string>;
@@ -88,7 +96,11 @@ function toRecipe(
   if (!r) return null;
   return {
     glassware: r.glassware,
-    specs: r.specs.map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+    specs: r.specs.map((s) => ({
+      amount: s.amount,
+      ingredient: s.ingredient,
+      upsell: s.upsell,
+    })),
     assembly: r.assembly,
     garnish: r.garnish,
     variants: r.variants.map((v) => ({
@@ -96,6 +108,7 @@ function toRecipe(
       specs: v.specs.map((s) => ({
         amount: s.amount,
         ingredient: s.ingredient,
+        upsell: s.upsell,
       })),
       assembly: v.assembly,
     })),
@@ -117,12 +130,20 @@ function toRecipe(
  */
 function fromRecipe(r: Recipe | null | undefined): {
   glassware: string;
-  specs: Array<{ amount: string; ingredient: string }>;
+  specs: Array<{
+    amount: string;
+    ingredient: string;
+    upsell: boolean;
+  }>;
   assembly: Array<string>;
   garnish: Array<string>;
   variants: Array<{
     variantLabel: string;
-    specs: Array<{ amount: string; ingredient: string }>;
+    specs: Array<{
+      amount: string;
+      ingredient: string;
+      upsell: boolean;
+    }>;
     assembly: Array<string>;
   }>;
   equipment: Array<string>;
@@ -133,7 +154,11 @@ function fromRecipe(r: Recipe | null | undefined): {
   if (!r) return null;
   return {
     glassware: r.glassware,
-    specs: r.specs.map((s) => ({ amount: s.amount, ingredient: s.ingredient })),
+    specs: r.specs.map((s) => ({
+      amount: s.amount,
+      ingredient: s.ingredient,
+      upsell: s.upsell,
+    })),
     assembly: r.assembly,
     garnish: r.garnish,
     variants: r.variants.map((v) => ({
@@ -141,6 +166,7 @@ function fromRecipe(r: Recipe | null | undefined): {
       specs: v.specs.map((s) => ({
         amount: s.amount,
         ingredient: s.ingredient,
+        upsell: s.upsell,
       })),
       assembly: v.assembly,
     })),
@@ -167,12 +193,20 @@ function toItem(i: {
   sortOrder: bigint;
   recipe?: {
     glassware: string;
-    specs: Array<{ amount: string; ingredient: string }>;
+    specs: Array<{
+      amount: string;
+      ingredient: string;
+      upsell: boolean;
+    }>;
     assembly: Array<string>;
     garnish: Array<string>;
     variants: Array<{
       variantLabel: string;
-      specs: Array<{ amount: string; ingredient: string }>;
+      specs: Array<{
+        amount: string;
+        ingredient: string;
+        upsell: boolean;
+      }>;
       assembly: Array<string>;
     }>;
     equipment?: Array<string>;

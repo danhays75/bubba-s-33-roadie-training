@@ -95,6 +95,19 @@ module {
   //                           (play until the learner stops). Default 0.
   //   soundDefault          : default on/off state for in-app WebAudio sound
   //                           effects. Default true.
+  //   glasswarePrompts      : admin-editable, rotating step heading prompts
+  //                           for the GLASSWARE step. 0-8 strings, display-only
+  //                           (no pool/scoring/round logic reads them). The
+  //                           game picks one per round at random, seeded by the
+  //                           round index; falls back to the default heading
+  //                           when the list is empty. Defaults ship with the
+  //                           first entry being the canonical "GLASSWARE" label.
+  //   specsPrompts          : same shape as glasswarePrompts, for the SPECS
+  //                           step.
+  //   assemblyPrompts       : same shape as glasswarePrompts, for the ASSEMBLY
+  //                           step.
+  //   garnishPrompts        : same shape as glasswarePrompts, for the GARNISH
+  //                           step.
   public type DrinksBuilderSettings = {
     includedCategories : [Text];
     excludedDrinkTitles : [Text];
@@ -106,6 +119,10 @@ module {
     pointsPerCorrect : Nat;
     roundsPerSession : Nat;
     soundDefault : Bool;
+    glasswarePrompts : [Text];
+    specsPrompts : [Text];
+    assemblyPrompts : [Text];
+    garnishPrompts : [Text];
   };
 
   // DrinksBuilderContent — the persisted payload for a #drinksBuilder
@@ -115,6 +132,25 @@ module {
   // scores are stored here — practice is session-only.
   public type DrinksBuilderContent = {
     settings : DrinksBuilderSettings;
+  };
+
+  // QuizSettings — admin-configurable question-type selection for a #quiz
+  // activity. Mirrors the DrinksBuilderSettings pattern: a record of
+  // booleans the admin toggles per activity, persisted with the activity so
+  // rebuilds and edits preserve the admin's choices. Each boolean controls
+  // whether the corresponding Question variant is eligible for generation:
+  //   includeMultipleChoice : emit #multipleChoice questions when true.
+  //   includeTrueFalse      : emit #trueFalse questions when true.
+  //   includeMatching       : emit #matching questions when true.
+  // All three default to true so a quiz with no explicit QuizSettings (null
+  // on the input) behaves as all-three-on — backward compatible with
+  // existing quizzes generated before this field existed. The Question
+  // variant union itself is unchanged; these booleans only gate which
+  // variants the generator emits.
+  public type QuizSettings = {
+    includeMultipleChoice : Bool;
+    includeTrueFalse : Bool;
+    includeMatching : Bool;
   };
 
   // ActivityContent — the generated payload, keyed by activity type.
@@ -128,6 +164,15 @@ module {
   // position the admin was viewing when they triggered generation).
   // sourceCategoryIds records which Library categories the items were drawn
   // from. createdAt/createdBy are set by the backend on creation.
+  //
+  // quizSettings carries the admin's question-type selection for #quiz
+  // activities (which of #multipleChoice / #trueFalse / #matching the
+  // generator emits). Optional: null means all-three-on (the default, and
+  // the value for activities generated before this field existed — backward
+  // compatible). Persisted here so rebuildLegendaryActivity regenerates
+  // content honoring the admin's choices, and updateLegendaryActivity can
+  // replace it without regenerating. Ignored for #flashcards and
+  // #drinksBuilder activities (always null for those).
   public type Activity = {
     id : Nat;
     positionId : Nat;
@@ -135,6 +180,7 @@ module {
     name : Text;
     sourceCategoryIds : [Nat];
     content : ActivityContent;
+    quizSettings : ?QuizSettings;
     createdAt : Nat;
     createdBy : Principal;
   };
@@ -151,12 +197,18 @@ module {
   //   #flashcards        -> omit (content is generated from sourceCategoryIds)
   //   #drinksBuilder     -> ?#drinksBuilderContent(DrinksBuilderContent)
   //                        with the admin's chosen DrinksBuilderSettings
+  //
+  // `quizSettings` carries the admin's question-type selection for #quiz
+  // activities (which of #multipleChoice / #trueFalse / #matching to emit).
+  // Optional: null means all-three-on (backward compatible with existing
+  // quizzes). Ignored for #flashcards and #drinksBuilder activities.
   public type BuildActivityInput = {
     positionId : Nat;
     activityType : ActivityType;
     name : Text;
     sourceCategoryIds : [Nat];
     content : ?ActivityContent;
+    quizSettings : ?QuizSettings;
   };
 
   // ListActivitiesInput — filter for listing activities by position.
@@ -173,10 +225,20 @@ module {
   // For #drinksBuilder activities, the admin may also replace the
   // DrinksBuilderSettings via `content`. For #quiz/#flashcards, `content`
   // is ignored (use rebuildLegendaryActivity to regenerate).
+  //
+  // `quizSettings` carries the admin's question-type selection for #quiz
+  // activities (which of #multipleChoice / #trueFalse / #matching to emit).
+  // Optional: null means "leave the existing quiz settings unchanged" on
+  // update (so an admin editing only the name does not silently reset the
+  // question-type selection). When non-null, the supplied QuizSettings
+  // replaces the stored selection and a subsequent rebuildLegendaryActivity
+  // regenerates content honoring the new selection. Ignored for #flashcards
+  // and #drinksBuilder activities.
   public type UpdateActivityInput = {
     id : Nat;
     name : Text;
     sourceCategoryIds : [Nat];
     content : ?ActivityContent;
+    quizSettings : ?QuizSettings;
   };
 };

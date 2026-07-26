@@ -123,13 +123,17 @@ export interface DetailField {
 /**
  * A single measured ingredient in a recipe spec (e.g. "2 oz" / "Bourbon").
  *
- * Mirrors the backend Candid RecipeSpec exactly (amount, ingredient). No ids
- * on recipe sub-records — they are value records, so React keys are derived
- * positionally by the editor.
+ * Mirrors the backend Candid RecipeSpec exactly (amount, ingredient, upsell).
+ * `upsell` flags ingredients the quiz generator can ask upsell questions
+ * about; it defaults to false on the import path and is not surfaced in the
+ * admin editor (the editor strips it on persist and the backend defaults
+ * absent specs to upsell=false). No ids on recipe sub-records — they are
+ * value records, so React keys are derived positionally by the editor.
  */
 export interface RecipeSpec {
   amount: string;
   ingredient: string;
+  upsell: boolean;
 }
 
 /**

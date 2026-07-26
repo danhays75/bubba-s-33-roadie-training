@@ -76,6 +76,43 @@ export function DrinksBuilderSettingsForm({
     );
   }
 
+  function addPrompt(
+    key:
+      | "glasswarePrompts"
+      | "specsPrompts"
+      | "assemblyPrompts"
+      | "garnishPrompts",
+  ): void {
+    patch(key, [...value[key], ""]);
+  }
+
+  function updatePrompt(
+    key:
+      | "glasswarePrompts"
+      | "specsPrompts"
+      | "assemblyPrompts"
+      | "garnishPrompts",
+    index: number,
+    text: string,
+  ): void {
+    const next = value[key].map((t, i) => (i === index ? text : t));
+    patch(key, next);
+  }
+
+  function removePrompt(
+    key:
+      | "glasswarePrompts"
+      | "specsPrompts"
+      | "assemblyPrompts"
+      | "garnishPrompts",
+    index: number,
+  ): void {
+    patch(
+      key,
+      value[key].filter((_, i) => i !== index),
+    );
+  }
+
   function clampNumber(raw: string, min: number, max: number): number {
     if (raw === "") return min;
     const n = Number.parseInt(raw, 10);
@@ -199,6 +236,57 @@ export function DrinksBuilderSettingsForm({
         </Button>
       </fieldset>
 
+      {/* Step prompts */}
+      <fieldset className="grid gap-3" disabled={disabled}>
+        <legend className="font-heading uppercase text-xs tracking-wider text-foreground">
+          Step prompts
+        </legend>
+        <p className="font-body text-xs text-muted-foreground">
+          Shown as this step's heading in the game. Add up to 8 — the game picks
+          a different one each round. Leave empty to use the default heading.
+        </p>
+        <PromptGroup
+          legend="Glassware prompts"
+          ocidBase="legendary.drinks_builder.settings_form.glassware_prompts"
+          items={value.glasswarePrompts}
+          placeholder="e.g. What glass are you reaching for?"
+          disabled={disabled}
+          onAdd={() => addPrompt("glasswarePrompts")}
+          onUpdate={(i, t) => updatePrompt("glasswarePrompts", i, t)}
+          onRemove={(i) => removePrompt("glasswarePrompts", i)}
+        />
+        <PromptGroup
+          legend="Specs prompts"
+          ocidBase="legendary.drinks_builder.settings_form.specs_prompts"
+          items={value.specsPrompts}
+          placeholder="e.g. Build the pour — what goes in?"
+          disabled={disabled}
+          onAdd={() => addPrompt("specsPrompts")}
+          onUpdate={(i, t) => updatePrompt("specsPrompts", i, t)}
+          onRemove={(i) => removePrompt("specsPrompts", i)}
+        />
+        <PromptGroup
+          legend="Assembly prompts"
+          ocidBase="legendary.drinks_builder.settings_form.assembly_prompts"
+          items={value.assemblyPrompts}
+          placeholder="e.g. How do we build it? In order!"
+          disabled={disabled}
+          onAdd={() => addPrompt("assemblyPrompts")}
+          onUpdate={(i, t) => updatePrompt("assemblyPrompts", i, t)}
+          onRemove={(i) => removePrompt("assemblyPrompts", i)}
+        />
+        <PromptGroup
+          legend="Garnish prompts"
+          ocidBase="legendary.drinks_builder.settings_form.garnish_prompts"
+          items={value.garnishPrompts}
+          placeholder="e.g. Finish strong — what's the garnish?"
+          disabled={disabled}
+          onAdd={() => addPrompt("garnishPrompts")}
+          onUpdate={(i, t) => updatePrompt("garnishPrompts", i, t)}
+          onRemove={(i) => removePrompt("garnishPrompts", i)}
+        />
+      </fieldset>
+
       {/* Numeric settings */}
       <div className="grid gap-4 sm:grid-cols-3">
         <NumberField
@@ -296,6 +384,70 @@ export function DrinksBuilderSettingsForm({
 }
 
 /* --------------------------- Sub-components ------------------------------ */
+
+function PromptGroup({
+  legend,
+  ocidBase,
+  items,
+  placeholder,
+  disabled,
+  onAdd,
+  onUpdate,
+  onRemove,
+}: {
+  legend: string;
+  ocidBase: string;
+  items: string[];
+  placeholder: string;
+  disabled: boolean;
+  onAdd: () => void;
+  onUpdate: (index: number, text: string) => void;
+  onRemove: (index: number) => void;
+}): ReactElement {
+  const atCap = items.length >= 8;
+  return (
+    <div className="grid gap-1.5">
+      <span className="font-heading uppercase text-xs tracking-wider text-foreground">
+        {legend}
+      </span>
+      <ul className="grid gap-1.5" data-ocid={`${ocidBase}.list`}>
+        {items.map((prompt, index) => (
+          <li key={`${ocidBase}-${prompt}`} className="flex items-center gap-2">
+            <Input
+              value={prompt}
+              onChange={(e) => onUpdate(index, e.target.value)}
+              placeholder={placeholder}
+              autoComplete="off"
+              maxLength={120}
+              disabled={disabled}
+              data-ocid={`${ocidBase}.input.${index + 1}`}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => onRemove(index)}
+              disabled={disabled}
+              aria-label={`Remove ${legend.toLowerCase()} ${index + 1}`}
+              data-ocid={`${ocidBase}.remove_button.${index + 1}`}
+            >
+              <X className="size-4" />
+            </Button>
+          </li>
+        ))}
+      </ul>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onAdd}
+        disabled={disabled || atCap}
+        data-ocid={`${ocidBase}.add_button`}
+      >
+        <Plus className="size-4" /> Add prompt
+      </Button>
+    </div>
+  );
+}
 
 function NumberField({
   id,
@@ -399,6 +551,46 @@ export const DEFAULT_DRINKS_BUILDER_SETTINGS: DrinksBuilderSettings = {
   pointsPerCorrect: 50,
   roundsPerSession: 0,
   soundDefault: true,
+  glasswarePrompts: [
+    "GLASSWARE",
+    "What glass are you reaching for?",
+    "Surprise me with your wisdom — what glass?",
+    "Be legendary — pick the glass.",
+    "Which glass makes this one shine?",
+    "Glass check! What's it going in?",
+    "Grab the right glass, Roadie.",
+    "First things first — the glass?",
+  ],
+  specsPrompts: [
+    "SPECS",
+    "Build the pour — what goes in?",
+    "Tap every spec that belongs.",
+    "Show me the recipe, Roadie.",
+    "What's in this legend?",
+    "Load it up — every correct spec.",
+    "Nail the pour. What's in it?",
+    "Ingredients, please — all of 'em.",
+  ],
+  assemblyPrompts: [
+    "ASSEMBLY",
+    "How do we build it? In order!",
+    "Walk me through the steps.",
+    "Put it together, step by step.",
+    "What's the play — in order?",
+    "Assemble like a legend.",
+    "Order matters — build it right.",
+    "Steps in sequence, Roadie.",
+  ],
+  garnishPrompts: [
+    "GARNISH",
+    "Finish strong — what's the garnish?",
+    "Top it off like a legend.",
+    "The final touch — garnish?",
+    "What makes it pop?",
+    "Dress it up — pick the garnish.",
+    "Last step — garnish it.",
+    "Make it picture-perfect — garnish?",
+  ],
 };
 
 export default DrinksBuilderSettingsForm;

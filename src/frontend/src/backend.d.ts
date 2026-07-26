@@ -12,21 +12,27 @@ export interface UpdateActivityInput {
     content?: ActivityContent;
     name: string;
     sourceCategoryIds: Array<bigint>;
+    quizSettings?: QuizSettings;
 }
 export interface DrinksBuilderSettings {
+    garnishPrompts: Array<string>;
     includedCategories: Array<string>;
     enforceAssemblyOrder: boolean;
     pointsPerCorrect: bigint;
     excludedDrinkTitles: Array<string>;
     showScoring: boolean;
+    assemblyPrompts: Array<string>;
     requireExactAmounts: boolean;
+    glasswarePrompts: Array<string>;
     soundDefault: boolean;
     decoyCount: bigint;
+    specsPrompts: Array<string>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
 }
 export interface RecipeSpec {
     ingredient: string;
+    upsell: boolean;
     amount: string;
 }
 export type QuizContent = Array<Question>;
@@ -178,12 +184,18 @@ export type Error_ = {
 export interface DrinksBuilderContent {
     settings: DrinksBuilderSettings;
 }
+export interface QuizSettings {
+    includeTrueFalse: boolean;
+    includeMatching: boolean;
+    includeMultipleChoice: boolean;
+}
 export interface BuildActivityInput {
     activityType: ActivityType;
     content?: ActivityContent;
     name: string;
     positionId: bigint;
     sourceCategoryIds: Array<bigint>;
+    quizSettings?: QuizSettings;
 }
 export type ActivityContent = {
     __kind__: "drinksBuilderContent";
@@ -244,6 +256,7 @@ export interface Activity {
     createdBy: Principal;
     positionId: bigint;
     sourceCategoryIds: Array<bigint>;
+    quizSettings?: QuizSettings;
 }
 export interface Recipe {
     equipment: Array<string>;

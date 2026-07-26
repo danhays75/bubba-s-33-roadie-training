@@ -615,10 +615,10 @@ function SectionCard({
           <Check className="size-3.5" />
         </span>
         <h3
-          className="font-heading text-sm uppercase tracking-[0.2em] text-foreground"
+          className="font-heading text-sm leading-snug tracking-wide text-foreground"
           data-ocid={`drinks.section.${section.kind}.label`}
         >
-          {label}
+          {section.label}
         </h3>
         <span
           className="ml-auto font-heading text-[0.65rem] uppercase tracking-wide text-muted-foreground"
@@ -741,7 +741,7 @@ function ChipButton({
           disabled &&
           "border-border bg-card/40 text-muted-foreground opacity-60 cursor-not-allowed",
         isCorrectFeedback &&
-          "border-drinks-correct bg-drinks-correct/15 text-drinks-correct animate-drinks-green-pop",
+          "border-drinks-correct bg-drinks-correct/25 text-drinks-correct animate-drinks-green-throb",
         isIncorrectFeedback &&
           "border-drinks-incorrect bg-drinks-incorrect/15 text-drinks-incorrect animate-drinks-red-shake",
       )}
