@@ -26,6 +26,7 @@ module {
   public type DrinksBuilderSettings = Types.DrinksBuilderSettings;
   public type DrinksBuilderContent = Types.DrinksBuilderContent;
   public type DrinksBuilderPrompt = Types.DrinksBuilderPrompt;
+  public type DrinksBuilderAnswerClip = Types.DrinksBuilderAnswerClip;
   public type QuizSettings = Types.QuizSettings;
 
   // List activities belonging to a position (filter by positionId).
@@ -842,8 +843,15 @@ module {
   // assemblyPrompts / garnishPrompts) are capped to their first 8 entries
   // before being stored — see capDrinksBuilderPrompts. Longer lists are
   // silently truncated, never rejected.
+  //
+  // celebrationClips is capped to its first 6 entries (drop overflow) — see
+  // capCelebrationClips. correctAffirmations and answerClips are NOT capped
+  // here (correctAffirmations is a small admin-editable phrase list;
+  // answerClips is keyed by answer text and uncapped). The three new fields
+  // are display/playback only — NO pool, decoy, scoring, or round-flow logic
+  // reads them.
   public func buildDrinksBuilderContent(settings : DrinksBuilderSettings) : Types.DrinksBuilderContent {
-    { settings = capDrinksBuilderPrompts(settings) };
+    { settings = capCelebrationClips(capDrinksBuilderPrompts(settings)) };
   };
 
   // Cap each of the four DrinksBuilderSettings prompt lists to its first 8
@@ -861,6 +869,18 @@ module {
     };
   };
 
+  // Cap celebrationClips to its first 6 entries (drop overflow). Returns a
+  // new DrinksBuilderSettings record with the truncated list; all other
+  // fields are carried forward verbatim via record spread. correctAffirmations
+  // and answerClips are NOT capped by this helper. Silently truncates — does
+  // not reject longer lists. The celebrationClips list is display/playback
+  // only — never read by pool/scoring logic.
+  public func capCelebrationClips(settings : DrinksBuilderSettings) : DrinksBuilderSettings {
+    { settings with
+      celebrationClips = capTextList(settings.celebrationClips, 6);
+    };
+  };
+
   // Truncate a prompt list to its first 8 entries. Returns the same array
   // reference when it is already within the cap (no allocation); otherwise
   // returns a new array containing only the first 8 entries. Operates on
@@ -869,6 +889,16 @@ module {
   func capPromptList(prompts : [DrinksBuilderPrompt]) : [DrinksBuilderPrompt] {
     if (prompts.size() <= 8) { return prompts };
     prompts.sliceToArray(0, 8);
+  };
+
+  // Truncate a [Text] list to its first `max` entries. Returns the same
+  // array reference when it is already within the cap (no allocation);
+  // otherwise returns a new array containing only the first `max` entries.
+  // Used to cap celebrationClips to 6 entries. The cap is purely structural
+  // and does NOT inspect or transform the entries.
+  func capTextList(list : [Text], max : Nat) : [Text] {
+    if (list.size() <= max) { return list };
+    list.sliceToArray(0, max);
   };
 
   // A Library item is a playable drink when it has a recipe with non-empty

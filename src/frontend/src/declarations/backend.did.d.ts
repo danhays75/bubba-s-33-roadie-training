@@ -51,6 +51,10 @@ export interface Category {
 }
 export interface Cell { 'value' : Value, 'name' : string }
 export interface DetailField { 'value' : string, 'fieldLabel' : string }
+export interface DrinksBuilderAnswerClip {
+  'audioUrl' : string,
+  'answer' : string,
+}
 export interface DrinksBuilderContent { 'settings' : DrinksBuilderSettings }
 export interface DrinksBuilderPrompt {
   'text' : string,
@@ -65,9 +69,12 @@ export interface DrinksBuilderSettings {
   'showScoring' : boolean,
   'assemblyPrompts' : Array<DrinksBuilderPrompt>,
   'requireExactAmounts' : boolean,
+  'answerClips' : Array<DrinksBuilderAnswerClip>,
   'glasswarePrompts' : Array<DrinksBuilderPrompt>,
   'soundDefault' : boolean,
   'decoyCount' : bigint,
+  'celebrationClips' : Array<string>,
+  'correctAffirmations' : Array<string>,
   'specsPrompts' : Array<DrinksBuilderPrompt>,
   'streakMultiplier' : boolean,
   'roundsPerSession' : bigint,
@@ -174,6 +181,7 @@ export interface QuizSettings {
 }
 export interface Recipe {
   'equipment' : Array<string>,
+  'recapAudio' : [] | [string],
   'glassware' : string,
   'variants' : Array<RecipeVariant>,
   'garnish' : Array<string>,

@@ -63,6 +63,13 @@ module {
   // is the ordered list of optional quality checks. `equipment` and
   // `qualityIdentifier` default to empty arrays (like garnish and assembly);
   // `yield` and `shelfLife` default to null (genuinely optional for bulk mixes).
+  //
+  // `recapAudio` is the optional durable object-storage URL of the drink's
+  // recap voice clip — a full spoken walk-through played at the end of a
+  // Drinks Builder round after a Roadie builds this drink. Playback-only —
+  // NO pool, decoy, scoring, or round-flow logic reads it; it rides along on
+  // the LibraryItem returned by getDrinksBuilderPlayablePool unchanged.
+  // Defaults to null — drinks without a clip just show the visual recap.
   public type Recipe = {
     glassware : Text;
     specs : [RecipeSpec];
@@ -73,6 +80,7 @@ module {
     yield : ?Text;
     shelfLife : ?Text;
     qualityIdentifier : [Text];
+    recapAudio : ?Text;
   };
 
   // A Library item (a recipe / reference entry). Belongs to a category.

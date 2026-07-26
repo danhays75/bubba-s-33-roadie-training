@@ -97,6 +97,7 @@ type Recipe =
    garnish: vec text;
    glassware: text;
    qualityIdentifier: vec text;
+   recapAudio: opt text;
    shelfLife: opt text;
    specs: vec RecipeSpec;
    variants: vec RecipeVariant;
@@ -242,7 +243,10 @@ type Error =
  };
 type DrinksBuilderSettings = 
  record {
+   answerClips: vec DrinksBuilderAnswerClip;
    assemblyPrompts: vec DrinksBuilderPrompt;
+   celebrationClips: vec text;
+   correctAffirmations: vec text;
    decoyCount: nat;
    enforceAssemblyOrder: bool;
    excludedDrinkTitles: vec text;
@@ -263,6 +267,11 @@ type DrinksBuilderPrompt =
    "text": text;
  };
 type DrinksBuilderContent = record {settings: DrinksBuilderSettings;};
+type DrinksBuilderAnswerClip = 
+ record {
+   answer: text;
+   audioUrl: text;
+ };
 type DetailField = 
  record {
    fieldLabel: text;

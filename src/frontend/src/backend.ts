@@ -69,9 +69,12 @@ export interface DrinksBuilderSettings {
     showScoring: boolean;
     assemblyPrompts: Array<DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
+    answerClips: Array<DrinksBuilderAnswerClip>;
     glasswarePrompts: Array<DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
+    celebrationClips: Array<string>;
+    correctAffirmations: Array<string>;
     specsPrompts: Array<DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
@@ -128,6 +131,10 @@ export interface _ImmutableObjectStorageRefillResult {
 export interface DrinksBuilderPrompt {
     text: string;
     audioUrl?: string;
+}
+export interface DrinksBuilderAnswerClip {
+    audioUrl: string;
+    answer: string;
 }
 export interface DetailField {
     value: string;
@@ -321,6 +328,7 @@ export interface Activity {
 }
 export interface Recipe {
     equipment: Array<string>;
+    recapAudio?: string;
     glassware: string;
     variants: Array<RecipeVariant>;
     garnish: Array<string>;
@@ -497,7 +505,7 @@ export interface backendInterface {
     updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;
     updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null, layoutStyle: LayoutStyle): Promise<Position>;
 }
-import type { Activity as _Activity, ActivityContent as _ActivityContent, ActivityType as _ActivityType, ApprovalStatus as _ApprovalStatus, AssignmentStatus as _AssignmentStatus, BuildActivityInput as _BuildActivityInput, Category as _Category, Cell as _Cell, DetailField as _DetailField, DrinksBuilderContent as _DrinksBuilderContent, DrinksBuilderPrompt as _DrinksBuilderPrompt, DrinksBuilderSettings as _DrinksBuilderSettings, Error as _Error, Flashcard as _Flashcard, FlashcardContent as _FlashcardContent, FlashcardRecipe as _FlashcardRecipe, LayoutStyle as _LayoutStyle, LibraryItem as _LibraryItem, NsoImportInput as _NsoImportInput, NsoImportPhase as _NsoImportPhase, NsoImportTask as _NsoImportTask, Phase as _Phase, Position as _Position, PositionAssignment as _PositionAssignment, Question as _Question, QuizContent as _QuizContent, QuizSettings as _QuizSettings, Recipe as _Recipe, RecipeSpec as _RecipeSpec, RecipeVariant as _RecipeVariant, Result as _Result, Result__1 as _Result__1, Role as _Role, SendResult as _SendResult, Task as _Task, UpdateActivityInput as _UpdateActivityInput, UserProfile as _UserProfile, UserRole as _UserRole, Value as _Value, _ImmutableObjectStorageRefillInformation as __ImmutableObjectStorageRefillInformation, _ImmutableObjectStorageRefillResult as __ImmutableObjectStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { Activity as _Activity, ActivityContent as _ActivityContent, ActivityType as _ActivityType, ApprovalStatus as _ApprovalStatus, AssignmentStatus as _AssignmentStatus, BuildActivityInput as _BuildActivityInput, Category as _Category, Cell as _Cell, DetailField as _DetailField, DrinksBuilderAnswerClip as _DrinksBuilderAnswerClip, DrinksBuilderContent as _DrinksBuilderContent, DrinksBuilderPrompt as _DrinksBuilderPrompt, DrinksBuilderSettings as _DrinksBuilderSettings, Error as _Error, Flashcard as _Flashcard, FlashcardContent as _FlashcardContent, FlashcardRecipe as _FlashcardRecipe, LayoutStyle as _LayoutStyle, LibraryItem as _LibraryItem, NsoImportInput as _NsoImportInput, NsoImportPhase as _NsoImportPhase, NsoImportTask as _NsoImportTask, Phase as _Phase, Position as _Position, PositionAssignment as _PositionAssignment, Question as _Question, QuizContent as _QuizContent, QuizSettings as _QuizSettings, Recipe as _Recipe, RecipeSpec as _RecipeSpec, RecipeVariant as _RecipeVariant, Result as _Result, Result__1 as _Result__1, Role as _Role, SendResult as _SendResult, Task as _Task, UpdateActivityInput as _UpdateActivityInput, UserProfile as _UserProfile, UserRole as _UserRole, Value as _Value, _ImmutableObjectStorageRefillInformation as __ImmutableObjectStorageRefillInformation, _ImmutableObjectStorageRefillResult as __ImmutableObjectStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async __accessControlState(): Promise<any> {
@@ -2059,6 +2067,7 @@ function from_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }
 function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     equipment: Array<string>;
+    recapAudio: [] | [string];
     glassware: string;
     variants: Array<_RecipeVariant>;
     garnish: Array<string>;
@@ -2069,6 +2078,7 @@ function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uin
     yield: [] | [string];
 }): {
     equipment: Array<string>;
+    recapAudio?: string;
     glassware: string;
     variants: Array<RecipeVariant>;
     garnish: Array<string>;
@@ -2080,6 +2090,7 @@ function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uin
 } {
     return {
         equipment: value.equipment,
+        recapAudio: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.recapAudio)),
         glassware: value.glassware,
         variants: value.variants,
         garnish: value.garnish,
@@ -2141,9 +2152,12 @@ function from_candid_record_n27(_uploadFile: (file: ExternalBlob) => Promise<Uin
     showScoring: boolean;
     assemblyPrompts: Array<_DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
+    answerClips: Array<_DrinksBuilderAnswerClip>;
     glasswarePrompts: Array<_DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
+    celebrationClips: Array<string>;
+    correctAffirmations: Array<string>;
     specsPrompts: Array<_DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
@@ -2156,9 +2170,12 @@ function from_candid_record_n27(_uploadFile: (file: ExternalBlob) => Promise<Uin
     showScoring: boolean;
     assemblyPrompts: Array<DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
+    answerClips: Array<DrinksBuilderAnswerClip>;
     glasswarePrompts: Array<DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
+    celebrationClips: Array<string>;
+    correctAffirmations: Array<string>;
     specsPrompts: Array<DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
@@ -2172,9 +2189,12 @@ function from_candid_record_n27(_uploadFile: (file: ExternalBlob) => Promise<Uin
         showScoring: value.showScoring,
         assemblyPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.assemblyPrompts),
         requireExactAmounts: value.requireExactAmounts,
+        answerClips: value.answerClips,
         glasswarePrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.glasswarePrompts),
         soundDefault: value.soundDefault,
         decoyCount: value.decoyCount,
+        celebrationClips: value.celebrationClips,
+        correctAffirmations: value.correctAffirmations,
         specsPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.specsPrompts),
         streakMultiplier: value.streakMultiplier,
         roundsPerSession: value.roundsPerSession
@@ -2933,9 +2953,12 @@ function to_candid_record_n89(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     showScoring: boolean;
     assemblyPrompts: Array<DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
+    answerClips: Array<DrinksBuilderAnswerClip>;
     glasswarePrompts: Array<DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
+    celebrationClips: Array<string>;
+    correctAffirmations: Array<string>;
     specsPrompts: Array<DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
@@ -2948,9 +2971,12 @@ function to_candid_record_n89(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     showScoring: boolean;
     assemblyPrompts: Array<_DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
+    answerClips: Array<_DrinksBuilderAnswerClip>;
     glasswarePrompts: Array<_DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
+    celebrationClips: Array<string>;
+    correctAffirmations: Array<string>;
     specsPrompts: Array<_DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
@@ -2964,9 +2990,12 @@ function to_candid_record_n89(_uploadFile: (file: ExternalBlob) => Promise<Uint8
         showScoring: value.showScoring,
         assemblyPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.assemblyPrompts),
         requireExactAmounts: value.requireExactAmounts,
+        answerClips: value.answerClips,
         glasswarePrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.glasswarePrompts),
         soundDefault: value.soundDefault,
         decoyCount: value.decoyCount,
+        celebrationClips: value.celebrationClips,
+        correctAffirmations: value.correctAffirmations,
         specsPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.specsPrompts),
         streakMultiplier: value.streakMultiplier,
         roundsPerSession: value.roundsPerSession
@@ -2986,6 +3015,7 @@ function to_candid_record_n92(_uploadFile: (file: ExternalBlob) => Promise<Uint8
 }
 function to_candid_record_n96(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     equipment: Array<string>;
+    recapAudio?: string;
     glassware: string;
     variants: Array<RecipeVariant>;
     garnish: Array<string>;
@@ -2996,6 +3026,7 @@ function to_candid_record_n96(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     yield?: string;
 }): {
     equipment: Array<string>;
+    recapAudio: [] | [string];
     glassware: string;
     variants: Array<_RecipeVariant>;
     garnish: Array<string>;
@@ -3007,6 +3038,7 @@ function to_candid_record_n96(_uploadFile: (file: ExternalBlob) => Promise<Uint8
 } {
     return {
         equipment: value.equipment,
+        recapAudio: value.recapAudio ? candid_some(value.recapAudio) : candid_none(),
         glassware: value.glassware,
         variants: value.variants,
         garnish: value.garnish,

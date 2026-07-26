@@ -636,6 +636,10 @@ export function BulkImportDialog({
       yield: yieldValue,
       shelfLife: shelfLifeValue,
       qualityIdentifier: recipe.qualityIdentifier ?? [],
+      // The bulk-import JSON does not carry a recap voice clip — default to
+      // null so the constructed Recipe satisfies the required recapAudio
+      // field. The admin can attach a clip later via the item editor.
+      recapAudio: null,
     };
   }
 
@@ -934,6 +938,7 @@ function toItem(i: {
     yield?: string;
     shelfLife?: string;
     qualityIdentifier: string[];
+    recapAudio?: string;
     variants: Array<{
       variantLabel: string;
       specs: Array<{
@@ -975,6 +980,7 @@ function toItem(i: {
           yield: i.recipe.yield ?? null,
           shelfLife: i.recipe.shelfLife ?? null,
           qualityIdentifier: i.recipe.qualityIdentifier ?? [],
+          recapAudio: i.recipe.recapAudio ?? null,
           variants: i.recipe.variants.map((v) => ({
             variantLabel: v.variantLabel,
             specs: v.specs.map((s) => ({

@@ -89,6 +89,12 @@ function toCandidDrinksBuilderSettings(
     specsPrompts: s.specsPrompts,
     assemblyPrompts: s.assemblyPrompts,
     garnishPrompts: s.garnishPrompts,
+    correctAffirmations: s.correctAffirmations,
+    answerClips: s.answerClips.map((c) => ({
+      answer: c.answer,
+      audioUrl: c.audioUrl,
+    })),
+    celebrationClips: s.celebrationClips,
   };
 }
 

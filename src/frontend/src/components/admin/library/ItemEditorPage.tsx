@@ -12,6 +12,7 @@ import {
   useUpdateItem,
 } from "@/hooks/useLibrary";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { usePhotoUpload } from "@/hooks/usePhotoUpload";
 import { cn } from "@/lib/utils";
 import type { DetailField, Recipe } from "@/types/foundation";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -21,8 +22,11 @@ import {
   ArrowUp,
   Loader2,
   Lock,
+  Play,
   Plus,
+  RefreshCw,
   Trash2,
+  Upload,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -181,8 +185,25 @@ export function ItemEditorPage({
   const [recipeQualityIdentifier, setRecipeQualityIdentifier] = useState<
     EditorTextRow[]
   >([emptyText()]);
+  // Recap voice clip — optional audio file uploaded via the same
+  // object-storage flow as the photo. Stored as a durable URL string (or
+  // null when absent). Mirrors how `photo` is stored at the item level.
+  // Audio is passed STRAIGHT THROUGH to uploadPhoto — never JPEG-encoded
+  // via resizeImage (resizeImage throws on non-image input).
+  const [recapAudio, setRecapAudio] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+
+  // Second usePhotoUpload instance dedicated to the recap audio clip.
+  // Reuses the photo upload's isUploading / error / reset states for the
+  // audio control — same hook, separate state so the two uploads do not
+  // clobber each other's progress/error indicators.
+  const {
+    uploadPhoto: uploadAudio,
+    isUploading: isAudioUploading,
+    error: audioUploadError,
+    reset: resetAudio,
+  } = usePhotoUpload();
 
   // Prefill in edit mode once the item arrives. Use a hydrated guard so a
   // later refetch (e.g. after invalidation) does not clobber in-flight edits.
@@ -260,6 +281,9 @@ export function ItemEditorPage({
               }))
             : [emptyText()],
         );
+        // Recap voice clip — hydrate from the existing recipe's
+        // recapAudio URL (null when the backend omits the optional ?Text).
+        setRecapAudio(r.recapAudio ?? null);
       } else {
         setIsRecipe(false);
       }
@@ -372,6 +396,9 @@ export function ItemEditorPage({
       yield: trimmedYield.length > 0 ? trimmedYield : null,
       shelfLife: trimmedShelfLife.length > 0 ? trimmedShelfLife : null,
       qualityIdentifier: cleanedQualityIdentifier,
+      // Recap voice clip — passed through unchanged (URL string or null).
+      // The audio upload control owns the URL; buildRecipe just forwards it.
+      recapAudio: recapAudio,
     };
   }
 
@@ -522,6 +549,37 @@ export function ItemEditorPage({
     const next = [...recipeVariants];
     [next[index], next[target]] = [next[target], next[index]];
     setRecipeVariants(next);
+  }
+
+  // --- Recap audio upload ------------------------------------------------
+  // Audio is uploaded via the SAME object-storage flow as the photo
+  // (usePhotoUpload().uploadPhoto), but the audio Blob is passed STRAIGHT
+  // THROUGH — never JPEG-encoded via resizeImage (resizeImage throws on
+  // non-image input and would corrupt the audio). On success the durable
+  // URL is stored in `recapAudio`; on remove it is set back to null.
+  async function handleAudioFileChange(
+    e: ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
+    const file = e.target.files?.[0];
+    // Always reset the input so re-selecting the same file fires change.
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("audio/")) {
+      toast.error("Please choose an audio file.");
+      return;
+    }
+    try {
+      // Pass the audio Blob straight through — NO resizeImage call.
+      const url = await uploadAudio(file);
+      setRecapAudio(url);
+    } catch {
+      // uploadAudio already populated audioUploadError; the UI surfaces it.
+    }
+  }
+
+  function handleAudioRemove() {
+    resetAudio();
+    setRecapAudio(null);
   }
 
   // --- Submit -------------------------------------------------------------
@@ -901,6 +959,130 @@ export function ItemEditorPage({
                 autoComplete="off"
                 maxLength={80}
               />
+            </div>
+
+            {/* Recap voice clip — optional audio upload. Uses the SAME
+                object-storage flow as the photo (usePhotoUpload), but the
+                audio Blob is passed STRAIGHT THROUGH (no resizeImage —
+                audio must not be JPEG-encoded). Shows a preview ▶ control
+                (HTMLAudioElement) + Remove when a clip URL is set, an
+                upload prompt when none, and reuses the photo upload's
+                isUploading / error states for processing + failure. */}
+            <div
+              className="grid gap-2"
+              data-ocid="library.admin.item.editor.recipe.recap_audio.section"
+            >
+              <div className="flex items-baseline justify-between">
+                <Label
+                  htmlFor="recipe-recap-audio"
+                  className="font-heading uppercase text-xs tracking-wider"
+                >
+                  Recap voice clip{" "}
+                  <span className="text-muted-foreground normal-case">
+                    (optional)
+                  </span>
+                </Label>
+              </div>
+              <p className="text-xs text-muted-foreground font-body">
+                Plays at the end of the game after a Roadie builds this drink. A
+                full spoken walk-through works great. Optional — drinks without
+                one just show the visual recap.
+              </p>
+
+              {/* Hidden audio file input — accept audio/* only. */}
+              <input
+                id="recipe-recap-audio"
+                type="file"
+                accept="audio/*"
+                className="hidden"
+                onChange={handleAudioFileChange}
+                disabled={isPending || isAudioUploading}
+                aria-label="Upload recap voice clip"
+                data-ocid="library.admin.item.editor.recipe.recap_audio.upload_button"
+              />
+
+              {isAudioUploading ? (
+                <div
+                  className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2"
+                  aria-live="polite"
+                  data-ocid="library.admin.item.editor.recipe.recap_audio.loading_state"
+                >
+                  <RefreshCw
+                    className="h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
+                  <span className="font-body text-xs text-muted-foreground">
+                    Uploading…
+                  </span>
+                </div>
+              ) : recapAudio ? (
+                <div
+                  className="flex items-center gap-3 rounded-md border border-border bg-card p-2"
+                  data-ocid="library.admin.item.editor.recipe.recap_audio.preview"
+                >
+                  <Play
+                    className="h-4 w-4 shrink-0 text-primary"
+                    aria-hidden="true"
+                  />
+                  {/* Inline audio player — native HTMLAudioElement with the
+                      durable URL as src. Controls attr gives play/pause +
+                      scrub + volume; the small inline player fits the
+                      recipe sub-form without dominating it. */}
+                  {/* biome-ignore lint/a11y/useMediaCaption: a recap voice clip is an admin-uploaded audio recording with no captions track available; captions are not applicable here */}
+                  <audio
+                    key={recapAudio}
+                    src={recapAudio}
+                    controls
+                    preload="metadata"
+                    className="min-w-0 flex-1"
+                    data-ocid="library.admin.item.editor.recipe.recap_audio.player"
+                  >
+                    Your browser does not support audio playback.
+                  </audio>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAudioRemove}
+                    disabled={isPending}
+                    aria-label="Remove recap voice clip"
+                    data-ocid="library.admin.item.editor.recipe.recap_audio.remove"
+                    className="shrink-0 font-display text-[11px] uppercase tracking-[0.16em] text-muted-foreground hover:text-primary"
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() =>
+                    document.getElementById("recipe-recap-audio")?.click()
+                  }
+                  disabled={isPending || isAudioUploading}
+                  className="flex items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card px-3 py-3 min-h-[44px] w-full text-left transition-colors hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Choose a recap voice clip to upload"
+                  data-ocid="library.admin.item.editor.recipe.recap_audio.empty_state"
+                >
+                  <Upload className="h-5 w-5" aria-hidden="true" />
+                  <span className="font-heading text-xs uppercase tracking-[0.18em]">
+                    Choose an audio clip…
+                  </span>
+                  <span className="font-body text-[10px] text-muted-foreground">
+                    MP3, WAV, M4A — passed through uncompressed
+                  </span>
+                </button>
+              )}
+
+              {audioUploadError ? (
+                <p
+                  className="text-xs text-primary font-body"
+                  role="alert"
+                  data-ocid="library.admin.item.editor.recipe.recap_audio.field_error"
+                >
+                  {audioUploadError}
+                </p>
+              ) : null}
             </div>
 
             {/* Specs — repeatable amount + ingredient rows */}

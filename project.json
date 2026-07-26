@@ -1,17 +1,17 @@
 {
-  "overview": "Rework the quiz builder to generate questions from structured drink recipe fields, add true/false and matching question types, and let admins pick which question types a quiz includes.",
+  "overview": "A roadie training app that teaches drink recipes with a builder game, now with a full per-drink recap on the finish screen.",
   "features": [
-    "Quiz questions generated from structured drink recipe fields",
-    "True/false and matching question types",
-    "Upsell ingredient tagging and questions",
-    "Admin question-type selector per quiz"
+    "Per-drink recap voice clip on recipes",
+    "Recap clip upload in the recipe editor",
+    "Full recipe recap card on the finish screen",
+    "Spoken recap with gated Next and Skip"
   ],
   "category": "productivity",
   "tags": [
     "training",
-    "quiz",
     "drinks",
-    "admin"
+    "recipes",
+    "recap"
   ],
-  "last_updated": "2026-07-26T19:39:05.096Z"
+  "last_updated": "2026-07-26T22:48:28.067Z"
 }

@@ -5,8 +5,13 @@ import { Label } from "@/components/ui/label";
 import { usePhotoUpload } from "@/hooks/usePhotoUpload";
 import { cn } from "@/lib/utils";
 import { Play, Plus, Upload, Volume2, X } from "lucide-react";
-import { type ReactElement, useRef } from "react";
-import type { DrinksBuilderPrompt, DrinksBuilderSettings } from "./types";
+import { type ReactElement, useMemo, useRef } from "react";
+import type {
+  DrinksBuilderAnswerClip,
+  DrinksBuilderPrompt,
+  DrinksBuilderSettings,
+} from "./types";
+import { DEFAULT_CORRECT_AFFIRMATIONS } from "./types";
 
 /**
  * DrinksBuilderSettingsForm — shared editor for the DrinksBuilderSettings
@@ -35,6 +40,13 @@ export interface DrinksBuilderSettingsFormProps {
   value: DrinksBuilderSettings;
   onChange: (next: DrinksBuilderSettings) => void;
   categories: Array<{ id: string; name: string }>;
+  /**
+   * Distinct glassware names offered in the answer-clip dropdown. Optional —
+   * when not provided the dropdown degrades to a free-typed answer input so
+   * the parent dialogs (ActivityBuilderDialog, ActivityEditorDialog) keep
+   * compiling without a Library dependency.
+   */
+  glasswareOptions?: string[];
   /** Disable every control (e.g. while a mutation is pending). */
   disabled?: boolean;
 }
@@ -43,6 +55,7 @@ export function DrinksBuilderSettingsForm({
   value,
   onChange,
   categories,
+  glasswareOptions = [],
   disabled = false,
 }: DrinksBuilderSettingsFormProps): ReactElement {
   function patch<K extends keyof DrinksBuilderSettings>(
@@ -126,6 +139,64 @@ export function DrinksBuilderSettingsForm({
     patch(
       key,
       value[key].filter((_, i) => i !== index),
+    );
+  }
+
+  /* ----- Correct-answer feedback handlers ----- */
+
+  function addAffirmation(): void {
+    patch("correctAffirmations", [...value.correctAffirmations, ""]);
+  }
+
+  function updateAffirmation(index: number, text: string): void {
+    const next = value.correctAffirmations.map((t, i) =>
+      i === index ? text : t,
+    );
+    patch("correctAffirmations", next);
+  }
+
+  function removeAffirmation(index: number): void {
+    patch(
+      "correctAffirmations",
+      value.correctAffirmations.filter((_, i) => i !== index),
+    );
+  }
+
+  function addAnswerClip(): void {
+    patch("answerClips", [...value.answerClips, { answer: "", audioUrl: "" }]);
+  }
+
+  function updateAnswerClip(
+    index: number,
+    field: keyof DrinksBuilderAnswerClip,
+    nextValue: string,
+  ): void {
+    const next = value.answerClips.map((clip, i) =>
+      i === index ? { ...clip, [field]: nextValue } : clip,
+    );
+    patch("answerClips", next);
+  }
+
+  function removeAnswerClip(index: number): void {
+    patch(
+      "answerClips",
+      value.answerClips.filter((_, i) => i !== index),
+    );
+  }
+
+  function addCelebrationClip(): void {
+    patch("celebrationClips", [...value.celebrationClips, ""]);
+  }
+
+  function updateCelebrationClip(index: number, url: string): void {
+    const next = value.celebrationClips.map((c, i) => (i === index ? url : c));
+    patch("celebrationClips", next);
+  }
+
+  function removeCelebrationClip(index: number): void {
+    patch(
+      "celebrationClips",
+      value.celebrationClips.filter((_, i) => i !== index),
     );
   }
 
@@ -310,6 +381,47 @@ export function DrinksBuilderSettingsForm({
           onUpdateAudio={(i, url) =>
             updatePromptAudio("garnishPrompts", i, url)
           }
+        />
+      </fieldset>
+
+      {/* Correct-answer feedback */}
+      <fieldset
+        className="grid gap-3"
+        disabled={disabled}
+        data-ocid="legendary.drinks_builder.settings_form.correct_feedback.section"
+      >
+        <legend className="font-heading uppercase text-xs tracking-wider text-foreground">
+          Correct-answer feedback
+        </legend>
+        <p className="font-body text-xs text-muted-foreground">
+          What the player hears the moment they nail a drink. Add spoken
+          affirmations, per-answer voice clips, and a rotation of celebration
+          clips.
+        </p>
+
+        <AffirmationList
+          items={value.correctAffirmations}
+          disabled={disabled}
+          onAdd={addAffirmation}
+          onUpdate={updateAffirmation}
+          onRemove={removeAffirmation}
+        />
+
+        <AnswerClipList
+          items={value.answerClips}
+          glasswareOptions={glasswareOptions}
+          disabled={disabled}
+          onAdd={addAnswerClip}
+          onUpdate={updateAnswerClip}
+          onRemove={removeAnswerClip}
+        />
+
+        <CelebrationClipList
+          items={value.celebrationClips}
+          disabled={disabled}
+          onAdd={addCelebrationClip}
+          onUpdate={updateCelebrationClip}
+          onRemove={removeCelebrationClip}
         />
       </fieldset>
 
@@ -594,6 +706,460 @@ function PromptGroup({
   );
 }
 
+/* ------------------- Correct-answer feedback editors --------------------- */
+
+const AFFIRMATION_OCID_BASE =
+  "legendary.drinks_builder.settings_form.correct_feedback.affirmations";
+const ANSWER_CLIP_OCID_BASE =
+  "legendary.drinks_builder.settings_form.correct_feedback.answer_clips";
+const CELEBRATION_OCID_BASE =
+  "legendary.drinks_builder.settings_form.correct_feedback.celebration_clips";
+const CELEBRATION_CAP = 6;
+
+function AffirmationList({
+  items,
+  disabled,
+  onAdd,
+  onUpdate,
+  onRemove,
+}: {
+  items: string[];
+  disabled: boolean;
+  onAdd: () => void;
+  onUpdate: (index: number, text: string) => void;
+  onRemove: (index: number) => void;
+}): ReactElement {
+  return (
+    <div className="grid gap-1.5">
+      <span className="font-heading uppercase text-xs tracking-wider text-foreground">
+        Affirmation phrases
+      </span>
+      <p className="font-body text-xs text-muted-foreground">
+        Use <code className="font-mono text-[0.7rem]">{"{answer}"}</code> where
+        the answer name should appear. The game picks one at random each correct
+        tap.
+      </p>
+      <ul className="grid gap-1.5" data-ocid={`${AFFIRMATION_OCID_BASE}.list`}>
+        {items.map((text, index) => (
+          <li
+            // biome-ignore lint/suspicious/noArrayIndexKey: affirmations have no stable id; list is small and re-renders are cheap
+            key={`${AFFIRMATION_OCID_BASE}-${index}`}
+            className="flex items-center gap-2"
+          >
+            <Input
+              value={text}
+              onChange={(e) => onUpdate(index, e.target.value)}
+              placeholder="e.g. Nailed it — {answer}!"
+              autoComplete="off"
+              maxLength={140}
+              disabled={disabled}
+              data-ocid={`${AFFIRMATION_OCID_BASE}.input.${index + 1}`}
+              className="min-w-0 flex-1"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => onRemove(index)}
+              disabled={disabled}
+              aria-label={`Remove affirmation ${index + 1}`}
+              data-ocid={`${AFFIRMATION_OCID_BASE}.remove_button.${index + 1}`}
+            >
+              <X className="size-4" />
+            </Button>
+          </li>
+        ))}
+      </ul>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onAdd}
+        disabled={disabled}
+        data-ocid={`${AFFIRMATION_OCID_BASE}.add_button`}
+      >
+        <Plus className="size-4" /> Add affirmation
+      </Button>
+    </div>
+  );
+}
+
+function AnswerClipList({
+  items,
+  glasswareOptions,
+  disabled,
+  onAdd,
+  onUpdate,
+  onRemove,
+}: {
+  items: DrinksBuilderAnswerClip[];
+  glasswareOptions: string[];
+  disabled: boolean;
+  onAdd: () => void;
+  onUpdate: (
+    index: number,
+    field: keyof DrinksBuilderAnswerClip,
+    nextValue: string,
+  ) => void;
+  onRemove: (index: number) => void;
+}): ReactElement {
+  const { uploadPhoto, isUploading, error: uploadError } = usePhotoUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingIndexRef = useRef<number | null>(null);
+
+  function openFilePicker(index: number): void {
+    pendingIndexRef.current = index;
+    fileInputRef.current?.click();
+  }
+
+  async function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const index = pendingIndexRef.current;
+    if (index === null) return;
+
+    if (!file.type.startsWith("audio/")) {
+      return;
+    }
+    try {
+      // Pass the audio Blob straight through — do NOT JPEG-encode or resize.
+      const url = await uploadPhoto(file);
+      onUpdate(index, "audioUrl", url);
+    } catch {
+      // Error surfaced via the inline uploadError state below.
+    } finally {
+      pendingIndexRef.current = null;
+    }
+  }
+
+  function previewAudio(url: string): void {
+    new Audio(url).play().catch(() => {});
+  }
+
+  // Distinct glassware options for the dropdown. Empty array degrades to a
+  // free-typed answer input so the form works without a Library dependency.
+  const distinctGlassware = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          glasswareOptions.map((g) => g.trim()).filter((g) => g.length > 0),
+        ),
+      ),
+    [glasswareOptions],
+  );
+
+  return (
+    <div className="grid gap-1.5">
+      <span className="font-heading uppercase text-xs tracking-wider text-foreground">
+        Answer voice clips
+      </span>
+      <p className="font-body text-xs text-muted-foreground">
+        Attach a short voice clip (2–4s) that plays when the player taps a
+        specific correct answer. Pick a glassware answer from the dropdown or
+        type your own.
+      </p>
+      <ul className="grid gap-1.5" data-ocid={`${ANSWER_CLIP_OCID_BASE}.list`}>
+        {items.map((clip, index) => (
+          <li
+            // biome-ignore lint/suspicious/noArrayIndexKey: answer clips have no stable id; list is small and re-renders are cheap
+            key={`${ANSWER_CLIP_OCID_BASE}-${index}`}
+            className="flex flex-wrap items-center gap-2"
+          >
+            {distinctGlassware.length > 0 ? (
+              <select
+                value={
+                  distinctGlassware.includes(clip.answer)
+                    ? clip.answer
+                    : "__custom"
+                }
+                onChange={(e) => {
+                  if (e.target.value === "__custom") {
+                    onUpdate(index, "answer", "");
+                  } else {
+                    onUpdate(index, "answer", e.target.value);
+                  }
+                }}
+                disabled={disabled}
+                aria-label={`Answer glassware for clip ${index + 1}`}
+                data-ocid={`${ANSWER_CLIP_OCID_BASE}.answer_select.${index + 1}`}
+                className="h-9 min-w-0 flex-1 rounded-md border border-input bg-card px-2 font-body text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="__custom" className="bg-card text-foreground">
+                  Type a custom answer…
+                </option>
+                {distinctGlassware.map((g) => (
+                  <option key={g} value={g} className="bg-card text-foreground">
+                    {g}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+            <Input
+              value={clip.answer}
+              onChange={(e) => onUpdate(index, "answer", e.target.value)}
+              placeholder="e.g. Coupe"
+              autoComplete="off"
+              maxLength={80}
+              disabled={disabled}
+              aria-label={`Answer text for clip ${index + 1}`}
+              data-ocid={`${ANSWER_CLIP_OCID_BASE}.answer_input.${index + 1}`}
+              className="min-w-0 flex-1"
+            />
+            {clip.audioUrl ? (
+              <span
+                className="flex items-center gap-1 font-body text-xs text-primary"
+                data-ocid={`${ANSWER_CLIP_OCID_BASE}.audio_indicator.${index + 1}`}
+                aria-label="Voice clip attached"
+              >
+                <Volume2 className="size-3.5" aria-hidden="true" />
+                clip
+              </span>
+            ) : null}
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => openFilePicker(index)}
+              disabled={disabled || isUploading}
+              aria-label={`Attach voice clip to answer clip ${index + 1}`}
+              data-ocid={`${ANSWER_CLIP_OCID_BASE}.audio_upload_button.${index + 1}`}
+            >
+              <Upload className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => clip.audioUrl && previewAudio(clip.audioUrl)}
+              disabled={disabled || !clip.audioUrl || isUploading}
+              aria-label={`Preview voice clip for answer clip ${index + 1}`}
+              data-ocid={`${ANSWER_CLIP_OCID_BASE}.audio_preview_button.${index + 1}`}
+            >
+              <Play className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => onRemove(index)}
+              disabled={disabled}
+              aria-label={`Remove answer clip ${index + 1}`}
+              data-ocid={`${ANSWER_CLIP_OCID_BASE}.remove_button.${index + 1}`}
+            >
+              <X className="size-4" />
+            </Button>
+          </li>
+        ))}
+      </ul>
+      {/* Hidden audio file input — shared across rows in this group. */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        className="hidden"
+        onChange={handleFileChange}
+        aria-label="Upload voice clip for answer clip"
+        data-ocid={`${ANSWER_CLIP_OCID_BASE}.audio_input`}
+      />
+      {isUploading ? (
+        <p
+          className="font-body text-xs text-muted-foreground"
+          data-ocid={`${ANSWER_CLIP_OCID_BASE}.audio_loading_state`}
+        >
+          Uploading clip…
+        </p>
+      ) : null}
+      {uploadError ? (
+        <p
+          className="font-body text-xs text-primary"
+          role="alert"
+          data-ocid={`${ANSWER_CLIP_OCID_BASE}.audio_error_state`}
+        >
+          {uploadError}
+        </p>
+      ) : null}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onAdd}
+        disabled={disabled}
+        data-ocid={`${ANSWER_CLIP_OCID_BASE}.add_button`}
+      >
+        <Plus className="size-4" /> Add answer clip
+      </Button>
+    </div>
+  );
+}
+
+function CelebrationClipList({
+  items,
+  disabled,
+  onAdd,
+  onUpdate,
+  onRemove,
+}: {
+  items: string[];
+  disabled: boolean;
+  onAdd: () => void;
+  onUpdate: (index: number, url: string) => void;
+  onRemove: (index: number) => void;
+}): ReactElement {
+  const atCap = items.length >= CELEBRATION_CAP;
+  const { uploadPhoto, isUploading, error: uploadError } = usePhotoUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingIndexRef = useRef<number | null>(null);
+
+  function openFilePicker(index: number): void {
+    pendingIndexRef.current = index;
+    fileInputRef.current?.click();
+  }
+
+  async function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const index = pendingIndexRef.current;
+    if (index === null) return;
+
+    if (!file.type.startsWith("audio/")) {
+      return;
+    }
+    try {
+      // Pass the audio Blob straight through — do NOT JPEG-encode or resize.
+      const url = await uploadPhoto(file);
+      onUpdate(index, url);
+    } catch {
+      // Error surfaced via the inline uploadError state below.
+    } finally {
+      pendingIndexRef.current = null;
+    }
+  }
+
+  function previewAudio(url: string): void {
+    new Audio(url).play().catch(() => {});
+  }
+
+  return (
+    <div className="grid gap-1.5">
+      <span className="font-heading uppercase text-xs tracking-wider text-foreground">
+        Celebration clips
+      </span>
+      <p className="font-body text-xs text-muted-foreground">
+        Short voice clips (2–4s) played when a round is won. The game rotates
+        through them. Up to {CELEBRATION_CAP}.
+      </p>
+      <ul className="grid gap-1.5" data-ocid={`${CELEBRATION_OCID_BASE}.list`}>
+        {items.map((url, index) => (
+          <li
+            // biome-ignore lint/suspicious/noArrayIndexKey: celebration clips have no stable id; list is capped at 6 and re-renders are cheap
+            key={`${CELEBRATION_OCID_BASE}-${index}`}
+            className="flex flex-wrap items-center gap-2"
+          >
+            {url ? (
+              <span
+                className="flex min-w-0 flex-1 items-center gap-1 font-body text-xs text-primary"
+                data-ocid={`${CELEBRATION_OCID_BASE}.audio_indicator.${index + 1}`}
+                aria-label="Celebration clip attached"
+              >
+                <Volume2 className="size-3.5" aria-hidden="true" />
+                <span className="truncate">clip {index + 1}</span>
+              </span>
+            ) : (
+              <span
+                className="flex min-w-0 flex-1 items-center font-body text-xs text-muted-foreground"
+                data-ocid={`${CELEBRATION_OCID_BASE}.audio_empty.${index + 1}`}
+              >
+                No clip attached
+              </span>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => openFilePicker(index)}
+              disabled={disabled || isUploading}
+              aria-label={`Attach celebration clip ${index + 1}`}
+              data-ocid={`${CELEBRATION_OCID_BASE}.audio_upload_button.${index + 1}`}
+            >
+              <Upload className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => url && previewAudio(url)}
+              disabled={disabled || !url || isUploading}
+              aria-label={`Preview celebration clip ${index + 1}`}
+              data-ocid={`${CELEBRATION_OCID_BASE}.audio_preview_button.${index + 1}`}
+            >
+              <Play className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => onRemove(index)}
+              disabled={disabled}
+              aria-label={`Remove celebration clip ${index + 1}`}
+              data-ocid={`${CELEBRATION_OCID_BASE}.remove_button.${index + 1}`}
+            >
+              <X className="size-4" />
+            </Button>
+          </li>
+        ))}
+      </ul>
+      {/* Hidden audio file input — shared across rows in this group. */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        className="hidden"
+        onChange={handleFileChange}
+        aria-label="Upload celebration clip"
+        data-ocid={`${CELEBRATION_OCID_BASE}.audio_input`}
+      />
+      {isUploading ? (
+        <p
+          className="font-body text-xs text-muted-foreground"
+          data-ocid={`${CELEBRATION_OCID_BASE}.audio_loading_state`}
+        >
+          Uploading clip…
+        </p>
+      ) : null}
+      {uploadError ? (
+        <p
+          className="font-body text-xs text-primary"
+          role="alert"
+          data-ocid={`${CELEBRATION_OCID_BASE}.audio_error_state`}
+        >
+          {uploadError}
+        </p>
+      ) : null}
+      {atCap ? (
+        <p
+          className="font-body text-xs text-muted-foreground"
+          data-ocid={`${CELEBRATION_OCID_BASE}.cap_hint`}
+        >
+          Maximum of {CELEBRATION_CAP} celebration clips reached.
+        </p>
+      ) : null}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onAdd}
+        disabled={disabled || atCap}
+        data-ocid={`${CELEBRATION_OCID_BASE}.add_button`}
+      >
+        <Plus className="size-4" /> Add celebration clip
+      </Button>
+    </div>
+  );
+}
+
 function NumberField({
   id,
   label,
@@ -742,6 +1308,14 @@ export const DEFAULT_DRINKS_BUILDER_SETTINGS: DrinksBuilderSettings = {
       audioUrl: undefined,
     },
   ],
+  // New audio/affirmation defaults. correctAffirmations reuses the shared
+  // DEFAULT_CORRECT_AFFIRMATIONS constant so the new-activity defaults and
+  // the useDrinksBuilder fallback for migrated/older data stay in sync from
+  // one source of truth. answerClips and celebrationClips start empty — the
+  // admin adds per-answer audio and celebration clips in the form.
+  correctAffirmations: DEFAULT_CORRECT_AFFIRMATIONS,
+  answerClips: [],
+  celebrationClips: [],
 };
 
 export default DrinksBuilderSettingsForm;

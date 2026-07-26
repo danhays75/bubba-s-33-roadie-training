@@ -23,9 +23,12 @@ export interface DrinksBuilderSettings {
     showScoring: boolean;
     assemblyPrompts: Array<DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
+    answerClips: Array<DrinksBuilderAnswerClip>;
     glasswarePrompts: Array<DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
+    celebrationClips: Array<string>;
+    correctAffirmations: Array<string>;
     specsPrompts: Array<DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
@@ -78,6 +81,10 @@ export interface Phase {
 export interface DrinksBuilderPrompt {
     text: string;
     audioUrl?: string;
+}
+export interface DrinksBuilderAnswerClip {
+    audioUrl: string;
+    answer: string;
 }
 export interface DetailField {
     value: string;
@@ -264,6 +271,7 @@ export interface Activity {
 }
 export interface Recipe {
     equipment: Array<string>;
+    recapAudio?: string;
     glassware: string;
     variants: Array<RecipeVariant>;
     garnish: Array<string>;

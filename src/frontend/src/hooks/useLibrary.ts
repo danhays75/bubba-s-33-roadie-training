@@ -90,6 +90,7 @@ function toRecipe(
         yield?: string;
         shelfLife?: string;
         qualityIdentifier?: Array<string>;
+        recapAudio?: string;
       }
     | undefined,
 ): Recipe | null {
@@ -118,6 +119,7 @@ function toRecipe(
     yield: r.yield && r.yield.length > 0 ? r.yield : null,
     shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : null,
     qualityIdentifier: r.qualityIdentifier ?? [],
+    recapAudio: r.recapAudio && r.recapAudio.length > 0 ? r.recapAudio : null,
   };
 }
 
@@ -150,6 +152,7 @@ function fromRecipe(r: Recipe | null | undefined): {
   yield: string | undefined;
   shelfLife: string | undefined;
   qualityIdentifier: Array<string>;
+  recapAudio: string | undefined;
 } | null {
   if (!r) return null;
   return {
@@ -176,6 +179,8 @@ function fromRecipe(r: Recipe | null | undefined): {
     yield: r.yield && r.yield.length > 0 ? r.yield : undefined,
     shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : undefined,
     qualityIdentifier: r.qualityIdentifier ?? [],
+    recapAudio:
+      r.recapAudio && r.recapAudio.length > 0 ? r.recapAudio : undefined,
   };
 }
 
@@ -213,6 +218,7 @@ function toItem(i: {
     yield?: string;
     shelfLife?: string;
     qualityIdentifier?: Array<string>;
+    recapAudio?: string;
   };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({

@@ -165,6 +165,9 @@ export interface RecipeVariant {
  *   backend omits the optional ?Text field.
  * - `qualityIdentifier`: quality checks to perform on the batch (required
  *   array, defaults to []).
+ * - `recapAudio`: optional audio-recap clip URL (durable object-storage
+ *   URL, same shape as profile photos). Mirrors backend `recapAudio : ?Text`.
+ *   Null when the backend omits the optional ?Text field.
  */
 export interface Recipe {
   glassware: string;
@@ -176,6 +179,7 @@ export interface Recipe {
   yield: string | null;
   shelfLife: string | null;
   qualityIdentifier: string[];
+  recapAudio: string | null;
 }
 
 /**

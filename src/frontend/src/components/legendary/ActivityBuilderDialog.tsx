@@ -17,11 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBuildLegendaryActivity } from "@/hooks/useLegendary";
-import { useCategoriesByPosition } from "@/hooks/useLibrary";
+import {
+  useCategoriesByPosition,
+  useItemsByCategory,
+} from "@/hooks/useLibrary";
 import { cn } from "@/lib/utils";
+import type { LibraryItem } from "@/types/foundation";
 import type { LegendaryActivityType, QuizSettings } from "@/types/legendary";
 import { Brain, Layers, Loader2, Sparkles, Wine, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactElement } from "react";
 import { toast } from "sonner";
 
@@ -91,6 +95,36 @@ export function ActivityBuilderDialog({
   }, [open]);
 
   const categories = categoriesQuery.data ?? [];
+
+  // Collect items across all categories so we can derive the distinct
+  // glassware strings for the Drinks Builder glassware prompt dropdown.
+  // useItemsByCategory must be called once per category at the top level of
+  // a component (rules of hooks), so we render one <CategoryItemsCollector>
+  // per category below; each calls the hook once and reports its data up.
+  // Mirrors the buildDecoyPool glassware-collection pattern in
+  // useDrinksBuilder.ts (distinct via Set, first-seen order).
+  const [itemsByCategory, setItemsByCategory] = useState<
+    Record<string, LibraryItem[]>
+  >({});
+
+  const glasswareOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const ordered: string[] = [];
+    // Walk categories in declared order so first-seen order is stable.
+    for (const category of categories) {
+      const items = itemsByCategory[category.id];
+      if (!items) continue;
+      for (const item of items) {
+        const g = item.recipe?.glassware?.trim();
+        if (g && !seen.has(g)) {
+          seen.add(g);
+          ordered.push(g);
+        }
+      }
+    }
+    return ordered;
+  }, [categories, itemsByCategory]);
+
   const trimmedName = name.trim();
   const canSubmit =
     trimmedName.length > 0 &&
@@ -161,6 +195,16 @@ export function ActivityBuilderDialog({
         </DialogHeader>
 
         <form onSubmit={handleBuild} className="flex min-h-0 flex-col gap-5">
+          {/* Per-category item collectors — render nothing, but each calls
+              useItemsByCategory once and reports its data up so we can derive
+              distinct glassware options for the Drinks Builder form below. */}
+          {categories.map((category) => (
+            <CategoryItemsCollector
+              key={category.id}
+              categoryId={category.id}
+              onData={setItemsByCategory}
+            />
+          ))}
           <div className="min-h-0 -mr-2 overflow-y-auto pr-2">
             <div className="grid gap-5">
               {/* Activity name */}
@@ -241,6 +285,7 @@ export function ActivityBuilderDialog({
                       id: c.id,
                       name: c.name,
                     }))}
+                    glasswareOptions={glasswareOptions}
                     disabled={buildMutation.isPending}
                   />
                 </div>
@@ -414,6 +459,32 @@ export function ActivityBuilderDialog({
 }
 
 /* --------------------------- Sub-components ------------------------------ */
+
+/**
+ * CategoryItemsCollector — renders nothing. Calls useItemsByCategory once
+ * for its categoryId (rules-of-hooks compliant: one hook call per instance)
+ * and reports the data up via onData so the parent can aggregate items across
+ * all categories and derive distinct glassware strings. The parent passes a
+ * stable setState function so this never loops.
+ */
+function CategoryItemsCollector({
+  categoryId,
+  onData,
+}: {
+  categoryId: string;
+  onData: React.Dispatch<React.SetStateAction<Record<string, LibraryItem[]>>>;
+}): null {
+  const itemsQuery = useItemsByCategory(categoryId);
+  useEffect(() => {
+    onData((prev) => {
+      const next = itemsQuery.data ?? [];
+      // Reference-equal short-circuit to avoid needless state churn.
+      if (prev[categoryId] === next) return prev;
+      return { ...prev, [categoryId]: next };
+    });
+  }, [categoryId, itemsQuery.data, onData]);
+  return null;
+}
 
 function ActivityTypeOption({
   value,

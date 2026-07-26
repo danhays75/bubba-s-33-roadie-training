@@ -40,6 +40,7 @@ export const RecipeVariant = IDL.Record({
 });
 export const Recipe = IDL.Record({
   'equipment' : IDL.Vec(IDL.Text),
+  'recapAudio' : IDL.Opt(IDL.Text),
   'glassware' : IDL.Text,
   'variants' : IDL.Vec(RecipeVariant),
   'garnish' : IDL.Vec(IDL.Text),
@@ -71,6 +72,10 @@ export const DrinksBuilderPrompt = IDL.Record({
   'text' : IDL.Text,
   'audioUrl' : IDL.Opt(IDL.Text),
 });
+export const DrinksBuilderAnswerClip = IDL.Record({
+  'audioUrl' : IDL.Text,
+  'answer' : IDL.Text,
+});
 export const DrinksBuilderSettings = IDL.Record({
   'garnishPrompts' : IDL.Vec(DrinksBuilderPrompt),
   'includedCategories' : IDL.Vec(IDL.Text),
@@ -80,9 +85,12 @@ export const DrinksBuilderSettings = IDL.Record({
   'showScoring' : IDL.Bool,
   'assemblyPrompts' : IDL.Vec(DrinksBuilderPrompt),
   'requireExactAmounts' : IDL.Bool,
+  'answerClips' : IDL.Vec(DrinksBuilderAnswerClip),
   'glasswarePrompts' : IDL.Vec(DrinksBuilderPrompt),
   'soundDefault' : IDL.Bool,
   'decoyCount' : IDL.Nat,
+  'celebrationClips' : IDL.Vec(IDL.Text),
+  'correctAffirmations' : IDL.Vec(IDL.Text),
   'specsPrompts' : IDL.Vec(DrinksBuilderPrompt),
   'streakMultiplier' : IDL.Bool,
   'roundsPerSession' : IDL.Nat,
@@ -593,6 +601,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Recipe = IDL.Record({
     'equipment' : IDL.Vec(IDL.Text),
+    'recapAudio' : IDL.Opt(IDL.Text),
     'glassware' : IDL.Text,
     'variants' : IDL.Vec(RecipeVariant),
     'garnish' : IDL.Vec(IDL.Text),
@@ -624,6 +633,10 @@ export const idlFactory = ({ IDL }) => {
     'text' : IDL.Text,
     'audioUrl' : IDL.Opt(IDL.Text),
   });
+  const DrinksBuilderAnswerClip = IDL.Record({
+    'audioUrl' : IDL.Text,
+    'answer' : IDL.Text,
+  });
   const DrinksBuilderSettings = IDL.Record({
     'garnishPrompts' : IDL.Vec(DrinksBuilderPrompt),
     'includedCategories' : IDL.Vec(IDL.Text),
@@ -633,9 +646,12 @@ export const idlFactory = ({ IDL }) => {
     'showScoring' : IDL.Bool,
     'assemblyPrompts' : IDL.Vec(DrinksBuilderPrompt),
     'requireExactAmounts' : IDL.Bool,
+    'answerClips' : IDL.Vec(DrinksBuilderAnswerClip),
     'glasswarePrompts' : IDL.Vec(DrinksBuilderPrompt),
     'soundDefault' : IDL.Bool,
     'decoyCount' : IDL.Nat,
+    'celebrationClips' : IDL.Vec(IDL.Text),
+    'correctAffirmations' : IDL.Vec(IDL.Text),
     'specsPrompts' : IDL.Vec(DrinksBuilderPrompt),
     'streakMultiplier' : IDL.Bool,
     'roundsPerSession' : IDL.Nat,

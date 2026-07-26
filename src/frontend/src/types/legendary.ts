@@ -233,6 +233,9 @@ type CandidDrinksBuilderSettings = {
   specsPrompts: DrinksBuilderPrompt[];
   assemblyPrompts: DrinksBuilderPrompt[];
   garnishPrompts: DrinksBuilderPrompt[];
+  correctAffirmations: string[];
+  answerClips: { answer: string; audioUrl: string }[];
+  celebrationClips: string[];
 };
 
 /** Candid Question tagged-union shape from backend.d.ts. */
@@ -390,6 +393,12 @@ function toFrontendDrinksBuilderSettings(
       text: p.text,
       audioUrl: p.audioUrl,
     })),
+    correctAffirmations: s.correctAffirmations,
+    answerClips: s.answerClips.map((c) => ({
+      answer: c.answer,
+      audioUrl: c.audioUrl,
+    })),
+    celebrationClips: s.celebrationClips,
   };
 }
 

@@ -31,6 +31,7 @@ import {
   Check,
   Flame,
   RotateCcw,
+  SkipForward,
   Star,
   Volume2,
   VolumeX,
@@ -45,6 +46,7 @@ import type {
   GameSectionKind,
   SessionState,
 } from "./types";
+import { DEFAULT_CORRECT_AFFIRMATIONS } from "./types";
 import { useConfetti } from "./useConfetti";
 import { useDrinksBuilder } from "./useDrinksBuilder";
 import { useDrinksBuilderSound } from "./useDrinksBuilderSound";
@@ -187,6 +189,61 @@ export function DrinksBuilderActivity({
     };
   }, []);
 
+  // Correct-answer callout — fires on EVERY correct tap in EVERY section
+  // (glassware/specs/assembly/garnish). Shows a settings-driven affirmation
+  // phrase with the tapped chip's label substituted into {answer}. Auto-
+  // dismisses after ~1.3s. Rapid multi-correct taps refresh the callout
+  // (clear + reset the timer + update the text) rather than stacking.
+  // pointer-events-none + aria-live=polite so it never blocks taps and
+  // remains accessible. Reuses animate-drinks-legendary-banner.
+  const [callout, setCallout] = useState<string | null>(null);
+  const calloutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (calloutTimer.current) clearTimeout(calloutTimer.current);
+    };
+  }, []);
+
+  // Monotonic correct-tap counter for deterministic phrase seeding. Never
+  // reset (survives round changes) so the seed (round + tap) is unique per
+  // correct tap across the whole session — no Math.random() in render.
+  const correctTapCount = useRef(0);
+
+  /**
+   * Strip a trailing "(upsell option)" or "(upsell only)" marker from a
+   * chip label before substituting it into an affirmation's {answer}.
+   * Case-insensitive on the marker text; trims trailing whitespace left
+   * behind. Returns the label unchanged when no marker is present.
+   */
+  function stripUpsellMarker(label: string): string {
+    return label.replace(/\s*\((upsell option|upsell only)\)\s*$/i, "").trim();
+  }
+
+  /**
+   * Pick a correct-affirmation phrase deterministically from the settings
+   * list, substituting {answer} with the cleaned chip label. Selection is
+   * seeded by (round + correct-tap-count) so the same tap always picks the
+   * same phrase — no Math.random() in render. Falls back to
+   * DEFAULT_CORRECT_AFFIRMATIONS when the settings list is missing, and to
+   * a single safe phrase when both are empty.
+   */
+  function pickAffirmation(label: string, roundIndex: number): string {
+    const phrases =
+      settings?.correctAffirmations && settings.correctAffirmations.length > 0
+        ? settings.correctAffirmations
+        : DEFAULT_CORRECT_AFFIRMATIONS.length > 0
+          ? DEFAULT_CORRECT_AFFIRMATIONS
+          : ["Correct! {answer}"];
+    const answer = stripUpsellMarker(label);
+    // Simple deterministic hash of (round, tap) — not cryptographic, just
+    // stable. Multiply the round by a prime so round advances shift the
+    // pick even when the tap counter is small.
+    const seed = roundIndex * 2654435761 + correctTapCount.current;
+    const idx = ((seed % phrases.length) + phrases.length) % phrases.length;
+    const phrase = phrases[idx] ?? "Correct! {answer}";
+    return phrase.replace(/\{answer\}/g, answer);
+  }
+
   // Reset the celebration guard when the session restarts or advances so
   // the next round can celebrate again. Also reset the clip-playback guard
   // and round tracker so a fresh session can fire clips from round 0.
@@ -268,8 +325,8 @@ export function DrinksBuilderActivity({
       <ConfettiCanvas />
 
       {/* Transient "Step N" popup — centered over the game on a correct
-          assembly tap. Auto-dismisses after ~900ms (see showStep state).
-          pointer-events-none so it never blocks taps underneath. */}
+           assembly tap. Auto-dismisses after ~900ms (see showStep state).
+           pointer-events-none so it never blocks taps underneath. */}
       {showStep !== null ? (
         <div
           className="pointer-events-none fixed inset-x-0 top-1/3 z-40 flex justify-center px-4"
@@ -278,6 +335,26 @@ export function DrinksBuilderActivity({
         >
           <span className="inline-flex items-center rounded-full border border-primary/50 bg-gradient-to-r from-[oklch(var(--legendary-banner-from))] via-[oklch(var(--legendary-banner-via))] to-[oklch(var(--legendary-banner-to))] px-5 py-2 font-display text-lg uppercase tracking-wide text-[oklch(var(--legendary-banner-foreground))] shadow-subtle animate-drinks-legendary-banner">
             Step {showStep}
+          </span>
+        </div>
+      ) : null}
+
+      {/* Correct-answer callout — fires on every correct tap in every
+          section. Shows a settings-driven affirmation with the tapped
+          chip's label substituted into {answer}. Auto-dismisses after
+          ~1.3s; rapid multi-correct taps refresh (clear + reset timer +
+          update text) rather than stacking. pointer-events-none so it
+          never blocks taps; aria-live=polite keeps it accessible. Reuses
+          animate-drinks-legendary-banner. Sits just below the Step N
+          popup so the two never visually collide on assembly taps. */}
+      {callout !== null ? (
+        <div
+          className="pointer-events-none fixed inset-x-0 top-1/2 z-40 flex justify-center px-4"
+          aria-live="polite"
+          data-ocid="drinks.correct_callout"
+        >
+          <span className="inline-flex max-w-[90vw] items-center rounded-full border border-primary/50 bg-gradient-to-r from-[oklch(var(--legendary-banner-from))] via-[oklch(var(--legendary-banner-via))] to-[oklch(var(--legendary-banner-to))] px-5 py-2 text-center font-display text-base uppercase tracking-wide text-[oklch(var(--legendary-banner-foreground))] shadow-subtle animate-drinks-legendary-banner">
+            {callout}
           </span>
         </div>
       ) : null}
@@ -394,6 +471,48 @@ export function DrinksBuilderActivity({
                   const result = tapChip(section.kind, chipId);
                   if (result === "correct") {
                     sound.playCorrect();
+                    // Fire the correct-answer callout on EVERY correct tap
+                    // in EVERY section. The phrase is picked deterministically
+                    // from settings.correctAffirmations (with {answer}
+                    // substituted by the tapped chip's label, upsell markers
+                    // stripped). Rapid multi-correct taps refresh the callout
+                    // (clear + reset the timer + update the text) rather than
+                    // stacking. The tap counter is incremented BEFORE picking
+                    // so each correct tap advances the seed.
+                    correctTapCount.current += 1;
+                    const affirmation = pickAffirmation(
+                      chip.label,
+                      session.currentIndex,
+                    );
+                    setCallout(affirmation);
+                    if (calloutTimer.current)
+                      clearTimeout(calloutTimer.current);
+                    calloutTimer.current = setTimeout(
+                      () => setCallout(null),
+                      1300,
+                    );
+                    // Speak the affirmation on the SAME correct tap as the
+                    // callout, in every section. Reuses the single playClip
+                    // voice channel (stop-before-play, so clips never
+                    // overlap). The tapped label is stripped of trailing
+                    // upsell markers via the existing stripUpsellMarker
+                    // helper (the sound hook re-strips defensively, but we
+                    // pass the cleaned label to match the callout text).
+                    // answerClips / celebrationClips come from the settings
+                    // reader. The seed mirrors pickAffirmation's seed
+                    // (roundIndex * 2654435761 + correctTapCount.current) so
+                    // the spoken celebration clip rotation stays in sync
+                    // with the callout phrase pick — no Math.random() in
+                    // render. Unlocked by the Start gesture (unlockAudio on
+                    // the first chip tap, above); obeys the header mute
+                    // toggle (playClip checks the same muted state).
+                    sound.playCorrectAffirmation(
+                      stripUpsellMarker(chip.label),
+                      settings.answerClips,
+                      settings.celebrationClips,
+                      session.currentIndex * 2654435761 +
+                        correctTapCount.current,
+                    );
                     // Show a transient "Step N" popup on a correct
                     // assembly tap. The step number is the recipe array
                     // index (1-based) of the step just tapped — i.e. the
@@ -443,6 +562,8 @@ export function DrinksBuilderActivity({
             score={session.score}
             isLastRound={session.currentIndex + 1 >= session.rounds.length}
             onNextDrink={nextDrink}
+            recapAudioUrl={round.drink.recapAudioUrl}
+            muted={sound.muted}
           />
         ) : null}
       </main>
@@ -865,12 +986,16 @@ function LegendaryBanner({
   score,
   isLastRound,
   onNextDrink,
+  recapAudioUrl,
+  muted,
 }: {
   round: GameRound;
   showScore: boolean;
   score: number;
   isLastRound: boolean;
   onNextDrink: () => void;
+  recapAudioUrl: string | null;
+  muted: boolean;
 }): ReactElement {
   // Star rating: 3 stars = 0 wrong, 2 = 1-2 wrong, 1 = 3+ wrong.
   const wrong = round.wrongTaps;
@@ -883,6 +1008,206 @@ function LegendaryBanner({
   const hasPhoto = typeof photo === "string" && photo.length > 0;
   // Lightbox state — only the finish-screen photo opens it.
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // --- Spoken recap playback + Next/Skip gating -------------------------
+  //
+  // When the finish view mounts for a completed round, AFTER the existing
+  // playFinish() chime fires (the chime is triggered by the parent's
+  // celebratedRoundKey guard, not here), if `recapAudioUrl` is set AND the
+  // game is NOT muted, play the recap clip ONCE. While the recap plays,
+  // hide/disable the Next button and show a "Skip recap" button instead.
+  // Reveal Next (and hide Skip) when ANY of these occur:
+  //   (a) the clip ends (ended event),
+  //   (b) a playback error occurs (error event or play() rejects),
+  //   (c) the user clicks Skip.
+  // If there is NO clip, OR the game is muted, OR playback can't start,
+  // reveal Next IMMEDIATELY on mount. The visual recap card (RecipeRecapCard)
+  // still shows regardless of audio.
+  //
+  // The recap voice obeys the header mute toggle: if the user mutes during
+  // playback, stop the clip and reveal Next.
+  //
+  // Audio element: a small dedicated HTMLAudioElement local to the banner.
+  // The shared sound.playClip(url) channel reuses an internal element whose
+  // ended/error events are not exposed to this component, and it wraps
+  // play() in a swallowed .catch — so it cannot satisfy the "wire
+  // ended/error events" and "never trap the user on play() rejection"
+  // requirements. The contract's fallback path (a small HTMLAudioElement
+  // that stops/resets before playing and wraps play() in a best-effort
+  // catch) is therefore the correct tool here. The recap plays at the
+  // finish moment when no in-round prompt clip is active, so there is no
+  // overlap with the shared channel.
+  const [recapPlaying, setRecapPlaying] = useState(false);
+  const recapElRef = useRef<HTMLAudioElement | null>(null);
+  const recapStartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Reveal Next immediately (recapPlaying=false) when there is no clip or
+  // the game is muted. This is the no-trap short-circuit: the visual recap
+  // card still renders, but the Next button is visible right away.
+  const hasRecapClip =
+    typeof recapAudioUrl === "string" && recapAudioUrl.length > 0;
+
+  // stopRecap — stop + reset the local audio element and clear the start
+  // timer. Best-effort (catches internally). Idempotent.
+  const stopRecap = () => {
+    if (recapStartTimer.current) {
+      clearTimeout(recapStartTimer.current);
+      recapStartTimer.current = null;
+    }
+    const el = recapElRef.current;
+    if (el) {
+      try {
+        el.pause();
+        el.currentTime = 0;
+        el.removeAttribute("src");
+        el.load();
+      } catch {
+        // ignore — best-effort reset
+      }
+    }
+  };
+
+  // skipRecap — user clicked Skip. Stop the clip and reveal Next.
+  const skipRecap = () => {
+    stopRecap();
+    setRecapPlaying(false);
+  };
+
+  // Main playback effect — keyed on the completed round (via drink.id) and
+  // the recap clip URL. Fires once when the finish view mounts for a
+  // completed round with a clip and unmuted sound. Schedules the recap
+  // shortly after the playFinish() chime so the two don't collide. Wires
+  // ended/error events and play() rejection to reveal Next. Cleans up the
+  // element, listeners, and timers on unmount or when the inputs change.
+  useEffect(() => {
+    // Re-key on drink.id so the recap re-runs when the round changes, even
+    // if two rounds happen to share the same recapAudioUrl. The void read
+    // below registers drink.id as a used dependency without side effects.
+    void drink.id;
+    // No clip or muted → reveal Next immediately, play nothing.
+    if (!hasRecapClip || muted) {
+      setRecapPlaying(false);
+      return;
+    }
+
+    // Lazily create the local audio element for this banner instance.
+    let el = recapElRef.current;
+    if (!el) {
+      try {
+        el = new Audio();
+        el.preload = "auto";
+        recapElRef.current = el;
+      } catch {
+        // Could not create an audio element — reveal Next, never trap.
+        setRecapPlaying(false);
+        return;
+      }
+    }
+    const audioEl = el;
+
+    // Mark playing now so the Skip button shows; the ended/error/reject
+    // handlers below will flip it back to false.
+    setRecapPlaying(true);
+
+    // Wire ended + error events to reveal Next.
+    const handleEnded = () => setRecapPlaying(false);
+    const handleError = () => setRecapPlaying(false);
+    audioEl.addEventListener("ended", handleEnded);
+    audioEl.addEventListener("error", handleError);
+
+    // Stop + reset before setting src (mirrors playClip's discipline so a
+    // re-trigger never overlaps a previous clip).
+    try {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+      audioEl.removeAttribute("src");
+      audioEl.load();
+    } catch {
+      // ignore — best-effort reset
+    }
+    audioEl.src = recapAudioUrl as string;
+
+    // Delay the recap slightly so the playFinish() chime (a ~0.56s
+    // WebAudio arpeggio fired by the parent) is heard first. The chime
+    // and the recap use different audio systems (WebAudio vs
+    // HTMLAudioElement) so they could overlap, but a short gap reads as
+    // a cleaner finish moment.
+    recapStartTimer.current = setTimeout(() => {
+      recapStartTimer.current = null;
+      // Re-check muted at fire time — the user may have muted during the
+      // delay. playClip checks muted too, but we short-circuit here so we
+      // never start a clip the user has asked to silence.
+      if (muted) {
+        setRecapPlaying(false);
+        return;
+      }
+      // Best-effort play — autoplay-policy rejections are caught and
+      // reveal Next so the user is never trapped.
+      audioEl.play().catch(() => setRecapPlaying(false));
+    }, 700);
+
+    // Cleanup: remove listeners, stop + reset the element, clear the
+    // timer. Runs on unmount and when the deps change (new round / new
+    // clip / mute toggle).
+    return () => {
+      audioEl.removeEventListener("ended", handleEnded);
+      audioEl.removeEventListener("error", handleError);
+      if (recapStartTimer.current) {
+        clearTimeout(recapStartTimer.current);
+        recapStartTimer.current = null;
+      }
+      try {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.removeAttribute("src");
+        audioEl.load();
+      } catch {
+        // ignore — best-effort reset
+      }
+    };
+    // Deliberately depend on drink.id + recapAudioUrl + muted + hasRecapClip
+    // so the effect re-runs when the round changes, the clip changes, or
+    // the mute state changes. hasRecapClip is derived from recapAudioUrl
+    // but included for clarity.
+  }, [drink.id, recapAudioUrl, muted, hasRecapClip]);
+
+  // Mid-playback mute handling — if the user mutes while the recap is
+  // playing, stop the clip and reveal Next. The main effect above also
+  // re-runs on `muted` changes (and its cleanup stops the clip), but this
+  // dedicated guard makes the intent explicit and ensures recapPlaying is
+  // flipped to false even if the effect's cleanup runs before the state
+  // update is observed. The stop logic is inlined here (it only touches
+  // refs) so the deps array stays free of an unstable function identity.
+  useEffect(() => {
+    if (muted && recapPlaying) {
+      if (recapStartTimer.current) {
+        clearTimeout(recapStartTimer.current);
+        recapStartTimer.current = null;
+      }
+      const el = recapElRef.current;
+      if (el) {
+        try {
+          el.pause();
+          el.currentTime = 0;
+          el.removeAttribute("src");
+          el.load();
+        } catch {
+          // ignore — best-effort reset
+        }
+      }
+      setRecapPlaying(false);
+    }
+  }, [muted, recapPlaying]);
+
+  // Wrap onNextDrink so the recap clip is stopped + reset before advancing
+  // to the next round. The main effect's cleanup also stops the clip on
+  // unmount (which happens when the round changes), but stopping here
+  // guarantees no clip bleeds into the next round's first prompt.
+  const handleNextDrink = () => {
+    stopRecap();
+    setRecapPlaying(false);
+    onNextDrink();
+  };
 
   return (
     <section
@@ -1033,15 +1358,216 @@ function LegendaryBanner({
         </p>
       ) : null}
 
-      <Button
-        type="button"
-        onClick={onNextDrink}
-        data-ocid="drinks.next_drink_button"
-        className="min-w-40"
-      >
-        {isLastRound ? "See results" : "Next drink"}
-      </Button>
+      {/* Recipe recap card — built from round.drink (the PlayableDrink).
+          Shows for EVERY completed drink regardless of recapAudioUrl (this
+          is a pure visual addition; audio recap is handled separately).
+          Mirrors the recipe-card structure used elsewhere in the app
+          (Glassware → Specs → Assembly → Garnish) but styled to match the
+          finish-screen card container (rounded-lg border border-primary/40
+          bg-card/80 p-5 shadow-subtle) and the section header style already
+          established in this component (font-heading text-sm tracking-wide).
+          Only sections with content are rendered. */}
+      <RecipeRecapCard drink={drink} />
+
+      {/* Next / Skip recap gating — while the spoken recap plays, hide the
+          Next button and show a "Skip recap" button instead. The Skip
+          button stops the clip (stopRecap) and reveals Next. Reveal Next
+          (and hide Skip) when the clip ends, errors, play() rejects, the
+          user mutes, or there was never a clip / sound was muted at mount
+          (recapPlaying stays false in those cases). NEVER trap the user —
+          Next is always reachable within one tap. */}
+      {recapPlaying ? (
+        <Button
+          type="button"
+          onClick={skipRecap}
+          variant="outline"
+          data-ocid="drinks.skip_recap_button"
+          className="min-w-40"
+        >
+          <SkipForward className="size-4" aria-hidden />
+          Skip recap
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          onClick={handleNextDrink}
+          data-ocid="drinks.next_drink_button"
+          className="min-w-40"
+        >
+          {isLastRound ? "See results" : "Next drink"}
+        </Button>
+      )}
     </section>
+  );
+}
+
+/* --------------------------- Recipe recap card --------------------------- */
+
+/**
+ * Recipe recap card — the four-section recipe breakdown (Glassware, Specs,
+ * Assembly, Garnish) shown on the finish screen below the score/stars and
+ * above the Next button. Built entirely from the round's PlayableDrink.
+ *
+ * Styling matches the finish-screen photo card container (rounded-lg border
+ * border-primary/40 bg-card/80 p-5 shadow-subtle) and the section header
+ * style already used in this component's SectionCard (font-heading text-sm
+ * leading-snug tracking-wide text-foreground), so the recap reads as part
+ * of the same finish moment rather than a foreign print-card element.
+ *
+ * Specs rows mirror the RecipeCardPage SpecsRow pattern: amount on the left
+ * (whitespace-nowrap, right-padded) + ingredient, rendered as "amount +
+ * ingredient" per the task contract. Assembly renders as a numbered ordered
+ * list (1, 2, 3...) in array order. Garnish renders as a bulleted list.
+ *
+ * A section is shown only when it has content (non-empty string for
+ * glassware, non-empty array for the others) — empty sections are skipped.
+ */
+function RecipeRecapCard({
+  drink,
+}: {
+  drink: GameRound["drink"];
+}): ReactElement | null {
+  const hasGlassware =
+    typeof drink.glassware === "string" && drink.glassware.trim().length > 0;
+  const hasSpecs = Array.isArray(drink.specs) && drink.specs.length > 0;
+  const hasAssembly =
+    Array.isArray(drink.assembly) && drink.assembly.length > 0;
+  const hasGarnish = Array.isArray(drink.garnish) && drink.garnish.length > 0;
+
+  // Skip the entire card when the drink has no recipe content at all
+  // (defensive — PlayableDrink always carries specs/assembly/glassware per
+  // the pool builder, but guard anyway so we never render an empty card).
+  if (!hasGlassware && !hasSpecs && !hasAssembly && !hasGarnish) {
+    return null;
+  }
+
+  return (
+    <div
+      className="w-full max-w-xs rounded-lg border border-primary/40 bg-card/80 p-5 shadow-subtle animate-drinks-legendary-banner"
+      data-ocid="drinks.finish.recap_card"
+      aria-label={`${drink.title} recipe recap`}
+    >
+      <h3
+        className="font-display text-base uppercase leading-tight tracking-wide text-foreground"
+        data-ocid="drinks.finish.recap_card.title"
+      >
+        Recipe
+      </h3>
+
+      <div className="mt-4 flex flex-col gap-4">
+        {/* Glassware */}
+        {hasGlassware ? (
+          <section data-ocid="drinks.finish.recap_card.glassware">
+            <h4
+              className="font-heading text-sm leading-snug tracking-wide text-foreground"
+              data-ocid="drinks.finish.recap_card.glassware.label"
+            >
+              Glassware
+            </h4>
+            <p
+              className="mt-1 font-body text-sm leading-relaxed text-muted-foreground"
+              data-ocid="drinks.finish.recap_card.glassware.value"
+            >
+              {drink.glassware}
+            </p>
+          </section>
+        ) : null}
+
+        {/* Specs — each row rendered as "amount + ingredient" in array order */}
+        {hasSpecs ? (
+          <section data-ocid="drinks.finish.recap_card.specs">
+            <h4
+              className="font-heading text-sm leading-snug tracking-wide text-foreground"
+              data-ocid="drinks.finish.recap_card.specs.label"
+            >
+              Specs
+            </h4>
+            <ul
+              className="mt-1 flex flex-col gap-1"
+              data-ocid="drinks.finish.recap_card.specs.list"
+            >
+              {drink.specs.map((spec, i) => (
+                <li
+                  key={`recap-spec-${i}-${spec.amount}-${spec.ingredient}`}
+                  className="flex items-baseline gap-2 font-body text-sm leading-relaxed text-muted-foreground"
+                  data-ocid={`drinks.finish.recap_card.specs.item.${i + 1}`}
+                >
+                  <span className="whitespace-nowrap font-heading text-sm tabular-nums text-foreground">
+                    {spec.amount}
+                  </span>
+                  <span aria-hidden className="text-muted-foreground/60">
+                    +
+                  </span>
+                  <span className="min-w-0 break-words">{spec.ingredient}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {/* Assembly — numbered ordered list in array order */}
+        {hasAssembly ? (
+          <section data-ocid="drinks.finish.recap_card.assembly">
+            <h4
+              className="font-heading text-sm leading-snug tracking-wide text-foreground"
+              data-ocid="drinks.finish.recap_card.assembly.label"
+            >
+              Assembly
+            </h4>
+            <ol
+              className="mt-1 flex flex-col gap-1.5"
+              data-ocid="drinks.finish.recap_card.assembly.list"
+            >
+              {drink.assembly.map((step, i) => (
+                <li
+                  key={`recap-asm-${i}-${step}`}
+                  className="flex items-baseline gap-2 font-body text-sm leading-relaxed text-muted-foreground"
+                  data-ocid={`drinks.finish.recap_card.assembly.step.${i + 1}`}
+                >
+                  <span
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/20 font-heading text-[0.65rem] font-semibold tabular-nums text-foreground"
+                    aria-hidden
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="min-w-0 break-words">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+
+        {/* Garnish — bulleted list */}
+        {hasGarnish ? (
+          <section data-ocid="drinks.finish.recap_card.garnish">
+            <h4
+              className="font-heading text-sm leading-snug tracking-wide text-foreground"
+              data-ocid="drinks.finish.recap_card.garnish.label"
+            >
+              Garnish
+            </h4>
+            <ul
+              className="mt-1 flex flex-col gap-1"
+              data-ocid="drinks.finish.recap_card.garnish.list"
+            >
+              {drink.garnish.map((g, i) => (
+                <li
+                  key={`recap-gar-${i}-${g}`}
+                  className="flex items-baseline gap-2 font-body text-sm leading-relaxed text-muted-foreground"
+                  data-ocid={`drinks.finish.recap_card.garnish.item.${i + 1}`}
+                >
+                  <span
+                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/60"
+                    aria-hidden
+                  />
+                  <span className="min-w-0 break-words">{g}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+    </div>
   );
 }
 

@@ -113,14 +113,40 @@ module {
   //                           step.
   //   garnishPrompts        : same shape as glasswarePrompts, for the GARNISH
   //                           step.
+  //   correctAffirmations   : admin-editable lead-in templates shown on a
+  //                           correct tap. Each may contain the literal
+  //                           "{answer}", replaced at play time with the
+  //                           tapped chip's label. Display-only — NO pool,
+  //                           decoy, scoring, or round-flow logic reads it.
+  //                           Defaults ship with five editable templates.
+  //                           Existing saved activities migrate to those five
+  //                           defaults. Uncapped at the type layer (the lib
+  //                           helper may cap to a reasonable bound).
+  //   answerClips           : per-answer voice clips keyed by answer TEXT
+  //                           (e.g. "18 oz Schooner" -> its clip URL), reused
+  //                           across every drink using that answer. The
+  //                           audioUrl is a durable object-storage URL (same
+  //                           kind as profile photos). Display/playback only
+  //                           — never read by pool/scoring logic. Defaults to
+  //                           empty. Uncapped at the type layer.
+  //   celebrationClips      : up to 6 generic celebratory clip URLs (durable
+  //                           object-storage URLs), played when no per-answer
+  //                           clip matches a correct tap. Display/playback
+  //                           only — never read by pool/scoring logic. The
+  //                           lib helper caps this list to 6 entries (drop
+  //                           overflow). Defaults to empty.
   //
-  // DrinksBuilderPrompt — one admin-editable step-heading prompt entry. The
-  // text is the heading shown when the step becomes active; the optional
-  // audioUrl is a durable object-storage clip (same kind as profile photos)
-  // that plays when the prompt appears in the game. The audio is
-  // display/playback only — NO pool, decoy, scoring, or round-flow logic
-  // reads audioUrl. Existing saved prompts (pre-audio) migrate to
-  // { text = S; audioUrl = null }.
+  // DrinksBuilderAnswerClip — one per-answer voice clip entry. The answer is
+  // the chip label TEXT the clip is keyed to (matched at play time after
+  // trimming and stripping a trailing "(upsell option)"/"(upsell only)"
+  // suffix); the audioUrl is a durable object-storage clip (same kind as
+  // profile photos). Display/playback only — NO pool, decoy, scoring, or
+  // round-flow logic reads it.
+  public type DrinksBuilderAnswerClip = {
+    answer : Text;
+    audioUrl : Text;
+  };
+
   public type DrinksBuilderPrompt = {
     text : Text;
     audioUrl : ?Text;
@@ -141,6 +167,9 @@ module {
     specsPrompts : [DrinksBuilderPrompt];
     assemblyPrompts : [DrinksBuilderPrompt];
     garnishPrompts : [DrinksBuilderPrompt];
+    correctAffirmations : [Text];
+    answerClips : [DrinksBuilderAnswerClip];
+    celebrationClips : [Text];
   };
 
   // DrinksBuilderContent — the persisted payload for a #drinksBuilder

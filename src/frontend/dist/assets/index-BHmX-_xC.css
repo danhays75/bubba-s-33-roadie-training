@@ -2926,6 +2926,9 @@ video {
 .border-dashed {
   border-style: dashed;
 }
+.border-\[\#1477BE\]\/40 {
+  border-color: rgb(20 119 190 / 0.4);
+}
 .border-\[oklch\(0\.801_0\.171_75\)\] {
   border-color: oklch(0.801 0.171 75);
 }
@@ -2976,6 +2979,9 @@ video {
 }
 .border-t-transparent {
   border-top-color: transparent;
+}
+.bg-\[\#1477BE\]\/5 {
+  background-color: rgb(20 119 190 / 0.05);
 }
 .bg-accent {
   --tw-bg-opacity: 1;
@@ -3055,6 +3061,9 @@ video {
 }
 .bg-primary\/20 {
   background-color: oklch(var(--primary) / 0.2);
+}
+.bg-primary\/60 {
+  background-color: oklch(var(--primary) / 0.6);
 }
 .bg-seasonal {
   --tw-bg-opacity: 1;
@@ -3484,6 +3493,10 @@ video {
 }
 .tracking-widest {
   letter-spacing: 0.1em;
+}
+.text-\[\#1477BE\] {
+  --tw-text-opacity: 1;
+  color: rgb(20 119 190 / var(--tw-text-opacity, 1));
 }
 .text-\[oklch\(0\.82_0\.09_235\)\] {
   color: oklch(0.82 0.09 235);
@@ -5813,6 +5826,10 @@ video {
   border-color: oklch(var(--primary) / 0.6);
 }
 
+.hover\:border-\[\#1477BE\]\/60:hover {
+  border-color: rgb(20 119 190 / 0.6);
+}
+
 .hover\:border-primary:hover {
   --tw-border-opacity: 1;
   border-color: oklch(var(--primary) / var(--tw-border-opacity, 1));
@@ -5828,6 +5845,10 @@ video {
 
 .hover\:border-primary\/60:hover {
   border-color: oklch(var(--primary) / 0.6);
+}
+
+.hover\:bg-\[\#1477BE\]\/10:hover {
+  background-color: rgb(20 119 190 / 0.1);
 }
 
 .hover\:bg-accent:hover {
@@ -6067,6 +6088,10 @@ video {
   --tw-ring-inset: inset;
 }
 
+.focus-visible\:ring-\[\#1477BE\]\/50:focus-visible {
+  --tw-ring-color: rgb(20 119 190 / 0.5);
+}
+
 .focus-visible\:ring-destructive\/20:focus-visible {
   --tw-ring-color: oklch(var(--destructive) / 0.2);
 }
@@ -6101,6 +6126,10 @@ video {
   --tw-ring-offset-color: oklch(var(--nav));
 }
 
+.focus-visible\:ring-offset-white:focus-visible {
+  --tw-ring-offset-color: #fff;
+}
+
 .active\:translate-y-px:active {
   --tw-translate-y: 1px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -6129,6 +6158,10 @@ video {
 
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
+}
+
+.disabled\:opacity-60:disabled {
+  opacity: 0.6;
 }
 
 .group\/menu-item:focus-within .group-focus-within\/menu-item\:opacity-100 {
@@ -7633,6 +7666,13 @@ video {
 
   .lg\:gap-10 {
     gap: 2.5rem;
+  }
+}
+
+@media print {
+
+  .print\:hidden {
+    display: none;
   }
 }
 

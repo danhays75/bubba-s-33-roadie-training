@@ -12,6 +12,7 @@ import type {
 } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 
 /**
@@ -113,6 +114,15 @@ function PrintRecipeCard({
         {item.title}
       </h1>
 
+      {/* Recap audio button — screen-only (print:hidden), shown only when the
+          recipe carries a non-empty recapAudio clip. Visually quiet pill that
+          matches the card's Barlow body font. Toggles playback via a dedicated
+          local HTMLAudioElement (mirrors the LegendaryBanner pattern). */}
+      <RecapAudioButton
+        recapAudio={recipe.recapAudio}
+        className="recipe-print-card-recap-button mt-3"
+      />
+
       {/* Optional subtitle */}
       {item.subtitle && item.subtitle.trim().length > 0 ? (
         <p
@@ -185,6 +195,202 @@ function PrintRecipeCard({
         <span className="right">{isLTO ? "LTO" : ""}</span>
       </div>
     </article>
+  );
+}
+
+/* --------------------------- Bulk mix recipe card ----------------------- */
+
+/**
+ * RecapAudioButton — a small, screen-only "Play recap" / "Stop" toggle that
+ * plays the recipe's optional recap audio clip via a dedicated local
+ * HTMLAudioElement.
+ *
+ * Rendered ONLY when `recapAudio` is a non-empty string. When the clip is
+ * null/absent/empty, this component renders nothing — no disabled button, no
+ * placeholder.
+ *
+ * Mirrors the LegendaryBanner recap-audio pattern (DrinksBuilderActivity):
+ * a useRef<HTMLAudioElement | null>(null) lazily created via `new Audio()`
+ * with preload='auto', 'ended' and 'error' events wired to
+ * setPlaying(false), play() wrapped in a best-effort .catch (user click, so
+ * no autoplay-policy issue), stop+reset discipline before setting src, and
+ * cleanup on unmount so the clip never keeps playing after leaving the card.
+ * The shared sound.playClip channel is intentionally NOT used because it
+ * swallows ended/error events and play() rejections — the local element
+ * exposes those events so state can be revealed without trapping the user.
+ *
+ * The button is marked print:hidden so it does NOT appear in the printed
+ * recipe card (the card uses .recipe-print-card* print-faithful styling).
+ * Styled as a small ghost pill in the brand body font (Barlow) so it stays
+ * visually quiet and does not fight the printed-recipe look.
+ */
+function RecapAudioButton({
+  recapAudio,
+  className,
+}: {
+  recapAudio: string | null;
+  className?: string;
+}): ReactElement | null {
+  // No clip → render nothing. No disabled button, no placeholder.
+  if (typeof recapAudio !== "string" || recapAudio.length === 0) {
+    return null;
+  }
+
+  return (
+    <RecapAudioButtonInner recapAudio={recapAudio} className={className} />
+  );
+}
+
+/**
+ * Inner implementation — always has a non-empty recapAudio string. Split from
+ * RecapAudioButton so the hooks run unconditionally (Rules of Hooks) and the
+ * null-guard lives in the parent.
+ */
+function RecapAudioButtonInner({
+  recapAudio,
+  className,
+}: {
+  recapAudio: string;
+  className?: string;
+}): ReactElement {
+  const [playing, setPlaying] = useState(false);
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
+
+  // Cleanup on unmount: stop + release the audio element so the clip never
+  // keeps playing after leaving the card (route change or unmount). The
+  // element is dereferenced so it can be garbage-collected. The stop logic
+  // is inlined here (it only touches refs) so the deps array stays empty.
+  useEffect(() => {
+    return () => {
+      const el = audioElRef.current;
+      if (el) {
+        try {
+          el.pause();
+          el.currentTime = 0;
+          el.removeAttribute("src");
+          el.load();
+        } catch {
+          // ignore — best-effort reset
+        }
+      }
+      audioElRef.current = null;
+    };
+  }, []);
+
+  // Wire 'ended' and 'error' events to flip playing back to false. These
+  // fire on the local element (not the shared playClip channel) so the
+  // toggle state never gets stuck on "Stop" after the clip ends or fails.
+  // The stop logic is inlined in the handlers (only touches refs) so the
+  // deps array stays empty.
+  useEffect(() => {
+    const el = audioElRef.current;
+    if (!el) return;
+    const handleEnded = () => {
+      setPlaying(false);
+      try {
+        el.pause();
+        el.currentTime = 0;
+        el.removeAttribute("src");
+        el.load();
+      } catch {
+        // ignore — best-effort reset
+      }
+    };
+    const handleError = () => {
+      setPlaying(false);
+      try {
+        el.pause();
+        el.currentTime = 0;
+        el.removeAttribute("src");
+        el.load();
+      } catch {
+        // ignore — best-effort reset
+      }
+    };
+    el.addEventListener("ended", handleEnded);
+    el.addEventListener("error", handleError);
+    return () => {
+      el.removeEventListener("ended", handleEnded);
+      el.removeEventListener("error", handleError);
+    };
+  }, []);
+
+  const handleToggle = () => {
+    if (playing) {
+      // Stop and reset to idle.
+      const el = audioElRef.current;
+      if (el) {
+        try {
+          el.pause();
+          el.currentTime = 0;
+          el.removeAttribute("src");
+          el.load();
+        } catch {
+          // ignore — best-effort reset
+        }
+      }
+      setPlaying(false);
+      return;
+    }
+    // Start playback. Lazily create the local audio element on first play
+    // (user gesture, so no autoplay-policy issue).
+    let el = audioElRef.current;
+    if (!el) {
+      try {
+        el = new Audio();
+        el.preload = "auto";
+        audioElRef.current = el;
+      } catch {
+        // Could not create an audio element — never trap the user.
+        setPlaying(false);
+        return;
+      }
+    }
+    const audioEl = el;
+    // Stop + reset before setting src (mirrors playClip's discipline so a
+    // re-trigger never overlaps a previous clip).
+    try {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+      audioEl.removeAttribute("src");
+      audioEl.load();
+    } catch {
+      // ignore — best-effort reset
+    }
+    audioEl.src = recapAudio;
+    // Mark playing now so the label flips to "Stop"; the ended/error/reject
+    // handlers below will flip it back if playback can't proceed.
+    setPlaying(true);
+    // Best-effort play — user click, so no autoplay-policy issue, but a
+    // rejection (e.g. corrupt clip) still reveals idle so the user is
+    // never trapped on "Stop".
+    audioEl.play().catch(() => {
+      try {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.removeAttribute("src");
+        audioEl.load();
+      } catch {
+        // ignore — best-effort reset
+      }
+      setPlaying(false);
+    });
+  };
+
+  const label = playing ? "⏸ Stop" : "▶ Play recap";
+  const ariaLabel = playing ? "Stop recipe recap" : "Play recipe recap";
+
+  return (
+    <button
+      type="button"
+      onClick={handleToggle}
+      aria-label={ariaLabel}
+      aria-pressed={playing}
+      data-ocid="library.item.print_recap_button"
+      className={`inline-flex items-center gap-1.5 rounded-full border border-[#1477BE]/40 bg-[#1477BE]/5 px-3 py-1 font-body text-xs font-medium leading-none text-[#1477BE] transition-smooth hover:bg-[#1477BE]/10 hover:border-[#1477BE]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1477BE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-white print:hidden ${className ?? ""}`}
+    >
+      {label}
+    </button>
   );
 }
 

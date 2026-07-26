@@ -33,6 +33,37 @@ export interface DrinksBuilderSettings {
   specsPrompts: DrinksBuilderPrompt[];
   assemblyPrompts: DrinksBuilderPrompt[];
   garnishPrompts: DrinksBuilderPrompt[];
+  /**
+   * Affirmation templates played/shown on a correct tap. Each entry is a
+   * template string with a literal `{answer}` placeholder the play code
+   * substitutes with the correct drink title (e.g. "That's correct! It's a
+   * {answer}!"). Mirrors backend.d.ts `DrinksBuilderSettings.correctAffirmations`.
+   * Display/playback only — never read by pool/decoy/scoring/round-flow logic.
+   */
+  correctAffirmations: string[];
+  /**
+   * Per-answer audio clips keyed by answer text. Each entry pairs an
+   * `answer` (the correct drink title) with an `audioUrl` (durable
+   * object-storage URL, same shape as profile photos). Mirrors backend.d.ts
+   * `DrinksBuilderSettings.answerClips`. Display/playback only.
+   */
+  answerClips: DrinksBuilderAnswerClip[];
+  /**
+   * Celebration clip URLs played on session completion. Each entry is a
+   * durable object-storage URL. Mirrors backend.d.ts
+   * `DrinksBuilderSettings.celebrationClips`. Display/playback only.
+   */
+  celebrationClips: string[];
+}
+
+/**
+ * Mirrors backend.d.ts `DrinksBuilderAnswerClip`. Pairs a correct answer
+ * (drink title) with a durable object-storage audio URL. The audioUrl is
+ * display/playback only — never read by pool/decoy/scoring/round-flow logic.
+ */
+export interface DrinksBuilderAnswerClip {
+  answer: string;
+  audioUrl: string;
 }
 
 /**
@@ -51,6 +82,23 @@ export interface DrinksBuilderPrompt {
 
 /** Default amber/gold liquid fill when a recipe omits the optional color. */
 export const DEFAULT_LIQUID_COLOR = "#F2A900";
+
+/**
+ * The five default correct-affirmation templates. Each is a template string
+ * with a literal `{answer}` placeholder the play code substitutes with the
+ * correct drink title. Single source of truth shared by
+ * DEFAULT_DRINKS_BUILDER_SETTINGS (new-activity defaults) and the
+ * useDrinksBuilder settings reader (fallback for migrated/older data missing
+ * the `correctAffirmations` field). Mirrors the backend's
+ * default-correct-affirmations migration equivalent.
+ */
+export const DEFAULT_CORRECT_AFFIRMATIONS: string[] = [
+  "That's correct! It's a {answer}!",
+  "Nailed it — {answer}!",
+  "Legendary! {answer}",
+  "You got it! {answer}",
+  "Boom — {answer}!",
+];
 
 /**
  * A drink that is playable in the game — derived from a LibraryItem with a
@@ -74,6 +122,12 @@ export interface PlayableDrink {
    * to the filled SVG glass in that case.
    */
   photo: string | null;
+  /**
+   * The drink's audio-recap clip URL (mirrors LibraryItem.recipe.recapAudio).
+   * Null when the recipe is null or recapAudio is absent. Display/playback
+   * only — never read by pool/decoy/scoring/round-flow logic.
+   */
+  recapAudioUrl: string | null;
 }
 
 /** The four modular sections of a drink the player builds. */

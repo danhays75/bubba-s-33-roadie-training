@@ -31,6 +31,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   type Chip,
+  DEFAULT_CORRECT_AFFIRMATIONS,
   DEFAULT_LIQUID_COLOR,
   type DrinksBuilderPrompt,
   type DrinksBuilderSettings,
@@ -101,6 +102,10 @@ function toFrontendItem(i: BackendLibraryItem): LibraryItem {
               ? i.recipe.shelfLife
               : null,
           qualityIdentifier: i.recipe.qualityIdentifier ?? [],
+          recapAudio:
+            i.recipe.recapAudio && i.recipe.recapAudio.length > 0
+              ? i.recipe.recapAudio
+              : null,
         }
       : null,
   };
@@ -185,6 +190,7 @@ export function buildPlayablePool(
       garnish: [...r.garnish],
       color: resolveLiquidColor(r),
       photo: item.photo ?? null,
+      recapAudioUrl: item.recipe?.recapAudio ?? null,
     });
   }
   let emptyReason: EmptyReason | null = null;
@@ -717,6 +723,16 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
       specsPrompts: s.specsPrompts ?? [],
       assemblyPrompts: s.assemblyPrompts ?? [],
       garnishPrompts: s.garnishPrompts ?? [],
+      // New audio/affirmation fields (mirrors backend.d.ts). Read
+      // defensively so migrated/older activities missing these fields
+      // still work: correctAffirmations falls back to the shared
+      // DEFAULT_CORRECT_AFFIRMATIONS templates, answerClips and
+      // celebrationClips fall back to empty arrays. Display/playback
+      // only — never read by pool/decoy/scoring/round-flow logic.
+      correctAffirmations:
+        s.correctAffirmations ?? DEFAULT_CORRECT_AFFIRMATIONS,
+      answerClips: s.answerClips ?? [],
+      celebrationClips: s.celebrationClips ?? [],
     };
   }, [activityQuery.data]);
 
@@ -826,6 +842,7 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
         garnish: [...r.garnish],
         color: resolveLiquidColor(r),
         photo: item.photo ?? null,
+        recapAudioUrl: item.recipe?.recapAudio ?? null,
       });
     }
     return out;

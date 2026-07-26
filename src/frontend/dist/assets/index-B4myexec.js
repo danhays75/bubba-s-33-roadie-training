@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-Cnluf9pV.js"(exports, module) {
+  "assets/index-B4myexec.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33213,6 +33213,7 @@ variant ${k2} -> ${e.message}`, {
     });
     const Recipe = Record({
       "equipment": Vec(Text$2),
+      "recapAudio": Opt(Text$2),
       "glassware": Text$2,
       "variants": Vec(RecipeVariant),
       "garnish": Vec(Text$2),
@@ -33244,6 +33245,10 @@ variant ${k2} -> ${e.message}`, {
       "text": Text$2,
       "audioUrl": Opt(Text$2)
     });
+    const DrinksBuilderAnswerClip = Record({
+      "audioUrl": Text$2,
+      "answer": Text$2
+    });
     const DrinksBuilderSettings = Record({
       "garnishPrompts": Vec(DrinksBuilderPrompt),
       "includedCategories": Vec(Text$2),
@@ -33253,9 +33258,12 @@ variant ${k2} -> ${e.message}`, {
       "showScoring": Bool,
       "assemblyPrompts": Vec(DrinksBuilderPrompt),
       "requireExactAmounts": Bool,
+      "answerClips": Vec(DrinksBuilderAnswerClip),
       "glasswarePrompts": Vec(DrinksBuilderPrompt),
       "soundDefault": Bool,
       "decoyCount": Nat,
+      "celebrationClips": Vec(Text$2),
+      "correctAffirmations": Vec(Text$2),
       "specsPrompts": Vec(DrinksBuilderPrompt),
       "streakMultiplier": Bool,
       "roundsPerSession": Nat
@@ -33762,6 +33770,7 @@ variant ${k2} -> ${e.message}`, {
       });
       const Recipe2 = IDL2.Record({
         "equipment": IDL2.Vec(IDL2.Text),
+        "recapAudio": IDL2.Opt(IDL2.Text),
         "glassware": IDL2.Text,
         "variants": IDL2.Vec(RecipeVariant2),
         "garnish": IDL2.Vec(IDL2.Text),
@@ -33793,6 +33802,10 @@ variant ${k2} -> ${e.message}`, {
         "text": IDL2.Text,
         "audioUrl": IDL2.Opt(IDL2.Text)
       });
+      const DrinksBuilderAnswerClip2 = IDL2.Record({
+        "audioUrl": IDL2.Text,
+        "answer": IDL2.Text
+      });
       const DrinksBuilderSettings2 = IDL2.Record({
         "garnishPrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "includedCategories": IDL2.Vec(IDL2.Text),
@@ -33802,9 +33815,12 @@ variant ${k2} -> ${e.message}`, {
         "showScoring": IDL2.Bool,
         "assemblyPrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "requireExactAmounts": IDL2.Bool,
+        "answerClips": IDL2.Vec(DrinksBuilderAnswerClip2),
         "glasswarePrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "soundDefault": IDL2.Bool,
         "decoyCount": IDL2.Nat,
+        "celebrationClips": IDL2.Vec(IDL2.Text),
+        "correctAffirmations": IDL2.Vec(IDL2.Text),
         "specsPrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "streakMultiplier": IDL2.Bool,
         "roundsPerSession": IDL2.Nat
@@ -35846,6 +35862,7 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_record_n16(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
+        recapAudio: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.recapAudio)),
         glassware: value.glassware,
         variants: value.variants,
         garnish: value.garnish,
@@ -35884,9 +35901,12 @@ variant ${k2} -> ${e.message}`, {
         showScoring: value.showScoring,
         assemblyPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.assemblyPrompts),
         requireExactAmounts: value.requireExactAmounts,
+        answerClips: value.answerClips,
         glasswarePrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.glasswarePrompts),
         soundDefault: value.soundDefault,
         decoyCount: value.decoyCount,
+        celebrationClips: value.celebrationClips,
+        correctAffirmations: value.correctAffirmations,
         specsPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.specsPrompts),
         streakMultiplier: value.streakMultiplier,
         roundsPerSession: value.roundsPerSession
@@ -36262,9 +36282,12 @@ variant ${k2} -> ${e.message}`, {
         showScoring: value.showScoring,
         assemblyPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.assemblyPrompts),
         requireExactAmounts: value.requireExactAmounts,
+        answerClips: value.answerClips,
         glasswarePrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.glasswarePrompts),
         soundDefault: value.soundDefault,
         decoyCount: value.decoyCount,
+        celebrationClips: value.celebrationClips,
+        correctAffirmations: value.correctAffirmations,
         specsPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.specsPrompts),
         streakMultiplier: value.streakMultiplier,
         roundsPerSession: value.roundsPerSession
@@ -36279,6 +36302,7 @@ variant ${k2} -> ${e.message}`, {
     function to_candid_record_n96(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
+        recapAudio: value.recapAudio ? candid_some(value.recapAudio) : candid_none(),
         glassware: value.glassware,
         variants: value.variants,
         garnish: value.garnish,
@@ -39398,11 +39422,22 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$U = [
+    const __iconNode$V = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$U);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$V);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$U = [
+      ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+      ["path", { d: "M19 12H5", key: "x3x0zl" }]
+    ];
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$U);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39410,10 +39445,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$T = [
-      ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-      ["path", { d: "M19 12H5", key: "x3x0zl" }]
+      ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+      ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$T);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$T);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39421,17 +39456,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$S = [
-      ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-      ["path", { d: "M12 19V5", key: "x0mq9r" }]
-    ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$S);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$R = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -39441,14 +39465,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$R);
+    const BookOpen = createLucideIcon("book-open", __iconNode$S);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$Q = [
+    const __iconNode$R = [
       [
         "path",
         {
@@ -39471,14 +39495,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
       ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
     ];
-    const Brain = createLucideIcon("brain", __iconNode$Q);
+    const Brain = createLucideIcon("brain", __iconNode$R);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$P = [
+    const __iconNode$Q = [
       [
         "path",
         {
@@ -39488,58 +39512,69 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
     ];
-    const Camera = createLucideIcon("camera", __iconNode$P);
+    const Camera = createLucideIcon("camera", __iconNode$Q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$O = [
+    const __iconNode$P = [
       ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
       ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
     ];
-    const CheckCheck = createLucideIcon("check-check", __iconNode$O);
+    const CheckCheck = createLucideIcon("check-check", __iconNode$P);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$N = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$N);
+    const __iconNode$O = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$O);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$M = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$M);
+    const __iconNode$N = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$N);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$L = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$L);
+    const __iconNode$M = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$M);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$K = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-    const ChevronRight = createLucideIcon("chevron-right", __iconNode$K);
+    const __iconNode$L = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$L);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$J = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$J);
+    const __iconNode$K = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$K);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$J = [
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+    ];
+    const CircleCheck = createLucideIcon("circle-check", __iconNode$J);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39548,36 +39583,25 @@ variant ${k2} -> ${e.message}`, {
      */
     const __iconNode$I = [
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-    ];
-    const CircleCheck = createLucideIcon("circle-check", __iconNode$I);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$H = [
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
       ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
       ["path", { d: "M12 17h.01", key: "p32p05" }]
     ];
-    const CircleHelp = createLucideIcon("circle-help", __iconNode$H);
+    const CircleHelp = createLucideIcon("circle-help", __iconNode$I);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$G = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$G);
+    const __iconNode$H = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$H);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$F = [
+    const __iconNode$G = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -39591,7 +39615,24 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$F);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$G);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$F = [
+      [
+        "path",
+        {
+          d: "m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z",
+          key: "9ktpf1"
+        }
+      ],
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+    ];
+    const Compass = createLucideIcon("compass", __iconNode$F);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39602,13 +39643,12 @@ variant ${k2} -> ${e.message}`, {
       [
         "path",
         {
-          d: "m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z",
-          key: "9ktpf1"
+          d: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z",
+          key: "96xj49"
         }
-      ],
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+      ]
     ];
-    const Compass = createLucideIcon("compass", __iconNode$E);
+    const Flame = createLucideIcon("flame", __iconNode$E);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39616,22 +39656,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$D = [
-      [
-        "path",
-        {
-          d: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z",
-          key: "96xj49"
-        }
-      ]
-    ];
-    const Flame = createLucideIcon("flame", __iconNode$D);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$C = [
       ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
       ["path", { d: "m18 15 4-4", key: "16gjal" }],
       [
@@ -39642,7 +39666,24 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Hammer = createLucideIcon("hammer", __iconNode$C);
+    const Hammer = createLucideIcon("hammer", __iconNode$D);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$C = [
+      [
+        "path",
+        {
+          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+          key: "c3ymky"
+        }
+      ],
+      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+    ];
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$C);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39656,10 +39697,9 @@ variant ${k2} -> ${e.message}`, {
           d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
           key: "c3ymky"
         }
-      ],
-      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+      ]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$B);
+    const Heart = createLucideIcon("heart", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39667,22 +39707,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$A = [
-      [
-        "path",
-        {
-          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
-          key: "c3ymky"
-        }
-      ]
-    ];
-    const Heart = createLucideIcon("heart", __iconNode$A);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$z = [
       ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
       ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
       ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
@@ -39696,14 +39720,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
     ];
-    const ImageOff = createLucideIcon("image-off", __iconNode$z);
+    const ImageOff = createLucideIcon("image-off", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$y = [
+    const __iconNode$z = [
       [
         "path",
         {
@@ -39726,7 +39750,20 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$y);
+    const Layers = createLucideIcon("layers", __iconNode$z);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$y = [
+      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
+      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+    ];
+    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$y);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39734,12 +39771,12 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$x = [
-      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
-      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
-      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
-      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
+      ["path", { d: "M12 6v14", key: "1n7gus" }],
+      ["path", { d: "M8 8v12", key: "1gg7y9" }],
+      ["path", { d: "M4 4v16", key: "6qkkli" }]
     ];
-    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$x);
+    const Library = createLucideIcon("library", __iconNode$x);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39747,19 +39784,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$w = [
-      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
-      ["path", { d: "M12 6v14", key: "1n7gus" }],
-      ["path", { d: "M8 8v12", key: "1gg7y9" }],
-      ["path", { d: "M4 4v16", key: "6qkkli" }]
-    ];
-    const Library = createLucideIcon("library", __iconNode$w);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$v = [
       [
         "path",
         {
@@ -39770,26 +39794,37 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M9 18h6", key: "x1upvd" }],
       ["path", { d: "M10 22h4", key: "ceow96" }]
     ];
-    const Lightbulb = createLucideIcon("lightbulb", __iconNode$v);
+    const Lightbulb = createLucideIcon("lightbulb", __iconNode$w);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$u = [
+    const __iconNode$v = [
       ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
       ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
     ];
-    const Link$2 = createLucideIcon("link", __iconNode$u);
+    const Link$2 = createLucideIcon("link", __iconNode$v);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$t = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$t);
+    const __iconNode$u = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$u);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$t = [
+      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+    ];
+    const Lock = createLucideIcon("lock", __iconNode$t);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39797,10 +39832,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$s = [
-      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
     ];
-    const Lock = createLucideIcon("lock", __iconNode$s);
+    const LogOut = createLucideIcon("log-out", __iconNode$s);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39808,11 +39844,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$r = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
+      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
+      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
     ];
-    const LogOut = createLucideIcon("log-out", __iconNode$r);
+    const MailCheck = createLucideIcon("mail-check", __iconNode$r);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39820,11 +39856,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$q = [
-      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
-      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
-      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
+      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
     ];
-    const MailCheck = createLucideIcon("mail-check", __iconNode$q);
+    const Mail = createLucideIcon("mail", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39832,17 +39867,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$p = [
-      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
-      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
-    ];
-    const Mail = createLucideIcon("mail", __iconNode$p);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$o = [
       ["path", { d: "M12 22v-9", key: "x3hkom" }],
       [
         "path",
@@ -39866,14 +39890,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const PackageOpen = createLucideIcon("package-open", __iconNode$o);
+    const PackageOpen = createLucideIcon("package-open", __iconNode$p);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$n = [
+    const __iconNode$o = [
       [
         "path",
         {
@@ -39885,14 +39909,14 @@ variant ${k2} -> ${e.message}`, {
       ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
       ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
     ];
-    const Package = createLucideIcon("package", __iconNode$n);
+    const Package = createLucideIcon("package", __iconNode$o);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$m = [
+    const __iconNode$n = [
       [
         "path",
         {
@@ -39902,15 +39926,26 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
     ];
-    const Pencil = createLucideIcon("pencil", __iconNode$m);
+    const Pencil = createLucideIcon("pencil", __iconNode$n);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$l = [["polygon", { points: "6 3 20 12 6 21 6 3", key: "1oa8hb" }]];
-    const Play = createLucideIcon("play", __iconNode$l);
+    const __iconNode$m = [["polygon", { points: "6 3 20 12 6 21 6 3", key: "1oa8hb" }]];
+    const Play = createLucideIcon("play", __iconNode$m);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$l = [
+      ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ["path", { d: "M12 5v14", key: "s699le" }]
+    ];
+    const Plus = createLucideIcon("plus", __iconNode$l);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39918,10 +39953,12 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$k = [
-      ["path", { d: "M5 12h14", key: "1ays0h" }],
-      ["path", { d: "M12 5v14", key: "s699le" }]
+      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+      ["path", { d: "M8 16H3v5", key: "1cv678" }]
     ];
-    const Plus = createLucideIcon("plus", __iconNode$k);
+    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$k);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39929,12 +39966,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$j = [
-      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-      ["path", { d: "M8 16H3v5", key: "1cv678" }]
+      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
     ];
-    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$j);
+    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$j);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39942,17 +39977,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$i = [
-      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
-    ];
-    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$i);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$h = [
       [
         "path",
         {
@@ -39963,7 +39987,18 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
       ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
     ];
-    const Save = createLucideIcon("save", __iconNode$h);
+    const Save = createLucideIcon("save", __iconNode$i);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$h = [
+      ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
+      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+    ];
+    const Search = createLucideIcon("search", __iconNode$h);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39971,10 +40006,17 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$g = [
-      ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
-      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+      [
+        "path",
+        {
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
+        }
+      ],
+      ["path", { d: "M12 8v4", key: "1got3b" }],
+      ["path", { d: "M12 16h.01", key: "1drbdi" }]
     ];
-    const Search = createLucideIcon("search", __iconNode$g);
+    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$g);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39989,10 +40031,9 @@ variant ${k2} -> ${e.message}`, {
           key: "oel41y"
         }
       ],
-      ["path", { d: "M12 8v4", key: "1got3b" }],
-      ["path", { d: "M12 16h.01", key: "1drbdi" }]
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
     ];
-    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$f);
+    const ShieldCheck = createLucideIcon("shield-check", __iconNode$f);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40007,9 +40048,10 @@ variant ${k2} -> ${e.message}`, {
           key: "oel41y"
         }
       ],
-      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+      ["path", { d: "m14.5 9.5-5 5", key: "17q4r4" }],
+      ["path", { d: "m9.5 9.5 5 5", key: "18nt4w" }]
     ];
-    const ShieldCheck = createLucideIcon("shield-check", __iconNode$e);
+    const ShieldX = createLucideIcon("shield-x", __iconNode$e);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40017,17 +40059,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$d = [
-      [
-        "path",
-        {
-          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-          key: "oel41y"
-        }
-      ],
-      ["path", { d: "m14.5 9.5-5 5", key: "17q4r4" }],
-      ["path", { d: "m9.5 9.5 5 5", key: "18nt4w" }]
+      ["polygon", { points: "5 4 15 12 5 20 5 4", key: "16p6eg" }],
+      ["line", { x1: "19", x2: "19", y1: "5", y2: "19", key: "futhcm" }]
     ];
-    const ShieldX = createLucideIcon("shield-x", __iconNode$d);
+    const SkipForward = createLucideIcon("skip-forward", __iconNode$d);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -51073,7 +51108,8 @@ variant ${k2} -> ${e.message}`, {
         // absent; normalize both to null so the frontend treats them uniformly.
         yield: r2.yield && r2.yield.length > 0 ? r2.yield : null,
         shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : null,
-        qualityIdentifier: r2.qualityIdentifier ?? []
+        qualityIdentifier: r2.qualityIdentifier ?? [],
+        recapAudio: r2.recapAudio && r2.recapAudio.length > 0 ? r2.recapAudio : null
       };
     }
     function fromRecipe(r2) {
@@ -51101,7 +51137,8 @@ variant ${k2} -> ${e.message}`, {
         // absent optionals. Translate null/empty -> undefined here.
         yield: r2.yield && r2.yield.length > 0 ? r2.yield : void 0,
         shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : void 0,
-        qualityIdentifier: r2.qualityIdentifier ?? []
+        qualityIdentifier: r2.qualityIdentifier ?? [],
+        recapAudio: r2.recapAudio && r2.recapAudio.length > 0 ? r2.recapAudio : void 0
       };
     }
     function toItem$1(i) {
@@ -51806,7 +51843,11 @@ variant ${k2} -> ${e.message}`, {
           equipment: recipe.equipment ?? [],
           yield: yieldValue,
           shelfLife: shelfLifeValue,
-          qualityIdentifier: recipe.qualityIdentifier ?? []
+          qualityIdentifier: recipe.qualityIdentifier ?? [],
+          // The bulk-import JSON does not carry a recap voice clip — default to
+          // null so the constructed Recipe satisfies the required recapAudio
+          // field. The admin can attach a clip later via the item editor.
+          recapAudio: null
         };
       }
       function buildRecipeTags(recipe) {
@@ -52068,6 +52109,7 @@ variant ${k2} -> ${e.message}`, {
           yield: i.recipe.yield ?? null,
           shelfLife: i.recipe.shelfLife ?? null,
           qualityIdentifier: i.recipe.qualityIdentifier ?? [],
+          recapAudio: i.recipe.recapAudio ?? null,
           variants: i.recipe.variants.map((v2) => ({
             variantLabel: v2.variantLabel,
             specs: v2.specs.map((s) => ({
@@ -65075,8 +65117,15 @@ ${escapeText(this.code(index2, length))}
       const [recipeYield, setRecipeYield] = reactExports.useState("");
       const [recipeShelfLife, setRecipeShelfLife] = reactExports.useState("");
       const [recipeQualityIdentifier, setRecipeQualityIdentifier] = reactExports.useState([emptyText()]);
+      const [recapAudio, setRecapAudio] = reactExports.useState(null);
       const [touched, setTouched] = reactExports.useState(false);
       const [hydrated, setHydrated] = reactExports.useState(false);
+      const {
+        uploadPhoto: uploadAudio,
+        isUploading: isAudioUploading,
+        error: audioUploadError,
+        reset: resetAudio
+      } = usePhotoUpload();
       reactExports.useEffect(() => {
         if (isCreate || hydrated) return;
         if (existing) {
@@ -65121,6 +65170,7 @@ ${escapeText(this.code(index2, length))}
                 value
               })) : [emptyText()]
             );
+            setRecapAudio(r2.recapAudio ?? null);
           } else {
             setIsRecipe(false);
           }
@@ -65175,7 +65225,10 @@ ${escapeText(this.code(index2, length))}
           equipment: cleanedEquipment,
           yield: trimmedYield.length > 0 ? trimmedYield : null,
           shelfLife: trimmedShelfLife.length > 0 ? trimmedShelfLife : null,
-          qualityIdentifier: cleanedQualityIdentifier
+          qualityIdentifier: cleanedQualityIdentifier,
+          // Recap voice clip — passed through unchanged (URL string or null).
+          // The audio upload control owns the URL; buildRecipe just forwards it.
+          recapAudio
         };
       }
       const recipeError = touched && isRecipe && buildRecipe() === null ? "Add at least glassware or one spec/step to save as a recipe, or turn the toggle off." : null;
@@ -65270,6 +65323,25 @@ ${escapeText(this.code(index2, length))}
         const next = [...recipeVariants];
         [next[index2], next[target]] = [next[target], next[index2]];
         setRecipeVariants(next);
+      }
+      async function handleAudioFileChange(e) {
+        var _a2;
+        const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
+        e.target.value = "";
+        if (!file) return;
+        if (!file.type.startsWith("audio/")) {
+          ue.error("Please choose an audio file.");
+          return;
+        }
+        try {
+          const url = await uploadAudio(file);
+          setRecapAudio(url);
+        } catch {
+        }
+      }
+      function handleAudioRemove() {
+        resetAudio();
+        setRecapAudio(null);
       }
       const backTo = reactExports.useMemo(
         () => ({
@@ -65633,6 +65705,130 @@ ${escapeText(this.code(index2, length))}
                         }
                       )
                     ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: "grid gap-2",
+                        "data-ocid": "library.admin.item.editor.recipe.recap_audio.section",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-baseline justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            Label,
+                            {
+                              htmlFor: "recipe-recap-audio",
+                              className: "font-heading uppercase text-xs tracking-wider",
+                              children: [
+                                "Recap voice clip",
+                                " ",
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground normal-case", children: "(optional)" })
+                              ]
+                            }
+                          ) }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Plays at the end of the game after a Roadie builds this drink. A full spoken walk-through works great. Optional — drinks without one just show the visual recap." }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "input",
+                            {
+                              id: "recipe-recap-audio",
+                              type: "file",
+                              accept: "audio/*",
+                              className: "hidden",
+                              onChange: handleAudioFileChange,
+                              disabled: isPending || isAudioUploading,
+                              "aria-label": "Upload recap voice clip",
+                              "data-ocid": "library.admin.item.editor.recipe.recap_audio.upload_button"
+                            }
+                          ),
+                          isAudioUploading ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            "div",
+                            {
+                              className: "flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2",
+                              "aria-live": "polite",
+                              "data-ocid": "library.admin.item.editor.recipe.recap_audio.loading_state",
+                              children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  RefreshCw,
+                                  {
+                                    className: "h-4 w-4 animate-spin",
+                                    "aria-hidden": "true"
+                                  }
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: "Uploading…" })
+                              ]
+                            }
+                          ) : recapAudio ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            "div",
+                            {
+                              className: "flex items-center gap-3 rounded-md border border-border bg-card p-2",
+                              "data-ocid": "library.admin.item.editor.recipe.recap_audio.preview",
+                              children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  Play,
+                                  {
+                                    className: "h-4 w-4 shrink-0 text-primary",
+                                    "aria-hidden": "true"
+                                  }
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  "audio",
+                                  {
+                                    src: recapAudio,
+                                    controls: true,
+                                    preload: "metadata",
+                                    className: "min-w-0 flex-1",
+                                    "data-ocid": "library.admin.item.editor.recipe.recap_audio.player",
+                                    children: "Your browser does not support audio playback."
+                                  },
+                                  recapAudio
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                  Button,
+                                  {
+                                    type: "button",
+                                    variant: "ghost",
+                                    size: "sm",
+                                    onClick: handleAudioRemove,
+                                    disabled: isPending,
+                                    "aria-label": "Remove recap voice clip",
+                                    "data-ocid": "library.admin.item.editor.recipe.recap_audio.remove",
+                                    className: "shrink-0 font-display text-[11px] uppercase tracking-[0.16em] text-muted-foreground hover:text-primary",
+                                    children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-3.5 w-3.5", "aria-hidden": "true" }),
+                                      "Remove"
+                                    ]
+                                  }
+                                )
+                              ]
+                            }
+                          ) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            "button",
+                            {
+                              type: "button",
+                              onClick: () => {
+                                var _a2;
+                                return (_a2 = document.getElementById("recipe-recap-audio")) == null ? void 0 : _a2.click();
+                              },
+                              disabled: isPending || isAudioUploading,
+                              className: "flex items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card px-3 py-3 min-h-[44px] w-full text-left transition-colors hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed",
+                              "aria-label": "Choose a recap voice clip to upload",
+                              "data-ocid": "library.admin.item.editor.recipe.recap_audio.empty_state",
+                              children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "h-5 w-5", "aria-hidden": "true" }),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-[0.18em]", children: "Choose an audio clip…" }),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-[10px] text-muted-foreground", children: "MP3, WAV, M4A — passed through uncompressed" })
+                              ]
+                            }
+                          ),
+                          audioUploadError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "p",
+                            {
+                              className: "text-xs text-primary font-body",
+                              role: "alert",
+                              "data-ocid": "library.admin.item.editor.recipe.recap_audio.field_error",
+                              children: audioUploadError
+                            }
+                          ) : null
+                        ]
+                      }
+                    ),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "font-heading uppercase text-xs tracking-wider", children: "Specs" }),
                       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground font-body", children: "Measured ingredients (e.g. 2 oz / Bourbon)." }),
@@ -78810,10 +79006,19 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    const DEFAULT_LIQUID_COLOR = "#F2A900";
+    const DEFAULT_CORRECT_AFFIRMATIONS = [
+      "That's correct! It's a {answer}!",
+      "Nailed it — {answer}!",
+      "Legendary! {answer}",
+      "You got it! {answer}",
+      "Boom — {answer}!"
+    ];
     function DrinksBuilderSettingsForm({
       value,
       onChange,
       categories,
+      glasswareOptions = [],
       disabled = false
     }) {
       function patch(key, next) {
@@ -78855,6 +79060,49 @@ Defaulting to \`null\`.`;
         patch(
           key,
           value[key].filter((_2, i) => i !== index2)
+        );
+      }
+      function addAffirmation() {
+        patch("correctAffirmations", [...value.correctAffirmations, ""]);
+      }
+      function updateAffirmation(index2, text) {
+        const next = value.correctAffirmations.map(
+          (t, i) => i === index2 ? text : t
+        );
+        patch("correctAffirmations", next);
+      }
+      function removeAffirmation(index2) {
+        patch(
+          "correctAffirmations",
+          value.correctAffirmations.filter((_2, i) => i !== index2)
+        );
+      }
+      function addAnswerClip() {
+        patch("answerClips", [...value.answerClips, { answer: "", audioUrl: "" }]);
+      }
+      function updateAnswerClip(index2, field, nextValue) {
+        const next = value.answerClips.map(
+          (clip, i) => i === index2 ? { ...clip, [field]: nextValue } : clip
+        );
+        patch("answerClips", next);
+      }
+      function removeAnswerClip(index2) {
+        patch(
+          "answerClips",
+          value.answerClips.filter((_2, i) => i !== index2)
+        );
+      }
+      function addCelebrationClip() {
+        patch("celebrationClips", [...value.celebrationClips, ""]);
+      }
+      function updateCelebrationClip(index2, url) {
+        const next = value.celebrationClips.map((c2, i) => i === index2 ? url : c2);
+        patch("celebrationClips", next);
+      }
+      function removeCelebrationClip(index2) {
+        patch(
+          "celebrationClips",
+          value.celebrationClips.filter((_2, i) => i !== index2)
         );
       }
       function clampNumber(raw, min2, max2) {
@@ -79033,6 +79281,49 @@ Defaulting to \`null\`.`;
                 }
               )
             ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "fieldset",
+              {
+                className: "grid gap-3",
+                disabled,
+                "data-ocid": "legendary.drinks_builder.settings_form.correct_feedback.section",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("legend", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Correct-answer feedback" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "What the player hears the moment they nail a drink. Add spoken affirmations, per-answer voice clips, and a rotation of celebration clips." }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    AffirmationList,
+                    {
+                      items: value.correctAffirmations,
+                      disabled,
+                      onAdd: addAffirmation,
+                      onUpdate: updateAffirmation,
+                      onRemove: removeAffirmation
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    AnswerClipList,
+                    {
+                      items: value.answerClips,
+                      glasswareOptions,
+                      disabled,
+                      onAdd: addAnswerClip,
+                      onUpdate: updateAnswerClip,
+                      onRemove: removeAnswerClip
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    CelebrationClipList,
+                    {
+                      items: value.celebrationClips,
+                      disabled,
+                      onAdd: addCelebrationClip,
+                      onUpdate: updateCelebrationClip,
+                      onRemove: removeCelebrationClip
+                    }
+                  )
+                ]
+              }
+            ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 NumberField,
@@ -79320,6 +79611,436 @@ Defaulting to \`null\`.`;
         )
       ] });
     }
+    const AFFIRMATION_OCID_BASE = "legendary.drinks_builder.settings_form.correct_feedback.affirmations";
+    const ANSWER_CLIP_OCID_BASE = "legendary.drinks_builder.settings_form.correct_feedback.answer_clips";
+    const CELEBRATION_OCID_BASE = "legendary.drinks_builder.settings_form.correct_feedback.celebration_clips";
+    const CELEBRATION_CAP = 6;
+    function AffirmationList({
+      items,
+      disabled,
+      onAdd,
+      onUpdate,
+      onRemove
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Affirmation phrases" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-xs text-muted-foreground", children: [
+          "Use ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-[0.7rem]", children: "{answer}" }),
+          " where the answer name should appear. The game picks one at random each correct tap."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "grid gap-1.5", "data-ocid": `${AFFIRMATION_OCID_BASE}.list`, children: items.map((text, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "li",
+          {
+            className: "flex items-center gap-2",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input$1,
+                {
+                  value: text,
+                  onChange: (e) => onUpdate(index2, e.target.value),
+                  placeholder: "e.g. Nailed it — {answer}!",
+                  autoComplete: "off",
+                  maxLength: 140,
+                  disabled,
+                  "data-ocid": `${AFFIRMATION_OCID_BASE}.input.${index2 + 1}`,
+                  className: "min-w-0 flex-1"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => onRemove(index2),
+                  disabled,
+                  "aria-label": `Remove affirmation ${index2 + 1}`,
+                  "data-ocid": `${AFFIRMATION_OCID_BASE}.remove_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                }
+              )
+            ]
+          },
+          `${AFFIRMATION_OCID_BASE}-${index2}`
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: onAdd,
+            disabled,
+            "data-ocid": `${AFFIRMATION_OCID_BASE}.add_button`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+              " Add affirmation"
+            ]
+          }
+        )
+      ] });
+    }
+    function AnswerClipList({
+      items,
+      glasswareOptions,
+      disabled,
+      onAdd,
+      onUpdate,
+      onRemove
+    }) {
+      const { uploadPhoto, isUploading, error: uploadError } = usePhotoUpload();
+      const fileInputRef = reactExports.useRef(null);
+      const pendingIndexRef = reactExports.useRef(null);
+      function openFilePicker(index2) {
+        var _a2;
+        pendingIndexRef.current = index2;
+        (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+      }
+      async function handleFileChange(e) {
+        var _a2;
+        const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
+        e.target.value = "";
+        if (!file) return;
+        const index2 = pendingIndexRef.current;
+        if (index2 === null) return;
+        if (!file.type.startsWith("audio/")) {
+          return;
+        }
+        try {
+          const url = await uploadPhoto(file);
+          onUpdate(index2, "audioUrl", url);
+        } catch {
+        } finally {
+          pendingIndexRef.current = null;
+        }
+      }
+      function previewAudio(url) {
+        new Audio(url).play().catch(() => {
+        });
+      }
+      const distinctGlassware = reactExports.useMemo(
+        () => Array.from(
+          new Set(
+            glasswareOptions.map((g2) => g2.trim()).filter((g2) => g2.length > 0)
+          )
+        ),
+        [glasswareOptions]
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Answer voice clips" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Attach a short voice clip (2–4s) that plays when the player taps a specific correct answer. Pick a glassware answer from the dropdown or type your own." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "grid gap-1.5", "data-ocid": `${ANSWER_CLIP_OCID_BASE}.list`, children: items.map((clip, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "li",
+          {
+            className: "flex flex-wrap items-center gap-2",
+            children: [
+              distinctGlassware.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "select",
+                {
+                  value: distinctGlassware.includes(clip.answer) ? clip.answer : "__custom",
+                  onChange: (e) => {
+                    if (e.target.value === "__custom") {
+                      onUpdate(index2, "answer", "");
+                    } else {
+                      onUpdate(index2, "answer", e.target.value);
+                    }
+                  },
+                  disabled,
+                  "aria-label": `Answer glassware for clip ${index2 + 1}`,
+                  "data-ocid": `${ANSWER_CLIP_OCID_BASE}.answer_select.${index2 + 1}`,
+                  className: "h-9 min-w-0 flex-1 rounded-md border border-input bg-card px-2 font-body text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "__custom", className: "bg-card text-foreground", children: "Type a custom answer…" }),
+                    distinctGlassware.map((g2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: g2, className: "bg-card text-foreground", children: g2 }, g2))
+                  ]
+                }
+              ) : null,
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input$1,
+                {
+                  value: clip.answer,
+                  onChange: (e) => onUpdate(index2, "answer", e.target.value),
+                  placeholder: "e.g. Coupe",
+                  autoComplete: "off",
+                  maxLength: 80,
+                  disabled,
+                  "aria-label": `Answer text for clip ${index2 + 1}`,
+                  "data-ocid": `${ANSWER_CLIP_OCID_BASE}.answer_input.${index2 + 1}`,
+                  className: "min-w-0 flex-1"
+                }
+              ),
+              clip.audioUrl ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "span",
+                {
+                  className: "flex items-center gap-1 font-body text-xs text-primary",
+                  "data-ocid": `${ANSWER_CLIP_OCID_BASE}.audio_indicator.${index2 + 1}`,
+                  "aria-label": "Voice clip attached",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Volume2, { className: "size-3.5", "aria-hidden": "true" }),
+                    "clip"
+                  ]
+                }
+              ) : null,
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => openFilePicker(index2),
+                  disabled: disabled || isUploading,
+                  "aria-label": `Attach voice clip to answer clip ${index2 + 1}`,
+                  "data-ocid": `${ANSWER_CLIP_OCID_BASE}.audio_upload_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => clip.audioUrl && previewAudio(clip.audioUrl),
+                  disabled: disabled || !clip.audioUrl || isUploading,
+                  "aria-label": `Preview voice clip for answer clip ${index2 + 1}`,
+                  "data-ocid": `${ANSWER_CLIP_OCID_BASE}.audio_preview_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => onRemove(index2),
+                  disabled,
+                  "aria-label": `Remove answer clip ${index2 + 1}`,
+                  "data-ocid": `${ANSWER_CLIP_OCID_BASE}.remove_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                }
+              )
+            ]
+          },
+          `${ANSWER_CLIP_OCID_BASE}-${index2}`
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            ref: fileInputRef,
+            type: "file",
+            accept: "audio/*",
+            className: "hidden",
+            onChange: handleFileChange,
+            "aria-label": "Upload voice clip for answer clip",
+            "data-ocid": `${ANSWER_CLIP_OCID_BASE}.audio_input`
+          }
+        ),
+        isUploading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-xs text-muted-foreground",
+            "data-ocid": `${ANSWER_CLIP_OCID_BASE}.audio_loading_state`,
+            children: "Uploading clip…"
+          }
+        ) : null,
+        uploadError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-xs text-primary",
+            role: "alert",
+            "data-ocid": `${ANSWER_CLIP_OCID_BASE}.audio_error_state`,
+            children: uploadError
+          }
+        ) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: onAdd,
+            disabled,
+            "data-ocid": `${ANSWER_CLIP_OCID_BASE}.add_button`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+              " Add answer clip"
+            ]
+          }
+        )
+      ] });
+    }
+    function CelebrationClipList({
+      items,
+      disabled,
+      onAdd,
+      onUpdate,
+      onRemove
+    }) {
+      const atCap = items.length >= CELEBRATION_CAP;
+      const { uploadPhoto, isUploading, error: uploadError } = usePhotoUpload();
+      const fileInputRef = reactExports.useRef(null);
+      const pendingIndexRef = reactExports.useRef(null);
+      function openFilePicker(index2) {
+        var _a2;
+        pendingIndexRef.current = index2;
+        (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+      }
+      async function handleFileChange(e) {
+        var _a2;
+        const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
+        e.target.value = "";
+        if (!file) return;
+        const index2 = pendingIndexRef.current;
+        if (index2 === null) return;
+        if (!file.type.startsWith("audio/")) {
+          return;
+        }
+        try {
+          const url = await uploadPhoto(file);
+          onUpdate(index2, url);
+        } catch {
+        } finally {
+          pendingIndexRef.current = null;
+        }
+      }
+      function previewAudio(url) {
+        new Audio(url).play().catch(() => {
+        });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: "Celebration clips" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-xs text-muted-foreground", children: [
+          "Short voice clips (2–4s) played when a round is won. The game rotates through them. Up to ",
+          CELEBRATION_CAP,
+          "."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "grid gap-1.5", "data-ocid": `${CELEBRATION_OCID_BASE}.list`, children: items.map((url, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "li",
+          {
+            className: "flex flex-wrap items-center gap-2",
+            children: [
+              url ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "span",
+                {
+                  className: "flex min-w-0 flex-1 items-center gap-1 font-body text-xs text-primary",
+                  "data-ocid": `${CELEBRATION_OCID_BASE}.audio_indicator.${index2 + 1}`,
+                  "aria-label": "Celebration clip attached",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Volume2, { className: "size-3.5", "aria-hidden": "true" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "truncate", children: [
+                      "clip ",
+                      index2 + 1
+                    ] })
+                  ]
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: "flex min-w-0 flex-1 items-center font-body text-xs text-muted-foreground",
+                  "data-ocid": `${CELEBRATION_OCID_BASE}.audio_empty.${index2 + 1}`,
+                  children: "No clip attached"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => openFilePicker(index2),
+                  disabled: disabled || isUploading,
+                  "aria-label": `Attach celebration clip ${index2 + 1}`,
+                  "data-ocid": `${CELEBRATION_OCID_BASE}.audio_upload_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => url && previewAudio(url),
+                  disabled: disabled || !url || isUploading,
+                  "aria-label": `Preview celebration clip ${index2 + 1}`,
+                  "data-ocid": `${CELEBRATION_OCID_BASE}.audio_preview_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => onRemove(index2),
+                  disabled,
+                  "aria-label": `Remove celebration clip ${index2 + 1}`,
+                  "data-ocid": `${CELEBRATION_OCID_BASE}.remove_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                }
+              )
+            ]
+          },
+          `${CELEBRATION_OCID_BASE}-${index2}`
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            ref: fileInputRef,
+            type: "file",
+            accept: "audio/*",
+            className: "hidden",
+            onChange: handleFileChange,
+            "aria-label": "Upload celebration clip",
+            "data-ocid": `${CELEBRATION_OCID_BASE}.audio_input`
+          }
+        ),
+        isUploading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-xs text-muted-foreground",
+            "data-ocid": `${CELEBRATION_OCID_BASE}.audio_loading_state`,
+            children: "Uploading clip…"
+          }
+        ) : null,
+        uploadError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-xs text-primary",
+            role: "alert",
+            "data-ocid": `${CELEBRATION_OCID_BASE}.audio_error_state`,
+            children: uploadError
+          }
+        ) : null,
+        atCap ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "p",
+          {
+            className: "font-body text-xs text-muted-foreground",
+            "data-ocid": `${CELEBRATION_OCID_BASE}.cap_hint`,
+            children: [
+              "Maximum of ",
+              CELEBRATION_CAP,
+              " celebration clips reached."
+            ]
+          }
+        ) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: onAdd,
+            disabled: disabled || atCap,
+            "data-ocid": `${CELEBRATION_OCID_BASE}.add_button`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+              " Add celebration clip"
+            ]
+          }
+        )
+      ] });
+    }
     function NumberField({
       id,
       label,
@@ -79450,7 +80171,15 @@ Defaulting to \`null\`.`;
           text: "Make it picture-perfect — garnish?",
           audioUrl: void 0
         }
-      ]
+      ],
+      // New audio/affirmation defaults. correctAffirmations reuses the shared
+      // DEFAULT_CORRECT_AFFIRMATIONS constant so the new-activity defaults and
+      // the useDrinksBuilder fallback for migrated/older data stay in sync from
+      // one source of truth. answerClips and celebrationClips start empty — the
+      // admin adds per-answer audio and celebration clips in the form.
+      correctAffirmations: DEFAULT_CORRECT_AFFIRMATIONS,
+      answerClips: [],
+      celebrationClips: []
     };
     function toFrontendQuestion(q2) {
       if (q2.__kind__ === "multipleChoice") {
@@ -79514,7 +80243,13 @@ Defaulting to \`null\`.`;
         garnishPrompts: s.garnishPrompts.map((p2) => ({
           text: p2.text,
           audioUrl: p2.audioUrl
-        }))
+        })),
+        correctAffirmations: s.correctAffirmations,
+        answerClips: s.answerClips.map((c2) => ({
+          answer: c2.answer,
+          audioUrl: c2.audioUrl
+        })),
+        celebrationClips: s.celebrationClips
       };
     }
     function toFrontendActivityContent(c2) {
@@ -79591,7 +80326,13 @@ Defaulting to \`null\`.`;
         glasswarePrompts: s.glasswarePrompts,
         specsPrompts: s.specsPrompts,
         assemblyPrompts: s.assemblyPrompts,
-        garnishPrompts: s.garnishPrompts
+        garnishPrompts: s.garnishPrompts,
+        correctAffirmations: s.correctAffirmations,
+        answerClips: s.answerClips.map((c2) => ({
+          answer: c2.answer,
+          audioUrl: c2.audioUrl
+        })),
+        celebrationClips: s.celebrationClips
       };
     }
     function toCandidQuizSettings(s) {
@@ -79749,6 +80490,24 @@ Defaulting to \`null\`.`;
         }
       }, [open]);
       const categories = categoriesQuery.data ?? [];
+      const [itemsByCategory, setItemsByCategory] = reactExports.useState({});
+      const glasswareOptions = reactExports.useMemo(() => {
+        var _a2, _b2;
+        const seen = /* @__PURE__ */ new Set();
+        const ordered = [];
+        for (const category of categories) {
+          const items = itemsByCategory[category.id];
+          if (!items) continue;
+          for (const item of items) {
+            const g2 = (_b2 = (_a2 = item.recipe) == null ? void 0 : _a2.glassware) == null ? void 0 : _b2.trim();
+            if (g2 && !seen.has(g2)) {
+              seen.add(g2);
+              ordered.push(g2);
+            }
+          }
+        }
+        return ordered;
+      }, [categories, itemsByCategory]);
       const trimmedName = name.trim();
       const canSubmit = trimmedName.length > 0 && activityType !== null && selectedCategoryIds.length > 0 && !buildMutation.isPending;
       function toggleCategory(categoryId) {
@@ -79807,6 +80566,14 @@ Defaulting to \`null\`.`;
               /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Pick library categories, choose a format, and generate a practice activity for this position. Available to all staff instantly." })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleBuild, className: "flex min-h-0 flex-col gap-5", children: [
+              categories.map((category) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                CategoryItemsCollector$1,
+                {
+                  categoryId: category.id,
+                  onData: setItemsByCategory
+                },
+                category.id
+              )),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-0 -mr-2 overflow-y-auto pr-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -79893,6 +80660,7 @@ Defaulting to \`null\`.`;
                         id: c2.id,
                         name: c2.name
                       })),
+                      glasswareOptions,
                       disabled: buildMutation.isPending
                     }
                   )
@@ -80040,6 +80808,20 @@ Defaulting to \`null\`.`;
         }
       ) });
     }
+    function CategoryItemsCollector$1({
+      categoryId,
+      onData
+    }) {
+      const itemsQuery = useItemsByCategory(categoryId);
+      reactExports.useEffect(() => {
+        onData((prev) => {
+          const next = itemsQuery.data ?? [];
+          if (prev[categoryId] === next) return prev;
+          return { ...prev, [categoryId]: next };
+        });
+      }, [categoryId, itemsQuery.data, onData]);
+      return null;
+    }
     function ActivityTypeOption({
       value,
       label,
@@ -80145,6 +80927,24 @@ Defaulting to \`null\`.`;
         }
       }, [open, activity]);
       const categories = categoriesQuery.data ?? [];
+      const [itemsByCategory, setItemsByCategory] = reactExports.useState({});
+      const glasswareOptions = reactExports.useMemo(() => {
+        var _a2, _b2;
+        const seen = /* @__PURE__ */ new Set();
+        const ordered = [];
+        for (const category of categories) {
+          const items = itemsByCategory[category.id];
+          if (!items) continue;
+          for (const item of items) {
+            const g2 = (_b2 = (_a2 = item.recipe) == null ? void 0 : _a2.glassware) == null ? void 0 : _b2.trim();
+            if (g2 && !seen.has(g2)) {
+              seen.add(g2);
+              ordered.push(g2);
+            }
+          }
+        }
+        return ordered;
+      }, [categories, itemsByCategory]);
       const trimmedName = name.trim();
       const canSubmit = trimmedName.length > 0 && selectedCategoryIds.length > 0 && !updateMutation.isPending;
       function toggleCategory(categoryId) {
@@ -80199,6 +80999,14 @@ Defaulting to \`null\`.`;
               /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Update the name or source categories. The activity type is fixed at build time and cannot change." })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSave, className: "flex min-h-0 flex-col gap-5", children: [
+              categories.map((category) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                CategoryItemsCollector,
+                {
+                  categoryId: category.id,
+                  onData: setItemsByCategory
+                },
+                category.id
+              )),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-0 -mr-2 overflow-y-auto pr-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -80280,6 +81088,7 @@ Defaulting to \`null\`.`;
                         id: c2.id,
                         name: c2.name
                       })),
+                      glasswareOptions,
                       disabled: updateMutation.isPending
                     }
                   )
@@ -80367,6 +81176,20 @@ Defaulting to \`null\`.`;
           ]
         }
       ) });
+    }
+    function CategoryItemsCollector({
+      categoryId,
+      onData
+    }) {
+      const itemsQuery = useItemsByCategory(categoryId);
+      reactExports.useEffect(() => {
+        onData((prev) => {
+          const next = itemsQuery.data ?? [];
+          if (prev[categoryId] === next) return prev;
+          return { ...prev, [categoryId]: next };
+        });
+      }, [categoryId, itemsQuery.data, onData]);
+      return null;
     }
     function ReadOnlyActivityTypeOption({
       value,
@@ -81014,7 +81837,6 @@ Defaulting to \`null\`.`;
       }, []);
       return { burst, ConfettiCanvas };
     }
-    const DEFAULT_LIQUID_COLOR = "#F2A900";
     let detailFieldCounter = 0;
     function toFrontendItem(i) {
       const details = (i.details ?? []).map((d2) => ({
@@ -81054,7 +81876,8 @@ Defaulting to \`null\`.`;
           equipment: i.recipe.equipment ?? [],
           yield: i.recipe.yield && i.recipe.yield.length > 0 ? i.recipe.yield : null,
           shelfLife: i.recipe.shelfLife && i.recipe.shelfLife.length > 0 ? i.recipe.shelfLife : null,
-          qualityIdentifier: i.recipe.qualityIdentifier ?? []
+          qualityIdentifier: i.recipe.qualityIdentifier ?? [],
+          recapAudio: i.recipe.recapAudio && i.recipe.recapAudio.length > 0 ? i.recipe.recapAudio : null
         } : null
       };
     }
@@ -81073,6 +81896,7 @@ Defaulting to \`null\`.`;
       return DEFAULT_LIQUID_COLOR;
     }
     function buildPlayablePool(items, categoryNameById, settings) {
+      var _a2;
       const included = settings.includedCategories;
       const excluded = new Set(
         settings.excludedDrinkTitles.map((t) => t.trim().toLowerCase())
@@ -81097,7 +81921,8 @@ Defaulting to \`null\`.`;
           assembly: [...r2.assembly],
           garnish: [...r2.garnish],
           color: resolveLiquidColor(),
-          photo: item.photo ?? null
+          photo: item.photo ?? null,
+          recapAudioUrl: ((_a2 = item.recipe) == null ? void 0 : _a2.recapAudio) ?? null
         });
       }
       let emptyReason = null;
@@ -81363,7 +82188,16 @@ Defaulting to \`null\`.`;
           glasswarePrompts: s.glasswarePrompts ?? [],
           specsPrompts: s.specsPrompts ?? [],
           assemblyPrompts: s.assemblyPrompts ?? [],
-          garnishPrompts: s.garnishPrompts ?? []
+          garnishPrompts: s.garnishPrompts ?? [],
+          // New audio/affirmation fields (mirrors backend.d.ts). Read
+          // defensively so migrated/older activities missing these fields
+          // still work: correctAffirmations falls back to the shared
+          // DEFAULT_CORRECT_AFFIRMATIONS templates, answerClips and
+          // celebrationClips fall back to empty arrays. Display/playback
+          // only — never read by pool/decoy/scoring/round-flow logic.
+          correctAffirmations: s.correctAffirmations ?? DEFAULT_CORRECT_AFFIRMATIONS,
+          answerClips: s.answerClips ?? [],
+          celebrationClips: s.celebrationClips ?? []
         };
       }, [activityQuery.data]);
       const playableQuery = useQuery({
@@ -81411,6 +82245,7 @@ Defaulting to \`null\`.`;
         });
       }, [playableQuery.data, categoryNameById, settings]);
       const allInScopeDrinks = reactExports.useMemo(() => {
+        var _a3;
         const seen = /* @__PURE__ */ new Set();
         const out = [];
         for (const d2 of playablePool.drinks) {
@@ -81438,7 +82273,8 @@ Defaulting to \`null\`.`;
             assembly: [...r2.assembly],
             garnish: [...r2.garnish],
             color: resolveLiquidColor(),
-            photo: item.photo ?? null
+            photo: item.photo ?? null,
+            recapAudioUrl: ((_a3 = item.recipe) == null ? void 0 : _a3.recapAudio) ?? null
           });
         }
         return out;
@@ -81668,6 +82504,17 @@ Defaulting to \`null\`.`;
         setMuted
       };
     }
+    const UPSELL_SUFFIXES = ["(upsell option)", "(upsell only)"];
+    function normalizeLabel(label) {
+      let s = label.trim();
+      for (const suffix2 of UPSELL_SUFFIXES) {
+        if (s.endsWith(suffix2)) {
+          s = s.slice(0, -suffix2.length).trim();
+          break;
+        }
+      }
+      return s;
+    }
     function useDrinksBuilderSound(soundDefault) {
       const [muted, setMutedState] = reactExports.useState(!soundDefault);
       const ctxRef = reactExports.useRef(null);
@@ -81768,6 +82615,29 @@ Defaulting to \`null\`.`;
         },
         [muted, getAudioEl]
       );
+      const playCorrectAffirmation = reactExports.useCallback(
+        (tappedLabel, answerClips, celebrationClips, seed) => {
+          if (muted) return;
+          const normalized = normalizeLabel(tappedLabel);
+          const match2 = answerClips.find(
+            (c2) => c2.answer.trim() === normalized && !!c2.audioUrl
+          );
+          if (match2) {
+            playClip(match2.audioUrl);
+            return;
+          }
+          if (celebrationClips.length > 0) {
+            const idx = (seed % celebrationClips.length + celebrationClips.length) % celebrationClips.length;
+            const url = celebrationClips[idx];
+            if (url) {
+              playClip(url);
+              return;
+            }
+          }
+          playCorrect();
+        },
+        [muted, playClip, playCorrect]
+      );
       const unlockAudio = reactExports.useCallback(() => {
         const el = getAudioEl();
         if (!el) return;
@@ -81817,6 +82687,7 @@ Defaulting to \`null\`.`;
         playWrong,
         playFinish,
         playClip,
+        playCorrectAffirmation,
         unlockAudio
       };
     }
@@ -81902,6 +82773,25 @@ Defaulting to \`null\`.`;
           if (stepTimer.current) clearTimeout(stepTimer.current);
         };
       }, []);
+      const [callout, setCallout] = reactExports.useState(null);
+      const calloutTimer = reactExports.useRef(null);
+      reactExports.useEffect(() => {
+        return () => {
+          if (calloutTimer.current) clearTimeout(calloutTimer.current);
+        };
+      }, []);
+      const correctTapCount = reactExports.useRef(0);
+      function stripUpsellMarker(label) {
+        return label.replace(/\s*\((upsell option|upsell only)\)\s*$/i, "").trim();
+      }
+      function pickAffirmation(label, roundIndex) {
+        const phrases = (settings == null ? void 0 : settings.correctAffirmations) && settings.correctAffirmations.length > 0 ? settings.correctAffirmations : DEFAULT_CORRECT_AFFIRMATIONS.length > 0 ? DEFAULT_CORRECT_AFFIRMATIONS : ["Correct! {answer}"];
+        const answer = stripUpsellMarker(label);
+        const seed = roundIndex * 2654435761 + correctTapCount.current;
+        const idx = (seed % phrases.length + phrases.length) % phrases.length;
+        const phrase = phrases[idx] ?? "Correct! {answer}";
+        return phrase.replace(/\{answer\}/g, answer);
+      }
       reactExports.useEffect(() => {
         if (!session) {
           celebratedRoundKey.current = "";
@@ -81972,6 +82862,15 @@ Defaulting to \`null\`.`;
               "Step ",
               showStep
             ] })
+          }
+        ) : null,
+        callout !== null ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "pointer-events-none fixed inset-x-0 top-1/2 z-40 flex justify-center px-4",
+            "aria-live": "polite",
+            "data-ocid": "drinks.correct_callout",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex max-w-[90vw] items-center rounded-full border border-primary/50 bg-gradient-to-r from-[oklch(var(--legendary-banner-from))] via-[oklch(var(--legendary-banner-via))] to-[oklch(var(--legendary-banner-to))] px-5 py-2 text-center font-display text-base uppercase tracking-wide text-[oklch(var(--legendary-banner-foreground))] shadow-subtle animate-drinks-legendary-banner", children: callout })
           }
         ) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -82080,6 +82979,24 @@ Defaulting to \`null\`.`;
                       const result = tapChip(section.kind, chipId);
                       if (result === "correct") {
                         sound.playCorrect();
+                        correctTapCount.current += 1;
+                        const affirmation = pickAffirmation(
+                          chip.label,
+                          session.currentIndex
+                        );
+                        setCallout(affirmation);
+                        if (calloutTimer.current)
+                          clearTimeout(calloutTimer.current);
+                        calloutTimer.current = setTimeout(
+                          () => setCallout(null),
+                          1300
+                        );
+                        sound.playCorrectAffirmation(
+                          stripUpsellMarker(chip.label),
+                          settings.answerClips,
+                          settings.celebrationClips,
+                          session.currentIndex * 2654435761 + correctTapCount.current
+                        );
                         if (section.kind === "assembly" && chip.isCorrect) {
                           const stepNumber = typeof chip.orderIndex === "number" ? chip.orderIndex + 1 : section.chips.filter(
                             (c2) => c2.isCorrect && c2.selected
@@ -82114,7 +83031,9 @@ Defaulting to \`null\`.`;
               showScore,
               score: session.score,
               isLastRound: session.currentIndex + 1 >= session.rounds.length,
-              onNextDrink: nextDrink
+              onNextDrink: nextDrink,
+              recapAudioUrl: round2.drink.recapAudioUrl,
+              muted: sound.muted
             }
           ) : null
         ] })
@@ -82443,7 +83362,9 @@ Defaulting to \`null\`.`;
       showScore,
       score,
       isLastRound,
-      onNextDrink
+      onNextDrink,
+      recapAudioUrl,
+      muted
     }) {
       const wrong = round2.wrongTaps;
       const stars = wrong === 0 ? 3 : wrong <= 2 ? 2 : 1;
@@ -82451,6 +83372,109 @@ Defaulting to \`null\`.`;
       const photo = drink.photo;
       const hasPhoto = typeof photo === "string" && photo.length > 0;
       const [lightboxOpen, setLightboxOpen] = reactExports.useState(false);
+      const [recapPlaying, setRecapPlaying] = reactExports.useState(false);
+      const recapElRef = reactExports.useRef(null);
+      const recapStartTimer = reactExports.useRef(null);
+      const hasRecapClip = typeof recapAudioUrl === "string" && recapAudioUrl.length > 0;
+      const stopRecap = () => {
+        if (recapStartTimer.current) {
+          clearTimeout(recapStartTimer.current);
+          recapStartTimer.current = null;
+        }
+        const el = recapElRef.current;
+        if (el) {
+          try {
+            el.pause();
+            el.currentTime = 0;
+            el.removeAttribute("src");
+            el.load();
+          } catch {
+          }
+        }
+      };
+      const skipRecap = () => {
+        stopRecap();
+        setRecapPlaying(false);
+      };
+      reactExports.useEffect(() => {
+        void drink.id;
+        if (!hasRecapClip || muted) {
+          setRecapPlaying(false);
+          return;
+        }
+        let el = recapElRef.current;
+        if (!el) {
+          try {
+            el = new Audio();
+            el.preload = "auto";
+            recapElRef.current = el;
+          } catch {
+            setRecapPlaying(false);
+            return;
+          }
+        }
+        const audioEl = el;
+        setRecapPlaying(true);
+        const handleEnded = () => setRecapPlaying(false);
+        const handleError = () => setRecapPlaying(false);
+        audioEl.addEventListener("ended", handleEnded);
+        audioEl.addEventListener("error", handleError);
+        try {
+          audioEl.pause();
+          audioEl.currentTime = 0;
+          audioEl.removeAttribute("src");
+          audioEl.load();
+        } catch {
+        }
+        audioEl.src = recapAudioUrl;
+        recapStartTimer.current = setTimeout(() => {
+          recapStartTimer.current = null;
+          if (muted) {
+            setRecapPlaying(false);
+            return;
+          }
+          audioEl.play().catch(() => setRecapPlaying(false));
+        }, 700);
+        return () => {
+          audioEl.removeEventListener("ended", handleEnded);
+          audioEl.removeEventListener("error", handleError);
+          if (recapStartTimer.current) {
+            clearTimeout(recapStartTimer.current);
+            recapStartTimer.current = null;
+          }
+          try {
+            audioEl.pause();
+            audioEl.currentTime = 0;
+            audioEl.removeAttribute("src");
+            audioEl.load();
+          } catch {
+          }
+        };
+      }, [drink.id, recapAudioUrl, muted, hasRecapClip]);
+      reactExports.useEffect(() => {
+        if (muted && recapPlaying) {
+          if (recapStartTimer.current) {
+            clearTimeout(recapStartTimer.current);
+            recapStartTimer.current = null;
+          }
+          const el = recapElRef.current;
+          if (el) {
+            try {
+              el.pause();
+              el.currentTime = 0;
+              el.removeAttribute("src");
+              el.load();
+            } catch {
+            }
+          }
+          setRecapPlaying(false);
+        }
+      }, [muted, recapPlaying]);
+      const handleNextDrink = () => {
+        stopRecap();
+        setRecapPlaying(false);
+        onNextDrink();
+      };
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "section",
         {
@@ -82605,16 +83629,180 @@ Defaulting to \`null\`.`;
                 ]
               }
             ) : null,
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeRecapCard, { drink }),
+            recapPlaying ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
               Button,
               {
                 type: "button",
-                onClick: onNextDrink,
+                onClick: skipRecap,
+                variant: "outline",
+                "data-ocid": "drinks.skip_recap_button",
+                className: "min-w-40",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { className: "size-4", "aria-hidden": true }),
+                  "Skip recap"
+                ]
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                type: "button",
+                onClick: handleNextDrink,
                 "data-ocid": "drinks.next_drink_button",
                 className: "min-w-40",
                 children: isLastRound ? "See results" : "Next drink"
               }
             )
+          ]
+        }
+      );
+    }
+    function RecipeRecapCard({
+      drink
+    }) {
+      const hasGlassware = typeof drink.glassware === "string" && drink.glassware.trim().length > 0;
+      const hasSpecs = Array.isArray(drink.specs) && drink.specs.length > 0;
+      const hasAssembly = Array.isArray(drink.assembly) && drink.assembly.length > 0;
+      const hasGarnish = Array.isArray(drink.garnish) && drink.garnish.length > 0;
+      if (!hasGlassware && !hasSpecs && !hasAssembly && !hasGarnish) {
+        return null;
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "w-full max-w-xs rounded-lg border border-primary/40 bg-card/80 p-5 shadow-subtle animate-drinks-legendary-banner",
+          "data-ocid": "drinks.finish.recap_card",
+          "aria-label": `${drink.title} recipe recap`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h3",
+              {
+                className: "font-display text-base uppercase leading-tight tracking-wide text-foreground",
+                "data-ocid": "drinks.finish.recap_card.title",
+                children: "Recipe"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 flex flex-col gap-4", children: [
+              hasGlassware ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "drinks.finish.recap_card.glassware", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "h4",
+                  {
+                    className: "font-heading text-sm leading-snug tracking-wide text-foreground",
+                    "data-ocid": "drinks.finish.recap_card.glassware.label",
+                    children: "Glassware"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    className: "mt-1 font-body text-sm leading-relaxed text-muted-foreground",
+                    "data-ocid": "drinks.finish.recap_card.glassware.value",
+                    children: drink.glassware
+                  }
+                )
+              ] }) : null,
+              hasSpecs ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "drinks.finish.recap_card.specs", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "h4",
+                  {
+                    className: "font-heading text-sm leading-snug tracking-wide text-foreground",
+                    "data-ocid": "drinks.finish.recap_card.specs.label",
+                    children: "Specs"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "ul",
+                  {
+                    className: "mt-1 flex flex-col gap-1",
+                    "data-ocid": "drinks.finish.recap_card.specs.list",
+                    children: drink.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "li",
+                      {
+                        className: "flex items-baseline gap-2 font-body text-sm leading-relaxed text-muted-foreground",
+                        "data-ocid": `drinks.finish.recap_card.specs.item.${i + 1}`,
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "whitespace-nowrap font-heading text-sm tabular-nums text-foreground", children: spec.amount }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": true, className: "text-muted-foreground/60", children: "+" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words", children: spec.ingredient })
+                        ]
+                      },
+                      `recap-spec-${i}-${spec.amount}-${spec.ingredient}`
+                    ))
+                  }
+                )
+              ] }) : null,
+              hasAssembly ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "drinks.finish.recap_card.assembly", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "h4",
+                  {
+                    className: "font-heading text-sm leading-snug tracking-wide text-foreground",
+                    "data-ocid": "drinks.finish.recap_card.assembly.label",
+                    children: "Assembly"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "ol",
+                  {
+                    className: "mt-1 flex flex-col gap-1.5",
+                    "data-ocid": "drinks.finish.recap_card.assembly.list",
+                    children: drink.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "li",
+                      {
+                        className: "flex items-baseline gap-2 font-body text-sm leading-relaxed text-muted-foreground",
+                        "data-ocid": `drinks.finish.recap_card.assembly.step.${i + 1}`,
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "span",
+                            {
+                              className: "flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/20 font-heading text-[0.65rem] font-semibold tabular-nums text-foreground",
+                              "aria-hidden": true,
+                              children: i + 1
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words", children: step })
+                        ]
+                      },
+                      `recap-asm-${i}-${step}`
+                    ))
+                  }
+                )
+              ] }) : null,
+              hasGarnish ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "drinks.finish.recap_card.garnish", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "h4",
+                  {
+                    className: "font-heading text-sm leading-snug tracking-wide text-foreground",
+                    "data-ocid": "drinks.finish.recap_card.garnish.label",
+                    children: "Garnish"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "ul",
+                  {
+                    className: "mt-1 flex flex-col gap-1",
+                    "data-ocid": "drinks.finish.recap_card.garnish.list",
+                    children: drink.garnish.map((g2, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "li",
+                      {
+                        className: "flex items-baseline gap-2 font-body text-sm leading-relaxed text-muted-foreground",
+                        "data-ocid": `drinks.finish.recap_card.garnish.item.${i + 1}`,
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "span",
+                            {
+                              className: "mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/60",
+                              "aria-hidden": true
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 break-words", children: g2 })
+                        ]
+                      },
+                      `recap-gar-${i}-${g2}`
+                    ))
+                  }
+                )
+              ] }) : null
+            ] })
           ]
         }
       );
@@ -84436,6 +85624,13 @@ Defaulting to \`null\`.`;
                 children: item.title
               }
             ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              RecapAudioButton,
+              {
+                recapAudio: recipe.recapAudio,
+                className: "recipe-print-card-recap-button mt-3"
+              }
+            ),
             item.subtitle && item.subtitle.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
               "p",
               {
@@ -84500,6 +85695,128 @@ Defaulting to \`null\`.`;
               }
             )
           ]
+        }
+      );
+    }
+    function RecapAudioButton({
+      recapAudio,
+      className
+    }) {
+      if (typeof recapAudio !== "string" || recapAudio.length === 0) {
+        return null;
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(RecapAudioButtonInner, { recapAudio, className });
+    }
+    function RecapAudioButtonInner({
+      recapAudio,
+      className
+    }) {
+      const [playing, setPlaying] = reactExports.useState(false);
+      const audioElRef = reactExports.useRef(null);
+      reactExports.useEffect(() => {
+        return () => {
+          const el = audioElRef.current;
+          if (el) {
+            try {
+              el.pause();
+              el.currentTime = 0;
+              el.removeAttribute("src");
+              el.load();
+            } catch {
+            }
+          }
+          audioElRef.current = null;
+        };
+      }, []);
+      reactExports.useEffect(() => {
+        const el = audioElRef.current;
+        if (!el) return;
+        const handleEnded = () => {
+          setPlaying(false);
+          try {
+            el.pause();
+            el.currentTime = 0;
+            el.removeAttribute("src");
+            el.load();
+          } catch {
+          }
+        };
+        const handleError = () => {
+          setPlaying(false);
+          try {
+            el.pause();
+            el.currentTime = 0;
+            el.removeAttribute("src");
+            el.load();
+          } catch {
+          }
+        };
+        el.addEventListener("ended", handleEnded);
+        el.addEventListener("error", handleError);
+        return () => {
+          el.removeEventListener("ended", handleEnded);
+          el.removeEventListener("error", handleError);
+        };
+      }, []);
+      const handleToggle = () => {
+        if (playing) {
+          const el2 = audioElRef.current;
+          if (el2) {
+            try {
+              el2.pause();
+              el2.currentTime = 0;
+              el2.removeAttribute("src");
+              el2.load();
+            } catch {
+            }
+          }
+          setPlaying(false);
+          return;
+        }
+        let el = audioElRef.current;
+        if (!el) {
+          try {
+            el = new Audio();
+            el.preload = "auto";
+            audioElRef.current = el;
+          } catch {
+            setPlaying(false);
+            return;
+          }
+        }
+        const audioEl = el;
+        try {
+          audioEl.pause();
+          audioEl.currentTime = 0;
+          audioEl.removeAttribute("src");
+          audioEl.load();
+        } catch {
+        }
+        audioEl.src = recapAudio;
+        setPlaying(true);
+        audioEl.play().catch(() => {
+          try {
+            audioEl.pause();
+            audioEl.currentTime = 0;
+            audioEl.removeAttribute("src");
+            audioEl.load();
+          } catch {
+          }
+          setPlaying(false);
+        });
+      };
+      const label = playing ? "⏸ Stop" : "▶ Play recap";
+      const ariaLabel = playing ? "Stop recipe recap" : "Play recipe recap";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick: handleToggle,
+          "aria-label": ariaLabel,
+          "aria-pressed": playing,
+          "data-ocid": "library.item.print_recap_button",
+          className: `inline-flex items-center gap-1.5 rounded-full border border-[#1477BE]/40 bg-[#1477BE]/5 px-3 py-1 font-body text-xs font-medium leading-none text-[#1477BE] transition-smooth hover:bg-[#1477BE]/10 hover:border-[#1477BE]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1477BE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-white print:hidden ${className ?? ""}`,
+          children: label
         }
       );
     }

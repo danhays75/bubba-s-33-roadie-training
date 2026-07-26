@@ -16,6 +16,7 @@
 // the play* functions are no-ops and mute still toggles.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { DrinksBuilderAnswerClip } from "./types";
 
 interface UseDrinksBuilderSoundResult {
   muted: boolean;
@@ -33,12 +34,48 @@ interface UseDrinksBuilderSoundResult {
    */
   playClip: (url: string) => void;
   /**
+   * Play a spoken affirmation on a correct tap, reusing the single
+   * playClip voice channel. Lookup order:
+   *   1. Per-answer clip — match the tapped label (trimmed, with
+   *      trailing '(upsell option)' / '(upsell only)' stripped) against
+   *      answerClips[i].answer; if found, play its audioUrl.
+   *   2. Celebration clip — if answerClips has no match and
+   *      celebrationClips is non-empty, pick one via seeded rotation
+   *      (seed % celebrationClips.length) — no Math.random() in render.
+   *   3. Synth chime — fall back to playCorrect() (two ascending pings).
+   * No-op when muted (playClip checks the same muted state). Unlocked
+   * by the existing unlockAudio() Start gesture. play() is wrapped in
+   * a best-effort catch inside playClip.
+   */
+  playCorrectAffirmation: (
+    tappedLabel: string,
+    answerClips: DrinksBuilderAnswerClip[],
+    celebrationClips: string[],
+    seed: number,
+  ) => void;
+  /**
    * Prime the reused audio element on the game's Start gesture so
    * later play() calls are allowed by the browser autoplay policy.
    * Calls load() on the element (and a muted 0-volume play().catch) to
    * unlock playback. Safe to call repeatedly.
    */
   unlockAudio: () => void;
+}
+
+// Trailing upsell suffixes stripped from a tapped label before matching
+// it against answerClips[i].answer. Display-only — the underlying
+// answer/pool/decoy/scoring values are untouched.
+const UPSELL_SUFFIXES = ["(upsell option)", "(upsell only)"];
+
+function normalizeLabel(label: string): string {
+  let s = label.trim();
+  for (const suffix of UPSELL_SUFFIXES) {
+    if (s.endsWith(suffix)) {
+      s = s.slice(0, -suffix.length).trim();
+      break;
+    }
+  }
+  return s;
 }
 
 /**
@@ -193,6 +230,52 @@ export function useDrinksBuilderSound(
     [muted, getAudioEl],
   );
 
+  // Play a spoken affirmation on a correct tap. Reuses the single
+  // playClip voice channel (no second HTMLAudioElement). Lookup order:
+  //   1. Per-answer clip — match the tapped label (trimmed, with
+  //      trailing '(upsell option)' / '(upsell only)' stripped) against
+  //      answerClips[i].answer; if found, play its audioUrl.
+  //   2. Celebration clip — if no per-answer match and
+  //      celebrationClips is non-empty, pick one via seeded rotation
+  //      (seed % celebrationClips.length). No Math.random() in render.
+  //   3. Synth chime — fall back to playCorrect() (two ascending pings).
+  // No-op when muted (playClip checks the same muted state). Unlocked
+  // by the existing unlockAudio() Start gesture. play() is wrapped in
+  // a best-effort catch inside playClip.
+  const playCorrectAffirmation = useCallback(
+    (
+      tappedLabel: string,
+      answerClips: DrinksBuilderAnswerClip[],
+      celebrationClips: string[],
+      seed: number,
+    ) => {
+      if (muted) return;
+      const normalized = normalizeLabel(tappedLabel);
+      // (1) Per-answer clip — exact match on the normalized label.
+      const match = answerClips.find(
+        (c) => c.answer.trim() === normalized && !!c.audioUrl,
+      );
+      if (match) {
+        playClip(match.audioUrl);
+        return;
+      }
+      // (2) Celebration clip — seeded rotation, no Math.random().
+      if (celebrationClips.length > 0) {
+        const idx =
+          ((seed % celebrationClips.length) + celebrationClips.length) %
+          celebrationClips.length;
+        const url = celebrationClips[idx];
+        if (url) {
+          playClip(url);
+          return;
+        }
+      }
+      // (3) Synth chime fallback.
+      playCorrect();
+    },
+    [muted, playClip, playCorrect],
+  );
+
   // Prime the reused audio element on the game's Start gesture so later
   // play() calls are allowed by the browser autoplay policy. Calls
   // load() on the element (and a muted 0-volume play().catch) to unlock
@@ -259,6 +342,7 @@ export function useDrinksBuilderSound(
     playWrong,
     playFinish,
     playClip,
+    playCorrectAffirmation,
     unlockAudio,
   };
 }

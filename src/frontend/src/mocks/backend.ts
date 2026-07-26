@@ -297,6 +297,12 @@ const oldFashionedRecipe = {
   yield: null,
   shelfLife: null,
   qualityIdentifier: [],
+  // Visual-QA: a recap clip URL so the finish screen's "Skip recap" gating
+  // path is exercised. Points to a tiny public-domain WAV so the audio
+  // element can attempt playback (the ended/error handlers reveal Next
+  // regardless of whether the clip actually plays in the headless browser).
+  recapAudio:
+    "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg",
 };
 
 const margaritaRecipe = {
