@@ -108,6 +108,19 @@ export function DrinksBuilderActivity({
   // Track which round we last celebrated so we fire confetti + chime once
   // per round completion (not on every re-render while the banner is up).
   const celebratedRoundKey = useRef<string>("");
+
+  // Per-round/per-section guard so each section's prompt clip plays ONCE
+  // when that section first becomes active — and never replays on
+  // re-render. Keyed by `${roundIndex}:${sectionKind}`. Cleared on round
+  // change so the new round's sections can fire their clips fresh.
+  const playedClipGuard = useRef<Set<string>>(new Set());
+  // Tracks the round index we last saw so we can reset the guard when the
+  // round changes (advance or restart). The sound hook's playClip already
+  // stops+resets the current clip before playing a new one, so a round
+  // change that activates a new section naturally stops the previous clip —
+  // but we also clear the guard so re-entering a section in the new round
+  // can play again.
+  const lastRoundIndex = useRef<number | null>(null);
   useEffect(() => {
     if (!session || !settings) return;
     const round = session.rounds[session.currentIndex] ?? null;
@@ -119,6 +132,49 @@ export function DrinksBuilderActivity({
     sound.playFinish();
     burst();
   }, [session, settings, sound, burst]);
+
+  // Play the active section's prompt clip ONCE when that section first
+  // becomes active. The active section is the first not-done section
+  // (computed below at render). When the round index changes, reset the
+  // per-round/per-section guard so the new round's sections can fire
+  // fresh. When the active section has a truthy audioUrl and the guard
+  // has not fired for this round+section, call sound.playClip and mark
+  // the guard fired. If the active section's audioUrl is undefined/null,
+  // play nothing (no browser TTS fallback). The sound hook's playClip
+  // stops+resets any in-flight clip before playing the new one, so a
+  // section change naturally stops the previous clip.
+  useEffect(() => {
+    if (!session) {
+      playedClipGuard.current = new Set();
+      lastRoundIndex.current = null;
+      return;
+    }
+    // Reset the guard when the round index changes (advance or restart).
+    if (lastRoundIndex.current !== session.currentIndex) {
+      lastRoundIndex.current = session.currentIndex;
+      playedClipGuard.current = new Set();
+    }
+    const round = session.rounds[session.currentIndex] ?? null;
+    if (!round) return;
+    // Find the active section (first not-done section, in play order).
+    const activeMeta = SECTION_META.find(
+      (m) => !round.sections.find((s) => s.kind === m.kind)?.done,
+    );
+    if (!activeMeta) return;
+    const activeSection = round.sections.find(
+      (s) => s.kind === activeMeta.kind,
+    );
+    if (!activeSection) return;
+    const guardKey = `${session.currentIndex}:${activeSection.kind}`;
+    if (playedClipGuard.current.has(guardKey)) return;
+    // Mark fired BEFORE playing so a synchronous re-render does not
+    // double-fire. If audioUrl is absent, we still mark fired so we do
+    // not keep re-evaluating (and never play a TTS fallback).
+    playedClipGuard.current.add(guardKey);
+    if (typeof activeSection.audioUrl === "string" && activeSection.audioUrl) {
+      sound.playClip(activeSection.audioUrl);
+    }
+  }, [session, sound]);
 
   // Transient "Step N" popup shown over the game when the player taps the
   // correct assembly step in sequence. Mirrors the rising-points popup
@@ -132,11 +188,14 @@ export function DrinksBuilderActivity({
   }, []);
 
   // Reset the celebration guard when the session restarts or advances so
-  // the next round can celebrate again.
+  // the next round can celebrate again. Also reset the clip-playback guard
+  // and round tracker so a fresh session can fire clips from round 0.
   useEffect(() => {
     if (!session) {
       celebratedRoundKey.current = "";
       lastSyncedMuted.current = null;
+      playedClipGuard.current = new Set();
+      lastRoundIndex.current = null;
     }
   }, [session]);
 
@@ -232,6 +291,14 @@ export function DrinksBuilderActivity({
           sound.toggleMute();
           toggleMute();
         }}
+        onBack={() => {
+          // The header back button is one of the first user gestures
+          // (alongside the first chip tap). Prime the reused audio
+          // element so the browser autoplay policy allows later
+          // playClip() calls on the destination route. unlockAudio is
+          // best-effort (catches internally) and idempotent.
+          sound.unlockAudio();
+        }}
       />
 
       <main className="mx-auto w-full max-w-md px-4 pb-16">
@@ -310,6 +377,12 @@ export function DrinksBuilderActivity({
                 streak={streak}
                 enforceAssemblyOrder={settings.enforceAssemblyOrder}
                 onTapChip={(chipId) => {
+                  // The first user gesture is the first chip tap (there is
+                  // no explicit Start button). Prime the reused audio
+                  // element on every tap so the browser autoplay policy
+                  // allows later playClip() calls. unlockAudio is
+                  // best-effort (catches internally) and idempotent.
+                  sound.unlockAudio();
                   const chip = section.chips.find((c) => c.id === chipId);
                   if (!chip || chip.selected) return;
                   // The hook is the single source of truth for whether a
@@ -385,12 +458,14 @@ function DrinksBuilderHeader({
   score,
   muted,
   onToggleMute,
+  onBack,
 }: {
   positionId: string;
   showScore: boolean;
   score: number;
   muted: boolean;
   onToggleMute: () => void;
+  onBack: () => void;
 }): ReactElement {
   return (
     <header
@@ -409,6 +484,7 @@ function DrinksBuilderHeader({
             to="/position/$id/legendary"
             params={{ id: positionId }}
             aria-label="Back to Be Legendary"
+            onClick={onBack}
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -997,6 +1073,7 @@ function SessionSummary({
         score={0}
         muted
         onToggleMute={() => {}}
+        onBack={() => {}}
       />
       <main
         className="mx-auto flex w-full max-w-md flex-col items-center gap-6 px-4 py-12 text-center"

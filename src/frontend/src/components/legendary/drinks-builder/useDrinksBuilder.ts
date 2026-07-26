@@ -32,6 +32,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   type Chip,
   DEFAULT_LIQUID_COLOR,
+  type DrinksBuilderPrompt,
   type DrinksBuilderSettings,
   type EmptyReason,
   type FeedbackState,
@@ -379,31 +380,49 @@ const SECTION_LABELS: Record<GameSectionKind, string> = {
  * is stable for the whole round (computed once at build time, never
  * re-rolled on render) and differs across rounds. When the list is empty
  * or every entry is blank, falls back to the default section label from
- * SECTION_LABELS so the heading always has text.
+ * SECTION_LABELS so the heading always has text (the fallback prompt has
+ * no audioUrl).
+ *
+ * Audio-backed subset selection: when sound is currently unmuted
+ * (`soundOn` is true) AND the section has at least one prompt with a
+ * truthy audioUrl, the round's prompt is picked from among the
+ * audio-backed ones (seeded random over that subset) so the page can
+ * play the clip. Otherwise the pick is from all prompts as before.
  *
  * The seed is the SAME value used to seed-shuffle that section's chips,
  * so the prompt pick and the chip order are both deterministic functions
  * of the round seed — replaying a round with the same seed reproduces the
- * same prompt AND the same chip layout.
+ * same prompt AND the same chip layout. No Math.random() is introduced.
  */
 function pickSectionPrompt(
-  prompts: string[] | undefined,
+  prompts: DrinksBuilderPrompt[] | undefined,
   fallback: string,
   sectionSeed: number,
-): string {
-  if (!prompts || prompts.length === 0) return fallback;
+  soundOn: boolean,
+): DrinksBuilderPrompt {
+  if (!prompts || prompts.length === 0) return { text: fallback };
   // Trim + drop blanks so an admin's stray empty entry doesn't waste a
-  // pick. We index into the trimmed list so the chosen prompt is clean.
-  const cleaned = prompts.map((p) => p.trim()).filter((p) => p.length > 0);
-  if (cleaned.length === 0) return fallback;
+  // pick. We index into the cleaned list so the chosen prompt is clean.
+  const cleaned = prompts
+    .map((p) => ({ text: p.text.trim(), audioUrl: p.audioUrl }))
+    .filter((p) => p.text.length > 0);
+  if (cleaned.length === 0) return { text: fallback };
   if (cleaned.length === 1) return cleaned[0];
+  // When sound is unmuted AND at least one prompt has a truthy audioUrl,
+  // pick from the audio-backed subset so the page can play the clip.
+  // Otherwise pick from all prompts as before. The seeded RNG drives
+  // both paths — no Math.random() is introduced.
+  const pool =
+    soundOn && cleaned.some((p) => !!p.audioUrl)
+      ? cleaned.filter((p) => !!p.audioUrl)
+      : cleaned;
   const rand = mulberry32(sectionSeed);
-  const idx = Math.floor(rand() * cleaned.length);
+  const idx = Math.floor(rand() * pool.length);
   // Clamp to [0, length-1] in case rand() returns exactly 1.0 (it
   // shouldn't for mulberry32, but the guard is cheap and avoids a
   // potential out-of-bounds).
-  const safeIdx = Math.min(cleaned.length - 1, Math.max(0, idx));
-  return cleaned[safeIdx];
+  const safeIdx = Math.min(pool.length - 1, Math.max(0, idx));
+  return pool[safeIdx];
 }
 
 /**
@@ -441,11 +460,12 @@ function buildRound(
   roundSeed: number,
   requireExactAmounts: boolean,
   sectionPrompts: {
-    glassware: string[];
-    specs: string[];
-    assembly: string[];
-    garnish: string[];
+    glassware: DrinksBuilderPrompt[];
+    specs: DrinksBuilderPrompt[];
+    assembly: DrinksBuilderPrompt[];
+    garnish: DrinksBuilderPrompt[];
   },
+  soundOn: boolean,
 ): GameRound {
   // Dedupe correct labels WITHIN a section. When requireExactAmounts is off,
   // multiple specs sharing the same ingredient produce identical correct
@@ -511,15 +531,44 @@ function buildRound(
   // applied to every section so any future legitimately-empty section is
   // handled too. The tapChip logic is unchanged — it already correctly
   // handles the vacuous-truth case when a tap occurs.
+  // Pick each section's prompt ONCE (not twice) so the label and the
+  // audioUrl come from the SAME picked DrinksBuilderPrompt. Calling
+  // pickSectionPrompt twice would advance the seeded RNG twice and
+  // produce a different pick for the label vs the audioUrl. Computing
+  // the picks up front also keeps the section-construction array
+  // readable. The fallback prompt (no audioUrl) is used when the
+  // section's prompt list is empty/all-blank.
+  const glasswarePrompt = pickSectionPrompt(
+    sectionPrompts.glassware,
+    SECTION_LABELS.glassware,
+    roundSeed + 1,
+    soundOn,
+  );
+  const specsPrompt = pickSectionPrompt(
+    sectionPrompts.specs,
+    SECTION_LABELS.specs,
+    roundSeed + 2,
+    soundOn,
+  );
+  const assemblyPrompt = pickSectionPrompt(
+    sectionPrompts.assembly,
+    SECTION_LABELS.assembly,
+    roundSeed + 3,
+    soundOn,
+  );
+  const garnishPrompt = pickSectionPrompt(
+    sectionPrompts.garnish,
+    SECTION_LABELS.garnish,
+    roundSeed + 4,
+    soundOn,
+  );
+
   const sections: GameSection[] = (
     [
       {
         kind: "glassware" as const,
-        label: pickSectionPrompt(
-          sectionPrompts.glassware,
-          SECTION_LABELS.glassware,
-          roundSeed + 1,
-        ),
+        label: glasswarePrompt.text,
+        audioUrl: glasswarePrompt.audioUrl,
         chips: makeChips(
           drink.glassware ? [drink.glassware] : [],
           decoyPool.glassware,
@@ -529,21 +578,15 @@ function buildRound(
       },
       {
         kind: "specs" as const,
-        label: pickSectionPrompt(
-          sectionPrompts.specs,
-          SECTION_LABELS.specs,
-          roundSeed + 2,
-        ),
+        label: specsPrompt.text,
+        audioUrl: specsPrompt.audioUrl,
         chips: makeChips(correctSpecs, decoyPool.specs, roundSeed + 2),
         done: false,
       },
       {
         kind: "assembly" as const,
-        label: pickSectionPrompt(
-          sectionPrompts.assembly,
-          SECTION_LABELS.assembly,
-          roundSeed + 3,
-        ),
+        label: assemblyPrompt.text,
+        audioUrl: assemblyPrompt.audioUrl,
         // Tag each correct assembly chip with its recipe array index
         // (0-based position in drink.assembly) BEFORE the shuffle so the
         // shuffle preserves orderIndex on each chip object. Only the
@@ -559,11 +602,8 @@ function buildRound(
       },
       {
         kind: "garnish" as const,
-        label: pickSectionPrompt(
-          sectionPrompts.garnish,
-          SECTION_LABELS.garnish,
-          roundSeed + 4,
-        ),
+        label: garnishPrompt.text,
+        audioUrl: garnishPrompt.audioUrl,
         chips: makeChips(correctGarnish, decoyPool.garnish, roundSeed + 4),
         done: false,
       },
@@ -667,11 +707,12 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
       pointsPerCorrect: s.pointsPerCorrect,
       roundsPerSession: s.roundsPerSession,
       soundDefault: s.soundDefault,
-      // Per-section prompt lists. The DrinksBuilderSettings type is being
-      // updated in parallel to add these four string[] fields; read them
-      // defensively so the hook works whether or not the parallel type
-      // update has landed yet. Empty/missing lists fall back to the
-      // default SECTION_LABELS value inside buildRound.
+      // Per-section prompt lists. Each prompt is a DrinksBuilderPrompt
+      // { text, audioUrl? } mirroring backend.d.ts. Read defensively so
+      // the hook works whether or not the parallel type update has
+      // landed yet. Empty/missing lists fall back to the default
+      // SECTION_LABELS value inside buildRound. The audioUrl is
+      // display/playback only — never read by pool/decoy/scoring logic.
       glasswarePrompts: s.glasswarePrompts ?? [],
       specsPrompts: s.specsPrompts ?? [],
       assemblyPrompts: s.assemblyPrompts ?? [],
@@ -863,6 +904,12 @@ export function useDrinksBuilder(activityId: string): UseDrinksBuilderResult {
           assembly: settings.assemblyPrompts,
           garnish: settings.garnishPrompts,
         },
+        // Initial soundOn mirrors the session's initial mute state
+        // (muted: !settings.soundDefault), so the first round's prompt
+        // pick uses the audio-backed subset iff sound starts unmuted.
+        // Additive-only: does not touch tapChip/scoring/pool/decoy/
+        // sessionKey/round flow.
+        settings.soundDefault,
       );
     });
     setSession({

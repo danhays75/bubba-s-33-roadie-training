@@ -67,19 +67,23 @@ export const ActivityType = IDL.Variant({
   'quiz' : IDL.Null,
   'flashcards' : IDL.Null,
 });
+export const DrinksBuilderPrompt = IDL.Record({
+  'text' : IDL.Text,
+  'audioUrl' : IDL.Opt(IDL.Text),
+});
 export const DrinksBuilderSettings = IDL.Record({
-  'garnishPrompts' : IDL.Vec(IDL.Text),
+  'garnishPrompts' : IDL.Vec(DrinksBuilderPrompt),
   'includedCategories' : IDL.Vec(IDL.Text),
   'enforceAssemblyOrder' : IDL.Bool,
   'pointsPerCorrect' : IDL.Nat,
   'excludedDrinkTitles' : IDL.Vec(IDL.Text),
   'showScoring' : IDL.Bool,
-  'assemblyPrompts' : IDL.Vec(IDL.Text),
+  'assemblyPrompts' : IDL.Vec(DrinksBuilderPrompt),
   'requireExactAmounts' : IDL.Bool,
-  'glasswarePrompts' : IDL.Vec(IDL.Text),
+  'glasswarePrompts' : IDL.Vec(DrinksBuilderPrompt),
   'soundDefault' : IDL.Bool,
   'decoyCount' : IDL.Nat,
-  'specsPrompts' : IDL.Vec(IDL.Text),
+  'specsPrompts' : IDL.Vec(DrinksBuilderPrompt),
   'streakMultiplier' : IDL.Bool,
   'roundsPerSession' : IDL.Nat,
 });
@@ -616,19 +620,23 @@ export const idlFactory = ({ IDL }) => {
     'quiz' : IDL.Null,
     'flashcards' : IDL.Null,
   });
+  const DrinksBuilderPrompt = IDL.Record({
+    'text' : IDL.Text,
+    'audioUrl' : IDL.Opt(IDL.Text),
+  });
   const DrinksBuilderSettings = IDL.Record({
-    'garnishPrompts' : IDL.Vec(IDL.Text),
+    'garnishPrompts' : IDL.Vec(DrinksBuilderPrompt),
     'includedCategories' : IDL.Vec(IDL.Text),
     'enforceAssemblyOrder' : IDL.Bool,
     'pointsPerCorrect' : IDL.Nat,
     'excludedDrinkTitles' : IDL.Vec(IDL.Text),
     'showScoring' : IDL.Bool,
-    'assemblyPrompts' : IDL.Vec(IDL.Text),
+    'assemblyPrompts' : IDL.Vec(DrinksBuilderPrompt),
     'requireExactAmounts' : IDL.Bool,
-    'glasswarePrompts' : IDL.Vec(IDL.Text),
+    'glasswarePrompts' : IDL.Vec(DrinksBuilderPrompt),
     'soundDefault' : IDL.Bool,
     'decoyCount' : IDL.Nat,
-    'specsPrompts' : IDL.Vec(IDL.Text),
+    'specsPrompts' : IDL.Vec(DrinksBuilderPrompt),
     'streakMultiplier' : IDL.Bool,
     'roundsPerSession' : IDL.Nat,
   });

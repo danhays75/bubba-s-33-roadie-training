@@ -24,6 +24,21 @@ interface UseDrinksBuilderSoundResult {
   playCorrect: () => void;
   playWrong: () => void;
   playFinish: () => void;
+  /**
+   * Play an audio clip from `url` using a single reused
+   * HTMLAudioElement. No-op when muted. Stops + resets any in-flight
+   * clip before starting the new one so clips never overlap. play() is
+   * wrapped in a best-effort catch so autoplay-policy rejections never
+   * throw.
+   */
+  playClip: (url: string) => void;
+  /**
+   * Prime the reused audio element on the game's Start gesture so
+   * later play() calls are allowed by the browser autoplay policy.
+   * Calls load() on the element (and a muted 0-volume play().catch) to
+   * unlock playback. Safe to call repeatedly.
+   */
+  unlockAudio: () => void;
 }
 
 /**
@@ -35,6 +50,28 @@ export function useDrinksBuilderSound(
 ): UseDrinksBuilderSoundResult {
   const [muted, setMutedState] = useState(!soundDefault);
   const ctxRef = useRef<AudioContext | null>(null);
+  // A single reused HTMLAudioElement for clip playback. Created lazily
+  // on first playClip / unlockAudio call so the hook does not trigger
+  // autoplay-policy warnings before the user interacts. Reused across
+  // all plays — stop+reset before setting a new src so clips never
+  // overlap. Obeys the SAME mute state as the SFX (checked inside
+  // playClip).
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
+
+  const getAudioEl = useCallback((): HTMLAudioElement | null => {
+    if (typeof window === "undefined") return null;
+    if (audioElRef.current) return audioElRef.current;
+    try {
+      const el = new Audio();
+      // Preload metadata so the first play() is responsive once
+      // unlocked. We do NOT set autoplay — play() is called explicitly.
+      el.preload = "auto";
+      audioElRef.current = el;
+      return el;
+    } catch {
+      return null;
+    }
+  }, []);
 
   // Lazily create the AudioContext on first use (not on mount) so the hook
   // does not trigger autoplay-policy warnings before the user interacts.
@@ -128,7 +165,66 @@ export function useDrinksBuilderSound(
     setMutedState(next);
   }, []);
 
-  // Close the AudioContext on unmount to free the audio thread.
+  // Play an audio clip from `url`. No-op when muted. Stops + resets any
+  // in-flight clip (pause + currentTime=0 + clear src) before setting
+  // the new src and calling play() so clips never overlap. play() is
+  // wrapped in a best-effort .catch(() => {}) so autoplay-policy
+  // rejections never throw. The clip player obeys the SAME mute state
+  // as the SFX (checked here, against the `muted` state).
+  const playClip = useCallback(
+    (url: string) => {
+      if (muted) return;
+      if (!url) return;
+      const el = getAudioEl();
+      if (!el) return;
+      // Stop + reset any in-flight clip before starting a new one.
+      try {
+        el.pause();
+        el.currentTime = 0;
+        el.removeAttribute("src");
+        el.load();
+      } catch {
+        // ignore — best-effort reset
+      }
+      el.src = url;
+      // Best-effort play — autoplay-policy rejections are swallowed.
+      void el.play().catch(() => {});
+    },
+    [muted, getAudioEl],
+  );
+
+  // Prime the reused audio element on the game's Start gesture so later
+  // play() calls are allowed by the browser autoplay policy. Calls
+  // load() on the element (and a muted 0-volume play().catch) to unlock
+  // playback. Safe to call repeatedly.
+  const unlockAudio = useCallback(() => {
+    const el = getAudioEl();
+    if (!el) return;
+    try {
+      el.muted = true;
+      el.volume = 0;
+      el.play()
+        .then(() => {
+          // Once unlocked, restore audible playback for real clips.
+          el.pause();
+          el.currentTime = 0;
+          el.muted = false;
+          el.volume = 1;
+        })
+        .catch(() => {
+          // Autoplay still blocked — restore audible state for the next
+          // user-gesture-triggered play().
+          el.muted = false;
+          el.volume = 1;
+        });
+    } catch {
+      // ignore — best-effort unlock
+    }
+  }, [getAudioEl]);
+
+  // Close the AudioContext on unmount to free the audio thread. Also
+  // pause + clear the reused HTMLAudioElement so no clip keeps playing
+  // after the component unmounts.
   useEffect(() => {
     return () => {
       const ctx = ctxRef.current;
@@ -140,6 +236,18 @@ export function useDrinksBuilderSound(
         }
       }
       ctxRef.current = null;
+      const el = audioElRef.current;
+      if (el) {
+        try {
+          el.pause();
+          el.currentTime = 0;
+          el.removeAttribute("src");
+          el.load();
+        } catch {
+          // ignore
+        }
+      }
+      audioElRef.current = null;
     };
   }, []);
 
@@ -150,5 +258,7 @@ export function useDrinksBuilderSound(
     playCorrect,
     playWrong,
     playFinish,
+    playClip,
+    unlockAudio,
   };
 }

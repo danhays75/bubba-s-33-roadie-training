@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-TEslLwFe.js"(exports, module) {
+  "assets/index-Cnluf9pV.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33240,19 +33240,23 @@ variant ${k2} -> ${e.message}`, {
       "quiz": Null,
       "flashcards": Null
     });
+    const DrinksBuilderPrompt = Record({
+      "text": Text$2,
+      "audioUrl": Opt(Text$2)
+    });
     const DrinksBuilderSettings = Record({
-      "garnishPrompts": Vec(Text$2),
+      "garnishPrompts": Vec(DrinksBuilderPrompt),
       "includedCategories": Vec(Text$2),
       "enforceAssemblyOrder": Bool,
       "pointsPerCorrect": Nat,
       "excludedDrinkTitles": Vec(Text$2),
       "showScoring": Bool,
-      "assemblyPrompts": Vec(Text$2),
+      "assemblyPrompts": Vec(DrinksBuilderPrompt),
       "requireExactAmounts": Bool,
-      "glasswarePrompts": Vec(Text$2),
+      "glasswarePrompts": Vec(DrinksBuilderPrompt),
       "soundDefault": Bool,
       "decoyCount": Nat,
-      "specsPrompts": Vec(Text$2),
+      "specsPrompts": Vec(DrinksBuilderPrompt),
       "streakMultiplier": Bool,
       "roundsPerSession": Nat
     });
@@ -33785,19 +33789,23 @@ variant ${k2} -> ${e.message}`, {
         "quiz": IDL2.Null,
         "flashcards": IDL2.Null
       });
+      const DrinksBuilderPrompt2 = IDL2.Record({
+        "text": IDL2.Text,
+        "audioUrl": IDL2.Opt(IDL2.Text)
+      });
       const DrinksBuilderSettings2 = IDL2.Record({
-        "garnishPrompts": IDL2.Vec(IDL2.Text),
+        "garnishPrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "includedCategories": IDL2.Vec(IDL2.Text),
         "enforceAssemblyOrder": IDL2.Bool,
         "pointsPerCorrect": IDL2.Nat,
         "excludedDrinkTitles": IDL2.Vec(IDL2.Text),
         "showScoring": IDL2.Bool,
-        "assemblyPrompts": IDL2.Vec(IDL2.Text),
+        "assemblyPrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "requireExactAmounts": IDL2.Bool,
-        "glasswarePrompts": IDL2.Vec(IDL2.Text),
+        "glasswarePrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "soundDefault": IDL2.Bool,
         "decoyCount": IDL2.Nat,
-        "specsPrompts": IDL2.Vec(IDL2.Text),
+        "specsPrompts": IDL2.Vec(DrinksBuilderPrompt2),
         "streakMultiplier": IDL2.Bool,
         "roundsPerSession": IDL2.Nat
       });
@@ -34489,42 +34497,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n34(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n34(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
         }
       }
       async __positions(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n38(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n38(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async __profiles(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n43(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.__profiles(to_candid_opt_n50(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n43(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.__profiles(to_candid_opt_n50(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
         }
       }
       async __verifiedEmails() {
@@ -34614,15 +34622,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n52(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n55(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n59(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n62(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n52(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n55(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n59(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n62(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34657,14 +34665,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n59(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n66(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n59(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n66(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34685,27 +34693,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.approveUser(arg0);
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.approveUser(arg0);
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n63(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n70(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n63(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n70(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34726,42 +34734,42 @@ variant ${k2} -> ${e.message}`, {
       async buildLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n65(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n72(this._uploadFile, this._downloadFile, arg0));
             return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n65(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n72(this._uploadFile, this._downloadFile, arg0));
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n80(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n80(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34769,14 +34777,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async createNsoPhase(arg0) {
@@ -34796,29 +34804,29 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n43(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Task_n35(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n50(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Task_n42(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n43(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Task_n35(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n50(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Task_n42(this._uploadFile, this._downloadFile, result);
         }
       }
       async createPosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n83(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Position_n39(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n83(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Position_n39(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
         }
       }
       async deleteCategory(arg0) {
@@ -34909,56 +34917,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n85(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n99(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n85(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n99(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllPositions();
-            return from_candid_vec_n38(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllPositions();
-          return from_candid_vec_n38(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n93(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n93(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n94(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n108(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n94(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n108(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -34979,14 +34987,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n110(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n110(this._uploadFile, this._downloadFile, result);
         }
       }
       async getDrinksBuilderDecoyPool(arg0) {
@@ -35021,14 +35029,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n111(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n111(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -35063,14 +35071,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivity(arg0);
-            return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n112(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivity(arg0);
-          return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n112(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -35091,28 +35099,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n113(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n113(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n93(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n93(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -35133,14 +35141,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n114(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n114(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -35175,42 +35183,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n101(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n115(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n101(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n115(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTasksByPhase(arg0);
-            return from_candid_vec_n34(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTasksByPhase(arg0);
-          return from_candid_vec_n34(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
         }
       }
       async getPosition(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n102(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n116(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n102(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n116(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -35231,27 +35239,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n103(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n117(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n103(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n117(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n104(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n118(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n104(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n118(this._uploadFile, this._downloadFile, arg0));
           return result;
         }
       }
@@ -35259,14 +35267,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.initiateEmailVerification(arg0);
-            return from_candid_SendResult_n112(this._uploadFile, this._downloadFile, result);
+            return from_candid_SendResult_n126(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.initiateEmailVerification(arg0);
-          return from_candid_SendResult_n112(this._uploadFile, this._downloadFile, result);
+          return from_candid_SendResult_n126(this._uploadFile, this._downloadFile, result);
         }
       }
       async isCallerAdmin() {
@@ -35301,14 +35309,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.rejectUser(arg0);
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.rejectUser(arg0);
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async reorderCategories(arg0, arg1) {
@@ -35342,28 +35350,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n114(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n114(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n114(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n114(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35371,14 +35379,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.reorderPositions(arg0);
-            return from_candid_vec_n38(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.reorderPositions(arg0);
-          return from_candid_vec_n38(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async resendApprovalEmail(arg0) {
@@ -35426,14 +35434,14 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n115(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n129(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n115(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n129(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35441,55 +35449,55 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.setEmailForUser(arg0);
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.setEmailForUser(arg0);
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async setMyPhoto(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.setMyPhoto(to_candid_opt_n79(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setMyPhoto(to_candid_opt_n93(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setMyPhoto(to_candid_opt_n79(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setMyPhoto(to_candid_opt_n93(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n43(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n43(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35497,55 +35505,55 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.setUserEmail(arg0, arg1);
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.setUserEmail(arg0, arg1);
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async setUserPhoto(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async setUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n117(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n131(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n117(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n131(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35566,42 +35574,42 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n80(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n80(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n119(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n133(this._uploadFile, this._downloadFile, arg0));
             return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n119(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n133(this._uploadFile, this._downloadFile, arg0));
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35609,28 +35617,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfileWithPhoto(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
-            return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2));
-          return from_candid_UserProfile_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateNsoPhase(arg0, arg1) {
@@ -35650,29 +35658,29 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n43(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n43(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
       async updatePosition(arg0, arg1, arg2, arg3, arg4) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n83(this._uploadFile, this._downloadFile, arg4));
-            return from_candid_Position_n39(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg4));
+            return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n79(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n83(this._uploadFile, this._downloadFile, arg4));
-          return from_candid_Position_n39(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg4));
+          return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
         }
       }
     }
@@ -35685,8 +35693,8 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Activity_n18(_uploadFile, _downloadFile, value) {
       return from_candid_record_n19(_uploadFile, _downloadFile, value);
     }
-    function from_candid_ApprovalStatus_n50(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n51(_uploadFile, _downloadFile, value);
+    function from_candid_ApprovalStatus_n57(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n58(_uploadFile, _downloadFile, value);
     }
     function from_candid_AssignmentStatus_n5(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n6(_uploadFile, _downloadFile, value);
@@ -35694,20 +35702,29 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n89(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n90(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n103(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n104(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n61(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n62(_uploadFile, _downloadFile, value);
+    function from_candid_DrinksBuilderContent_n24(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n25(_uploadFile, _downloadFile, value);
     }
-    function from_candid_FlashcardContent_n28(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n29(_uploadFile, _downloadFile, value);
+    function from_candid_DrinksBuilderPrompt_n29(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n30(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Flashcard_n30(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n31(_uploadFile, _downloadFile, value);
+    function from_candid_DrinksBuilderSettings_n26(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n27(_uploadFile, _downloadFile, value);
     }
-    function from_candid_LayoutStyle_n41(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n42(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n68(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n69(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_FlashcardContent_n35(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n36(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Flashcard_n37(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n38(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_LayoutStyle_n48(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n49(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -35715,89 +35732,101 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, value) {
       return from_candid_record_n4(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Position_n39(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n40(_uploadFile, _downloadFile, value);
+    function from_candid_Position_n46(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n47(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Question_n26(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n27(_uploadFile, _downloadFile, value);
+    function from_candid_Question_n33(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n34(_uploadFile, _downloadFile, value);
     }
-    function from_candid_QuizContent_n24(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n25(_uploadFile, _downloadFile, value);
+    function from_candid_QuizContent_n31(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n32(_uploadFile, _downloadFile, value);
     }
     function from_candid_Recipe_n15(_uploadFile, _downloadFile, value) {
       return from_candid_record_n16(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n59(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n60(_uploadFile, _downloadFile, value);
+    function from_candid_Result__1_n66(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n67(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n85(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n86(_uploadFile, _downloadFile, value);
+    function from_candid_Result_n99(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n100(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Role_n48(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n49(_uploadFile, _downloadFile, value);
+    function from_candid_Role_n55(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n56(_uploadFile, _downloadFile, value);
     }
-    function from_candid_SendResult_n112(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n113(_uploadFile, _downloadFile, value);
+    function from_candid_SendResult_n126(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n127(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Task_n35(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n36(_uploadFile, _downloadFile, value);
+    function from_candid_Task_n42(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n43(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserProfile_n46(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n47(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n53(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n54(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserRole_n94(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n95(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n108(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n109(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Value_n91(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n92(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n105(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n106(_uploadFile, _downloadFile, value);
     }
-    function from_candid__ImmutableObjectStorageRefillResult_n55(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n56(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n62(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n63(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n100(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n110(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n111(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n112(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n113(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_UserProfile_n53(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n114(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n101(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n35(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n115(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n42(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n102(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n39(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n116(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n46(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n103(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n48(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n117(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n55(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n14(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_Recipe_n15(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n32(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n33(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n40(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n37(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n44(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n57(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n64(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n58(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n65(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n96(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
+    function from_candid_record_n100(_uploadFile, _downloadFile, value) {
+      return {
+        hasMore: value.hasMore,
+        rows: from_candid_vec_n101(_uploadFile, _downloadFile, value.rows)
+      };
     }
-    function from_candid_opt_n97(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n98(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n99(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n46(_uploadFile, _downloadFile, value[0]);
+    function from_candid_record_n104(_uploadFile, _downloadFile, value) {
+      return {
+        value: from_candid_Value_n105(_uploadFile, _downloadFile, value.value),
+        name: value.name
+      };
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
       return {
@@ -35837,28 +35866,44 @@ variant ${k2} -> ${e.message}`, {
         createdBy: value.createdBy,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds,
-        quizSettings: record_opt_to_undefined(from_candid_opt_n33(_uploadFile, _downloadFile, value.quizSettings))
+        quizSettings: record_opt_to_undefined(from_candid_opt_n40(_uploadFile, _downloadFile, value.quizSettings))
       };
     }
-    function from_candid_record_n31(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n25(_uploadFile, _downloadFile, value) {
+      return {
+        settings: from_candid_DrinksBuilderSettings_n26(_uploadFile, _downloadFile, value.settings)
+      };
+    }
+    function from_candid_record_n27(_uploadFile, _downloadFile, value) {
+      return {
+        garnishPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.garnishPrompts),
+        includedCategories: value.includedCategories,
+        enforceAssemblyOrder: value.enforceAssemblyOrder,
+        pointsPerCorrect: value.pointsPerCorrect,
+        excludedDrinkTitles: value.excludedDrinkTitles,
+        showScoring: value.showScoring,
+        assemblyPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.assemblyPrompts),
+        requireExactAmounts: value.requireExactAmounts,
+        glasswarePrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.glasswarePrompts),
+        soundDefault: value.soundDefault,
+        decoyCount: value.decoyCount,
+        specsPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.specsPrompts),
+        streakMultiplier: value.streakMultiplier,
+        roundsPerSession: value.roundsPerSession
+      };
+    }
+    function from_candid_record_n30(_uploadFile, _downloadFile, value) {
+      return {
+        text: value.text,
+        audioUrl: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.audioUrl))
+      };
+    }
+    function from_candid_record_n38(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
         itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto)),
-        recipe: record_opt_to_undefined(from_candid_opt_n32(_uploadFile, _downloadFile, value.recipe))
-      };
-    }
-    function from_candid_record_n36(_uploadFile, _downloadFile, value) {
-      return {
-        id: value.id,
-        completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
-        assignedTo: record_opt_to_undefined(from_candid_opt_n37(_uploadFile, _downloadFile, value.assignedTo)),
-        sortOrder: value.sortOrder,
-        done: value.done,
-        text: value.text,
-        section: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.section)),
-        notes: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.notes)),
-        phaseId: value.phaseId
+        recipe: record_opt_to_undefined(from_candid_opt_n39(_uploadFile, _downloadFile, value.recipe))
       };
     }
     function from_candid_record_n4(_uploadFile, _downloadFile, value) {
@@ -35868,37 +35913,44 @@ variant ${k2} -> ${e.message}`, {
         positionId: value.positionId
       };
     }
-    function from_candid_record_n40(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n43(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        layoutStyle: from_candid_LayoutStyle_n41(_uploadFile, _downloadFile, value.layoutStyle),
+        completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
+        assignedTo: record_opt_to_undefined(from_candid_opt_n44(_uploadFile, _downloadFile, value.assignedTo)),
+        sortOrder: value.sortOrder,
+        done: value.done,
+        text: value.text,
+        section: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.section)),
+        notes: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.notes)),
+        phaseId: value.phaseId
+      };
+    }
+    function from_candid_record_n47(_uploadFile, _downloadFile, value) {
+      return {
+        id: value.id,
+        layoutStyle: from_candid_LayoutStyle_n48(_uploadFile, _downloadFile, value.layoutStyle),
         sortOrder: value.sortOrder,
         name: value.name,
         description: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.description)),
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_record_n47(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n54(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         name: value.name,
-        role: from_candid_Role_n48(_uploadFile, _downloadFile, value.role),
+        role: from_candid_Role_n55(_uploadFile, _downloadFile, value.role),
         email: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.email)),
-        approvalStatus: from_candid_ApprovalStatus_n50(_uploadFile, _downloadFile, value.approvalStatus),
+        approvalStatus: from_candid_ApprovalStatus_n57(_uploadFile, _downloadFile, value.approvalStatus),
         storeLocation: value.storeLocation,
         photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo))
       };
     }
-    function from_candid_record_n56(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n63(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n57(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n58(_uploadFile, _downloadFile, value.topped_up_amount))
-      };
-    }
-    function from_candid_record_n86(_uploadFile, _downloadFile, value) {
-      return {
-        hasMore: value.hasMore,
-        rows: from_candid_vec_n87(_uploadFile, _downloadFile, value.rows)
+        success: record_opt_to_undefined(from_candid_opt_n64(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n65(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
     function from_candid_record_n9(_uploadFile, _downloadFile, value) {
@@ -35910,19 +35962,37 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_record_n90(_uploadFile, _downloadFile, value) {
-      return {
-        value: from_candid_Value_n91(_uploadFile, _downloadFile, value.value),
-        name: value.name
-      };
-    }
-    function from_candid_tuple_n45(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n52(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n46(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n53(_uploadFile, _downloadFile, value[1])
       ];
     }
-    function from_candid_variant_n113(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n106(_uploadFile, _downloadFile, value) {
+      return "int" in value ? {
+        __kind__: "int",
+        int: value.int
+      } : "nat" in value ? {
+        __kind__: "nat",
+        nat: value.nat
+      } : "float" in value ? {
+        __kind__: "float",
+        float: value.float
+      } : "bool" in value ? {
+        __kind__: "bool",
+        bool: value.bool
+      } : "null" in value ? {
+        __kind__: "null",
+        null: value.null
+      } : "text" in value ? {
+        __kind__: "text",
+        text: value.text
+      } : value;
+    }
+    function from_candid_variant_n109(_uploadFile, _downloadFile, value) {
+      return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
+    }
+    function from_candid_variant_n127(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
@@ -35937,16 +36007,16 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_variant_n23(_uploadFile, _downloadFile, value) {
       return "drinksBuilderContent" in value ? {
         __kind__: "drinksBuilderContent",
-        drinksBuilderContent: value.drinksBuilderContent
+        drinksBuilderContent: from_candid_DrinksBuilderContent_n24(_uploadFile, _downloadFile, value.drinksBuilderContent)
       } : "quizContent" in value ? {
         __kind__: "quizContent",
-        quizContent: from_candid_QuizContent_n24(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: from_candid_QuizContent_n31(_uploadFile, _downloadFile, value.quizContent)
       } : "flashcardContent" in value ? {
         __kind__: "flashcardContent",
-        flashcardContent: from_candid_FlashcardContent_n28(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: from_candid_FlashcardContent_n35(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function from_candid_variant_n27(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n34(_uploadFile, _downloadFile, value) {
       return "multipleChoice" in value ? {
         __kind__: "multipleChoice",
         multipleChoice: value.multipleChoice
@@ -35958,28 +36028,28 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function from_candid_variant_n42(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n49(_uploadFile, _downloadFile, value) {
       return "library" in value ? "library" : "orientation" in value ? "orientation" : value;
     }
-    function from_candid_variant_n49(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n56(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n51(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n58(_uploadFile, _downloadFile, value) {
       return "pending" in value ? "pending" : "approved" in value ? "approved" : "rejected" in value ? "rejected" : value;
     }
     function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
       return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
     }
-    function from_candid_variant_n60(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n67(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n61(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n68(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n62(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n69(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -36012,29 +36082,14 @@ variant ${k2} -> ${e.message}`, {
         FrontendOriginMismatch: value.FrontendOriginMismatch
       } : value;
     }
-    function from_candid_variant_n92(_uploadFile, _downloadFile, value) {
-      return "int" in value ? {
-        __kind__: "int",
-        int: value.int
-      } : "nat" in value ? {
-        __kind__: "nat",
-        nat: value.nat
-      } : "float" in value ? {
-        __kind__: "float",
-        float: value.float
-      } : "bool" in value ? {
-        __kind__: "bool",
-        bool: value.bool
-      } : "null" in value ? {
-        __kind__: "null",
-        null: value.null
-      } : "text" in value ? {
-        __kind__: "text",
-        text: value.text
-      } : value;
+    function from_candid_vec_n101(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n102(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_variant_n95(_uploadFile, _downloadFile, value) {
-      return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
+    function from_candid_vec_n102(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n103(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n107(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n53(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_LibraryItem_n12(_uploadFile, _downloadFile, x2));
@@ -36045,143 +36100,146 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_vec_n2(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n25(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Question_n26(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n28(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_DrinksBuilderPrompt_n29(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n29(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Flashcard_n30(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n32(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Question_n33(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n34(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Task_n35(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n36(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Flashcard_n37(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n38(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Position_n39(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n41(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Task_n42(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n44(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n45(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Position_n46(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n51(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n52(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n87(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n88(_uploadFile, _downloadFile, x2));
+    function to_candid_ActivityContent_n76(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n77(_uploadFile, _downloadFile, value);
     }
-    function from_candid_vec_n88(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n89(_uploadFile, _downloadFile, x2));
+    function to_candid_ActivityType_n74(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n75(_uploadFile, _downloadFile, value);
     }
-    function from_candid_vec_n93(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n46(_uploadFile, _downloadFile, x2));
+    function to_candid_AssignmentStatus_n129(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n130(_uploadFile, _downloadFile, value);
     }
-    function to_candid_ActivityContent_n69(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n70(_uploadFile, _downloadFile, value);
+    function to_candid_BuildActivityInput_n72(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n73(_uploadFile, _downloadFile, value);
     }
-    function to_candid_ActivityType_n67(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n68(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderContent_n86(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n87(_uploadFile, _downloadFile, value);
     }
-    function to_candid_AssignmentStatus_n115(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n116(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderPrompt_n91(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n92(_uploadFile, _downloadFile, value);
     }
-    function to_candid_BuildActivityInput_n65(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n66(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderSettings_n88(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n89(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FlashcardContent_n71(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n72(_uploadFile, _downloadFile, value);
+    function to_candid_FlashcardContent_n78(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n79(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Flashcard_n73(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n74(_uploadFile, _downloadFile, value);
+    function to_candid_Flashcard_n80(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n81(_uploadFile, _downloadFile, value);
     }
-    function to_candid_LayoutStyle_n83(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n84(_uploadFile, _downloadFile, value);
+    function to_candid_LayoutStyle_n97(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n98(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportInput_n104(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n105(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportInput_n118(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n119(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportPhase_n107(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n108(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportPhase_n121(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n122(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportTask_n110(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n111(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportTask_n124(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n125(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Question_n77(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n78(_uploadFile, _downloadFile, value);
+    function to_candid_Question_n84(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n85(_uploadFile, _downloadFile, value);
     }
-    function to_candid_QuizContent_n75(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n76(_uploadFile, _downloadFile, value);
+    function to_candid_QuizContent_n82(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n83(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Recipe_n81(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n82(_uploadFile, _downloadFile, value);
+    function to_candid_Recipe_n95(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n96(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n117(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n118(_uploadFile, _downloadFile, value);
+    function to_candid_Role_n131(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n132(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UpdateActivityInput_n119(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n120(_uploadFile, _downloadFile, value);
+    function to_candid_UpdateActivityInput_n133(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n134(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n63(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n64(_uploadFile, _downloadFile, value);
+    function to_candid_UserRole_n70(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n71(_uploadFile, _downloadFile, value);
     }
-    function to_candid__ImmutableObjectStorageRefillInformation_n53(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n54(_uploadFile, _downloadFile, value);
+    function to_candid__ImmutableObjectStorageRefillInformation_n60(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n61(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n43(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n50(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n52(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n53(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n59(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n60(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n79(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n93(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n80(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid_Recipe_n81(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n94(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_Recipe_n95(_uploadFile, _downloadFile, value));
     }
-    function to_candid_record_n105(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n119(_uploadFile, _downloadFile, value) {
       return {
         moduleName: value.moduleName,
-        phases: to_candid_vec_n106(_uploadFile, _downloadFile, value.phases)
+        phases: to_candid_vec_n120(_uploadFile, _downloadFile, value.phases)
       };
     }
-    function to_candid_record_n108(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n122(_uploadFile, _downloadFile, value) {
       return {
-        tasks: to_candid_vec_n109(_uploadFile, _downloadFile, value.tasks),
+        tasks: to_candid_vec_n123(_uploadFile, _downloadFile, value.tasks),
         name: value.name
       };
     }
-    function to_candid_record_n111(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n125(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         section: value.section ? candid_some(value.section) : candid_none(),
         notes: value.notes ? candid_some(value.notes) : candid_none()
       };
     }
-    function to_candid_record_n120(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n134(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        content: value.content ? candid_some(to_candid_ActivityContent_n69(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        content: value.content ? candid_some(to_candid_ActivityContent_n76(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         sourceCategoryIds: value.sourceCategoryIds,
         quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
       };
     }
-    function to_candid_record_n54(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n61(_uploadFile, _downloadFile, value) {
       return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
       };
     }
-    function to_candid_record_n66(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n73(_uploadFile, _downloadFile, value) {
       return {
-        activityType: to_candid_ActivityType_n67(_uploadFile, _downloadFile, value.activityType),
-        content: value.content ? candid_some(to_candid_ActivityContent_n69(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        activityType: to_candid_ActivityType_n74(_uploadFile, _downloadFile, value.activityType),
+        content: value.content ? candid_some(to_candid_ActivityContent_n76(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds,
         quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
       };
     }
-    function to_candid_record_n74(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n81(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
@@ -36189,7 +36247,36 @@ variant ${k2} -> ${e.message}`, {
         recipe: value.recipe ? candid_some(value.recipe) : candid_none()
       };
     }
-    function to_candid_record_n82(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n87(_uploadFile, _downloadFile, value) {
+      return {
+        settings: to_candid_DrinksBuilderSettings_n88(_uploadFile, _downloadFile, value.settings)
+      };
+    }
+    function to_candid_record_n89(_uploadFile, _downloadFile, value) {
+      return {
+        garnishPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.garnishPrompts),
+        includedCategories: value.includedCategories,
+        enforceAssemblyOrder: value.enforceAssemblyOrder,
+        pointsPerCorrect: value.pointsPerCorrect,
+        excludedDrinkTitles: value.excludedDrinkTitles,
+        showScoring: value.showScoring,
+        assemblyPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.assemblyPrompts),
+        requireExactAmounts: value.requireExactAmounts,
+        glasswarePrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.glasswarePrompts),
+        soundDefault: value.soundDefault,
+        decoyCount: value.decoyCount,
+        specsPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.specsPrompts),
+        streakMultiplier: value.streakMultiplier,
+        roundsPerSession: value.roundsPerSession
+      };
+    }
+    function to_candid_record_n92(_uploadFile, _downloadFile, value) {
+      return {
+        text: value.text,
+        audioUrl: value.audioUrl ? candid_some(value.audioUrl) : candid_none()
+      };
+    }
+    function to_candid_record_n96(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         glassware: value.glassware,
@@ -36202,21 +36289,21 @@ variant ${k2} -> ${e.message}`, {
         yield: value.yield ? candid_some(value.yield) : candid_none()
       };
     }
-    function to_candid_variant_n114(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n128(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n116(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n130(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n118(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n132(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -36227,7 +36314,7 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_variant_n64(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n71(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -36236,7 +36323,7 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n68(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n75(_uploadFile, _downloadFile, value) {
       return value == "drinksBuilder" ? {
         drinksBuilder: null
       } : value == "quiz" ? {
@@ -36245,16 +36332,16 @@ variant ${k2} -> ${e.message}`, {
         flashcards: null
       } : value;
     }
-    function to_candid_variant_n70(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n77(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "drinksBuilderContent" ? {
-        drinksBuilderContent: value.drinksBuilderContent
+        drinksBuilderContent: to_candid_DrinksBuilderContent_n86(_uploadFile, _downloadFile, value.drinksBuilderContent)
       } : value.__kind__ === "quizContent" ? {
-        quizContent: to_candid_QuizContent_n75(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: to_candid_QuizContent_n82(_uploadFile, _downloadFile, value.quizContent)
       } : value.__kind__ === "flashcardContent" ? {
-        flashcardContent: to_candid_FlashcardContent_n71(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: to_candid_FlashcardContent_n78(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function to_candid_variant_n78(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n85(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "multipleChoice" ? {
         multipleChoice: value.multipleChoice
       } : value.__kind__ === "matching" ? {
@@ -36263,24 +36350,27 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function to_candid_variant_n84(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n98(_uploadFile, _downloadFile, value) {
       return value == "library" ? {
         library: null
       } : value == "orientation" ? {
         orientation: null
       } : value;
     }
-    function to_candid_vec_n106(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n107(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n120(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n121(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n109(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n110(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n123(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n124(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n72(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Flashcard_n73(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n79(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Flashcard_n80(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n76(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Question_n77(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n83(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Question_n84(_uploadFile, _downloadFile, x2));
+    }
+    function to_candid_vec_n90(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_DrinksBuilderPrompt_n91(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -39308,11 +39398,22 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$T = [
+    const __iconNode$U = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$T);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$U);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$T = [
+      ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+      ["path", { d: "M19 12H5", key: "x3x0zl" }]
+    ];
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$T);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39320,10 +39421,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$S = [
-      ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-      ["path", { d: "M19 12H5", key: "x3x0zl" }]
+      ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+      ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$S);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$S);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39331,17 +39432,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$R = [
-      ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-      ["path", { d: "M12 19V5", key: "x0mq9r" }]
-    ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$R);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$Q = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -39351,14 +39441,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$Q);
+    const BookOpen = createLucideIcon("book-open", __iconNode$R);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$P = [
+    const __iconNode$Q = [
       [
         "path",
         {
@@ -39381,14 +39471,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
       ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
     ];
-    const Brain = createLucideIcon("brain", __iconNode$P);
+    const Brain = createLucideIcon("brain", __iconNode$Q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$O = [
+    const __iconNode$P = [
       [
         "path",
         {
@@ -39398,58 +39488,69 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
     ];
-    const Camera = createLucideIcon("camera", __iconNode$O);
+    const Camera = createLucideIcon("camera", __iconNode$P);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$N = [
+    const __iconNode$O = [
       ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
       ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
     ];
-    const CheckCheck = createLucideIcon("check-check", __iconNode$N);
+    const CheckCheck = createLucideIcon("check-check", __iconNode$O);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$M = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$M);
+    const __iconNode$N = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$N);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$L = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$L);
+    const __iconNode$M = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$M);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$K = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$K);
+    const __iconNode$L = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$L);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$J = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-    const ChevronRight = createLucideIcon("chevron-right", __iconNode$J);
+    const __iconNode$K = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$K);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$I = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$I);
+    const __iconNode$J = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$J);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$I = [
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+    ];
+    const CircleCheck = createLucideIcon("circle-check", __iconNode$I);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39458,36 +39559,25 @@ variant ${k2} -> ${e.message}`, {
      */
     const __iconNode$H = [
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-    ];
-    const CircleCheck = createLucideIcon("circle-check", __iconNode$H);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$G = [
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
       ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
       ["path", { d: "M12 17h.01", key: "p32p05" }]
     ];
-    const CircleHelp = createLucideIcon("circle-help", __iconNode$G);
+    const CircleHelp = createLucideIcon("circle-help", __iconNode$H);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$F = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$F);
+    const __iconNode$G = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$G);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$E = [
+    const __iconNode$F = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -39501,7 +39591,24 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$E);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$F);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$E = [
+      [
+        "path",
+        {
+          d: "m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z",
+          key: "9ktpf1"
+        }
+      ],
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+    ];
+    const Compass = createLucideIcon("compass", __iconNode$E);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39512,13 +39619,12 @@ variant ${k2} -> ${e.message}`, {
       [
         "path",
         {
-          d: "m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z",
-          key: "9ktpf1"
+          d: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z",
+          key: "96xj49"
         }
-      ],
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+      ]
     ];
-    const Compass = createLucideIcon("compass", __iconNode$D);
+    const Flame = createLucideIcon("flame", __iconNode$D);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39526,22 +39632,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$C = [
-      [
-        "path",
-        {
-          d: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z",
-          key: "96xj49"
-        }
-      ]
-    ];
-    const Flame = createLucideIcon("flame", __iconNode$C);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$B = [
       ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
       ["path", { d: "m18 15 4-4", key: "16gjal" }],
       [
@@ -39552,7 +39642,24 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Hammer = createLucideIcon("hammer", __iconNode$B);
+    const Hammer = createLucideIcon("hammer", __iconNode$C);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$B = [
+      [
+        "path",
+        {
+          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+          key: "c3ymky"
+        }
+      ],
+      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+    ];
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39566,10 +39673,9 @@ variant ${k2} -> ${e.message}`, {
           d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
           key: "c3ymky"
         }
-      ],
-      ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
+      ]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$A);
+    const Heart = createLucideIcon("heart", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39577,22 +39683,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$z = [
-      [
-        "path",
-        {
-          d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
-          key: "c3ymky"
-        }
-      ]
-    ];
-    const Heart = createLucideIcon("heart", __iconNode$z);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$y = [
       ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
       ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
       ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
@@ -39606,14 +39696,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
     ];
-    const ImageOff = createLucideIcon("image-off", __iconNode$y);
+    const ImageOff = createLucideIcon("image-off", __iconNode$z);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$x = [
+    const __iconNode$y = [
       [
         "path",
         {
@@ -39636,7 +39726,20 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$x);
+    const Layers = createLucideIcon("layers", __iconNode$y);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$x = [
+      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
+      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+    ];
+    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$x);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39644,12 +39747,12 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$w = [
-      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
-      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
-      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
-      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
+      ["path", { d: "M12 6v14", key: "1n7gus" }],
+      ["path", { d: "M8 8v12", key: "1gg7y9" }],
+      ["path", { d: "M4 4v16", key: "6qkkli" }]
     ];
-    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$w);
+    const Library = createLucideIcon("library", __iconNode$w);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39657,19 +39760,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$v = [
-      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
-      ["path", { d: "M12 6v14", key: "1n7gus" }],
-      ["path", { d: "M8 8v12", key: "1gg7y9" }],
-      ["path", { d: "M4 4v16", key: "6qkkli" }]
-    ];
-    const Library = createLucideIcon("library", __iconNode$v);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$u = [
       [
         "path",
         {
@@ -39680,26 +39770,37 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M9 18h6", key: "x1upvd" }],
       ["path", { d: "M10 22h4", key: "ceow96" }]
     ];
-    const Lightbulb = createLucideIcon("lightbulb", __iconNode$u);
+    const Lightbulb = createLucideIcon("lightbulb", __iconNode$v);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$t = [
+    const __iconNode$u = [
       ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
       ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
     ];
-    const Link$2 = createLucideIcon("link", __iconNode$t);
+    const Link$2 = createLucideIcon("link", __iconNode$u);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$s = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$s);
+    const __iconNode$t = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$t);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$s = [
+      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+    ];
+    const Lock = createLucideIcon("lock", __iconNode$s);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39707,10 +39808,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$r = [
-      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
     ];
-    const Lock = createLucideIcon("lock", __iconNode$r);
+    const LogOut = createLucideIcon("log-out", __iconNode$r);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39718,11 +39820,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$q = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
+      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
+      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
     ];
-    const LogOut = createLucideIcon("log-out", __iconNode$q);
+    const MailCheck = createLucideIcon("mail-check", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39730,11 +39832,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$p = [
-      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
-      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
-      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
+      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
     ];
-    const MailCheck = createLucideIcon("mail-check", __iconNode$p);
+    const Mail = createLucideIcon("mail", __iconNode$p);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39742,17 +39843,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$o = [
-      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
-      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
-    ];
-    const Mail = createLucideIcon("mail", __iconNode$o);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$n = [
       ["path", { d: "M12 22v-9", key: "x3hkom" }],
       [
         "path",
@@ -39776,14 +39866,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const PackageOpen = createLucideIcon("package-open", __iconNode$n);
+    const PackageOpen = createLucideIcon("package-open", __iconNode$o);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$m = [
+    const __iconNode$n = [
       [
         "path",
         {
@@ -39795,14 +39885,14 @@ variant ${k2} -> ${e.message}`, {
       ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
       ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
     ];
-    const Package = createLucideIcon("package", __iconNode$m);
+    const Package = createLucideIcon("package", __iconNode$n);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$l = [
+    const __iconNode$m = [
       [
         "path",
         {
@@ -39812,7 +39902,15 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
     ];
-    const Pencil = createLucideIcon("pencil", __iconNode$l);
+    const Pencil = createLucideIcon("pencil", __iconNode$m);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$l = [["polygon", { points: "6 3 20 12 6 21 6 3", key: "1oa8hb" }]];
+    const Play = createLucideIcon("play", __iconNode$l);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -78741,10 +78839,16 @@ Defaulting to \`null\`.`;
         );
       }
       function addPrompt(key) {
-        patch(key, [...value[key], ""]);
+        patch(key, [...value[key], { text: "", audioUrl: void 0 }]);
       }
       function updatePrompt(key, index2, text) {
-        const next = value[key].map((t, i) => i === index2 ? text : t);
+        const next = value[key].map((p2, i) => i === index2 ? { ...p2, text } : p2);
+        patch(key, next);
+      }
+      function updatePromptAudio(key, index2, audioUrl) {
+        const next = value[key].map(
+          (p2, i) => i === index2 ? { ...p2, audioUrl } : p2
+        );
         patch(key, next);
       }
       function removePrompt(key, index2) {
@@ -78882,7 +78986,8 @@ Defaulting to \`null\`.`;
                   disabled,
                   onAdd: () => addPrompt("glasswarePrompts"),
                   onUpdate: (i, t) => updatePrompt("glasswarePrompts", i, t),
-                  onRemove: (i) => removePrompt("glasswarePrompts", i)
+                  onRemove: (i) => removePrompt("glasswarePrompts", i),
+                  onUpdateAudio: (i, url) => updatePromptAudio("glasswarePrompts", i, url)
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -78895,7 +79000,8 @@ Defaulting to \`null\`.`;
                   disabled,
                   onAdd: () => addPrompt("specsPrompts"),
                   onUpdate: (i, t) => updatePrompt("specsPrompts", i, t),
-                  onRemove: (i) => removePrompt("specsPrompts", i)
+                  onRemove: (i) => removePrompt("specsPrompts", i),
+                  onUpdateAudio: (i, url) => updatePromptAudio("specsPrompts", i, url)
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -78908,7 +79014,8 @@ Defaulting to \`null\`.`;
                   disabled,
                   onAdd: () => addPrompt("assemblyPrompts"),
                   onUpdate: (i, t) => updatePrompt("assemblyPrompts", i, t),
-                  onRemove: (i) => removePrompt("assemblyPrompts", i)
+                  onRemove: (i) => removePrompt("assemblyPrompts", i),
+                  onUpdateAudio: (i, url) => updatePromptAudio("assemblyPrompts", i, url)
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -78921,7 +79028,8 @@ Defaulting to \`null\`.`;
                   disabled,
                   onAdd: () => addPrompt("garnishPrompts"),
                   onUpdate: (i, t) => updatePrompt("garnishPrompts", i, t),
-                  onRemove: (i) => removePrompt("garnishPrompts", i)
+                  onRemove: (i) => removePrompt("garnishPrompts", i),
+                  onUpdateAudio: (i, url) => updatePromptAudio("garnishPrompts", i, url)
                 }
               )
             ] }),
@@ -79044,38 +79152,158 @@ Defaulting to \`null\`.`;
       disabled,
       onAdd,
       onUpdate,
-      onRemove
+      onRemove,
+      onUpdateAudio
     }) {
       const atCap = items.length >= 8;
+      const { uploadPhoto, isUploading, error: uploadError } = usePhotoUpload();
+      const fileInputRef = reactExports.useRef(null);
+      const pendingIndexRef = reactExports.useRef(null);
+      function openFilePicker(index2) {
+        var _a2;
+        pendingIndexRef.current = index2;
+        (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+      }
+      async function handleFileChange(e) {
+        var _a2;
+        const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
+        e.target.value = "";
+        if (!file) return;
+        const index2 = pendingIndexRef.current;
+        if (index2 === null) return;
+        if (!file.type.startsWith("audio/")) {
+          return;
+        }
+        try {
+          const url = await uploadPhoto(file);
+          onUpdateAudio(index2, url);
+        } catch {
+        } finally {
+          pendingIndexRef.current = null;
+        }
+      }
+      function previewAudio(url) {
+        new Audio(url).play().catch(() => {
+        });
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading uppercase text-xs tracking-wider text-foreground", children: legend }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "grid gap-1.5", "data-ocid": `${ocidBase}.list`, children: items.map((prompt2, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Input$1,
-            {
-              value: prompt2,
-              onChange: (e) => onUpdate(index2, e.target.value),
-              placeholder,
-              autoComplete: "off",
-              maxLength: 120,
-              disabled,
-              "data-ocid": `${ocidBase}.input.${index2 + 1}`
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Button,
-            {
-              type: "button",
-              variant: "outline",
-              size: "icon",
-              onClick: () => onRemove(index2),
-              disabled,
-              "aria-label": `Remove ${legend.toLowerCase()} ${index2 + 1}`,
-              "data-ocid": `${ocidBase}.remove_button.${index2 + 1}`,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
-            }
-          )
-        ] }, `${ocidBase}-${prompt2}`)) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Optional: attach a short voice clip (2–4s) that plays when this prompt appears in the game." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "grid gap-1.5", "data-ocid": `${ocidBase}.list`, children: items.map((prompt2, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "li",
+          {
+            className: "flex flex-wrap items-center gap-2",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input$1,
+                {
+                  value: prompt2.text,
+                  onChange: (e) => onUpdate(index2, e.target.value),
+                  placeholder,
+                  autoComplete: "off",
+                  maxLength: 120,
+                  disabled,
+                  "data-ocid": `${ocidBase}.input.${index2 + 1}`,
+                  className: "min-w-0 flex-1"
+                }
+              ),
+              prompt2.audioUrl ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "span",
+                {
+                  className: "flex items-center gap-1 font-body text-xs text-primary",
+                  "data-ocid": `${ocidBase}.audio_indicator.${index2 + 1}`,
+                  "aria-label": "Voice clip attached",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Volume2, { className: "size-3.5", "aria-hidden": "true" }),
+                    "clip"
+                  ]
+                }
+              ) : null,
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => openFilePicker(index2),
+                  disabled: disabled || isUploading,
+                  "aria-label": `Attach voice clip to ${legend.toLowerCase()} ${index2 + 1}`,
+                  "data-ocid": `${ocidBase}.audio_upload_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => prompt2.audioUrl && previewAudio(prompt2.audioUrl),
+                  disabled: disabled || !prompt2.audioUrl || isUploading,
+                  "aria-label": `Preview voice clip for ${legend.toLowerCase()} ${index2 + 1}`,
+                  "data-ocid": `${ocidBase}.audio_preview_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => onUpdateAudio(index2, void 0),
+                  disabled: disabled || !prompt2.audioUrl || isUploading,
+                  "aria-label": `Remove voice clip from ${legend.toLowerCase()} ${index2 + 1}`,
+                  "data-ocid": `${ocidBase}.audio_remove_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => onRemove(index2),
+                  disabled,
+                  "aria-label": `Remove ${legend.toLowerCase()} ${index2 + 1}`,
+                  "data-ocid": `${ocidBase}.remove_button.${index2 + 1}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                }
+              )
+            ]
+          },
+          `${ocidBase}-${index2}`
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            ref: fileInputRef,
+            type: "file",
+            accept: "audio/*",
+            className: "hidden",
+            onChange: handleFileChange,
+            "aria-label": `Upload voice clip for ${legend.toLowerCase()}`,
+            "data-ocid": `${ocidBase}.audio_input`
+          }
+        ),
+        isUploading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-xs text-muted-foreground",
+            "data-ocid": `${ocidBase}.audio_loading_state`,
+            children: "Uploading clip…"
+          }
+        ) : null,
+        uploadError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-xs text-primary",
+            role: "alert",
+            "data-ocid": `${ocidBase}.audio_error_state`,
+            children: uploadError
+          }
+        ) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           Button,
           {
@@ -79178,44 +79406,50 @@ Defaulting to \`null\`.`;
       roundsPerSession: 0,
       soundDefault: true,
       glasswarePrompts: [
-        "GLASSWARE",
-        "What glass are you reaching for?",
-        "Surprise me with your wisdom — what glass?",
-        "Be legendary — pick the glass.",
-        "Which glass makes this one shine?",
-        "Glass check! What's it going in?",
-        "Grab the right glass, Roadie.",
-        "First things first — the glass?"
+        { text: "GLASSWARE", audioUrl: void 0 },
+        { text: "What glass are you reaching for?", audioUrl: void 0 },
+        {
+          text: "Surprise me with your wisdom — what glass?",
+          audioUrl: void 0
+        },
+        { text: "Be legendary — pick the glass.", audioUrl: void 0 },
+        { text: "Which glass makes this one shine?", audioUrl: void 0 },
+        { text: "Glass check! What's it going in?", audioUrl: void 0 },
+        { text: "Grab the right glass, Roadie.", audioUrl: void 0 },
+        { text: "First things first — the glass?", audioUrl: void 0 }
       ],
       specsPrompts: [
-        "SPECS",
-        "Build the pour — what goes in?",
-        "Tap every spec that belongs.",
-        "Show me the recipe, Roadie.",
-        "What's in this legend?",
-        "Load it up — every correct spec.",
-        "Nail the pour. What's in it?",
-        "Ingredients, please — all of 'em."
+        { text: "SPECS", audioUrl: void 0 },
+        { text: "Build the pour — what goes in?", audioUrl: void 0 },
+        { text: "Tap every spec that belongs.", audioUrl: void 0 },
+        { text: "Show me the recipe, Roadie.", audioUrl: void 0 },
+        { text: "What's in this legend?", audioUrl: void 0 },
+        { text: "Load it up — every correct spec.", audioUrl: void 0 },
+        { text: "Nail the pour. What's in it?", audioUrl: void 0 },
+        { text: "Ingredients, please — all of 'em.", audioUrl: void 0 }
       ],
       assemblyPrompts: [
-        "ASSEMBLY",
-        "How do we build it? In order!",
-        "Walk me through the steps.",
-        "Put it together, step by step.",
-        "What's the play — in order?",
-        "Assemble like a legend.",
-        "Order matters — build it right.",
-        "Steps in sequence, Roadie."
+        { text: "ASSEMBLY", audioUrl: void 0 },
+        { text: "How do we build it? In order!", audioUrl: void 0 },
+        { text: "Walk me through the steps.", audioUrl: void 0 },
+        { text: "Put it together, step by step.", audioUrl: void 0 },
+        { text: "What's the play — in order?", audioUrl: void 0 },
+        { text: "Assemble like a legend.", audioUrl: void 0 },
+        { text: "Order matters — build it right.", audioUrl: void 0 },
+        { text: "Steps in sequence, Roadie.", audioUrl: void 0 }
       ],
       garnishPrompts: [
-        "GARNISH",
-        "Finish strong — what's the garnish?",
-        "Top it off like a legend.",
-        "The final touch — garnish?",
-        "What makes it pop?",
-        "Dress it up — pick the garnish.",
-        "Last step — garnish it.",
-        "Make it picture-perfect — garnish?"
+        { text: "GARNISH", audioUrl: void 0 },
+        { text: "Finish strong — what's the garnish?", audioUrl: void 0 },
+        { text: "Top it off like a legend.", audioUrl: void 0 },
+        { text: "The final touch — garnish?", audioUrl: void 0 },
+        { text: "What makes it pop?", audioUrl: void 0 },
+        { text: "Dress it up — pick the garnish.", audioUrl: void 0 },
+        { text: "Last step — garnish it.", audioUrl: void 0 },
+        {
+          text: "Make it picture-perfect — garnish?",
+          audioUrl: void 0
+        }
       ]
     };
     function toFrontendQuestion(q2) {
@@ -79265,10 +79499,22 @@ Defaulting to \`null\`.`;
         pointsPerCorrect: Number(s.pointsPerCorrect),
         roundsPerSession: Number(s.roundsPerSession),
         soundDefault: s.soundDefault,
-        glasswarePrompts: s.glasswarePrompts,
-        specsPrompts: s.specsPrompts,
-        assemblyPrompts: s.assemblyPrompts,
-        garnishPrompts: s.garnishPrompts
+        glasswarePrompts: s.glasswarePrompts.map((p2) => ({
+          text: p2.text,
+          audioUrl: p2.audioUrl
+        })),
+        specsPrompts: s.specsPrompts.map((p2) => ({
+          text: p2.text,
+          audioUrl: p2.audioUrl
+        })),
+        assemblyPrompts: s.assemblyPrompts.map((p2) => ({
+          text: p2.text,
+          audioUrl: p2.audioUrl
+        })),
+        garnishPrompts: s.garnishPrompts.map((p2) => ({
+          text: p2.text,
+          audioUrl: p2.audioUrl
+        }))
       };
     }
     function toFrontendActivityContent(c2) {
@@ -80964,17 +81210,18 @@ Defaulting to \`null\`.`;
       assembly: "Assembly",
       garnish: "Garnish"
     };
-    function pickSectionPrompt(prompts, fallback, sectionSeed) {
-      if (!prompts || prompts.length === 0) return fallback;
-      const cleaned = prompts.map((p2) => p2.trim()).filter((p2) => p2.length > 0);
-      if (cleaned.length === 0) return fallback;
+    function pickSectionPrompt(prompts, fallback, sectionSeed, soundOn) {
+      if (!prompts || prompts.length === 0) return { text: fallback };
+      const cleaned = prompts.map((p2) => ({ text: p2.text.trim(), audioUrl: p2.audioUrl })).filter((p2) => p2.text.length > 0);
+      if (cleaned.length === 0) return { text: fallback };
       if (cleaned.length === 1) return cleaned[0];
+      const pool = soundOn && cleaned.some((p2) => !!p2.audioUrl) ? cleaned.filter((p2) => !!p2.audioUrl) : cleaned;
       const rand = mulberry32$1(sectionSeed);
-      const idx = Math.floor(rand() * cleaned.length);
-      const safeIdx = Math.min(cleaned.length - 1, Math.max(0, idx));
-      return cleaned[safeIdx];
+      const idx = Math.floor(rand() * pool.length);
+      const safeIdx = Math.min(pool.length - 1, Math.max(0, idx));
+      return pool[safeIdx];
     }
-    function buildRound(drink, decoyPool, decoyCount, roundSeed, requireExactAmounts, sectionPrompts) {
+    function buildRound(drink, decoyPool, decoyCount, roundSeed, requireExactAmounts, sectionPrompts, soundOn) {
       const correctSpecs = dedupeLabels(
         drink.specs.map(
           (s) => formatSpecLabel(s.amount, s.ingredient, requireExactAmounts)
@@ -81009,14 +81256,35 @@ Defaulting to \`null\`.`;
         );
         return all;
       };
+      const glasswarePrompt = pickSectionPrompt(
+        sectionPrompts.glassware,
+        SECTION_LABELS.glassware,
+        roundSeed + 1,
+        soundOn
+      );
+      const specsPrompt = pickSectionPrompt(
+        sectionPrompts.specs,
+        SECTION_LABELS.specs,
+        roundSeed + 2,
+        soundOn
+      );
+      const assemblyPrompt = pickSectionPrompt(
+        sectionPrompts.assembly,
+        SECTION_LABELS.assembly,
+        roundSeed + 3,
+        soundOn
+      );
+      const garnishPrompt = pickSectionPrompt(
+        sectionPrompts.garnish,
+        SECTION_LABELS.garnish,
+        roundSeed + 4,
+        soundOn
+      );
       const sections = [
         {
           kind: "glassware",
-          label: pickSectionPrompt(
-            sectionPrompts.glassware,
-            SECTION_LABELS.glassware,
-            roundSeed + 1
-          ),
+          label: glasswarePrompt.text,
+          audioUrl: glasswarePrompt.audioUrl,
           chips: makeChips(
             drink.glassware ? [drink.glassware] : [],
             decoyPool.glassware,
@@ -81026,21 +81294,15 @@ Defaulting to \`null\`.`;
         },
         {
           kind: "specs",
-          label: pickSectionPrompt(
-            sectionPrompts.specs,
-            SECTION_LABELS.specs,
-            roundSeed + 2
-          ),
+          label: specsPrompt.text,
+          audioUrl: specsPrompt.audioUrl,
           chips: makeChips(correctSpecs, decoyPool.specs, roundSeed + 2),
           done: false
         },
         {
           kind: "assembly",
-          label: pickSectionPrompt(
-            sectionPrompts.assembly,
-            SECTION_LABELS.assembly,
-            roundSeed + 3
-          ),
+          label: assemblyPrompt.text,
+          audioUrl: assemblyPrompt.audioUrl,
           // Tag each correct assembly chip with its recipe array index
           // (0-based position in drink.assembly) BEFORE the shuffle so the
           // shuffle preserves orderIndex on each chip object. Only the
@@ -81056,11 +81318,8 @@ Defaulting to \`null\`.`;
         },
         {
           kind: "garnish",
-          label: pickSectionPrompt(
-            sectionPrompts.garnish,
-            SECTION_LABELS.garnish,
-            roundSeed + 4
-          ),
+          label: garnishPrompt.text,
+          audioUrl: garnishPrompt.audioUrl,
           chips: makeChips(correctGarnish, decoyPool.garnish, roundSeed + 4),
           done: false
         }
@@ -81095,11 +81354,12 @@ Defaulting to \`null\`.`;
           pointsPerCorrect: s.pointsPerCorrect,
           roundsPerSession: s.roundsPerSession,
           soundDefault: s.soundDefault,
-          // Per-section prompt lists. The DrinksBuilderSettings type is being
-          // updated in parallel to add these four string[] fields; read them
-          // defensively so the hook works whether or not the parallel type
-          // update has landed yet. Empty/missing lists fall back to the
-          // default SECTION_LABELS value inside buildRound.
+          // Per-section prompt lists. Each prompt is a DrinksBuilderPrompt
+          // { text, audioUrl? } mirroring backend.d.ts. Read defensively so
+          // the hook works whether or not the parallel type update has
+          // landed yet. Empty/missing lists fall back to the default
+          // SECTION_LABELS value inside buildRound. The audioUrl is
+          // display/playback only — never read by pool/decoy/scoring logic.
           glasswarePrompts: s.glasswarePrompts ?? [],
           specsPrompts: s.specsPrompts ?? [],
           assemblyPrompts: s.assemblyPrompts ?? [],
@@ -81219,7 +81479,13 @@ Defaulting to \`null\`.`;
               specs: settings.specsPrompts,
               assembly: settings.assemblyPrompts,
               garnish: settings.garnishPrompts
-            }
+            },
+            // Initial soundOn mirrors the session's initial mute state
+            // (muted: !settings.soundDefault), so the first round's prompt
+            // pick uses the audio-backed subset iff sound starts unmuted.
+            // Additive-only: does not touch tapChip/scoring/pool/decoy/
+            // sessionKey/round flow.
+            settings.soundDefault
           );
         });
         setSession({
@@ -81405,6 +81671,19 @@ Defaulting to \`null\`.`;
     function useDrinksBuilderSound(soundDefault) {
       const [muted, setMutedState] = reactExports.useState(!soundDefault);
       const ctxRef = reactExports.useRef(null);
+      const audioElRef = reactExports.useRef(null);
+      const getAudioEl = reactExports.useCallback(() => {
+        if (typeof window === "undefined") return null;
+        if (audioElRef.current) return audioElRef.current;
+        try {
+          const el = new Audio();
+          el.preload = "auto";
+          audioElRef.current = el;
+          return el;
+        } catch {
+          return null;
+        }
+      }, []);
       const getCtx = reactExports.useCallback(() => {
         if (typeof window === "undefined") return null;
         if (ctxRef.current) return ctxRef.current;
@@ -81470,6 +81749,43 @@ Defaulting to \`null\`.`;
       const setMuted = reactExports.useCallback((next) => {
         setMutedState(next);
       }, []);
+      const playClip = reactExports.useCallback(
+        (url) => {
+          if (muted) return;
+          if (!url) return;
+          const el = getAudioEl();
+          if (!el) return;
+          try {
+            el.pause();
+            el.currentTime = 0;
+            el.removeAttribute("src");
+            el.load();
+          } catch {
+          }
+          el.src = url;
+          void el.play().catch(() => {
+          });
+        },
+        [muted, getAudioEl]
+      );
+      const unlockAudio = reactExports.useCallback(() => {
+        const el = getAudioEl();
+        if (!el) return;
+        try {
+          el.muted = true;
+          el.volume = 0;
+          el.play().then(() => {
+            el.pause();
+            el.currentTime = 0;
+            el.muted = false;
+            el.volume = 1;
+          }).catch(() => {
+            el.muted = false;
+            el.volume = 1;
+          });
+        } catch {
+        }
+      }, [getAudioEl]);
       reactExports.useEffect(() => {
         return () => {
           const ctx = ctxRef.current;
@@ -81480,6 +81796,17 @@ Defaulting to \`null\`.`;
             }
           }
           ctxRef.current = null;
+          const el = audioElRef.current;
+          if (el) {
+            try {
+              el.pause();
+              el.currentTime = 0;
+              el.removeAttribute("src");
+              el.load();
+            } catch {
+            }
+          }
+          audioElRef.current = null;
         };
       }, []);
       return {
@@ -81488,7 +81815,9 @@ Defaulting to \`null\`.`;
         setMuted,
         playCorrect,
         playWrong,
-        playFinish
+        playFinish,
+        playClip,
+        unlockAudio
       };
     }
     const SECTION_META = [
@@ -81524,6 +81853,8 @@ Defaulting to \`null\`.`;
         }
       }, [session, sound]);
       const celebratedRoundKey = reactExports.useRef("");
+      const playedClipGuard = reactExports.useRef(/* @__PURE__ */ new Set());
+      const lastRoundIndex = reactExports.useRef(null);
       reactExports.useEffect(() => {
         if (!session || !settings) return;
         const round22 = session.rounds[session.currentIndex] ?? null;
@@ -81534,6 +81865,36 @@ Defaulting to \`null\`.`;
         sound.playFinish();
         burst();
       }, [session, settings, sound, burst]);
+      reactExports.useEffect(() => {
+        if (!session) {
+          playedClipGuard.current = /* @__PURE__ */ new Set();
+          lastRoundIndex.current = null;
+          return;
+        }
+        if (lastRoundIndex.current !== session.currentIndex) {
+          lastRoundIndex.current = session.currentIndex;
+          playedClipGuard.current = /* @__PURE__ */ new Set();
+        }
+        const round22 = session.rounds[session.currentIndex] ?? null;
+        if (!round22) return;
+        const activeMeta = SECTION_META.find(
+          (m2) => {
+            var _a2;
+            return !((_a2 = round22.sections.find((s) => s.kind === m2.kind)) == null ? void 0 : _a2.done);
+          }
+        );
+        if (!activeMeta) return;
+        const activeSection = round22.sections.find(
+          (s) => s.kind === activeMeta.kind
+        );
+        if (!activeSection) return;
+        const guardKey = `${session.currentIndex}:${activeSection.kind}`;
+        if (playedClipGuard.current.has(guardKey)) return;
+        playedClipGuard.current.add(guardKey);
+        if (typeof activeSection.audioUrl === "string" && activeSection.audioUrl) {
+          sound.playClip(activeSection.audioUrl);
+        }
+      }, [session, sound]);
       const [showStep, setShowStep] = reactExports.useState(null);
       const stepTimer = reactExports.useRef(null);
       reactExports.useEffect(() => {
@@ -81545,6 +81906,8 @@ Defaulting to \`null\`.`;
         if (!session) {
           celebratedRoundKey.current = "";
           lastSyncedMuted.current = null;
+          playedClipGuard.current = /* @__PURE__ */ new Set();
+          lastRoundIndex.current = null;
         }
       }, [session]);
       if (isLoading) {
@@ -81621,6 +81984,9 @@ Defaulting to \`null\`.`;
             onToggleMute: () => {
               sound.toggleMute();
               toggleMute();
+            },
+            onBack: () => {
+              sound.unlockAudio();
             }
           }
         ),
@@ -81708,6 +82074,7 @@ Defaulting to \`null\`.`;
                     streak,
                     enforceAssemblyOrder: settings.enforceAssemblyOrder,
                     onTapChip: (chipId) => {
+                      sound.unlockAudio();
                       const chip = section.chips.find((c2) => c2.id === chipId);
                       if (!chip || chip.selected) return;
                       const result = tapChip(section.kind, chipId);
@@ -81758,7 +82125,8 @@ Defaulting to \`null\`.`;
       showScore,
       score,
       muted,
-      onToggleMute
+      onToggleMute,
+      onBack
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "header",
@@ -81780,6 +82148,7 @@ Defaulting to \`null\`.`;
                     to: "/position/$id/legendary",
                     params: { id: positionId },
                     "aria-label": "Back to Be Legendary",
+                    onClick: onBack,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" })
                   }
                 )
@@ -82269,6 +82638,8 @@ Defaulting to \`null\`.`;
             score: 0,
             muted: true,
             onToggleMute: () => {
+            },
+            onBack: () => {
             }
           }
         ),

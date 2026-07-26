@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePhotoUpload } from "@/hooks/usePhotoUpload";
 import { cn } from "@/lib/utils";
-import { Plus, X } from "lucide-react";
-import type { ReactElement } from "react";
-import type { DrinksBuilderSettings } from "./types";
+import { Play, Plus, Upload, Volume2, X } from "lucide-react";
+import { type ReactElement, useRef } from "react";
+import type { DrinksBuilderPrompt, DrinksBuilderSettings } from "./types";
 
 /**
  * DrinksBuilderSettingsForm — shared editor for the DrinksBuilderSettings
@@ -83,7 +84,7 @@ export function DrinksBuilderSettingsForm({
       | "assemblyPrompts"
       | "garnishPrompts",
   ): void {
-    patch(key, [...value[key], ""]);
+    patch(key, [...value[key], { text: "", audioUrl: undefined }]);
   }
 
   function updatePrompt(
@@ -95,7 +96,22 @@ export function DrinksBuilderSettingsForm({
     index: number,
     text: string,
   ): void {
-    const next = value[key].map((t, i) => (i === index ? text : t));
+    const next = value[key].map((p, i) => (i === index ? { ...p, text } : p));
+    patch(key, next);
+  }
+
+  function updatePromptAudio(
+    key:
+      | "glasswarePrompts"
+      | "specsPrompts"
+      | "assemblyPrompts"
+      | "garnishPrompts",
+    index: number,
+    audioUrl: string | undefined,
+  ): void {
+    const next = value[key].map((p, i) =>
+      i === index ? { ...p, audioUrl } : p,
+    );
     patch(key, next);
   }
 
@@ -254,6 +270,9 @@ export function DrinksBuilderSettingsForm({
           onAdd={() => addPrompt("glasswarePrompts")}
           onUpdate={(i, t) => updatePrompt("glasswarePrompts", i, t)}
           onRemove={(i) => removePrompt("glasswarePrompts", i)}
+          onUpdateAudio={(i, url) =>
+            updatePromptAudio("glasswarePrompts", i, url)
+          }
         />
         <PromptGroup
           legend="Specs prompts"
@@ -264,6 +283,7 @@ export function DrinksBuilderSettingsForm({
           onAdd={() => addPrompt("specsPrompts")}
           onUpdate={(i, t) => updatePrompt("specsPrompts", i, t)}
           onRemove={(i) => removePrompt("specsPrompts", i)}
+          onUpdateAudio={(i, url) => updatePromptAudio("specsPrompts", i, url)}
         />
         <PromptGroup
           legend="Assembly prompts"
@@ -274,6 +294,9 @@ export function DrinksBuilderSettingsForm({
           onAdd={() => addPrompt("assemblyPrompts")}
           onUpdate={(i, t) => updatePrompt("assemblyPrompts", i, t)}
           onRemove={(i) => removePrompt("assemblyPrompts", i)}
+          onUpdateAudio={(i, url) =>
+            updatePromptAudio("assemblyPrompts", i, url)
+          }
         />
         <PromptGroup
           legend="Garnish prompts"
@@ -284,6 +307,9 @@ export function DrinksBuilderSettingsForm({
           onAdd={() => addPrompt("garnishPrompts")}
           onUpdate={(i, t) => updatePrompt("garnishPrompts", i, t)}
           onRemove={(i) => removePrompt("garnishPrompts", i)}
+          onUpdateAudio={(i, url) =>
+            updatePromptAudio("garnishPrompts", i, url)
+          }
         />
       </fieldset>
 
@@ -394,34 +420,126 @@ function PromptGroup({
   onAdd,
   onUpdate,
   onRemove,
+  onUpdateAudio,
 }: {
   legend: string;
   ocidBase: string;
-  items: string[];
+  items: DrinksBuilderPrompt[];
   placeholder: string;
   disabled: boolean;
   onAdd: () => void;
   onUpdate: (index: number, text: string) => void;
   onRemove: (index: number) => void;
+  onUpdateAudio: (index: number, audioUrl: string | undefined) => void;
 }): ReactElement {
   const atCap = items.length >= 8;
+  const { uploadPhoto, isUploading, error: uploadError } = usePhotoUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingIndexRef = useRef<number | null>(null);
+
+  function openFilePicker(index: number): void {
+    pendingIndexRef.current = index;
+    fileInputRef.current?.click();
+  }
+
+  async function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
+    const file = e.target.files?.[0];
+    // Always reset the input so re-selecting the same file fires change.
+    e.target.value = "";
+    if (!file) return;
+    const index = pendingIndexRef.current;
+    if (index === null) return;
+
+    if (!file.type.startsWith("audio/")) {
+      return;
+    }
+    try {
+      // Pass the audio Blob straight through — do NOT JPEG-encode or resize.
+      const url = await uploadPhoto(file);
+      onUpdateAudio(index, url);
+    } catch {
+      // Error surfaced via the inline uploadError state below.
+    } finally {
+      pendingIndexRef.current = null;
+    }
+  }
+
+  function previewAudio(url: string): void {
+    // Local preview only — separate from the game's clip player.
+    new Audio(url).play().catch(() => {});
+  }
+
   return (
     <div className="grid gap-1.5">
       <span className="font-heading uppercase text-xs tracking-wider text-foreground">
         {legend}
       </span>
+      <p className="font-body text-xs text-muted-foreground">
+        Optional: attach a short voice clip (2–4s) that plays when this prompt
+        appears in the game.
+      </p>
       <ul className="grid gap-1.5" data-ocid={`${ocidBase}.list`}>
         {items.map((prompt, index) => (
-          <li key={`${ocidBase}-${prompt}`} className="flex items-center gap-2">
+          <li
+            // biome-ignore lint/suspicious/noArrayIndexKey: prompts have no stable id; list is capped at 8 and re-renders are cheap
+            key={`${ocidBase}-${index}`}
+            className="flex flex-wrap items-center gap-2"
+          >
             <Input
-              value={prompt}
+              value={prompt.text}
               onChange={(e) => onUpdate(index, e.target.value)}
               placeholder={placeholder}
               autoComplete="off"
               maxLength={120}
               disabled={disabled}
               data-ocid={`${ocidBase}.input.${index + 1}`}
+              className="min-w-0 flex-1"
             />
+            {prompt.audioUrl ? (
+              <span
+                className="flex items-center gap-1 font-body text-xs text-primary"
+                data-ocid={`${ocidBase}.audio_indicator.${index + 1}`}
+                aria-label="Voice clip attached"
+              >
+                <Volume2 className="size-3.5" aria-hidden="true" />
+                clip
+              </span>
+            ) : null}
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => openFilePicker(index)}
+              disabled={disabled || isUploading}
+              aria-label={`Attach voice clip to ${legend.toLowerCase()} ${index + 1}`}
+              data-ocid={`${ocidBase}.audio_upload_button.${index + 1}`}
+            >
+              <Upload className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => prompt.audioUrl && previewAudio(prompt.audioUrl)}
+              disabled={disabled || !prompt.audioUrl || isUploading}
+              aria-label={`Preview voice clip for ${legend.toLowerCase()} ${index + 1}`}
+              data-ocid={`${ocidBase}.audio_preview_button.${index + 1}`}
+            >
+              <Play className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => onUpdateAudio(index, undefined)}
+              disabled={disabled || !prompt.audioUrl || isUploading}
+              aria-label={`Remove voice clip from ${legend.toLowerCase()} ${index + 1}`}
+              data-ocid={`${ocidBase}.audio_remove_button.${index + 1}`}
+            >
+              <X className="size-4" />
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -436,6 +554,33 @@ function PromptGroup({
           </li>
         ))}
       </ul>
+      {/* Hidden audio file input — shared across rows in this group. */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        className="hidden"
+        onChange={handleFileChange}
+        aria-label={`Upload voice clip for ${legend.toLowerCase()}`}
+        data-ocid={`${ocidBase}.audio_input`}
+      />
+      {isUploading ? (
+        <p
+          className="font-body text-xs text-muted-foreground"
+          data-ocid={`${ocidBase}.audio_loading_state`}
+        >
+          Uploading clip…
+        </p>
+      ) : null}
+      {uploadError ? (
+        <p
+          className="font-body text-xs text-primary"
+          role="alert"
+          data-ocid={`${ocidBase}.audio_error_state`}
+        >
+          {uploadError}
+        </p>
+      ) : null}
       <Button
         type="button"
         variant="outline"
@@ -552,44 +697,50 @@ export const DEFAULT_DRINKS_BUILDER_SETTINGS: DrinksBuilderSettings = {
   roundsPerSession: 0,
   soundDefault: true,
   glasswarePrompts: [
-    "GLASSWARE",
-    "What glass are you reaching for?",
-    "Surprise me with your wisdom — what glass?",
-    "Be legendary — pick the glass.",
-    "Which glass makes this one shine?",
-    "Glass check! What's it going in?",
-    "Grab the right glass, Roadie.",
-    "First things first — the glass?",
+    { text: "GLASSWARE", audioUrl: undefined },
+    { text: "What glass are you reaching for?", audioUrl: undefined },
+    {
+      text: "Surprise me with your wisdom — what glass?",
+      audioUrl: undefined,
+    },
+    { text: "Be legendary — pick the glass.", audioUrl: undefined },
+    { text: "Which glass makes this one shine?", audioUrl: undefined },
+    { text: "Glass check! What's it going in?", audioUrl: undefined },
+    { text: "Grab the right glass, Roadie.", audioUrl: undefined },
+    { text: "First things first — the glass?", audioUrl: undefined },
   ],
   specsPrompts: [
-    "SPECS",
-    "Build the pour — what goes in?",
-    "Tap every spec that belongs.",
-    "Show me the recipe, Roadie.",
-    "What's in this legend?",
-    "Load it up — every correct spec.",
-    "Nail the pour. What's in it?",
-    "Ingredients, please — all of 'em.",
+    { text: "SPECS", audioUrl: undefined },
+    { text: "Build the pour — what goes in?", audioUrl: undefined },
+    { text: "Tap every spec that belongs.", audioUrl: undefined },
+    { text: "Show me the recipe, Roadie.", audioUrl: undefined },
+    { text: "What's in this legend?", audioUrl: undefined },
+    { text: "Load it up — every correct spec.", audioUrl: undefined },
+    { text: "Nail the pour. What's in it?", audioUrl: undefined },
+    { text: "Ingredients, please — all of 'em.", audioUrl: undefined },
   ],
   assemblyPrompts: [
-    "ASSEMBLY",
-    "How do we build it? In order!",
-    "Walk me through the steps.",
-    "Put it together, step by step.",
-    "What's the play — in order?",
-    "Assemble like a legend.",
-    "Order matters — build it right.",
-    "Steps in sequence, Roadie.",
+    { text: "ASSEMBLY", audioUrl: undefined },
+    { text: "How do we build it? In order!", audioUrl: undefined },
+    { text: "Walk me through the steps.", audioUrl: undefined },
+    { text: "Put it together, step by step.", audioUrl: undefined },
+    { text: "What's the play — in order?", audioUrl: undefined },
+    { text: "Assemble like a legend.", audioUrl: undefined },
+    { text: "Order matters — build it right.", audioUrl: undefined },
+    { text: "Steps in sequence, Roadie.", audioUrl: undefined },
   ],
   garnishPrompts: [
-    "GARNISH",
-    "Finish strong — what's the garnish?",
-    "Top it off like a legend.",
-    "The final touch — garnish?",
-    "What makes it pop?",
-    "Dress it up — pick the garnish.",
-    "Last step — garnish it.",
-    "Make it picture-perfect — garnish?",
+    { text: "GARNISH", audioUrl: undefined },
+    { text: "Finish strong — what's the garnish?", audioUrl: undefined },
+    { text: "Top it off like a legend.", audioUrl: undefined },
+    { text: "The final touch — garnish?", audioUrl: undefined },
+    { text: "What makes it pop?", audioUrl: undefined },
+    { text: "Dress it up — pick the garnish.", audioUrl: undefined },
+    { text: "Last step — garnish it.", audioUrl: undefined },
+    {
+      text: "Make it picture-perfect — garnish?",
+      audioUrl: undefined,
+    },
   ],
 };
 

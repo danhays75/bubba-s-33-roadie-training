@@ -52,19 +52,23 @@ export interface Category {
 export interface Cell { 'value' : Value, 'name' : string }
 export interface DetailField { 'value' : string, 'fieldLabel' : string }
 export interface DrinksBuilderContent { 'settings' : DrinksBuilderSettings }
+export interface DrinksBuilderPrompt {
+  'text' : string,
+  'audioUrl' : [] | [string],
+}
 export interface DrinksBuilderSettings {
-  'garnishPrompts' : Array<string>,
+  'garnishPrompts' : Array<DrinksBuilderPrompt>,
   'includedCategories' : Array<string>,
   'enforceAssemblyOrder' : boolean,
   'pointsPerCorrect' : bigint,
   'excludedDrinkTitles' : Array<string>,
   'showScoring' : boolean,
-  'assemblyPrompts' : Array<string>,
+  'assemblyPrompts' : Array<DrinksBuilderPrompt>,
   'requireExactAmounts' : boolean,
-  'glasswarePrompts' : Array<string>,
+  'glasswarePrompts' : Array<DrinksBuilderPrompt>,
   'soundDefault' : boolean,
   'decoyCount' : bigint,
-  'specsPrompts' : Array<string>,
+  'specsPrompts' : Array<DrinksBuilderPrompt>,
   'streakMultiplier' : boolean,
   'roundsPerSession' : bigint,
 }

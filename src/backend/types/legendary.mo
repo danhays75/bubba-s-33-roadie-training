@@ -96,18 +96,36 @@ module {
   //   soundDefault          : default on/off state for in-app WebAudio sound
   //                           effects. Default true.
   //   glasswarePrompts      : admin-editable, rotating step heading prompts
-  //                           for the GLASSWARE step. 0-8 strings, display-only
-  //                           (no pool/scoring/round logic reads them). The
-  //                           game picks one per round at random, seeded by the
-  //                           round index; falls back to the default heading
-  //                           when the list is empty. Defaults ship with the
-  //                           first entry being the canonical "GLASSWARE" label.
+  //                           for the GLASSWARE step. 0-8 DrinksBuilderPrompt
+  //                           entries, display-only (no pool/scoring/round
+  //                           logic reads them). The game picks one per round
+  //                           at random, seeded by the round index; falls back
+  //                           to the default heading when the list is empty.
+  //                           Defaults ship with the first entry being the
+  //                           canonical "GLASSWARE" label. Each entry may carry
+  //                           an optional audioUrl pointing at a durable
+  //                           object-storage clip that plays when the prompt
+  //                           becomes active — display/playback only, never
+  //                           read by pool/scoring logic.
   //   specsPrompts          : same shape as glasswarePrompts, for the SPECS
   //                           step.
   //   assemblyPrompts       : same shape as glasswarePrompts, for the ASSEMBLY
   //                           step.
   //   garnishPrompts        : same shape as glasswarePrompts, for the GARNISH
   //                           step.
+  //
+  // DrinksBuilderPrompt — one admin-editable step-heading prompt entry. The
+  // text is the heading shown when the step becomes active; the optional
+  // audioUrl is a durable object-storage clip (same kind as profile photos)
+  // that plays when the prompt appears in the game. The audio is
+  // display/playback only — NO pool, decoy, scoring, or round-flow logic
+  // reads audioUrl. Existing saved prompts (pre-audio) migrate to
+  // { text = S; audioUrl = null }.
+  public type DrinksBuilderPrompt = {
+    text : Text;
+    audioUrl : ?Text;
+  };
+
   public type DrinksBuilderSettings = {
     includedCategories : [Text];
     excludedDrinkTitles : [Text];
@@ -119,10 +137,10 @@ module {
     pointsPerCorrect : Nat;
     roundsPerSession : Nat;
     soundDefault : Bool;
-    glasswarePrompts : [Text];
-    specsPrompts : [Text];
-    assemblyPrompts : [Text];
-    garnishPrompts : [Text];
+    glasswarePrompts : [DrinksBuilderPrompt];
+    specsPrompts : [DrinksBuilderPrompt];
+    assemblyPrompts : [DrinksBuilderPrompt];
+    garnishPrompts : [DrinksBuilderPrompt];
   };
 
   // DrinksBuilderContent — the persisted payload for a #drinksBuilder

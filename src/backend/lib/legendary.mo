@@ -25,6 +25,7 @@ module {
   public type UpdateActivityInput = Types.UpdateActivityInput;
   public type DrinksBuilderSettings = Types.DrinksBuilderSettings;
   public type DrinksBuilderContent = Types.DrinksBuilderContent;
+  public type DrinksBuilderPrompt = Types.DrinksBuilderPrompt;
   public type QuizSettings = Types.QuizSettings;
 
   // List activities belonging to a position (filter by positionId).
@@ -862,8 +863,10 @@ module {
 
   // Truncate a prompt list to its first 8 entries. Returns the same array
   // reference when it is already within the cap (no allocation); otherwise
-  // returns a new array containing only the first 8 entries.
-  func capPromptList(prompts : [Text]) : [Text] {
+  // returns a new array containing only the first 8 entries. Operates on
+  // the DrinksBuilderPrompt element shape (text + optional audioUrl) — the
+  // cap is purely structural and does NOT inspect or transform the entries.
+  func capPromptList(prompts : [DrinksBuilderPrompt]) : [DrinksBuilderPrompt] {
     if (prompts.size() <= 8) { return prompts };
     prompts.sliceToArray(0, 8);
   };

@@ -15,7 +15,10 @@
 // (`{ __kind__: "quiz" }` etc.). The frontend mirrors them as discriminated
 // unions keyed on `kind` so the page components can switch cleanly.
 
-import type { DrinksBuilderSettings } from "../components/legendary/drinks-builder/types";
+import type {
+  DrinksBuilderPrompt,
+  DrinksBuilderSettings,
+} from "../components/legendary/drinks-builder/types";
 
 /**
  * The kind of Be Legendary activity a position can practice.
@@ -226,10 +229,10 @@ type CandidDrinksBuilderSettings = {
   pointsPerCorrect: bigint;
   roundsPerSession: bigint;
   soundDefault: boolean;
-  glasswarePrompts: string[];
-  specsPrompts: string[];
-  assemblyPrompts: string[];
-  garnishPrompts: string[];
+  glasswarePrompts: DrinksBuilderPrompt[];
+  specsPrompts: DrinksBuilderPrompt[];
+  assemblyPrompts: DrinksBuilderPrompt[];
+  garnishPrompts: DrinksBuilderPrompt[];
 };
 
 /** Candid Question tagged-union shape from backend.d.ts. */
@@ -371,10 +374,22 @@ function toFrontendDrinksBuilderSettings(
     pointsPerCorrect: Number(s.pointsPerCorrect),
     roundsPerSession: Number(s.roundsPerSession),
     soundDefault: s.soundDefault,
-    glasswarePrompts: s.glasswarePrompts,
-    specsPrompts: s.specsPrompts,
-    assemblyPrompts: s.assemblyPrompts,
-    garnishPrompts: s.garnishPrompts,
+    glasswarePrompts: s.glasswarePrompts.map((p) => ({
+      text: p.text,
+      audioUrl: p.audioUrl,
+    })),
+    specsPrompts: s.specsPrompts.map((p) => ({
+      text: p.text,
+      audioUrl: p.audioUrl,
+    })),
+    assemblyPrompts: s.assemblyPrompts.map((p) => ({
+      text: p.text,
+      audioUrl: p.audioUrl,
+    })),
+    garnishPrompts: s.garnishPrompts.map((p) => ({
+      text: p.text,
+      audioUrl: p.audioUrl,
+    })),
   };
 }
 

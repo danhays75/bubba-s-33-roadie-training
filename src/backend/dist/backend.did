@@ -242,20 +242,25 @@ type Error =
  };
 type DrinksBuilderSettings = 
  record {
-   assemblyPrompts: vec text;
+   assemblyPrompts: vec DrinksBuilderPrompt;
    decoyCount: nat;
    enforceAssemblyOrder: bool;
    excludedDrinkTitles: vec text;
-   garnishPrompts: vec text;
-   glasswarePrompts: vec text;
+   garnishPrompts: vec DrinksBuilderPrompt;
+   glasswarePrompts: vec DrinksBuilderPrompt;
    includedCategories: vec text;
    pointsPerCorrect: nat;
    requireExactAmounts: bool;
    roundsPerSession: nat;
    showScoring: bool;
    soundDefault: bool;
-   specsPrompts: vec text;
+   specsPrompts: vec DrinksBuilderPrompt;
    streakMultiplier: bool;
+ };
+type DrinksBuilderPrompt = 
+ record {
+   audioUrl: opt text;
+   "text": text;
  };
 type DrinksBuilderContent = record {settings: DrinksBuilderSettings;};
 type DetailField = 

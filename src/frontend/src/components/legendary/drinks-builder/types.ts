@@ -29,10 +29,24 @@ export interface DrinksBuilderSettings {
   pointsPerCorrect: number;
   roundsPerSession: number;
   soundDefault: boolean;
-  glasswarePrompts: string[];
-  specsPrompts: string[];
-  assemblyPrompts: string[];
-  garnishPrompts: string[];
+  glasswarePrompts: DrinksBuilderPrompt[];
+  specsPrompts: DrinksBuilderPrompt[];
+  assemblyPrompts: DrinksBuilderPrompt[];
+  garnishPrompts: DrinksBuilderPrompt[];
+}
+
+/**
+ * A single per-section prompt the admin authors. `text` is the heading
+ * shown above the section's chips; `audioUrl` is an optional clip URL
+ * (mirrors backend.d.ts `DrinksBuilderPrompt.audioUrl?: string`). When a
+ * prompt carries a truthy audioUrl and sound is unmuted, the round's
+ * prompt is picked from the audio-backed subset so the page can play the
+ * clip. The audioUrl is display/playback only — never read by pool,
+ * decoy, scoring, or round-flow logic.
+ */
+export interface DrinksBuilderPrompt {
+  text: string;
+  audioUrl?: string;
 }
 
 /** Default amber/gold liquid fill when a recipe omits the optional color. */
@@ -95,6 +109,14 @@ export interface GameSection {
   kind: GameSectionKind;
   /** Section heading label (GLASSWARE / SPECS / ASSEMBLY / GARNISH). */
   label: string;
+  /**
+   * Optional audio clip URL carried by the picked prompt for this
+   * section. Set by buildRound to the picked DrinksBuilderPrompt's
+   * audioUrl (or undefined when the fallback SECTION_LABELS value is
+   * used, or the picked prompt has no audioUrl). Display/playback only —
+   * never read by pool, decoy, scoring, or round-flow logic.
+   */
+  audioUrl?: string;
   /** All chip options (correct + decoys), shuffled. */
   chips: Chip[];
   /** True when every correct chip in this section has been tapped. */

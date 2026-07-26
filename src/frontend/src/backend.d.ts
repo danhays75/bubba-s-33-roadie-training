@@ -15,18 +15,18 @@ export interface UpdateActivityInput {
     quizSettings?: QuizSettings;
 }
 export interface DrinksBuilderSettings {
-    garnishPrompts: Array<string>;
+    garnishPrompts: Array<DrinksBuilderPrompt>;
     includedCategories: Array<string>;
     enforceAssemblyOrder: boolean;
     pointsPerCorrect: bigint;
     excludedDrinkTitles: Array<string>;
     showScoring: boolean;
-    assemblyPrompts: Array<string>;
+    assemblyPrompts: Array<DrinksBuilderPrompt>;
     requireExactAmounts: boolean;
-    glasswarePrompts: Array<string>;
+    glasswarePrompts: Array<DrinksBuilderPrompt>;
     soundDefault: boolean;
     decoyCount: bigint;
-    specsPrompts: Array<string>;
+    specsPrompts: Array<DrinksBuilderPrompt>;
     streakMultiplier: boolean;
     roundsPerSession: bigint;
 }
@@ -74,6 +74,10 @@ export interface Phase {
     id: bigint;
     sortOrder: bigint;
     name: string;
+}
+export interface DrinksBuilderPrompt {
+    text: string;
+    audioUrl?: string;
 }
 export interface DetailField {
     value: string;

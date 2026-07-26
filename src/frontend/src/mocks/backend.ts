@@ -900,9 +900,91 @@ const roadieQuiz = {
   },
 };
 
+// A Drinks Builder activity so the drinks-builder game route + admin form
+// render under the mock. Uses the Candid shape (bigint fields for
+// decoyCount/pointsPerCorrect/roundsPerSession) so the hook's
+// toFrontendDrinksBuilderSettings translation runs identically to a live
+// canister. The settings mirror DEFAULT_DRINKS_BUILDER_SETTINGS from
+// DrinksBuilderSettingsForm, with one prompt per section carrying a
+// (fake) audioUrl so the "🔊 clip" indicator + audio-backed subset
+// selection are exercised visually.
+const drinksBuilderActivity = {
+  id: 3000n,
+  activityType: "drinksBuilder" as const,
+  name: "Cocktail Construction",
+  positionId: 2n,
+  sourceCategoryIds: [21n],
+  createdAt: 1700000004n,
+  createdBy: FAKE_PRINCIPAL,
+  content: {
+    __kind__: "drinksBuilderContent" as const,
+    drinksBuilderContent: {
+      settings: {
+        includedCategories: [],
+        excludedDrinkTitles: [],
+        decoyCount: 2n,
+        requireExactAmounts: true,
+        enforceAssemblyOrder: true,
+        showScoring: true,
+        streakMultiplier: true,
+        pointsPerCorrect: 50n,
+        roundsPerSession: 0n,
+        soundDefault: true,
+        glasswarePrompts: [
+          { text: "GLASSWARE", audioUrl: undefined },
+          { text: "What glass are you reaching for?", audioUrl: undefined },
+          {
+            text: "Surprise me with your wisdom — what glass?",
+            audioUrl: undefined,
+          },
+          { text: "Be legendary — pick the glass.", audioUrl: undefined },
+          { text: "Which glass makes this one shine?", audioUrl: undefined },
+          { text: "Glass check! What's it going in?", audioUrl: undefined },
+          { text: "Grab the right glass, Roadie.", audioUrl: undefined },
+          { text: "First things first — the glass?", audioUrl: undefined },
+        ],
+        specsPrompts: [
+          { text: "SPECS", audioUrl: undefined },
+          { text: "Build the pour — what goes in?", audioUrl: undefined },
+          { text: "Tap every spec that belongs.", audioUrl: undefined },
+          { text: "Show me the recipe, Roadie.", audioUrl: undefined },
+          { text: "What's in this legend?", audioUrl: undefined },
+          { text: "Load it up — every correct spec.", audioUrl: undefined },
+          { text: "Nail the pour. What's in it?", audioUrl: undefined },
+          { text: "Ingredients, please — all of 'em.", audioUrl: undefined },
+        ],
+        assemblyPrompts: [
+          { text: "ASSEMBLY", audioUrl: undefined },
+          { text: "How do we build it? In order!", audioUrl: undefined },
+          { text: "Walk me through the steps.", audioUrl: undefined },
+          { text: "Put it together, step by step.", audioUrl: undefined },
+          { text: "What's the play — in order?", audioUrl: undefined },
+          { text: "Assemble like a legend.", audioUrl: undefined },
+          { text: "Order matters — build it right.", audioUrl: undefined },
+          { text: "Steps in sequence, Roadie.", audioUrl: undefined },
+        ],
+        garnishPrompts: [
+          { text: "GARNISH", audioUrl: undefined },
+          { text: "Finish strong — what's the garnish?", audioUrl: undefined },
+          { text: "Top it off like a legend.", audioUrl: undefined },
+          { text: "The final touch — garnish?", audioUrl: undefined },
+          { text: "What makes it pop?", audioUrl: undefined },
+          { text: "Dress it up — pick the garnish.", audioUrl: undefined },
+          { text: "Last step — garnish it.", audioUrl: undefined },
+          {
+            text: "Make it picture-perfect — garnish?",
+            audioUrl: undefined,
+          },
+        ],
+      },
+    },
+  },
+};
+
 const allLegendaryActivities = [
   ...legendaryActivities,
   roadieQuiz,
+  drinksBuilderActivity,
 ];
 
 // --- Profile + assignments --------------------------------------------------
@@ -1288,6 +1370,47 @@ export const mockBackend: backendInterface = {
     };
   },
   deleteLegendaryActivity: async () => undefined,
+  // Drinks Builder pool methods. The hook translates the returned backend
+  // LibraryItems (bigint ids) to the frontend shape. The playable pool
+  // returns in-scope recipe items from the activity's source categories;
+  // the decoy pool returns other in-scope recipe items across all
+  // categories (the hook builds the global decoy pool from the union).
+  // In-scope = has a recipe with non-empty glassware + specs + assembly
+  // and is not a bulk-mix (no yield, no equipment) — mirroring the hook's
+  // isInScope() filter so the mock exercises the same code paths.
+  getDrinksBuilderPlayablePool: async (activityId) => {
+    const activity = allLegendaryActivities.find(
+      (a) => a.id === activityId,
+    );
+    if (!activity) return [];
+    const sourceIds = new Set(activity.sourceCategoryIds);
+    return items.filter(
+      (i) =>
+        sourceIds.has(i.categoryId) &&
+        i.recipe &&
+        i.recipe.glassware.trim().length > 0 &&
+        i.recipe.specs.length > 0 &&
+        i.recipe.assembly.length > 0 &&
+        !(i.recipe.yield && i.recipe.yield.length > 0) &&
+        !(i.recipe.equipment && i.recipe.equipment.length > 0),
+    );
+  },
+  getDrinksBuilderDecoyPool: async (activityId) => {
+    const activity = allLegendaryActivities.find(
+      (a) => a.id === activityId,
+    );
+    const sourceIds = new Set(activity?.sourceCategoryIds ?? []);
+    return items.filter(
+      (i) =>
+        !sourceIds.has(i.categoryId) &&
+        i.recipe &&
+        i.recipe.glassware.trim().length > 0 &&
+        i.recipe.specs.length > 0 &&
+        i.recipe.assembly.length > 0 &&
+        !(i.recipe.yield && i.recipe.yield.length > 0) &&
+        !(i.recipe.equipment && i.recipe.equipment.length > 0),
+    );
+  },
   updateLegendaryActivity: async (input) => {
     const existing = allLegendaryActivities.find((a) => a.id === input.id);
     return {
