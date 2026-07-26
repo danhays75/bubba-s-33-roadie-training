@@ -19,6 +19,21 @@ module {
     profiles.get(userId);
   };
 
+  // Read-only approval gate helper. Returns true only when the caller has a
+  // profile whose approvalStatus == #approved. Admins are already #approved
+  // so they pass. Used by the gated read/query endpoints across all four
+  // domain mixins to enforce the approval gate on the SERVER. Defined ONCE
+  // here so the four mixins can call Foundation.isCallerApproved(profiles,
+  // caller) without redefining a local helper (which caused
+  // `type error [M0051]: duplicate definition for isCallerApproved in block`
+  // when all mixins were include'd into one actor in main.mo).
+  public func isCallerApproved(profiles : Map.Map<Principal, UserProfile>, caller : Principal) : Bool {
+    switch (getProfile(profiles, caller)) {
+      case (?profile) { profile.approvalStatus == #approved };
+      case null { false };
+    };
+  };
+
   // Create a new profile. The first user is auto-#approved (Version 95
   // behavior preserved); subsequent users are #pending until an admin
   // approves them. email is captured from the caller's arguments (the
@@ -207,8 +222,9 @@ module {
     let existing = positions.find(func(p) { p.id == id });
     switch (existing) {
       case (?_) {
+        let kept = positions.filter(func(p) { p.id != id });
         positions.clear();
-        positions.addAll(positions.filter(func(p) { p.id != id }).values());
+        positions.addAll(kept.values());
         existing;
       };
       case null null;
@@ -263,8 +279,9 @@ module {
     let existing = assignments.find(func(a) { a.userId == userId and a.positionId == positionId });
     switch (existing) {
       case (?_) {
+        let kept = assignments.filter(func(a) { not (a.userId == userId and a.positionId == positionId) });
         assignments.clear();
-        assignments.addAll(assignments.filter(func(a) { not (a.userId == userId and a.positionId == positionId) }).values());
+        assignments.addAll(kept.values());
         existing;
       };
       case null null;

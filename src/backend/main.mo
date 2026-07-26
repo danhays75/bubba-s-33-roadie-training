@@ -113,9 +113,9 @@ actor {
   );
 
   include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId, verifiedEmails);
-  include LibraryApi(accessControlState, positions, categories, items, nextCategoryId, nextItemId);
+  include LibraryApi(accessControlState, profiles, positions, categories, items, nextCategoryId, nextItemId);
   include NsoApi(accessControlState, profiles, nsoPhases, nsoTasks, nextPhaseId, nextTaskId);
-  include LegendaryApi(accessControlState, positions, categories, items, legendaryActivities, nextLegendaryActivityId);
+  include LegendaryApi(accessControlState, profiles, positions, categories, items, legendaryActivities, nextLegendaryActivityId);
 
   // --- OQL (Data Intelligence) ---
   // Expose every persisted queryable collection to the Caffeine Data

@@ -1,5 +1,7 @@
 import Int "mo:core/Int";
 import List "mo:core/List";
+import Map "mo:core/Map";
+import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
 import AccessControl "mo:caffeineai-authorization/access-control";
@@ -36,6 +38,7 @@ import Types "../types/legendary";
 // to regenerate).
 mixin (
   accessControlState : AccessControl.AccessControlState,
+  profiles : Map.Map<Principal, Foundation.UserProfile>,
   positions : List.List<Foundation.Position>,
   categories : List.List<Library.Category>,
   items : List.List<Library.LibraryItem>,
@@ -43,13 +46,22 @@ mixin (
   nextLegendaryActivityId : { var value : Nat },
 ) {
 
-  // --- Browsing (public query, no admin guard) ---
+  // isCallerApproved is defined ONCE in lib/foundation.mo as
+  // Foundation.isCallerApproved(profiles, caller). The gated read/query
+  // endpoints below call it directly. Do NOT re-add a local definition here:
+  // defining it locally in each of the four mixins caused
+  // `type error [M0051]: duplicate definition for isCallerApproved in block`
+  // when all mixins were include'd into one actor in main.mo.
 
-  public query func getLegendaryActivitiesByPosition(positionId : Nat) : async [Legendary.Activity] {
+  // --- Browsing (gated query: caller must be approved) ---
+
+  public shared query ({ caller }) func getLegendaryActivitiesByPosition(positionId : Nat) : async [Legendary.Activity] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Legendary.listActivitiesByPosition(legendaryActivities, positionId);
   };
 
-  public query func getLegendaryActivity(id : Nat) : async ?Legendary.Activity {
+  public shared query ({ caller }) func getLegendaryActivity(id : Nat) : async ?Legendary.Activity {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Legendary.getActivity(legendaryActivities, id);
   };
 
@@ -199,7 +211,7 @@ mixin (
     Legendary.rebuildActivity(legendaryActivities, id, newContent);
   };
 
-  // --- Drinks Builder play-time resolution (public query, no admin guard) ---
+  // --- Drinks Builder play-time resolution (gated query: caller must be approved) ---
   // These let the frontend derive the playable drink pool and decoy pool at
   // play time from a #drinksBuilder activity's settings + the current Library.
   // Practice-only — no scores are stored; the frontend tracks session scores.
@@ -208,7 +220,8 @@ mixin (
   // Returns the in-scope Library items (bulk-mix recipes excluded) the
   // learner can be quizzed on. Traps if the activity is not found or is not a
   // #drinksBuilder activity.
-  public query func getDrinksBuilderPlayablePool(activityId : Nat) : async [Library.LibraryItem] {
+  public shared query ({ caller }) func getDrinksBuilderPlayablePool(activityId : Nat) : async [Library.LibraryItem] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     let activity = switch (Legendary.getActivity(legendaryActivities, activityId)) {
       case (?a) a;
       case null { Runtime.trap("Activity not found") };
@@ -227,7 +240,8 @@ mixin (
   // to decoyCount or dedupe against the playable pool; that capping is done
   // client-side. Traps if the activity is not found or is not a
   // #drinksBuilder activity.
-  public query func getDrinksBuilderDecoyPool(activityId : Nat) : async [Library.LibraryItem] {
+  public shared query ({ caller }) func getDrinksBuilderDecoyPool(activityId : Nat) : async [Library.LibraryItem] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     let activity = switch (Legendary.getActivity(legendaryActivities, activityId)) {
       case (?a) a;
       case null { Runtime.trap("Activity not found") };

@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-D6P-ASAU.js"(exports, module) {
+  "assets/index-BsgiWm7d.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -70390,42 +70390,53 @@ ${escapeText(this.code(index2, length))}
       value,
       onValueChange,
       disabled,
+      disabledHint,
       index: index2,
       userLabel
     }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        Select,
-        {
-          value,
-          onValueChange: (v2) => onValueChange(v2),
-          disabled,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              SelectTrigger,
-              {
-                size: "sm",
-                className: cn(
-                  "w-32 border-border bg-card font-heading text-xs uppercase tracking-wide",
-                  "data-[placeholder]:text-muted-foreground",
-                  value === "admin" && "border-primary text-primary"
-                ),
-                "data-ocid": `user.role.select.${index2}`,
-                "aria-label": `Set role for ${userLabel}`,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {})
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: ROLES.map((role) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-              SelectItem,
-              {
-                value: role.value,
-                className: "font-heading text-xs uppercase tracking-wide",
-                children: role.label
-              },
-              role.value
-            )) })
-          ]
-        }
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Select,
+          {
+            value,
+            onValueChange: (v2) => onValueChange(v2),
+            disabled,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SelectTrigger,
+                {
+                  size: "sm",
+                  className: cn(
+                    "w-32 border-border bg-card font-heading text-xs uppercase tracking-wide",
+                    "data-[placeholder]:text-muted-foreground",
+                    value === "admin" && "border-primary text-primary"
+                  ),
+                  "data-ocid": `user.role.select.${index2}`,
+                  "aria-label": `Set role for ${userLabel}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {})
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: ROLES.map((role) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SelectItem,
+                {
+                  value: role.value,
+                  className: "font-heading text-xs uppercase tracking-wide",
+                  children: role.label
+                },
+                role.value
+              )) })
+            ]
+          }
+        ),
+        disabled && disabledHint ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "max-w-[12rem] font-body text-[0.65rem] leading-tight text-muted-foreground",
+            "data-ocid": `user.role.disabled_hint.${index2}`,
+            children: disabledHint
+          }
+        ) : null
+      ] });
     }
     function Sheet({ ...props }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { "data-slot": "sheet", ...props });
@@ -73410,7 +73421,7 @@ ${escapeText(this.code(index2, length))}
     }
     function AdminUsersPage() {
       const { data: myProfile } = useMyProfile();
-      const { data: users, isLoading } = useAllUsers();
+      const { data: users, isLoading, isError, refetch } = useAllUsers();
       if (myProfile === void 0) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-dvh bg-background", "aria-hidden": true });
       }
@@ -73420,11 +73431,27 @@ ${escapeText(this.code(index2, length))}
       const all = users ?? [];
       const pending = all.filter((u2) => u2.approvalStatus === "pending");
       const approved = all.filter((u2) => u2.approvalStatus === "approved");
+      const myPrincipal = myProfile == null ? void 0 : myProfile.principal;
+      const adminCount = approved.filter((u2) => u2.role === "admin").length;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-4xl px-4 py-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Header, { pendingCount: pending.length }),
-        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(UsersSkeleton, {}) : all.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyUsers, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-8", children: [
+        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(UsersSkeleton, {}) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load users.",
+            description: "We couldn't load the users list right now. Please try again.",
+            onRetry: () => void refetch()
+          }
+        ) : all.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyUsers, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-8", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(PendingApprovalSection, { users: pending }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(ApprovedUsersSection, { users: approved })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ApprovedUsersSection,
+            {
+              users: approved,
+              myPrincipal,
+              adminCount
+            }
+          )
         ] })
       ] });
     }
@@ -73507,6 +73534,7 @@ ${escapeText(this.code(index2, length))}
     function PendingUserRow({ user, index: index2 }) {
       const approve = useApproveUser();
       const reject = useRejectUser();
+      const [rejectOpen, setRejectOpen] = reactExports.useState(false);
       const handleApprove = () => {
         approve.mutate(
           { userPrincipal: user.principal },
@@ -73522,7 +73550,10 @@ ${escapeText(this.code(index2, length))}
         reject.mutate(
           { userPrincipal: user.principal },
           {
-            onSuccess: () => ue.success(`${user.name || "User"} rejected. Access denied.`),
+            onSuccess: () => {
+              ue.success(`${user.name || "User"} rejected. Access denied.`);
+              setRejectOpen(false);
+            },
             onError: () => ue.error("Couldn't reject. Try again.")
           }
         );
@@ -73582,7 +73613,7 @@ ${escapeText(this.code(index2, length))}
               size: "sm",
               variant: "destructive",
               disabled: busy,
-              onClick: handleReject,
+              onClick: () => setRejectOpen(true),
               "data-ocid": `pending_user.reject_button.${index2}`,
               "aria-label": `Reject ${user.name}`,
               children: [
@@ -73592,10 +73623,61 @@ ${escapeText(this.code(index2, length))}
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ResendEmailButton, { user, index: index2, variant: "secondary" })
-        ] }) })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          AlertDialog,
+          {
+            open: rejectOpen,
+            onOpenChange: (o) => !o && setRejectOpen(false),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              AlertDialogContent,
+              {
+                className: "bg-card border-border",
+                "data-ocid": `pending_user.reject_dialog.${index2}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: [
+                      "Reject ",
+                      user.name || "user",
+                      "?"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: "They will be denied access." })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      AlertDialogCancel,
+                      {
+                        disabled: reject.isPending,
+                        "data-ocid": `pending_user.reject_dialog.cancel_button.${index2}`,
+                        children: "Cancel"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      AlertDialogAction,
+                      {
+                        onClick: handleReject,
+                        disabled: reject.isPending,
+                        className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+                        "data-ocid": `pending_user.reject_dialog.confirm_button.${index2}`,
+                        children: [
+                          reject.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                          "Reject"
+                        ]
+                      }
+                    )
+                  ] })
+                ]
+              }
+            )
+          }
+        )
       ] });
     }
-    function ApprovedUsersSection({ users }) {
+    function ApprovedUsersSection({
+      users,
+      myPrincipal,
+      adminCount
+    }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "section",
         {
@@ -73623,12 +73705,23 @@ ${escapeText(this.code(index2, length))}
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-xs text-muted-foreground", children: "Approve pending requests above to populate this list." })
                 ]
               }
-            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(UsersTable, { users })
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              UsersTable,
+              {
+                users,
+                myPrincipal,
+                adminCount
+              }
+            )
           ]
         }
       );
     }
-    function UsersTable({ users }) {
+    function UsersTable({
+      users,
+      myPrincipal,
+      adminCount
+    }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -73643,16 +73736,35 @@ ${escapeText(this.code(index2, length))}
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Positions" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Manage" })
             ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: users.map((user, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(UserRow, { user, index: i + 1 }, user.principal)) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: users.map((user, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              UserRow,
+              {
+                user,
+                index: i + 1,
+                myPrincipal,
+                adminCount
+              },
+              user.principal
+            )) })
           ] })
         }
       );
     }
-    function UserRow({ user, index: index2 }) {
+    function UserRow({
+      user,
+      index: index2,
+      myPrincipal,
+      adminCount
+    }) {
       const setRole = useSetUserRole();
       const { data: assignments } = useUserAssignments(user.principal);
       const { data: positions } = useAllPositions();
       const userLabel = user.name || (user.principal ? `${user.principal.slice(0, 6)}…${user.principal.slice(-4)}` : "user");
+      const isSelf = !!myPrincipal && user.principal === myPrincipal;
+      const isLastAdmin = user.role === "admin" && adminCount <= 1;
+      const roleLocked = isSelf || isLastAdmin;
+      const roleDisabledHint = isSelf ? "You can't change your own role" : isLastAdmin ? "At least one admin is required" : void 0;
+      const [pendingRole, setPendingRole] = reactExports.useState(null);
       const handleRoleChange = (role) => {
         setRole.mutate(
           { userPrincipal: user.principal, role },
@@ -73661,6 +73773,19 @@ ${escapeText(this.code(index2, length))}
             onError: () => ue.error("Couldn't update role. Try again.")
           }
         );
+      };
+      const onRoleSelect = (role) => {
+        if (role === user.role) return;
+        if (isLowerPrivilege(role, user.role)) {
+          setPendingRole(role);
+          return;
+        }
+        handleRoleChange(role);
+      };
+      const confirmRoleChange = () => {
+        if (!pendingRole) return;
+        handleRoleChange(pendingRole);
+        setPendingRole(null);
       };
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-border", "data-ocid": `user.row.${index2}`, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-2.5", children: [
@@ -73698,8 +73823,9 @@ ${escapeText(this.code(index2, length))}
           RoleSelect,
           {
             value: user.role,
-            onValueChange: handleRoleChange,
-            disabled: setRole.isPending,
+            onValueChange: onRoleSelect,
+            disabled: roleLocked || setRole.isPending,
+            disabledHint: roleLocked ? roleDisabledHint : void 0,
             index: index2,
             userLabel
           }
@@ -73717,7 +73843,57 @@ ${escapeText(this.code(index2, length))}
           /* @__PURE__ */ jsxRuntimeExports.jsx(ResendEmailButton, { user, index: index2, variant: "outline" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(UserEditSheet, { user, index: index2 }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(UserAssignmentEditor, { user, index: index2 })
-        ] }) })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          AlertDialog,
+          {
+            open: pendingRole !== null,
+            onOpenChange: (o) => !o && setPendingRole(null),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              AlertDialogContent,
+              {
+                className: "bg-card border-border",
+                "data-ocid": `user.role_change_dialog.${index2}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogTitle, { className: "font-heading uppercase tracking-wide text-foreground", children: [
+                      "Change ",
+                      user.name,
+                      "’s role to",
+                      " ",
+                      pendingRole ? roleLabel(pendingRole) : "",
+                      "?"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: "This lowers their access level. They may lose permissions they currently use." })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      AlertDialogCancel,
+                      {
+                        disabled: setRole.isPending,
+                        "data-ocid": `user.role_change_dialog.cancel_button.${index2}`,
+                        children: "Cancel"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      AlertDialogAction,
+                      {
+                        onClick: confirmRoleChange,
+                        disabled: setRole.isPending,
+                        className: "bg-primary text-primary-foreground hover:bg-primary-hover",
+                        "data-ocid": `user.role_change_dialog.confirm_button.${index2}`,
+                        children: [
+                          setRole.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                          "Change role"
+                        ]
+                      }
+                    )
+                  ] })
+                ]
+              }
+            )
+          }
+        )
       ] });
     }
     function ApprovalStatusBadge({
@@ -73838,6 +74014,15 @@ ${escapeText(this.code(index2, length))}
         default:
           return "Trainee";
       }
+    }
+    const ROLE_PRIVILEGE = {
+      trainee: 0,
+      trainer: 1,
+      manager: 2,
+      admin: 3
+    };
+    function isLowerPrivilege(next, current) {
+      return ROLE_PRIVILEGE[next] < ROLE_PRIVILEGE[current];
     }
     function approvalLabel(status) {
       switch (status) {

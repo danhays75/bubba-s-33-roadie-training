@@ -1,7 +1,18 @@
+import { QueryErrorState } from "@/components/QueryErrorState";
 import { ResendEmailButton } from "@/components/admin/ResendEmailButton";
 import { RoleSelect } from "@/components/admin/RoleSelect";
 import { UserAssignmentEditor } from "@/components/admin/UserAssignmentEditor";
 import { UserEditSheet } from "@/components/admin/UserEditSheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +41,8 @@ import type {
   UserProfile,
 } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
-import { Check, ShieldAlert, UserCheck, Users, X } from "lucide-react";
+import { Check, Loader2, ShieldAlert, UserCheck, Users, X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 /**
@@ -54,7 +66,7 @@ import { toast } from "sonner";
  */
 export function AdminUsersPage() {
   const { data: myProfile } = useMyProfile();
-  const { data: users, isLoading } = useAllUsers();
+  const { data: users, isLoading, isError, refetch } = useAllUsers();
 
   // Gate on admin role. While profile is loading, myProfile is undefined —
   // render a quiet dark placeholder rather than flashing access-denied.
@@ -70,18 +82,36 @@ export function AdminUsersPage() {
   const pending = all.filter((u) => u.approvalStatus === "pending");
   const approved = all.filter((u) => u.approvalStatus === "approved");
 
+  // Self-lockout protection: the acting admin's own principal (stringified)
+  // and the count of admins among approved users. Passed down to UserRow so
+  // it can disable the RoleSelect on the admin's own row AND on the last
+  // remaining admin row (prevents the admin from locking themselves or the
+  // org out of admin access).
+  const myPrincipal = myProfile?.principal;
+  const adminCount = approved.filter((u) => u.role === "admin").length;
+
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6">
       <Header pendingCount={pending.length} />
 
       {isLoading ? (
         <UsersSkeleton />
+      ) : isError ? (
+        <QueryErrorState
+          title="Couldn't load users."
+          description="We couldn't load the users list right now. Please try again."
+          onRetry={() => void refetch()}
+        />
       ) : all.length === 0 ? (
         <EmptyUsers />
       ) : (
         <div className="flex flex-col gap-8">
           <PendingApprovalSection users={pending} />
-          <ApprovedUsersSection users={approved} />
+          <ApprovedUsersSection
+            users={approved}
+            myPrincipal={myPrincipal}
+            adminCount={adminCount}
+          />
         </div>
       )}
     </div>
@@ -184,6 +214,10 @@ function PendingUserRow({ user, index }: { user: UserProfile; index: number }) {
   const approve = useApproveUser();
   const reject = useRejectUser();
 
+  // Confirm-before-reject: rejecting denies the user access, so we surface
+  // an AlertDialog before firing the mutation. Approve stays one click.
+  const [rejectOpen, setRejectOpen] = useState(false);
+
   const handleApprove = () => {
     approve.mutate(
       { userPrincipal: user.principal },
@@ -201,8 +235,10 @@ function PendingUserRow({ user, index }: { user: UserProfile; index: number }) {
     reject.mutate(
       { userPrincipal: user.principal },
       {
-        onSuccess: () =>
-          toast.success(`${user.name || "User"} rejected. Access denied.`),
+        onSuccess: () => {
+          toast.success(`${user.name || "User"} rejected. Access denied.`);
+          setRejectOpen(false);
+        },
         onError: () => toast.error("Couldn't reject. Try again."),
       },
     );
@@ -262,7 +298,7 @@ function PendingUserRow({ user, index }: { user: UserProfile; index: number }) {
             size="sm"
             variant="destructive"
             disabled={busy}
-            onClick={handleReject}
+            onClick={() => setRejectOpen(true)}
             data-ocid={`pending_user.reject_button.${index}`}
             aria-label={`Reject ${user.name}`}
           >
@@ -272,6 +308,41 @@ function PendingUserRow({ user, index }: { user: UserProfile; index: number }) {
           <ResendEmailButton user={user} index={index} variant="secondary" />
         </div>
       </TableCell>
+      <AlertDialog
+        open={rejectOpen}
+        onOpenChange={(o) => !o && setRejectOpen(false)}
+      >
+        <AlertDialogContent
+          className="bg-card border-border"
+          data-ocid={`pending_user.reject_dialog.${index}`}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-heading uppercase tracking-wide text-foreground">
+              Reject {user.name || "user"}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              They will be denied access.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={reject.isPending}
+              data-ocid={`pending_user.reject_dialog.cancel_button.${index}`}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReject}
+              disabled={reject.isPending}
+              className="bg-primary text-primary-foreground hover:bg-primary-hover"
+              data-ocid={`pending_user.reject_dialog.confirm_button.${index}`}
+            >
+              {reject.isPending && <Loader2 className="animate-spin" />}
+              Reject
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </TableRow>
   );
 }
@@ -282,7 +353,15 @@ function PendingUserRow({ user, index }: { user: UserProfile; index: number }) {
  * approval-status column so admins can see each user's current status at a
  * glance.
  */
-function ApprovedUsersSection({ users }: { users: UserProfile[] }) {
+function ApprovedUsersSection({
+  users,
+  myPrincipal,
+  adminCount,
+}: {
+  users: UserProfile[];
+  myPrincipal: string | undefined;
+  adminCount: number;
+}) {
   return (
     <section
       className="flex flex-col gap-3"
@@ -310,13 +389,25 @@ function ApprovedUsersSection({ users }: { users: UserProfile[] }) {
           </p>
         </div>
       ) : (
-        <UsersTable users={users} />
+        <UsersTable
+          users={users}
+          myPrincipal={myPrincipal}
+          adminCount={adminCount}
+        />
       )}
     </section>
   );
 }
 
-function UsersTable({ users }: { users: UserProfile[] }) {
+function UsersTable({
+  users,
+  myPrincipal,
+  adminCount,
+}: {
+  users: UserProfile[];
+  myPrincipal: string | undefined;
+  adminCount: number;
+}) {
   return (
     <div
       className="overflow-hidden border border-border bg-card"
@@ -347,7 +438,13 @@ function UsersTable({ users }: { users: UserProfile[] }) {
         </TableHeader>
         <TableBody>
           {users.map((user, i) => (
-            <UserRow key={user.principal} user={user} index={i + 1} />
+            <UserRow
+              key={user.principal}
+              user={user}
+              index={i + 1}
+              myPrincipal={myPrincipal}
+              adminCount={adminCount}
+            />
           ))}
         </TableBody>
       </Table>
@@ -355,7 +452,17 @@ function UsersTable({ users }: { users: UserProfile[] }) {
   );
 }
 
-function UserRow({ user, index }: { user: UserProfile; index: number }) {
+function UserRow({
+  user,
+  index,
+  myPrincipal,
+  adminCount,
+}: {
+  user: UserProfile;
+  index: number;
+  myPrincipal: string | undefined;
+  adminCount: number;
+}) {
   const setRole = useSetUserRole();
   const { data: assignments } = useUserAssignments(user.principal);
   const { data: positions } = useAllPositions();
@@ -368,6 +475,26 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
       ? `${user.principal.slice(0, 6)}…${user.principal.slice(-4)}`
       : "user");
 
+  // Self-lockout + last-admin protection (B1). The acting admin cannot
+  // change their own role, and no one can demote the last remaining admin.
+  // The RoleSelect is disabled in either case with a short muted hint
+  // explaining why.
+  const isSelf = !!myPrincipal && user.principal === myPrincipal;
+  const isLastAdmin = user.role === "admin" && adminCount <= 1;
+  const roleLocked = isSelf || isLastAdmin;
+  const roleDisabledHint = isSelf
+    ? "You can't change your own role"
+    : isLastAdmin
+      ? "At least one admin is required"
+      : undefined;
+
+  // Confirm-before-lower-privilege role change (B3). Demoting a user (moving
+  // to a lower-privilege role per trainee < trainer < manager < admin) opens
+  // an AlertDialog before firing. Equal-or-higher privilege changes stay
+  // one click. The candidate role is held in local state while the dialog is
+  // open.
+  const [pendingRole, setPendingRole] = useState<Role | null>(null);
+
   const handleRoleChange = (role: Role) => {
     setRole.mutate(
       { userPrincipal: user.principal, role },
@@ -377,6 +504,21 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
         onError: () => toast.error("Couldn't update role. Try again."),
       },
     );
+  };
+
+  const onRoleSelect = (role: Role) => {
+    if (role === user.role) return;
+    if (isLowerPrivilege(role, user.role)) {
+      setPendingRole(role);
+      return;
+    }
+    handleRoleChange(role);
+  };
+
+  const confirmRoleChange = () => {
+    if (!pendingRole) return;
+    handleRoleChange(pendingRole);
+    setPendingRole(null);
   };
 
   return (
@@ -417,8 +559,9 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
       <TableCell className="align-top">
         <RoleSelect
           value={user.role}
-          onValueChange={handleRoleChange}
-          disabled={setRole.isPending}
+          onValueChange={onRoleSelect}
+          disabled={roleLocked || setRole.isPending}
+          disabledHint={roleLocked ? roleDisabledHint : undefined}
           index={index}
           userLabel={userLabel}
         />
@@ -440,6 +583,43 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
           <UserAssignmentEditor user={user} index={index} />
         </div>
       </TableCell>
+      <AlertDialog
+        open={pendingRole !== null}
+        onOpenChange={(o) => !o && setPendingRole(null)}
+      >
+        <AlertDialogContent
+          className="bg-card border-border"
+          data-ocid={`user.role_change_dialog.${index}`}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-heading uppercase tracking-wide text-foreground">
+              Change {user.name}&rsquo;s role to{" "}
+              {pendingRole ? roleLabel(pendingRole) : ""}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This lowers their access level. They may lose permissions they
+              currently use.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={setRole.isPending}
+              data-ocid={`user.role_change_dialog.cancel_button.${index}`}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRoleChange}
+              disabled={setRole.isPending}
+              className="bg-primary text-primary-foreground hover:bg-primary-hover"
+              data-ocid={`user.role_change_dialog.confirm_button.${index}`}
+            >
+              {setRole.isPending && <Loader2 className="animate-spin" />}
+              Change role
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </TableRow>
   );
 }
@@ -584,6 +764,22 @@ function roleLabel(role: Role): string {
     default:
       return "Trainee";
   }
+}
+
+/**
+ * Privilege order per the role contract: trainee < trainer < manager < admin.
+ * Returns true when `next` is LOWER privilege than `current` (a demotion),
+ * which is the case that requires a confirmation dialog before applying.
+ */
+const ROLE_PRIVILEGE: Record<Role, number> = {
+  trainee: 0,
+  trainer: 1,
+  manager: 2,
+  admin: 3,
+};
+
+function isLowerPrivilege(next: Role, current: Role): boolean {
+  return ROLE_PRIVILEGE[next] < ROLE_PRIVILEGE[current];
 }
 
 function approvalLabel(status: ApprovalStatus): string {

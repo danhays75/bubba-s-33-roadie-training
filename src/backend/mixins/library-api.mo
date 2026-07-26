@@ -1,4 +1,6 @@
 import List "mo:core/List";
+import Map "mo:core/Map";
+import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import AccessControl "mo:caffeineai-authorization/access-control";
 import Foundation "../lib/foundation";
@@ -25,6 +27,7 @@ import Types "../types/library";
 // is optional — passing null keeps the item in the generic detail shape.
 mixin (
   accessControlState : AccessControl.AccessControlState,
+  profiles : Map.Map<Principal, Foundation.UserProfile>,
   positions : List.List<Foundation.Position>,
   categories : List.List<Library.Category>,
   items : List.List<Library.LibraryItem>,
@@ -32,25 +35,37 @@ mixin (
   nextItemId : { var value : Nat },
 ) {
 
-  // --- Browsing (public query, no admin guard) ---
+  // isCallerApproved is defined ONCE in lib/foundation.mo as
+  // Foundation.isCallerApproved(profiles, caller). The gated read/query
+  // endpoints below call it directly. Do NOT re-add a local definition here:
+  // defining it locally in each of the four mixins caused
+  // `type error [M0051]: duplicate definition for isCallerApproved in block`
+  // when all mixins were include'd into one actor in main.mo.
 
-  public query func getCategoriesByPosition(positionId : Nat) : async [Library.Category] {
+  // --- Browsing (gated query: caller must be approved) ---
+
+  public shared query ({ caller }) func getCategoriesByPosition(positionId : Nat) : async [Library.Category] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Library.listCategoriesByPosition(categories, positionId);
   };
 
-  public query func getCategory(categoryId : Nat) : async ?Library.Category {
+  public shared query ({ caller }) func getCategory(categoryId : Nat) : async ?Library.Category {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Library.getCategory(categories, categoryId);
   };
 
-  public query func getItemsByCategory(categoryId : Nat) : async [Library.LibraryItem] {
+  public shared query ({ caller }) func getItemsByCategory(categoryId : Nat) : async [Library.LibraryItem] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Library.listItemsByCategory(items, categoryId);
   };
 
-  public query func getItem(itemId : Nat) : async ?Library.LibraryItem {
+  public shared query ({ caller }) func getItem(itemId : Nat) : async ?Library.LibraryItem {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Library.getItem(items, itemId);
   };
 
-  public query func searchLibrary(positionId : Nat, searchText : Text) : async [Library.LibraryItem] {
+  public shared query ({ caller }) func searchLibrary(positionId : Nat, searchText : Text) : async [Library.LibraryItem] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Library.searchItemsInPosition(categories, items, positionId, searchText);
   };
 

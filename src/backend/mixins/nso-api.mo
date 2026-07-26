@@ -45,25 +45,37 @@ mixin (
     };
   };
 
-  // --- Browsing (public query, no role guard) ---
+  // isCallerApproved is defined ONCE in lib/foundation.mo as
+  // Foundation.isCallerApproved(profiles, caller). The gated read/query
+  // endpoints below call it directly. Do NOT re-add a local definition here:
+  // defining it locally in each of the four mixins caused
+  // `type error [M0051]: duplicate definition for isCallerApproved in block`
+  // when all mixins were include'd into one actor in main.mo.
 
-  public query func getNsoPhases() : async [Nso.Phase] {
+  // --- Browsing (approved users only) ---
+
+  public shared query ({ caller }) func getNsoPhases() : async [Nso.Phase] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Nso.listPhases(nsoPhases);
   };
 
-  public query func getNsoPhase(id : Nat) : async ?Nso.Phase {
+  public shared query ({ caller }) func getNsoPhase(id : Nat) : async ?Nso.Phase {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Nso.getPhase(nsoPhases, id);
   };
 
-  public query func getNsoTasksByPhase(phaseId : Nat) : async [Nso.Task] {
+  public shared query ({ caller }) func getNsoTasksByPhase(phaseId : Nat) : async [Nso.Task] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Nso.listTasksByPhase(nsoTasks, phaseId);
   };
 
-  public query func getNsoTask(id : Nat) : async ?Nso.Task {
+  public shared query ({ caller }) func getNsoTask(id : Nat) : async ?Nso.Task {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Nso.getTask(nsoTasks, id);
   };
 
-  public query func getNsoOverallProgress() : async { doneCount : Nat; totalCount : Nat } {
+  public shared query ({ caller }) func getNsoOverallProgress() : async { doneCount : Nat; totalCount : Nat } {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     let (doneCount, totalCount) = Nso.overallProgress(nsoTasks);
     { doneCount; totalCount };
   };
@@ -74,18 +86,17 @@ mixin (
   // headers' "N of M done" — it does NOT load any task rows. Full task rows
   // for a phase are only fetched via getNsoTasksByPhase when the phase is
   // expanded.
-  public query func getNsoPhaseProgressCounts() : async [Types.NsoPhaseProgressCount] {
+  public shared query ({ caller }) func getNsoPhaseProgressCounts() : async [Types.NsoPhaseProgressCount] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Nso.phaseProgressCounts(nsoPhases, nsoTasks);
   };
 
   // Returns the users assignable to an NSO task — i.e. those whose app-domain
-  // role is #manager or #admin. This is a READ (public query, no role guard):
-  // it only returns manager/admin profiles (no trainee/trainer data leaks) and
-  // the NSO page is already frontend-gated to manager/admin. Used by the Assign
-  // control so managers (not just admins) can populate the dropdown — the
-  // foundation getAllUsers endpoint is admin-only and would return an empty
-  // list for managers.
-  public query func getNsoAssignableUsers() : async [Foundation.UserProfile] {
+  // role is #manager or #admin. Admin-only: this returns full UserProfile
+  // records (PII), so it is gated by AccessControl.isAdmin rather than the
+  // isCallerApproved read gate.
+  public shared query ({ caller }) func getNsoAssignableUsers() : async [Foundation.UserProfile] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) { Runtime.trap("Unauthorized: admin only") };
     Foundation.listProfiles(profiles).filter(func(p) {
       p.role == #manager or p.role == #admin;
     });

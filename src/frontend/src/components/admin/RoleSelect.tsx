@@ -28,6 +28,13 @@ export type RoleSelectProps = {
   value: Role;
   onValueChange: (role: Role) => void;
   disabled?: boolean;
+  /**
+   * Optional muted hint rendered beneath the trigger when the control is
+   * disabled. Used to explain WHY the role is locked (e.g. self-lockout
+   * protection, last-admin protection). Only rendered when `disabled` is
+   * true and a hint is provided.
+   */
+  disabledHint?: string;
   /** Row index — used only for the data-ocid test hook. */
   index: number;
   /**
@@ -44,38 +51,49 @@ export function RoleSelect({
   value,
   onValueChange,
   disabled,
+  disabledHint,
   index,
   userLabel,
 }: RoleSelectProps) {
   return (
-    <Select
-      value={value}
-      onValueChange={(v) => onValueChange(v as Role)}
-      disabled={disabled}
-    >
-      <SelectTrigger
-        size="sm"
-        className={cn(
-          "w-32 border-border bg-card font-heading text-xs uppercase tracking-wide",
-          "data-[placeholder]:text-muted-foreground",
-          value === "admin" && "border-primary text-primary",
-        )}
-        data-ocid={`user.role.select.${index}`}
-        aria-label={`Set role for ${userLabel}`}
+    <div className="flex flex-col gap-1">
+      <Select
+        value={value}
+        onValueChange={(v) => onValueChange(v as Role)}
+        disabled={disabled}
       >
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {ROLES.map((role) => (
-          <SelectItem
-            key={role.value}
-            value={role.value}
-            className="font-heading text-xs uppercase tracking-wide"
-          >
-            {role.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+        <SelectTrigger
+          size="sm"
+          className={cn(
+            "w-32 border-border bg-card font-heading text-xs uppercase tracking-wide",
+            "data-[placeholder]:text-muted-foreground",
+            value === "admin" && "border-primary text-primary",
+          )}
+          data-ocid={`user.role.select.${index}`}
+          aria-label={`Set role for ${userLabel}`}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {ROLES.map((role) => (
+            <SelectItem
+              key={role.value}
+              value={role.value}
+              className="font-heading text-xs uppercase tracking-wide"
+            >
+              {role.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {disabled && disabledHint ? (
+        <p
+          className="max-w-[12rem] font-body text-[0.65rem] leading-tight text-muted-foreground"
+          data-ocid={`user.role.disabled_hint.${index}`}
+        >
+          {disabledHint}
+        </p>
+      ) : null}
+    </div>
   );
 }

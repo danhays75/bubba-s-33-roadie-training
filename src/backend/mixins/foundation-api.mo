@@ -52,6 +52,14 @@ mixin (
   // and the callback hasn't run yet.
   public shared ({ caller }) func createMyProfile(name : Text, storeLocation : Text) : async Foundation.UserProfile {
     AccessControlAdminGuard.initialize(accessControlState, profiles, caller);
+    // Idempotency guard: if the caller already has a profile, return it
+    // unchanged. Do NOT recreate it (which would flip an approved user back to
+    // #pending and, for the first user, reset the admin role) and do NOT
+    // re-send the pending-approval email.
+    switch (Foundation.getProfile(profiles, caller)) {
+      case (?existing) { return existing };
+      case null {};
+    };
     // Determine the role: the first user becomes #admin (Version 95), every
     // later user becomes #trainee (pending admin approval).
     let role : Types.Role = if (profiles.size() == 0) { #admin } else { #trainee };
@@ -187,6 +195,18 @@ mixin (
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
+    // Protect the last admin: if the target is currently #admin and the
+    // change would leave zero admins, trap instead of applying it.
+    switch (Foundation.getProfile(profiles, userId)) {
+      case (?existing) {
+        if (existing.role == #admin and role != #admin) {
+          if (countAdmins() <= 1) {
+            Runtime.trap("Cannot remove the last admin");
+          };
+        };
+      };
+      case null {};
+    };
     switch (Foundation.setRole(profiles, userId, role)) {
       case (?profile) {
         // Keep the access-control UserRole in sync: an app-domain #admin gets
@@ -230,6 +250,18 @@ mixin (
     AccessControlAdminGuard.initialize(accessControlState, profiles, caller);
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
+    };
+    // Protect the last admin: if the target is an #admin and rejecting them
+    // would leave zero admins, trap instead of applying it.
+    switch (Foundation.getProfile(profiles, userId)) {
+      case (?existing) {
+        if (existing.role == #admin) {
+          if (countAdmins() <= 1) {
+            Runtime.trap("Cannot remove the last admin");
+          };
+        };
+      };
+      case null {};
     };
     switch (Foundation.rejectUser(profiles, userId)) {
       case (?profile) {
@@ -330,11 +362,13 @@ mixin (
 
   // --- Positions ---
 
-  public query func getAllPositions() : async [Foundation.Position] {
+  public shared query ({ caller }) func getAllPositions() : async [Foundation.Position] {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Foundation.listPositions(positions);
   };
 
-  public query func getPosition(id : Nat) : async ?Foundation.Position {
+  public shared query ({ caller }) func getPosition(id : Nat) : async ?Foundation.Position {
+    if (not Foundation.isCallerApproved(profiles, caller)) { Runtime.trap("Unauthorized: account not approved") };
     Foundation.getPosition(positions, id);
   };
 
@@ -421,6 +455,25 @@ mixin (
   };
 
   // --- Helpers ---
+
+  // isCallerApproved is defined ONCE in lib/foundation.mo as
+  // Foundation.isCallerApproved(profiles, caller). The gated read/query
+  // endpoints (getAllPositions, getPosition) call it directly — see the
+  // guards above. Do NOT re-add a local definition here: defining it locally
+  // in each of the four mixins caused `type error [M0051]: duplicate
+  // definition for isCallerApproved in block` when all mixins were include'd
+  // into one actor in main.mo.
+
+  // Count the number of admins by scanning Foundation.listProfiles(profiles)
+  // for role == #admin. Used by setUserRole and rejectUser to protect the
+  // last admin.
+  func countAdmins() : Nat {
+    var count = 0;
+    for (p in Foundation.listProfiles(profiles).vals()) {
+      if (p.role == #admin) { count += 1 };
+    };
+    count;
+  };
 
   // Collect the email addresses of every admin who has one on file. Used by
   // createMyProfile to send the pending-approval notification. Sources:
