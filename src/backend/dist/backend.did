@@ -28,8 +28,11 @@ type UserRole =
  };
 type UserProfile = 
  record {
+   approvalStatus: ApprovalStatus;
+   email: opt text;
    id: principal;
    name: text;
+   photo: opt text;
    role: Role;
    storeLocation: text;
  };
@@ -51,6 +54,11 @@ type Task =
    section: opt text;
    sortOrder: nat;
    "text": text;
+ };
+type SendResult = 
+ variant {
+   err: text;
+   ok;
  };
 type Role = 
  variant {
@@ -269,6 +277,12 @@ type AssignmentStatus =
    certified;
    inTraining;
  };
+type ApprovalStatus = 
+ variant {
+   approved;
+   pending;
+   rejected;
+ };
 type ActivityType = 
  variant {
    drinksBuilder;
@@ -314,6 +328,8 @@ service : {
           principal;
           UserProfile;
         }) query;
+  __verifiedEmails: () -> (reserved) query;
+  _caffeineEmailVerify: (email: text) -> ();
   _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
   _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
   _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
@@ -326,6 +342,7 @@ service : {
   _initialize_access_control: () -> ();
   _internet_identity_sign_in_finish: () -> (Result__1);
   _internet_identity_sign_in_start: () -> (blob);
+  approveUser: (userId: principal) -> (UserProfile);
   assignCallerUserRole: (user: principal, role: UserRole) -> ();
   assignPosition: (userId: principal, positionId: nat) ->
    (PositionAssignment);
@@ -376,8 +393,10 @@ service : {
   getUserAssignments: (userId: principal) -> (vec PositionAssignment);
   getUserRole: (userId: principal) -> (opt Role);
   importNsoTasks: (input: NsoImportInput) -> (NsoImportSummary);
+  initiateEmailVerification: (email: text) -> (SendResult);
   isCallerAdmin: () -> (bool) query;
   rebuildLegendaryActivity: (id: nat) -> (Activity);
+  rejectUser: (userId: principal) -> (UserProfile);
   reorderCategories: (positionId: nat, orderedCategoryIds: vec nat) ->
    (vec Category);
   reorderItems: (categoryId: nat, orderedItemIds: vec nat) ->
@@ -391,13 +410,18 @@ service : {
                                           up;
                                         }) -> ();
   reorderPositions: (orderedIds: vec nat) -> (vec Position);
+  resendApprovalEmail: (userId: principal) -> ();
   schema: () -> (text) query;
   searchLibrary: (positionId: nat, searchText: text) ->
    (vec LibraryItem) query;
   setAssignmentStatus: (userId: principal, positionId: nat, status:
    AssignmentStatus) -> (PositionAssignment);
+  setEmailForUser: (newEmail: text) -> (UserProfile);
+  setMyPhoto: (photo: opt text) -> (UserProfile);
   setNsoTaskAssignment: (id: nat, assignedTo: opt principal) -> ();
   setNsoTaskCompletionDate: (id: nat, completionDate: opt text) -> ();
+  setUserEmail: (userId: principal, email: text) -> (UserProfile);
+  setUserPhoto: (userId: principal, photo: opt text) -> (UserProfile);
   setUserRole: (userId: principal, role: Role) -> (UserProfile);
   toggleNsoTask: (id: nat, done: bool, completionDate: opt text) -> ();
   unassignPosition: (userId: principal, positionId: nat) -> ();
@@ -408,6 +432,8 @@ service : {
    bool, recipe: opt Recipe) -> (LibraryItem);
   updateLegendaryActivity: (input: UpdateActivityInput) -> (Activity);
   updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
+  updateMyProfileWithPhoto: (name: text, storeLocation: text, photo:
+   opt text) -> (UserProfile);
   updateNsoPhase: (id: nat, name: text) -> ();
   updateNsoTask: (id: nat, "text": text, section: opt text, done: bool,
    assignedTo: opt principal, completionDate: opt text, notes: opt text) ->

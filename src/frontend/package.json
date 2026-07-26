@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@caffeineai/core-infrastructure": "^1.1.0",
-    "@caffeineai/object-storage": "^1.1.0",
+    "@caffeineai/object-storage": "^1.1.1",
     "@icp-sdk/auth": "^7.1.0",
     "@icp-sdk/core": "^5.4.0",
     "@radix-ui/react-accordion": "^1.2.15",
@@ -78,6 +78,7 @@
     "react": "~19.1.8",
     "react-day-picker": "^9.14.0",
     "react-dom": "~19.1.8",
+    "react-easy-crop": "^6.2.2",
     "react-hook-form": "^7.80.0",
     "react-icons": "^5.7.0",
     "react-quill-new": "3.4.6",

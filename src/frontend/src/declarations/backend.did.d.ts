@@ -28,6 +28,9 @@ export type ActivityContent = {
 export type ActivityType = { 'drinksBuilder' : null } |
   { 'quiz' : null } |
   { 'flashcards' : null };
+export type ApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
 export type AssignmentStatus = { 'inTraining' : null } |
   { 'certified' : null };
 export interface BuildActivityInput {
@@ -178,6 +181,8 @@ export type Role = { 'manager' : null } |
   { 'admin' : null } |
   { 'trainee' : null } |
   { 'trainer' : null };
+export type SendResult = { 'ok' : null } |
+  { 'err' : string };
 export interface Task {
   'id' : bigint,
   'completionDate' : [] | [string],
@@ -199,7 +204,10 @@ export interface UserProfile {
   'id' : Principal,
   'name' : string,
   'role' : Role,
+  'email' : [] | [string],
+  'approvalStatus' : ApprovalStatus,
   'storeLocation' : string,
+  'photo' : [] | [string],
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -246,6 +254,8 @@ export interface _SERVICE {
     [[] | [Principal], [] | [bigint]],
     Array<[Principal, UserProfile]>
   >,
+  '__verifiedEmails' : ActorMethod<[], any>,
+  '_caffeineEmailVerify' : ActorMethod<[string], undefined>,
   '_immutableObjectStorageBlobsAreLive' : ActorMethod<
     [Array<Uint8Array>],
     Array<boolean>
@@ -267,6 +277,7 @@ export interface _SERVICE {
   '_initialize_access_control' : ActorMethod<[], undefined>,
   '_internet_identity_sign_in_finish' : ActorMethod<[], Result__1>,
   '_internet_identity_sign_in_start' : ActorMethod<[], Uint8Array>,
+  'approveUser' : ActorMethod<[Principal], UserProfile>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignPosition' : ActorMethod<[Principal, bigint], PositionAssignment>,
   'buildLegendaryActivity' : ActorMethod<[BuildActivityInput], Activity>,
@@ -329,8 +340,10 @@ export interface _SERVICE {
   'getUserAssignments' : ActorMethod<[Principal], Array<PositionAssignment>>,
   'getUserRole' : ActorMethod<[Principal], [] | [Role]>,
   'importNsoTasks' : ActorMethod<[NsoImportInput], NsoImportSummary>,
+  'initiateEmailVerification' : ActorMethod<[string], SendResult>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'rebuildLegendaryActivity' : ActorMethod<[bigint], Activity>,
+  'rejectUser' : ActorMethod<[Principal], UserProfile>,
   'reorderCategories' : ActorMethod<[bigint, Array<bigint>], Array<Category>>,
   'reorderItems' : ActorMethod<[bigint, Array<bigint>], Array<LibraryItem>>,
   'reorderNsoPhases' : ActorMethod<
@@ -342,14 +355,19 @@ export interface _SERVICE {
     undefined
   >,
   'reorderPositions' : ActorMethod<[Array<bigint>], Array<Position>>,
+  'resendApprovalEmail' : ActorMethod<[Principal], undefined>,
   'schema' : ActorMethod<[], string>,
   'searchLibrary' : ActorMethod<[bigint, string], Array<LibraryItem>>,
   'setAssignmentStatus' : ActorMethod<
     [Principal, bigint, AssignmentStatus],
     PositionAssignment
   >,
+  'setEmailForUser' : ActorMethod<[string], UserProfile>,
+  'setMyPhoto' : ActorMethod<[[] | [string]], UserProfile>,
   'setNsoTaskAssignment' : ActorMethod<[bigint, [] | [Principal]], undefined>,
   'setNsoTaskCompletionDate' : ActorMethod<[bigint, [] | [string]], undefined>,
+  'setUserEmail' : ActorMethod<[Principal, string], UserProfile>,
+  'setUserPhoto' : ActorMethod<[Principal, [] | [string]], UserProfile>,
   'setUserRole' : ActorMethod<[Principal, Role], UserProfile>,
   'toggleNsoTask' : ActorMethod<[bigint, boolean, [] | [string]], undefined>,
   'unassignPosition' : ActorMethod<[Principal, bigint], undefined>,
@@ -370,6 +388,10 @@ export interface _SERVICE {
   >,
   'updateLegendaryActivity' : ActorMethod<[UpdateActivityInput], Activity>,
   'updateMyProfile' : ActorMethod<[string, string], UserProfile>,
+  'updateMyProfileWithPhoto' : ActorMethod<
+    [string, string, [] | [string]],
+    UserProfile
+  >,
   'updateNsoPhase' : ActorMethod<[bigint, string], undefined>,
   'updateNsoTask' : ActorMethod<
     [

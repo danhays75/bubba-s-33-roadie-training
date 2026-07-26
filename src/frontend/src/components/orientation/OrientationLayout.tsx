@@ -49,6 +49,7 @@ const OUR_STORY_NAME = "Our Story";
 const OPERATIONAL_GOALS_NAME = "Operational Goals";
 const SERVICE_PRIORITIES_NAME = "Service Priorities";
 const FOOD_PRIORITIES_NAME = "Food Priorities";
+const MARKETING_PRIORITIES_NAME = "Marketing / Community Priorities";
 
 /** Field-label lookups used by hero sections. Case-insensitive contains. */
 function findField(item: LibraryItem, needle: string): string | null {
@@ -120,12 +121,32 @@ export function OrientationLayout({
   const findCategory = (name: string): Category | null =>
     nameIndex.get(name.trim().toLowerCase()) ?? null;
 
+  /**
+   * Tolerant lookup for the Community Priorities (gold) card. The user may
+   * have named their Library category "Community Priorities",
+   * "Marketing / Community Priorities", or a similar variant. Match the
+   * first category whose trimmed, lowercased name CONTAINS "community"
+   * (case-insensitive) OR whose trimmed, lowercased name exactly equals
+   * "marketing / community priorities". First matching category wins.
+   * Service and Food Priorities keep their exact-match bindings unchanged.
+   */
+  const findCommunityCategory = (): Category | null => {
+    const exact = nameIndex.get(MARKETING_PRIORITIES_NAME.trim().toLowerCase());
+    if (exact) return exact;
+    for (const c of categories) {
+      const key = c.name.trim().toLowerCase();
+      if (key.includes("community")) return c;
+    }
+    return null;
+  };
+
   const missionCategory = findCategory(MISSION_NAME);
   const coreValuesCategory = findCategory(CORE_VALUES_NAME);
   const ourStoryCategory = findCategory(OUR_STORY_NAME);
   const operationalGoalsCategory = findCategory(OPERATIONAL_GOALS_NAME);
   const servicePrioritiesCategory = findCategory(SERVICE_PRIORITIES_NAME);
   const foodPrioritiesCategory = findCategory(FOOD_PRIORITIES_NAME);
+  const marketingPrioritiesCategory = findCommunityCategory();
 
   const heroCategoryIds = new Set(
     [
@@ -135,6 +156,7 @@ export function OrientationLayout({
       operationalGoalsCategory,
       servicePrioritiesCategory,
       foodPrioritiesCategory,
+      marketingPrioritiesCategory,
     ]
       .filter((c): c is Category => c !== null)
       .map((c) => c.id),
@@ -172,11 +194,14 @@ export function OrientationLayout({
           category={operationalGoalsCategory}
         />
       ) : null}
-      {servicePrioritiesCategory || foodPrioritiesCategory ? (
+      {servicePrioritiesCategory ||
+      foodPrioritiesCategory ||
+      marketingPrioritiesCategory ? (
         <PrioritiesSection
           positionId={positionId}
           serviceCategory={servicePrioritiesCategory}
           foodCategory={foodPrioritiesCategory}
+          marketingCategory={marketingPrioritiesCategory}
         />
       ) : null}
       <BeLegendaryCta positionId={positionId} />
@@ -462,7 +487,7 @@ function CapstoneBar({
 /* ----------------------------- Our Story ------------------------------- */
 
 function OurStorySection({
-  positionId,
+  positionId: _positionId,
   category,
 }: {
   positionId: string;
@@ -475,10 +500,10 @@ function OurStorySection({
   const knownFor = item ? findField(item, "Known for") : null;
   const thisMeans = item ? findField(item, "This means we have") : null;
 
-  // Decode + split the 'This means we have' field into poster list
-  // items by semicolons. Each non-empty trimmed segment becomes one
-  // cream star-bulleted list row. Computed before the early return so
-  // biome's rules-of-hooks check is satisfied (useMemo above any guard).
+  // Decode + split the 'This means we have' field into list items by
+  // semicolons. Each non-empty trimmed segment becomes one row. Computed
+  // before the early return so biome's rules-of-hooks check is satisfied
+  // (useMemo above any guard).
   const thisMeansItems = useMemo(() => {
     if (!thisMeans) return [] as string[];
     return decodeHtmlEntities(thisMeans)
@@ -489,157 +514,189 @@ function OurStorySection({
 
   if (!item) return null;
 
-  const to = `/position/${positionId}/library/${category.id}/item/${item.id}`;
   const knownForText = knownFor ? decodeHtmlEntities(knownFor) : null;
+  const hasPhoto =
+    typeof item.photo === "string" && item.photo.trim().length > 0;
 
   return (
     <section data-ocid="orientation.our_story.section">
       <SectionDivider number="02" heading="Our Story" />
 
-      {/* Outer dark card wrapper stays so the section fits cleanly next
-          to Mission, Core Values, Operational Goals, Priorities, CTA,
-          and Rules. The Bubba's 33 'Food For All' poster look is the
-          card's INTERIOR — the wrapper frames the poster. */}
-      <div
-        className="mt-5 rounded-lg border border-border bg-card p-6 sm:p-8"
-        data-ocid="orientation.our_story.card"
-      >
-        {/* Poster interior: weathered blue wood-grain frame wrapping a
-            red-to-orange radial field with the poster zones in order. */}
-        <div
-          className="bubba-poster-frame"
-          data-ocid="orientation.our_story.frame"
-        >
-          <div
-            className="bubba-poster-field"
-            data-ocid="orientation.our_story.field"
-          >
-            {/* (1) Red Pacifico script 'Bubba's 33' wordmark */}
-            <div data-ocid="orientation.our_story.logo">
-              <span
-                className="bubba-poster-logo text-4xl sm:text-5xl"
-                aria-label="Bubba's 33"
-              >
-                Bubba&apos;s 33
-              </span>
-            </div>
-
-            {/* (2) Hero food photo slot (burger + fries) — empty
-                gradient placeholder; a real <img> drops in later. */}
-            <div
-              className="bubba-poster-hero"
-              data-ocid="orientation.our_story.hero"
-            >
-              <span className="bubba-poster-hero-img" aria-hidden />
-            </div>
-
-            {/* (3) Navy SCRATCH-MADE banner — white block caps */}
-            <div
-              className="bubba-poster-banner text-sm sm:text-base"
-              data-ocid="orientation.our_story.banner"
-            >
-              Scratch-Made
-            </div>
-
-            {/* (4) 'Food FOR All' headline — Pacifico 'Food'/'All' +
-                Anton block 'FOR' */}
-            <div
-              className="bubba-poster-headline"
-              data-ocid="orientation.our_story.headline"
-            >
-              <span className="bubba-poster-headline-script text-5xl sm:text-6xl">
-                Food
-              </span>
-              <span className="bubba-poster-headline-block text-3xl sm:text-4xl">
-                FOR
-              </span>
-              <span className="bubba-poster-headline-script text-5xl sm:text-6xl">
-                All
-              </span>
-            </div>
-
-            {/* (5) Known-for supporting copy — bound to the Library
-                'Known for' field, decoded. Omitted when null. */}
-            {knownForText ? (
-              <div data-ocid="orientation.our_story.known_for">
-                <p
-                  className="bubba-poster-knownfor-kicker"
-                  data-ocid="orientation.our_story.known_for.label"
-                >
-                  Known For
-                </p>
-                <p
-                  className="bubba-poster-knownfor-body text-sm sm:text-base"
-                  data-ocid="orientation.our_story.known_for.value"
-                >
-                  {knownForText}
-                </p>
-              </div>
-            ) : null}
-
-            {/* (6) Lower food cluster slot (pizza / beer / cocktails)
-                — empty gradient placeholder; a real <img> drops in
-                later. */}
-            <div
-              className="bubba-poster-cluster"
-              data-ocid="orientation.our_story.cluster"
-            >
-              <span className="bubba-poster-cluster-img" aria-hidden />
-            </div>
-
-            {/* (7) + (8) 'This means we have:' Pacifico label + cream
-                star-bulleted feature list. Both omitted when the field
-                is null. List items come from splitting the decoded
-                field value by semicolons. */}
-            {thisMeansItems.length > 0 ? (
-              <>
-                <p
-                  className="bubba-poster-list-label text-xl sm:text-2xl"
-                  data-ocid="orientation.our_story.list_label"
-                >
-                  This means we have:
-                </p>
-                <ul
-                  className="bubba-poster-list text-sm sm:text-base"
-                  data-ocid="orientation.our_story.list"
-                >
-                  {thisMeansItems.map((line, index) => (
-                    <li
-                      key={line}
-                      className="bubba-poster-list-item"
-                      data-ocid={`orientation.our_story.list.item.${index + 1}`}
-                    >
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
-
-            {/* (9) Card footer Back-to-category link — stays INSIDE the
-                card footer (not floating above) so the section reads as
-                one cohesive block matching the sibling sections. */}
-            <div
-              className="bubba-poster-footer"
-              data-ocid="orientation.our_story.footer"
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                asChild
-                className="text-patriotic-cream/80 hover:text-patriotic-cream"
-                data-ocid="orientation.our_story.back_button"
-              >
-                <Link to={to}>
-                  <ArrowLeft className="size-4" />
-                  Back to category
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {hasPhoto ? (
+        <OurStoryPhoto
+          src={item.photo as string}
+          knownForText={knownForText}
+          thisMeansItems={thisMeansItems}
+          tags={item.tags}
+        />
+      ) : (
+        <OurStoryTextFallback
+          knownForText={knownForText}
+          thisMeansItems={thisMeansItems}
+          tags={item.tags}
+        />
+      )}
     </section>
+  );
+}
+
+/**
+ * Photo-dominant Our Story. Renders ONLY the uploaded poster photo as a
+ * plain responsive image — no code-drawn poster placeholder, no Bubba's 33
+ * logo, no SCRATCH-MADE banner, no 'Food FOR All' headline, no gradient
+ * hero/cluster slots, no card footer, and NO 'Back to category' link.
+ *
+ * The image is centered, max-width 560px on desktop / full width on mobile,
+ * height auto, object-fit: contain (never cropped), rounded corners, subtle
+ * shadow. No extra border or background — the poster already has its own
+ * frame. The item's text fields and tags render as a small caption BELOW
+ * the image as a screen-reader / search-engine fallback. The whole section
+ * is display-only — it is NOT a link and does NOT navigate.
+ */
+function OurStoryPhoto({
+  src,
+  knownForText,
+  thisMeansItems,
+  tags,
+}: {
+  src: string;
+  knownForText: string | null;
+  thisMeansItems: string[];
+  tags: string[];
+}): ReactElement {
+  return (
+    <div
+      className="mt-5 flex flex-col items-center"
+      data-ocid="orientation.our_story.photo_wrap"
+    >
+      <img
+        src={src}
+        alt="Our Story — Scratch-Made, Food For All"
+        className="orientation-our-story-photo"
+        data-ocid="orientation.our_story.photo"
+        loading="lazy"
+      />
+      <OurStoryCaption
+        knownForText={knownForText}
+        thisMeansItems={thisMeansItems}
+        tags={tags}
+      />
+    </div>
+  );
+}
+
+/**
+ * Display-only text/chips fallback shown when the Our Story item has NO
+ * photo. Renders the item's text fields and tags as a small, non-distracting
+ * block — no code-drawn poster placeholder and NO 'Back to category' link.
+ * The whole block is display-only.
+ */
+function OurStoryTextFallback({
+  knownForText,
+  thisMeansItems,
+  tags,
+}: {
+  knownForText: string | null;
+  thisMeansItems: string[];
+  tags: string[];
+}): ReactElement {
+  return (
+    <div
+      className="mt-5 rounded-lg border border-border bg-card p-6 sm:p-8"
+      data-ocid="orientation.our_story.fallback"
+    >
+      <OurStoryCaption
+        knownForText={knownForText}
+        thisMeansItems={thisMeansItems}
+        tags={tags}
+        prominent
+      />
+    </div>
+  );
+}
+
+/**
+ * Small caption block rendered below the photo (or as the fallback body).
+ * Doubles as a screen-reader / search-engine fallback for the photo-dominant
+ * view. Kept minimal and non-distracting: a 'Known for' line, a short
+ * star-bulleted feature list, and the item's emoji tags as chips. All
+ * optional pieces are omitted when their source field is empty.
+ */
+function OurStoryCaption({
+  knownForText,
+  thisMeansItems,
+  tags,
+  prominent = false,
+}: {
+  knownForText: string | null;
+  thisMeansItems: string[];
+  tags: string[];
+  prominent?: boolean;
+}): ReactElement | null {
+  const hasCaption =
+    !!knownForText || thisMeansItems.length > 0 || tags.length > 0;
+  if (!hasCaption) return null;
+
+  return (
+    <div
+      className={cn(
+        "mt-4 flex flex-col gap-3 text-center",
+        prominent ? "" : "max-w-2xl",
+      )}
+      data-ocid="orientation.our_story.caption"
+    >
+      {knownForText ? (
+        <p
+          className={cn(
+            "font-body leading-relaxed text-patriotic-cream/80",
+            prominent ? "text-base sm:text-lg" : "text-xs sm:text-sm",
+          )}
+          data-ocid="orientation.our_story.caption.known_for"
+        >
+          {knownForText}
+        </p>
+      ) : null}
+
+      {thisMeansItems.length > 0 ? (
+        <ul
+          className={cn(
+            "mx-auto flex flex-col gap-1 text-left",
+            prominent ? "text-sm sm:text-base" : "text-xs sm:text-sm",
+          )}
+          data-ocid="orientation.our_story.caption.list"
+        >
+          {thisMeansItems.map((line, index) => (
+            <li
+              key={line}
+              className="flex items-baseline gap-2 font-body text-patriotic-cream/70"
+              data-ocid={`orientation.our_story.caption.list.item.${index + 1}`}
+            >
+              <span aria-hidden className="text-patriotic-gold">
+                ★
+              </span>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {tags.length > 0 ? (
+        <div
+          className="flex flex-wrap justify-center gap-2"
+          data-ocid="orientation.our_story.caption.tags"
+        >
+          {tags.map((tag, index) => (
+            <span
+              key={tag}
+              className="orientation-chip text-xs"
+              data-ocid={`orientation.our_story.caption.tag.${index + 1}`}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -730,16 +787,21 @@ function PrioritiesSection({
   positionId,
   serviceCategory,
   foodCategory,
+  marketingCategory,
 }: {
   positionId: string;
   serviceCategory: Category | null;
   foodCategory: Category | null;
+  marketingCategory: Category | null;
 }): ReactElement {
   return (
     <section data-ocid="orientation.priorities.section">
-      <SectionDivider number="04" heading="Service & Food Priorities" />
+      <SectionDivider
+        number="04"
+        heading="Service, Food & Community Priorities"
+      />
       <div
-        className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2"
+        className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3"
         data-ocid="orientation.priorities.grid"
       >
         {serviceCategory ? (
@@ -758,6 +820,14 @@ function PrioritiesSection({
             label="10 Daily Essentials"
           />
         ) : null}
+        {marketingCategory ? (
+          <PriorityCard
+            category={marketingCategory}
+            positionId={positionId}
+            tone="gold"
+            label="10 Community Priorities"
+          />
+        ) : null}
       </div>
     </section>
   );
@@ -771,7 +841,7 @@ function PriorityCard({
 }: {
   category: Category;
   positionId: string;
-  tone: "red" | "blue";
+  tone: "red" | "blue" | "gold";
   label: string;
 }): ReactElement {
   const to = `/position/${positionId}/library/${category.id}`;
@@ -780,7 +850,7 @@ function PriorityCard({
       to={to}
       className={cn(
         "orientation-priority-card group block p-5 transition-smooth hover:brightness-110",
-        tone === "red" ? "is-red" : "is-blue",
+        tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
       )}
       data-ocid={`orientation.priorities.card.${tone}`}

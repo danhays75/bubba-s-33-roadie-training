@@ -1,19 +1,17 @@
 {
-  "overview": "Bubba's 33 Roadie Training app with a patriotic Orientation layout for the Legendary Starts Here position.",
+  "overview": "Roadie Training app with admin user editing, photo cropping, and approval email resend.",
   "features": [
-    "Patriotic Orientation layout for the Legendary Starts Here position",
-    "Admin toggle to switch a position between Library and Orientation layouts",
-    "Hero sections for Mission, Core Values, Our Story, Operational Goals, and Priorities",
-    "Rules of the Road reference grid for remaining policy categories",
-    "Reads existing Library content — no data changes beyond a small layoutStyle field"
+    "Admin edit sheet to change a user's email and photo from the Users page",
+    "Photo cropping step in the profile photo upload flow",
+    "Resend approval notification emails from the admin Users page"
   ],
-  "category": "training",
+  "category": "productivity",
   "tags": [
-    "orientation",
-    "patriotic",
-    "library",
-    "positions",
-    "bubbas-33"
+    "admin",
+    "user-management",
+    "photo-cropping",
+    "email-notifications",
+    "roadie-training"
   ],
-  "last_updated": "2026-07-20T20:31:15.310Z"
+  "last_updated": "2026-07-23T00:46:13.844Z"
 }

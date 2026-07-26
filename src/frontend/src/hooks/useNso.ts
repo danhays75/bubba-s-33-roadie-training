@@ -1,5 +1,5 @@
 import { Variant_up_down } from "@/backend";
-import type { Role, UserProfile } from "@/types/foundation";
+import type { ApprovalStatus, Role, UserProfile } from "@/types/foundation";
 import type {
   NsoImportInput,
   NsoImportSummary,
@@ -135,6 +135,8 @@ export function useNsoAssignableUsers() {
         name: p.name,
         storeLocation: p.storeLocation,
         role: p.role as Role,
+        approvalStatus: p.approvalStatus as ApprovalStatus,
+        email: p.email,
       }));
     },
     enabled: !!actor && !isFetching,

@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-DoJRkE21.js"(exports, module) {
+  "assets/index-D6P-ASAU.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -4839,6 +4839,10 @@ variant ${k2} -> ${e.message}`, {
         throw InputError.fromCode(new CborDecodeErrorCode(error, input));
       }
     }
+    const Cbor = {
+      encode: encode$1,
+      decode: decode$1
+    };
     const randomNumber = () => {
       if (typeof window !== "undefined" && !!window.crypto && !!window.crypto.getRandomValues) {
         const array = new Uint32Array(1);
@@ -11327,6 +11331,20 @@ variant ${k2} -> ${e.message}`, {
       const escaped = trimmed.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
       return `attachment; filename="${escaped}"`;
     }
+    const CERTIFICATE_METHOD = "_immutableObjectStorageCreateCertificate";
+    function formatCertificateRejectionError(options2) {
+      const { rejectCode, rejectMessage, errorCode } = options2;
+      const isMissingUpdateMethod = rejectCode === ReplicaRejectCode.DestinationInvalid && typeof rejectMessage === "string" && /has no update method/i.test(rejectMessage);
+      if (isMissingUpdateMethod) {
+        return new Error(`method not found on backend canister; install the caffeineai-object-storage mops package`);
+      }
+      const details = [
+        rejectCode !== void 0 ? `reject_code=${rejectCode}` : void 0,
+        rejectMessage ? `reject_message=${rejectMessage}` : void 0,
+        errorCode ? `error_code=${errorCode}` : void 0
+      ].filter((part) => part !== void 0).join(", ");
+      return new Error(details.length > 0 ? `backend canister rejected ${CERTIFICATE_METHOD} (${details})` : `backend canister rejected ${CERTIFICATE_METHOD}`);
+    }
     const WINDOWS_1252_EXTRA = {
       128: "€",
       130: "‚",
@@ -15853,8 +15871,29 @@ variant ${k2} -> ${e.message}`, {
         });
         const respone = result.response.body;
         if (isV4ResponseBody(respone)) {
-          console.log("Certificate:", respone.certificate);
-          return respone.certificate;
+          const certBytes = respone.certificate;
+          const decoded = Cbor.decode(certBytes);
+          if (decoded.tree) {
+            const requestStatusPath = [
+              new TextEncoder().encode("request_status"),
+              result.requestId
+            ];
+            const statusLookup = lookup_path([...requestStatusPath, new TextEncoder().encode("status")], decoded.tree);
+            if (statusLookup.status === LookupPathStatus.Found && new TextDecoder().decode(statusLookup.value) === "rejected") {
+              const rejectCodeBytes = lookupResultToBuffer(lookup_path([...requestStatusPath, new TextEncoder().encode("reject_code")], decoded.tree));
+              const rejectMessageBytes = lookupResultToBuffer(lookup_path([
+                ...requestStatusPath,
+                new TextEncoder().encode("reject_message")
+              ], decoded.tree));
+              const errorCodeBytes = lookupResultToBuffer(lookup_path([...requestStatusPath, new TextEncoder().encode("error_code")], decoded.tree));
+              throw formatCertificateRejectionError({
+                rejectCode: rejectCodeBytes == null ? void 0 : rejectCodeBytes[0],
+                rejectMessage: rejectMessageBytes ? new TextDecoder().decode(rejectMessageBytes) : void 0,
+                errorCode: errorCodeBytes ? new TextDecoder().decode(errorCodeBytes) : void 0
+              });
+            }
+          }
+          return certBytes;
         }
         throw new Error("Expected v4 response body");
       }
@@ -23175,8 +23214,8 @@ variant ${k2} -> ${e.message}`, {
         );
       return stateNode;
     }
-    var canUseDOM = !("undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement), passiveBrowserEventsSupported = false;
-    if (canUseDOM)
+    var canUseDOM$1 = !("undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement), passiveBrowserEventsSupported = false;
+    if (canUseDOM$1)
       try {
         var options$1 = {};
         Object.defineProperty(options$1, "passive", {
@@ -23407,9 +23446,9 @@ variant ${k2} -> ${e.message}`, {
     }), SyntheticWheelEvent = createSyntheticEvent(WheelEventInterface), ToggleEventInterface = assign({}, EventInterface, {
       newState: 0,
       oldState: 0
-    }), SyntheticToggleEvent = createSyntheticEvent(ToggleEventInterface), END_KEYCODES = [9, 13, 27, 32], canUseCompositionEvent = canUseDOM && "CompositionEvent" in window, documentMode = null;
-    canUseDOM && "documentMode" in document && (documentMode = document.documentMode);
-    var canUseTextInputEvent = canUseDOM && "TextEvent" in window && !documentMode, useFallbackCompositionData = canUseDOM && (!canUseCompositionEvent || documentMode && 8 < documentMode && 11 >= documentMode), SPACEBAR_CHAR = String.fromCharCode(32), hasSpaceKeypress = false;
+    }), SyntheticToggleEvent = createSyntheticEvent(ToggleEventInterface), END_KEYCODES = [9, 13, 27, 32], canUseCompositionEvent = canUseDOM$1 && "CompositionEvent" in window, documentMode = null;
+    canUseDOM$1 && "documentMode" in document && (documentMode = document.documentMode);
+    var canUseTextInputEvent = canUseDOM$1 && "TextEvent" in window && !documentMode, useFallbackCompositionData = canUseDOM$1 && (!canUseCompositionEvent || documentMode && 8 < documentMode && 11 >= documentMode), SPACEBAR_CHAR = String.fromCharCode(32), hasSpaceKeypress = false;
     function isFallbackCompositionEnd(domEventName, nativeEvent) {
       switch (domEventName) {
         case "keyup":
@@ -23506,9 +23545,9 @@ variant ${k2} -> ${e.message}`, {
       if ("change" === domEventName) return targetInst;
     }
     var isInputEventSupported = false;
-    if (canUseDOM) {
+    if (canUseDOM$1) {
       var JSCompiler_inline_result$jscomp$282;
-      if (canUseDOM) {
+      if (canUseDOM$1) {
         var isSupported$jscomp$inline_417 = "oninput" in document;
         if (!isSupported$jscomp$inline_417) {
           var element$jscomp$inline_418 = document.createElement("div");
@@ -23613,7 +23652,7 @@ variant ${k2} -> ${e.message}`, {
       var nodeName = elem && elem.nodeName && elem.nodeName.toLowerCase();
       return nodeName && ("input" === nodeName && ("text" === elem.type || "search" === elem.type || "tel" === elem.type || "url" === elem.type || "password" === elem.type) || "textarea" === nodeName || "true" === elem.contentEditable);
     }
-    var skipSelectionChangeEvent = canUseDOM && "documentMode" in document && 11 >= document.documentMode, activeElement = null, activeElementInst = null, lastSelection = null, mouseDown = false;
+    var skipSelectionChangeEvent = canUseDOM$1 && "documentMode" in document && 11 >= document.documentMode, activeElement = null, activeElementInst = null, lastSelection = null, mouseDown = false;
     function constructSelectEvent(dispatchQueue, nativeEvent, nativeEventTarget) {
       var doc = nativeEventTarget.window === nativeEventTarget ? nativeEventTarget.document : 9 === nativeEventTarget.nodeType ? nativeEventTarget : nativeEventTarget.ownerDocument;
       mouseDown || null == activeElement || activeElement !== getActiveElement(doc) || (doc = activeElement, "selectionStart" in doc && hasSelectionCapabilities(doc) ? doc = { start: doc.selectionStart, end: doc.selectionEnd } : (doc = (doc.ownerDocument && doc.ownerDocument.defaultView || window).getSelection(), doc = {
@@ -23645,7 +23684,7 @@ variant ${k2} -> ${e.message}`, {
       transitioncancel: makePrefixMap("Transition", "TransitionCancel"),
       transitionend: makePrefixMap("Transition", "TransitionEnd")
     }, prefixedEventNames = {}, style = {};
-    canUseDOM && (style = document.createElement("div").style, "AnimationEvent" in window || (delete vendorPrefixes.animationend.animation, delete vendorPrefixes.animationiteration.animation, delete vendorPrefixes.animationstart.animation), "TransitionEvent" in window || delete vendorPrefixes.transitionend.transition);
+    canUseDOM$1 && (style = document.createElement("div").style, "AnimationEvent" in window || (delete vendorPrefixes.animationend.animation, delete vendorPrefixes.animationiteration.animation, delete vendorPrefixes.animationstart.animation), "TransitionEvent" in window || delete vendorPrefixes.transitionend.transition);
     function getVendorPrefixedEventName(eventName) {
       if (prefixedEventNames[eventName]) return prefixedEventNames[eventName];
       if (!vendorPrefixes[eventName]) return eventName;
@@ -33296,11 +33335,19 @@ variant ${k2} -> ${e.message}`, {
       "trainee": Null,
       "trainer": Null
     });
+    const ApprovalStatus = Variant({
+      "pending": Null,
+      "approved": Null,
+      "rejected": Null
+    });
     const UserProfile = Record({
       "id": Principal,
       "name": Text$2,
       "role": Role,
-      "storeLocation": Text$2
+      "email": Opt(Text$2),
+      "approvalStatus": ApprovalStatus,
+      "storeLocation": Text$2,
+      "photo": Opt(Text$2)
     });
     const _ImmutableObjectStorageCreateCertificateResult = Record({
       "method": Text$2,
@@ -33383,6 +33430,7 @@ variant ${k2} -> ${e.message}`, {
       "phasesReused": Nat,
       "tasksAdded": Nat
     });
+    const SendResult = Variant({ "ok": Null, "err": Text$2 });
     const UpdateActivityInput = Record({
       "id": Nat,
       "content": Opt(ActivityContent),
@@ -33437,6 +33485,8 @@ variant ${k2} -> ${e.message}`, {
         [Vec(Tuple(Principal, UserProfile))],
         ["query"]
       ),
+      "__verifiedEmails": Func([], [Reserved], ["query"]),
+      "_caffeineEmailVerify": Func([Text$2], [], []),
       "_immutableObjectStorageBlobsAreLive": Func(
         [Vec(Vec(Nat8))],
         [Vec(Bool)],
@@ -33466,6 +33516,7 @@ variant ${k2} -> ${e.message}`, {
       "_initialize_access_control": Func([], [], []),
       "_internet_identity_sign_in_finish": Func([], [Result__1], []),
       "_internet_identity_sign_in_start": Func([], [Vec(Nat8)], []),
+      "approveUser": Func([Principal], [UserProfile], []),
       "assignCallerUserRole": Func([Principal, UserRole], [], []),
       "assignPosition": Func(
         [Principal, Nat],
@@ -33564,8 +33615,10 @@ variant ${k2} -> ${e.message}`, {
       ),
       "getUserRole": Func([Principal], [Opt(Role)], []),
       "importNsoTasks": Func([NsoImportInput], [NsoImportSummary], []),
+      "initiateEmailVerification": Func([Text$2], [SendResult], []),
       "isCallerAdmin": Func([], [Bool], ["query"]),
       "rebuildLegendaryActivity": Func([Nat], [Activity], []),
+      "rejectUser": Func([Principal], [UserProfile], []),
       "reorderCategories": Func(
         [Nat, Vec(Nat)],
         [Vec(Category)],
@@ -33587,6 +33640,7 @@ variant ${k2} -> ${e.message}`, {
         []
       ),
       "reorderPositions": Func([Vec(Nat)], [Vec(Position)], []),
+      "resendApprovalEmail": Func([Principal], [], []),
       "schema": Func([], [Text$2], ["query"]),
       "searchLibrary": Func(
         [Nat, Text$2],
@@ -33598,8 +33652,16 @@ variant ${k2} -> ${e.message}`, {
         [PositionAssignment],
         []
       ),
+      "setEmailForUser": Func([Text$2], [UserProfile], []),
+      "setMyPhoto": Func([Opt(Text$2)], [UserProfile], []),
       "setNsoTaskAssignment": Func([Nat, Opt(Principal)], [], []),
       "setNsoTaskCompletionDate": Func([Nat, Opt(Text$2)], [], []),
+      "setUserEmail": Func([Principal, Text$2], [UserProfile], []),
+      "setUserPhoto": Func(
+        [Principal, Opt(Text$2)],
+        [UserProfile],
+        []
+      ),
       "setUserRole": Func([Principal, Role], [UserProfile], []),
       "toggleNsoTask": Func([Nat, Bool, Opt(Text$2)], [], []),
       "unassignPosition": Func([Principal, Nat], [], []),
@@ -33625,6 +33687,11 @@ variant ${k2} -> ${e.message}`, {
       ),
       "updateLegendaryActivity": Func([UpdateActivityInput], [Activity], []),
       "updateMyProfile": Func([Text$2, Text$2], [UserProfile], []),
+      "updateMyProfileWithPhoto": Func(
+        [Text$2, Text$2, Opt(Text$2)],
+        [UserProfile],
+        []
+      ),
       "updateNsoPhase": Func([Nat, Text$2], [], []),
       "updateNsoTask": Func(
         [
@@ -33800,11 +33867,19 @@ variant ${k2} -> ${e.message}`, {
         "trainee": IDL2.Null,
         "trainer": IDL2.Null
       });
+      const ApprovalStatus2 = IDL2.Variant({
+        "pending": IDL2.Null,
+        "approved": IDL2.Null,
+        "rejected": IDL2.Null
+      });
       const UserProfile2 = IDL2.Record({
         "id": IDL2.Principal,
         "name": IDL2.Text,
         "role": Role2,
-        "storeLocation": IDL2.Text
+        "email": IDL2.Opt(IDL2.Text),
+        "approvalStatus": ApprovalStatus2,
+        "storeLocation": IDL2.Text,
+        "photo": IDL2.Opt(IDL2.Text)
       });
       const _ImmutableObjectStorageCreateCertificateResult2 = IDL2.Record({
         "method": IDL2.Text,
@@ -33887,6 +33962,7 @@ variant ${k2} -> ${e.message}`, {
         "phasesReused": IDL2.Nat,
         "tasksAdded": IDL2.Nat
       });
+      const SendResult2 = IDL2.Variant({ "ok": IDL2.Null, "err": IDL2.Text });
       const UpdateActivityInput2 = IDL2.Record({
         "id": IDL2.Nat,
         "content": IDL2.Opt(ActivityContent2),
@@ -33941,6 +34017,8 @@ variant ${k2} -> ${e.message}`, {
           [IDL2.Vec(IDL2.Tuple(IDL2.Principal, UserProfile2))],
           ["query"]
         ),
+        "__verifiedEmails": IDL2.Func([], [IDL2.Reserved], ["query"]),
+        "_caffeineEmailVerify": IDL2.Func([IDL2.Text], [], []),
         "_immutableObjectStorageBlobsAreLive": IDL2.Func(
           [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
           [IDL2.Vec(IDL2.Bool)],
@@ -33970,6 +34048,7 @@ variant ${k2} -> ${e.message}`, {
         "_initialize_access_control": IDL2.Func([], [], []),
         "_internet_identity_sign_in_finish": IDL2.Func([], [Result__12], []),
         "_internet_identity_sign_in_start": IDL2.Func([], [IDL2.Vec(IDL2.Nat8)], []),
+        "approveUser": IDL2.Func([IDL2.Principal], [UserProfile2], []),
         "assignCallerUserRole": IDL2.Func([IDL2.Principal, UserRole2], [], []),
         "assignPosition": IDL2.Func(
           [IDL2.Principal, IDL2.Nat],
@@ -34076,8 +34155,10 @@ variant ${k2} -> ${e.message}`, {
         ),
         "getUserRole": IDL2.Func([IDL2.Principal], [IDL2.Opt(Role2)], []),
         "importNsoTasks": IDL2.Func([NsoImportInput2], [NsoImportSummary2], []),
+        "initiateEmailVerification": IDL2.Func([IDL2.Text], [SendResult2], []),
         "isCallerAdmin": IDL2.Func([], [IDL2.Bool], ["query"]),
         "rebuildLegendaryActivity": IDL2.Func([IDL2.Nat], [Activity2], []),
+        "rejectUser": IDL2.Func([IDL2.Principal], [UserProfile2], []),
         "reorderCategories": IDL2.Func(
           [IDL2.Nat, IDL2.Vec(IDL2.Nat)],
           [IDL2.Vec(Category2)],
@@ -34099,6 +34180,7 @@ variant ${k2} -> ${e.message}`, {
           []
         ),
         "reorderPositions": IDL2.Func([IDL2.Vec(IDL2.Nat)], [IDL2.Vec(Position2)], []),
+        "resendApprovalEmail": IDL2.Func([IDL2.Principal], [], []),
         "schema": IDL2.Func([], [IDL2.Text], ["query"]),
         "searchLibrary": IDL2.Func(
           [IDL2.Nat, IDL2.Text],
@@ -34110,12 +34192,20 @@ variant ${k2} -> ${e.message}`, {
           [PositionAssignment2],
           []
         ),
+        "setEmailForUser": IDL2.Func([IDL2.Text], [UserProfile2], []),
+        "setMyPhoto": IDL2.Func([IDL2.Opt(IDL2.Text)], [UserProfile2], []),
         "setNsoTaskAssignment": IDL2.Func(
           [IDL2.Nat, IDL2.Opt(IDL2.Principal)],
           [],
           []
         ),
         "setNsoTaskCompletionDate": IDL2.Func([IDL2.Nat, IDL2.Opt(IDL2.Text)], [], []),
+        "setUserEmail": IDL2.Func([IDL2.Principal, IDL2.Text], [UserProfile2], []),
+        "setUserPhoto": IDL2.Func(
+          [IDL2.Principal, IDL2.Opt(IDL2.Text)],
+          [UserProfile2],
+          []
+        ),
         "setUserRole": IDL2.Func([IDL2.Principal, Role2], [UserProfile2], []),
         "toggleNsoTask": IDL2.Func([IDL2.Nat, IDL2.Bool, IDL2.Opt(IDL2.Text)], [], []),
         "unassignPosition": IDL2.Func([IDL2.Principal, IDL2.Nat], [], []),
@@ -34141,6 +34231,11 @@ variant ${k2} -> ${e.message}`, {
         ),
         "updateLegendaryActivity": IDL2.Func([UpdateActivityInput2], [Activity2], []),
         "updateMyProfile": IDL2.Func([IDL2.Text, IDL2.Text], [UserProfile2], []),
+        "updateMyProfileWithPhoto": IDL2.Func(
+          [IDL2.Text, IDL2.Text, IDL2.Opt(IDL2.Text)],
+          [UserProfile2],
+          []
+        ),
         "updateNsoPhase": IDL2.Func([IDL2.Nat, IDL2.Text], [], []),
         "updateNsoTask": IDL2.Func(
           [
@@ -34406,6 +34501,34 @@ variant ${k2} -> ${e.message}`, {
           return from_candid_vec_n43(this._uploadFile, this._downloadFile, result);
         }
       }
+      async __verifiedEmails() {
+        if (this.processError) {
+          try {
+            const result = await this.actor.__verifiedEmails();
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.__verifiedEmails();
+          return result;
+        }
+      }
+      async _caffeineEmailVerify(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor._caffeineEmailVerify(arg0);
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor._caffeineEmailVerify(arg0);
+          return result;
+        }
+      }
       async _immutableObjectStorageBlobsAreLive(arg0) {
         if (this.processError) {
           try {
@@ -34465,15 +34588,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n49(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n52(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n51(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n54(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n49(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n52(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n51(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n54(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34508,14 +34631,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n56(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n58(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n56(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n58(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34532,17 +34655,31 @@ variant ${k2} -> ${e.message}`, {
           return result;
         }
       }
+      async approveUser(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.approveUser(arg0);
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.approveUser(arg0);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+        }
+      }
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n60(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n62(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n60(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n62(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34563,42 +34700,42 @@ variant ${k2} -> ${e.message}`, {
       async buildLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n62(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n64(this._uploadFile, this._downloadFile, arg0));
             return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n62(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n64(this._uploadFile, this._downloadFile, arg0));
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34633,28 +34770,28 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n42(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n42(this._uploadFile, this._downloadFile, arg3));
             return from_candid_Task_n34(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n42(this._uploadFile, this._downloadFile, arg3));
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n42(this._uploadFile, this._downloadFile, arg3));
           return from_candid_Task_n34(this._uploadFile, this._downloadFile, result);
         }
       }
       async createPosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n82(this._uploadFile, this._downloadFile, arg3));
             return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg3));
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n82(this._uploadFile, this._downloadFile, arg3));
           return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34746,14 +34883,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n82(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n84(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n82(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n84(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
@@ -34774,28 +34911,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n92(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n92(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n91(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n93(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n91(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n93(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -34816,14 +34953,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n93(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
         }
       }
       async getDrinksBuilderDecoyPool(arg0) {
@@ -34858,14 +34995,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n94(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -34900,14 +35037,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivity(arg0);
-            return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivity(arg0);
-          return from_candid_opt_n95(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -34928,28 +35065,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n96(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n92(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n90(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n92(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -34970,14 +35107,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n97(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -35012,14 +35149,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n98(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
@@ -35040,14 +35177,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n101(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n99(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n101(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -35068,28 +35205,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n102(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n100(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n102(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n101(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n103(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n101(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n103(this._uploadFile, this._downloadFile, arg0));
           return result;
+        }
+      }
+      async initiateEmailVerification(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.initiateEmailVerification(arg0);
+            return from_candid_SendResult_n111(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.initiateEmailVerification(arg0);
+          return from_candid_SendResult_n111(this._uploadFile, this._downloadFile, result);
         }
       }
       async isCallerAdmin() {
@@ -35118,6 +35269,20 @@ variant ${k2} -> ${e.message}`, {
         } else {
           const result = await this.actor.rebuildLegendaryActivity(arg0);
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async rejectUser(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.rejectUser(arg0);
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.rejectUser(arg0);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async reorderCategories(arg0, arg1) {
@@ -35151,28 +35316,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n113(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n113(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n113(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n109(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n113(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35188,6 +35353,20 @@ variant ${k2} -> ${e.message}`, {
         } else {
           const result = await this.actor.reorderPositions(arg0);
           return from_candid_vec_n37(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async resendApprovalEmail(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.resendApprovalEmail(arg0);
+            return result;
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.resendApprovalEmail(arg0);
+          return result;
         }
       }
       async schema() {
@@ -35221,15 +35400,43 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n110(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n114(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n110(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n114(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async setEmailForUser(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.setEmailForUser(arg0);
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.setEmailForUser(arg0);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async setMyPhoto(arg0) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.setMyPhoto(to_candid_opt_n78(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.setMyPhoto(to_candid_opt_n78(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
@@ -35249,42 +35456,70 @@ variant ${k2} -> ${e.message}`, {
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
-      async setUserRole(arg0, arg1) {
+      async setUserEmail(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n112(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setUserEmail(arg0, arg1);
             return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n112(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setUserEmail(arg0, arg1);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async setUserPhoto(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async setUserRole(arg0, arg1) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n116(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n116(this._uploadFile, this._downloadFile, arg1));
           return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35305,42 +35540,42 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg8));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n77(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n79(this._uploadFile, this._downloadFile, arg8));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n114(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n118(this._uploadFile, this._downloadFile, arg0));
             return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n114(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n118(this._uploadFile, this._downloadFile, arg0));
           return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35355,6 +35590,20 @@ variant ${k2} -> ${e.message}`, {
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
+          return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+        }
+      }
+      async updateMyProfileWithPhoto(arg0, arg1, arg2) {
+        if (this.processError) {
+          try {
+            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
+          } catch (e) {
+            this.processError(e);
+            throw new Error("unreachable");
+          }
+        } else {
+          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2));
           return from_candid_UserProfile_n45(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35375,28 +35624,28 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n42(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
       async updatePosition(arg0, arg1, arg2, arg3, arg4) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg4));
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n82(this._uploadFile, this._downloadFile, arg4));
             return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n76(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n76(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n80(this._uploadFile, this._downloadFile, arg4));
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n78(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n78(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n82(this._uploadFile, this._downloadFile, arg4));
           return from_candid_Position_n38(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35410,17 +35659,20 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Activity_n18(_uploadFile, _downloadFile, value) {
       return from_candid_record_n19(_uploadFile, _downloadFile, value);
     }
+    function from_candid_ApprovalStatus_n49(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n50(_uploadFile, _downloadFile, value);
+    }
     function from_candid_AssignmentStatus_n5(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n6(_uploadFile, _downloadFile, value);
     }
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n86(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n87(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n88(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n89(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n58(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n59(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n60(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n61(_uploadFile, _downloadFile, value);
     }
     function from_candid_FlashcardContent_n28(_uploadFile, _downloadFile, value) {
       return from_candid_vec_n29(_uploadFile, _downloadFile, value);
@@ -35449,14 +35701,17 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Recipe_n15(_uploadFile, _downloadFile, value) {
       return from_candid_record_n16(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n56(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n57(_uploadFile, _downloadFile, value);
+    function from_candid_Result__1_n58(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n59(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n82(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n83(_uploadFile, _downloadFile, value);
+    function from_candid_Result_n84(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n85(_uploadFile, _downloadFile, value);
     }
     function from_candid_Role_n47(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n48(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_SendResult_n111(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n112(_uploadFile, _downloadFile, value);
     }
     function from_candid_Task_n34(_uploadFile, _downloadFile, value) {
       return from_candid_record_n35(_uploadFile, _downloadFile, value);
@@ -35464,19 +35719,25 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_UserProfile_n45(_uploadFile, _downloadFile, value) {
       return from_candid_record_n46(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserRole_n91(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n92(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n93(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n94(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Value_n88(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n89(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n90(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n91(_uploadFile, _downloadFile, value);
     }
-    function from_candid__ImmutableObjectStorageRefillResult_n52(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n53(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n54(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n55(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
     function from_candid_opt_n100(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n34(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n101(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n38(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n102(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_Role_n47(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n14(_uploadFile, _downloadFile, value) {
@@ -35488,32 +35749,26 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_opt_n36(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n54(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n56(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n55(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n57(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
-    }
-    function from_candid_opt_n93(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n94(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n95(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n96(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n45(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n97(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : value[0];
+      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n98(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n34(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_UserProfile_n45(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n99(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n38(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : value[0];
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
       return {
@@ -35598,24 +35853,27 @@ variant ${k2} -> ${e.message}`, {
         id: value.id,
         name: value.name,
         role: from_candid_Role_n47(_uploadFile, _downloadFile, value.role),
-        storeLocation: value.storeLocation
+        email: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.email)),
+        approvalStatus: from_candid_ApprovalStatus_n49(_uploadFile, _downloadFile, value.approvalStatus),
+        storeLocation: value.storeLocation,
+        photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo))
       };
     }
-    function from_candid_record_n53(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n55(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n54(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n55(_uploadFile, _downloadFile, value.topped_up_amount))
+        success: record_opt_to_undefined(from_candid_opt_n56(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n57(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
-    function from_candid_record_n83(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n85(_uploadFile, _downloadFile, value) {
       return {
         hasMore: value.hasMore,
-        rows: from_candid_vec_n84(_uploadFile, _downloadFile, value.rows)
+        rows: from_candid_vec_n86(_uploadFile, _downloadFile, value.rows)
       };
     }
-    function from_candid_record_n87(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n89(_uploadFile, _downloadFile, value) {
       return {
-        value: from_candid_Value_n88(_uploadFile, _downloadFile, value.value),
+        value: from_candid_Value_n90(_uploadFile, _downloadFile, value.value),
         name: value.name
       };
     }
@@ -35633,6 +35891,15 @@ variant ${k2} -> ${e.message}`, {
         value[0],
         from_candid_UserProfile_n45(_uploadFile, _downloadFile, value[1])
       ];
+    }
+    function from_candid_variant_n112(_uploadFile, _downloadFile, value) {
+      return "ok" in value ? {
+        __kind__: "ok",
+        ok: value.ok
+      } : "err" in value ? {
+        __kind__: "err",
+        err: value.err
+      } : value;
     }
     function from_candid_variant_n21(_uploadFile, _downloadFile, value) {
       return "drinksBuilder" in value ? "drinksBuilder" : "quiz" in value ? "quiz" : "flashcards" in value ? "flashcards" : value;
@@ -35667,16 +35934,22 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_variant_n48(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n57(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n50(_uploadFile, _downloadFile, value) {
+      return "pending" in value ? "pending" : "approved" in value ? "approved" : "rejected" in value ? "rejected" : value;
+    }
+    function from_candid_variant_n59(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n58(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n60(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n59(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
+      return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
+    }
+    function from_candid_variant_n61(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -35709,10 +35982,7 @@ variant ${k2} -> ${e.message}`, {
         FrontendOriginMismatch: value.FrontendOriginMismatch
       } : value;
     }
-    function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
-      return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
-    }
-    function from_candid_variant_n89(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n91(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -35733,7 +36003,7 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n92(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n94(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
     }
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
@@ -35763,65 +36033,65 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n84(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n85(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n86(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n87(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n85(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n86(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n87(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n88(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n90(_uploadFile, _downloadFile, value) {
+    function from_candid_vec_n92(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_UserProfile_n45(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_ActivityContent_n66(_uploadFile, _downloadFile, value) {
+    function to_candid_ActivityContent_n68(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n69(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_ActivityType_n66(_uploadFile, _downloadFile, value) {
       return to_candid_variant_n67(_uploadFile, _downloadFile, value);
     }
-    function to_candid_ActivityType_n64(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n65(_uploadFile, _downloadFile, value);
+    function to_candid_AssignmentStatus_n114(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n115(_uploadFile, _downloadFile, value);
     }
-    function to_candid_AssignmentStatus_n110(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n111(_uploadFile, _downloadFile, value);
+    function to_candid_BuildActivityInput_n64(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n65(_uploadFile, _downloadFile, value);
     }
-    function to_candid_BuildActivityInput_n62(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n63(_uploadFile, _downloadFile, value);
+    function to_candid_FlashcardContent_n70(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n71(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FlashcardContent_n68(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n69(_uploadFile, _downloadFile, value);
+    function to_candid_Flashcard_n72(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n73(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Flashcard_n70(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n71(_uploadFile, _downloadFile, value);
+    function to_candid_LayoutStyle_n82(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n83(_uploadFile, _downloadFile, value);
     }
-    function to_candid_LayoutStyle_n80(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n81(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportInput_n103(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n104(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportInput_n101(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n102(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportPhase_n106(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n107(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportPhase_n104(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n105(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportTask_n109(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n110(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportTask_n107(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n108(_uploadFile, _downloadFile, value);
+    function to_candid_Question_n76(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n77(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Question_n74(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n75(_uploadFile, _downloadFile, value);
+    function to_candid_QuizContent_n74(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n75(_uploadFile, _downloadFile, value);
     }
-    function to_candid_QuizContent_n72(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n73(_uploadFile, _downloadFile, value);
+    function to_candid_Recipe_n80(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n81(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Recipe_n78(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n79(_uploadFile, _downloadFile, value);
+    function to_candid_Role_n116(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n117(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n112(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n113(_uploadFile, _downloadFile, value);
+    function to_candid_UpdateActivityInput_n118(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n119(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UpdateActivityInput_n114(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n115(_uploadFile, _downloadFile, value);
+    function to_candid_UserRole_n62(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n63(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n60(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n61(_uploadFile, _downloadFile, value);
-    }
-    function to_candid__ImmutableObjectStorageRefillInformation_n50(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n51(_uploadFile, _downloadFile, value);
+    function to_candid__ImmutableObjectStorageRefillInformation_n52(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n53(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
@@ -35829,57 +36099,57 @@ variant ${k2} -> ${e.message}`, {
     function to_candid_opt_n42(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n49(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n50(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n51(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n52(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n76(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n78(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n77(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid_Recipe_n78(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n79(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_Recipe_n80(_uploadFile, _downloadFile, value));
     }
-    function to_candid_record_n102(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n104(_uploadFile, _downloadFile, value) {
       return {
         moduleName: value.moduleName,
-        phases: to_candid_vec_n103(_uploadFile, _downloadFile, value.phases)
+        phases: to_candid_vec_n105(_uploadFile, _downloadFile, value.phases)
       };
     }
-    function to_candid_record_n105(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n107(_uploadFile, _downloadFile, value) {
       return {
-        tasks: to_candid_vec_n106(_uploadFile, _downloadFile, value.tasks),
+        tasks: to_candid_vec_n108(_uploadFile, _downloadFile, value.tasks),
         name: value.name
       };
     }
-    function to_candid_record_n108(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n110(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         section: value.section ? candid_some(value.section) : candid_none(),
         notes: value.notes ? candid_some(value.notes) : candid_none()
       };
     }
-    function to_candid_record_n115(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n119(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        content: value.content ? candid_some(to_candid_ActivityContent_n66(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        content: value.content ? candid_some(to_candid_ActivityContent_n68(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         sourceCategoryIds: value.sourceCategoryIds
       };
     }
-    function to_candid_record_n51(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n53(_uploadFile, _downloadFile, value) {
       return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
       };
     }
-    function to_candid_record_n63(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n65(_uploadFile, _downloadFile, value) {
       return {
-        activityType: to_candid_ActivityType_n64(_uploadFile, _downloadFile, value.activityType),
-        content: value.content ? candid_some(to_candid_ActivityContent_n66(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        activityType: to_candid_ActivityType_n66(_uploadFile, _downloadFile, value.activityType),
+        content: value.content ? candid_some(to_candid_ActivityContent_n68(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds
       };
     }
-    function to_candid_record_n71(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n73(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
@@ -35887,7 +36157,7 @@ variant ${k2} -> ${e.message}`, {
         recipe: value.recipe ? candid_some(value.recipe) : candid_none()
       };
     }
-    function to_candid_record_n79(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n81(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         glassware: value.glassware,
@@ -35900,21 +36170,21 @@ variant ${k2} -> ${e.message}`, {
         yield: value.yield ? candid_some(value.yield) : candid_none()
       };
     }
-    function to_candid_variant_n109(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n113(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n111(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n115(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n113(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n117(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -35925,7 +36195,7 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_variant_n61(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n63(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -35934,7 +36204,7 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n65(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n67(_uploadFile, _downloadFile, value) {
       return value == "drinksBuilder" ? {
         drinksBuilder: null
       } : value == "quiz" ? {
@@ -35943,16 +36213,16 @@ variant ${k2} -> ${e.message}`, {
         flashcards: null
       } : value;
     }
-    function to_candid_variant_n67(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n69(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "drinksBuilderContent" ? {
         drinksBuilderContent: value.drinksBuilderContent
       } : value.__kind__ === "quizContent" ? {
-        quizContent: to_candid_QuizContent_n72(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: to_candid_QuizContent_n74(_uploadFile, _downloadFile, value.quizContent)
       } : value.__kind__ === "flashcardContent" ? {
-        flashcardContent: to_candid_FlashcardContent_n68(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: to_candid_FlashcardContent_n70(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function to_candid_variant_n75(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n77(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "multipleChoice" ? {
         multipleChoice: value.multipleChoice
       } : value.__kind__ === "matching" ? {
@@ -35961,24 +36231,24 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function to_candid_variant_n81(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n83(_uploadFile, _downloadFile, value) {
       return value == "library" ? {
         library: null
       } : value == "orientation" ? {
         orientation: null
       } : value;
     }
-    function to_candid_vec_n103(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n104(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n105(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n106(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n106(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n107(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n108(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n109(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n69(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Flashcard_n70(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n71(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Flashcard_n72(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n73(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Question_n74(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n75(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Question_n76(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -36007,7 +36277,10 @@ variant ${k2} -> ${e.message}`, {
         principal: p2.id.toString(),
         name: p2.name,
         storeLocation: p2.storeLocation,
-        role: p2.role
+        role: p2.role,
+        approvalStatus: p2.approvalStatus,
+        email: p2.email,
+        photo: p2.photo
       };
     }
     function useMyProfile() {
@@ -36037,6 +36310,62 @@ variant ${k2} -> ${e.message}`, {
             input.name,
             input.storeLocation
           );
+          return toUserProfile$1(result);
+        },
+        onSuccess: (profile) => {
+          queryClient2.setQueryData(QUERY_KEY$3, profile);
+          queryClient2.invalidateQueries({ queryKey: ["all-users"] });
+        }
+      });
+    }
+    function useUpdateMyProfile() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.updateMyProfile(
+            input.name,
+            input.storeLocation
+          );
+          return toUserProfile$1(result);
+        },
+        onSuccess: (profile) => {
+          queryClient2.setQueryData(QUERY_KEY$3, profile);
+        }
+      });
+    }
+    function useSetMyPhoto() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.setMyPhoto(input.photo);
+          return toUserProfile$1(result);
+        },
+        onSuccess: (profile) => {
+          queryClient2.setQueryData(QUERY_KEY$3, profile);
+          queryClient2.invalidateQueries({ queryKey: ["all-users"] });
+        }
+      });
+    }
+    function useInitiateEmailVerification() {
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (email) => {
+          if (!actor) throw new Error("Backend not ready");
+          return actor.initiateEmailVerification(email);
+        }
+      });
+    }
+    function useSetEmailForUser() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (newEmail) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.setEmailForUser(newEmail);
           return toUserProfile$1(result);
         },
         onSuccess: (profile) => {
@@ -36499,10 +36828,10 @@ variant ${k2} -> ${e.message}`, {
         getConflictingClassGroupIds
       } = configUtils;
       const classGroupsInConflict = [];
-      const classNames = classList.trim().split(SPLIT_CLASSES_REGEX);
+      const classNames2 = classList.trim().split(SPLIT_CLASSES_REGEX);
       let result = "";
-      for (let index2 = classNames.length - 1; index2 >= 0; index2 -= 1) {
-        const originalClassName = classNames[index2];
+      for (let index2 = classNames2.length - 1; index2 >= 0; index2 -= 1) {
+        const originalClassName = classNames2[index2];
         const {
           modifiers,
           hasImportantModifier,
@@ -38825,13 +39154,13 @@ variant ${k2} -> ${e.message}`, {
       );
     });
     Label$1.displayName = NAME$2;
-    var Root$3 = Label$1;
+    var Root$4 = Label$1;
     function Label({
       className,
       ...props
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Root$3,
+        Root$4,
         {
           "data-slot": "label",
           className: cn(
@@ -38947,40 +39276,40 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$J = [
+    const __iconNode$T = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$J);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$T);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$I = [
+    const __iconNode$S = [
       ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
       ["path", { d: "M19 12H5", key: "x3x0zl" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$I);
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$S);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$H = [
+    const __iconNode$R = [
       ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
       ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$H);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$R);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$G = [
+    const __iconNode$Q = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -38990,14 +39319,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$G);
+    const BookOpen = createLucideIcon("book-open", __iconNode$Q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$F = [
+    const __iconNode$P = [
       [
         "path",
         {
@@ -39020,7 +39349,106 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
       ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
     ];
-    const Brain = createLucideIcon("brain", __iconNode$F);
+    const Brain = createLucideIcon("brain", __iconNode$P);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$O = [
+      [
+        "path",
+        {
+          d: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z",
+          key: "1tc9qg"
+        }
+      ],
+      ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
+    ];
+    const Camera = createLucideIcon("camera", __iconNode$O);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$N = [
+      ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
+      ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
+    ];
+    const CheckCheck = createLucideIcon("check-check", __iconNode$N);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$M = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$M);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$L = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$L);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$K = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$K);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$J = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$J);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$I = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$I);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$H = [
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+    ];
+    const CircleCheck = createLucideIcon("circle-check", __iconNode$H);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$G = [
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+      ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
+      ["path", { d: "M12 17h.01", key: "p32p05" }]
+    ];
+    const CircleHelp = createLucideIcon("circle-help", __iconNode$G);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$F = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$F);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39028,65 +39456,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$E = [
-      ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
-      ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
-    ];
-    const CheckCheck = createLucideIcon("check-check", __iconNode$E);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$D = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$D);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$C = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$C);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$B = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$B);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$A = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-    const ChevronRight = createLucideIcon("chevron-right", __iconNode$A);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$z = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$z);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$y = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$y);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$x = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -39100,14 +39469,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$x);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$E);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$w = [
+    const __iconNode$D = [
       [
         "path",
         {
@@ -39117,14 +39486,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
     ];
-    const Compass = createLucideIcon("compass", __iconNode$w);
+    const Compass = createLucideIcon("compass", __iconNode$D);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$v = [
+    const __iconNode$C = [
       [
         "path",
         {
@@ -39133,14 +39502,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Flame = createLucideIcon("flame", __iconNode$v);
+    const Flame = createLucideIcon("flame", __iconNode$C);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$u = [
+    const __iconNode$B = [
       ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
       ["path", { d: "m18 15 4-4", key: "16gjal" }],
       [
@@ -39151,14 +39520,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Hammer = createLucideIcon("hammer", __iconNode$u);
+    const Hammer = createLucideIcon("hammer", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$t = [
+    const __iconNode$A = [
       [
         "path",
         {
@@ -39168,14 +39537,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$t);
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$s = [
+    const __iconNode$z = [
       [
         "path",
         {
@@ -39184,14 +39553,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Heart = createLucideIcon("heart", __iconNode$s);
+    const Heart = createLucideIcon("heart", __iconNode$z);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$r = [
+    const __iconNode$y = [
       ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
       ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
       ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
@@ -39205,14 +39574,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
     ];
-    const ImageOff = createLucideIcon("image-off", __iconNode$r);
+    const ImageOff = createLucideIcon("image-off", __iconNode$y);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$q = [
+    const __iconNode$x = [
       [
         "path",
         {
@@ -39235,7 +39604,93 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$q);
+    const Layers = createLucideIcon("layers", __iconNode$x);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$w = [
+      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
+      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
+      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+    ];
+    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$w);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$v = [
+      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
+      ["path", { d: "M12 6v14", key: "1n7gus" }],
+      ["path", { d: "M8 8v12", key: "1gg7y9" }],
+      ["path", { d: "M4 4v16", key: "6qkkli" }]
+    ];
+    const Library = createLucideIcon("library", __iconNode$v);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$u = [
+      [
+        "path",
+        {
+          d: "M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5",
+          key: "1gvzjb"
+        }
+      ],
+      ["path", { d: "M9 18h6", key: "x1upvd" }],
+      ["path", { d: "M10 22h4", key: "ceow96" }]
+    ];
+    const Lightbulb = createLucideIcon("lightbulb", __iconNode$u);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$t = [
+      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
+      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
+    ];
+    const Link$2 = createLucideIcon("link", __iconNode$t);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$s = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$s);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$r = [
+      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+    ];
+    const Lock = createLucideIcon("lock", __iconNode$r);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$q = [
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+    ];
+    const LogOut = createLucideIcon("log-out", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39243,12 +39698,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$p = [
-      ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
-      ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
-      ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
-      ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
+      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
+      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
     ];
-    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$p);
+    const MailCheck = createLucideIcon("mail-check", __iconNode$p);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39256,12 +39710,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$o = [
-      ["path", { d: "m16 6 4 14", key: "ji33uf" }],
-      ["path", { d: "M12 6v14", key: "1n7gus" }],
-      ["path", { d: "M8 8v12", key: "1gg7y9" }],
-      ["path", { d: "M4 4v16", key: "6qkkli" }]
+      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
     ];
-    const Library = createLucideIcon("library", __iconNode$o);
+    const Mail = createLucideIcon("mail", __iconNode$o);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39269,48 +39721,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$n = [
-      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
-      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
-    ];
-    const Link$2 = createLucideIcon("link", __iconNode$n);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$m = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$m);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$l = [
-      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
-    ];
-    const Lock = createLucideIcon("lock", __iconNode$l);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$k = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-    ];
-    const LogOut = createLucideIcon("log-out", __iconNode$k);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$j = [
       ["path", { d: "M12 22v-9", key: "x3hkom" }],
       [
         "path",
@@ -39334,14 +39744,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const PackageOpen = createLucideIcon("package-open", __iconNode$j);
+    const PackageOpen = createLucideIcon("package-open", __iconNode$n);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$i = [
+    const __iconNode$m = [
       [
         "path",
         {
@@ -39353,7 +39763,59 @@ variant ${k2} -> ${e.message}`, {
       ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
       ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
     ];
-    const Package = createLucideIcon("package", __iconNode$i);
+    const Package = createLucideIcon("package", __iconNode$m);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$l = [
+      [
+        "path",
+        {
+          d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+          key: "1a8usu"
+        }
+      ],
+      ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+    ];
+    const Pencil = createLucideIcon("pencil", __iconNode$l);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$k = [
+      ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ["path", { d: "M12 5v14", key: "s699le" }]
+    ];
+    const Plus = createLucideIcon("plus", __iconNode$k);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$j = [
+      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+      ["path", { d: "M8 16H3v5", key: "1cv678" }]
+    ];
+    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$j);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$i = [
+      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+    ];
+    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$i);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39364,58 +39826,6 @@ variant ${k2} -> ${e.message}`, {
       [
         "path",
         {
-          d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
-          key: "1a8usu"
-        }
-      ],
-      ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
-    ];
-    const Pencil = createLucideIcon("pencil", __iconNode$h);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$g = [
-      ["path", { d: "M5 12h14", key: "1ays0h" }],
-      ["path", { d: "M12 5v14", key: "s699le" }]
-    ];
-    const Plus = createLucideIcon("plus", __iconNode$g);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$f = [
-      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-      ["path", { d: "M8 16H3v5", key: "1cv678" }]
-    ];
-    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$f);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$e = [
-      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
-    ];
-    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$e);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$d = [
-      [
-        "path",
-        {
           d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
           key: "1c8476"
         }
@@ -39423,25 +39833,25 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
       ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
     ];
-    const Save = createLucideIcon("save", __iconNode$d);
+    const Save = createLucideIcon("save", __iconNode$h);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$c = [
+    const __iconNode$g = [
       ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
       ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
     ];
-    const Search = createLucideIcon("search", __iconNode$c);
+    const Search = createLucideIcon("search", __iconNode$g);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$b = [
+    const __iconNode$f = [
       [
         "path",
         {
@@ -39452,14 +39862,49 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M12 8v4", key: "1got3b" }],
       ["path", { d: "M12 16h.01", key: "1drbdi" }]
     ];
-    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$b);
+    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$f);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$a = [
+    const __iconNode$e = [
+      [
+        "path",
+        {
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
+        }
+      ],
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+    ];
+    const ShieldCheck = createLucideIcon("shield-check", __iconNode$e);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$d = [
+      [
+        "path",
+        {
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
+        }
+      ],
+      ["path", { d: "m14.5 9.5-5 5", key: "17q4r4" }],
+      ["path", { d: "m9.5 9.5 5 5", key: "18nt4w" }]
+    ];
+    const ShieldX = createLucideIcon("shield-x", __iconNode$d);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$c = [
       [
         "path",
         {
@@ -39472,14 +39917,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M4 17v2", key: "vumght" }],
       ["path", { d: "M5 18H3", key: "zchphs" }]
     ];
-    const Sparkles = createLucideIcon("sparkles", __iconNode$a);
+    const Sparkles = createLucideIcon("sparkles", __iconNode$c);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$9 = [
+    const __iconNode$b = [
       [
         "path",
         {
@@ -39488,28 +39933,28 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Star = createLucideIcon("star", __iconNode$9);
+    const Star = createLucideIcon("star", __iconNode$b);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$8 = [
+    const __iconNode$a = [
       ["path", { d: "M3 6h18", key: "d0wm0j" }],
       ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
       ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
       ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
       ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
     ];
-    const Trash2 = createLucideIcon("trash-2", __iconNode$8);
+    const Trash2 = createLucideIcon("trash-2", __iconNode$a);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$7 = [
+    const __iconNode$9 = [
       ["path", { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6", key: "17hqa7" }],
       ["path", { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18", key: "lmptdp" }],
       ["path", { d: "M4 22h16", key: "57wxv0" }],
@@ -39517,7 +39962,31 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22", key: "1np0yb" }],
       ["path", { d: "M18 2H6v7a6 6 0 0 0 12 0V2Z", key: "u46fv3" }]
     ];
-    const Trophy = createLucideIcon("trophy", __iconNode$7);
+    const Trophy = createLucideIcon("trophy", __iconNode$9);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$8 = [
+      ["path", { d: "M12 3v12", key: "1x0j5s" }],
+      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
+      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+    ];
+    const Upload = createLucideIcon("upload", __iconNode$8);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$7 = [
+      ["path", { d: "m16 11 2 2 4-4", key: "9rsbq5" }],
+      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+    ];
+    const UserCheck = createLucideIcon("user-check", __iconNode$7);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39525,11 +39994,12 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$6 = [
-      ["path", { d: "M12 3v12", key: "1x0j5s" }],
-      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
-      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
+      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
+      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
     ];
-    const Upload = createLucideIcon("upload", __iconNode$6);
+    const Users = createLucideIcon("users", __iconNode$6);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39537,12 +40007,17 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$5 = [
-      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
-      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
-      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+      [
+        "path",
+        {
+          d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
+          key: "uqj9uw"
+        }
+      ],
+      ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }],
+      ["path", { d: "M19.364 18.364a9 9 0 0 0 0-12.728", key: "ijwkga" }]
     ];
-    const Users = createLucideIcon("users", __iconNode$5);
+    const Volume2 = createLucideIcon("volume-2", __iconNode$5);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39557,10 +40032,10 @@ variant ${k2} -> ${e.message}`, {
           key: "uqj9uw"
         }
       ],
-      ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }],
-      ["path", { d: "M19.364 18.364a9 9 0 0 0 0-12.728", key: "ijwkga" }]
+      ["line", { x1: "22", x2: "16", y1: "9", y2: "15", key: "1ewh16" }],
+      ["line", { x1: "16", x2: "22", y1: "9", y2: "15", key: "5ykzw1" }]
     ];
-    const Volume2 = createLucideIcon("volume-2", __iconNode$4);
+    const VolumeX = createLucideIcon("volume-x", __iconNode$4);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39568,24 +40043,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$3 = [
-      [
-        "path",
-        {
-          d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
-          key: "uqj9uw"
-        }
-      ],
-      ["line", { x1: "22", x2: "16", y1: "9", y2: "15", key: "1ewh16" }],
-      ["line", { x1: "16", x2: "22", y1: "9", y2: "15", key: "5ykzw1" }]
-    ];
-    const VolumeX = createLucideIcon("volume-x", __iconNode$3);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$2 = [
       ["path", { d: "M8 22h8", key: "rmew8v" }],
       ["path", { d: "M7 10h10", key: "1101jm" }],
       ["path", { d: "M12 15v7", key: "t2xh3l" }],
@@ -39594,7 +40051,18 @@ variant ${k2} -> ${e.message}`, {
         { d: "M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z", key: "10ffi3" }
       ]
     ];
-    const Wine = createLucideIcon("wine", __iconNode$2);
+    const Wine = createLucideIcon("wine", __iconNode$3);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$2 = [
+      ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+      ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+    ];
+    const X = createLucideIcon("x", __iconNode$2);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39602,17 +40070,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$1 = [
-      ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-      ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
-    ];
-    const X = createLucideIcon("x", __iconNode$1);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode = [
       [
         "path",
         {
@@ -39621,7 +40078,20 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Zap = createLucideIcon("zap", __iconNode);
+    const Zap = createLucideIcon("zap", __iconNode$1);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode = [
+      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+      ["line", { x1: "21", x2: "16.65", y1: "21", y2: "16.65", key: "13gj7c" }],
+      ["line", { x1: "11", x2: "11", y1: "8", y2: "14", key: "1vmskp" }],
+      ["line", { x1: "8", x2: "14", y1: "11", y2: "11", key: "durymu" }]
+    ];
+    const ZoomIn = createLucideIcon("zoom-in", __iconNode);
     var jt = (n) => {
       switch (n) {
         case "success":
@@ -39919,7 +40389,17 @@ variant ${k2} -> ${e.message}`, {
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh flex-col items-center justify-center bg-background px-6 py-10", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-sm", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-4xl uppercase leading-none tracking-wide text-foreground", children: "Bubba’s 33" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: "/assets/brand/logo-horizontal.webp",
+              alt: "Bubba's 33",
+              width: 640,
+              height: 240,
+              className: "mx-auto h-auto w-full max-w-[16rem]",
+              "data-ocid": "create_profile.brand_logo"
+            }
+          ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-heading text-sm uppercase tracking-[0.2em] text-muted-foreground", children: "One last step" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -40000,6 +40480,311 @@ variant ${k2} -> ${e.message}`, {
         )
       ] }) });
     }
+    const EMAIL_RE$1 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    function EnterEmailScreen() {
+      const { clear } = useAuth();
+      const queryClient2 = useQueryClient();
+      const initiateVerification = useInitiateEmailVerification();
+      const setEmail = useSetEmailForUser();
+      const [email, setEmailValue] = reactExports.useState("");
+      const [stage, setStage] = reactExports.useState("idle");
+      const [errorMessage, setErrorMessage] = reactExports.useState(null);
+      const [isSigningOut, setIsSigningOut] = reactExports.useState(false);
+      const trimmedEmail = email.trim();
+      const emailValid = EMAIL_RE$1.test(trimmedEmail);
+      function handleSignOut() {
+        if (isSigningOut) return;
+        setIsSigningOut(true);
+        try {
+          clear();
+          queryClient2.clear();
+        } finally {
+          setIsSigningOut(false);
+        }
+      }
+      function handleSendLink(e) {
+        e.preventDefault();
+        if (!emailValid || stage === "sending") return;
+        setErrorMessage(null);
+        setStage("sending");
+        initiateVerification.mutate(trimmedEmail, {
+          onSuccess: (result) => {
+            if (result && typeof result === "object" && "__kind__" in result) {
+              if (result.__kind__ === "ok") {
+                setStage("awaiting-confirmation");
+                ue.success("Verification link sent. Check your inbox.");
+              } else if (result.__kind__ === "err") {
+                const errText = "err" in result ? String(result.err) : "";
+                setStage("idle");
+                setErrorMessage(
+                  errText || "Could not send verification link. Try again."
+                );
+              } else {
+                setStage("idle");
+                setErrorMessage("Could not send verification link. Try again.");
+              }
+            } else {
+              setStage("awaiting-confirmation");
+              ue.success("Verification link sent. Check your inbox.");
+            }
+          },
+          onError: (err) => {
+            setStage("idle");
+            setErrorMessage(err.message || "Could not send verification link.");
+          }
+        });
+      }
+      function handleConfirmVerification(e) {
+        e.preventDefault();
+        if (stage === "verifying") return;
+        setErrorMessage(null);
+        setStage("verifying");
+        setEmail.mutate(trimmedEmail, {
+          onSuccess: () => {
+            setStage("success");
+            ue.success("Email verified and saved.");
+            queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+          },
+          onError: (err) => {
+            setStage("awaiting-confirmation");
+            setErrorMessage(
+              err.message || "We couldn't verify that email yet. Click the link in your email, then try again."
+            );
+          }
+        });
+      }
+      function handleBackToEmail() {
+        setStage("idle");
+        setErrorMessage(null);
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh flex-col items-center justify-center bg-background px-6 py-10", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "mx-auto flex size-14 items-center justify-center rounded-full border border-border bg-card",
+              "data-ocid": "enter_email.icon",
+              children: stage === "success" ? /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-7 text-primary", "aria-hidden": true }) : stage === "awaiting-confirmation" || stage === "verifying" ? /* @__PURE__ */ jsxRuntimeExports.jsx(MailCheck, { className: "size-7 text-primary", "aria-hidden": true }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "size-7 text-primary", "aria-hidden": true })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "h1",
+            {
+              className: "mt-6 font-display text-4xl uppercase leading-none tracking-wide text-foreground",
+              "data-ocid": "enter_email.title",
+              children: stage === "success" ? "All set" : "Enter your email"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "p",
+            {
+              className: "mt-3 font-body text-sm leading-relaxed text-muted-foreground",
+              "data-ocid": "enter_email.subtitle",
+              children: stage === "success" ? "Your email is verified and saved. Taking you in…" : stage === "awaiting-confirmation" || stage === "verifying" ? "We sent a verification link to your email. Click the link in your email to verify your address, then come back and click Confirm below." : "Add an email so we can reach you. We'll send a verification link to confirm it's yours."
+            }
+          )
+        ] }),
+        stage === "success" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mt-8 flex flex-col items-center gap-4",
+            "data-ocid": "enter_email.success_state",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 rounded-md border border-border bg-card px-4 py-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-5 text-primary", "aria-hidden": true }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide text-foreground", children: trimmedEmail })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-body text-sm text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin", "aria-hidden": true }),
+                "Loading…"
+              ] })
+            ]
+          }
+        ) : stage === "awaiting-confirmation" || stage === "verifying" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "form",
+          {
+            onSubmit: handleConfirmVerification,
+            className: "mt-8 flex flex-col gap-5",
+            "data-ocid": "enter_email.confirm_form",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "rounded-md border border-border bg-card px-4 py-3",
+                  "data-ocid": "enter_email.awaiting_message",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-sm leading-relaxed text-muted-foreground", children: [
+                    "We sent a verification link to",
+                    " ",
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide text-foreground", children: trimmedEmail }),
+                    ". Click the link in your email to verify your address, then come back and click Confirm below."
+                  ] })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "submit",
+                  size: "lg",
+                  className: "w-full font-heading uppercase tracking-wide",
+                  disabled: stage === "verifying",
+                  "data-ocid": "enter_email.confirm_button",
+                  children: stage === "verifying" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                    "Verifying…"
+                  ] }) : "Confirm verification"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: handleBackToEmail,
+                  className: "inline-flex items-center justify-center gap-1.5 font-heading text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "data-ocid": "enter_email.back_to_email_button",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+                    "Use a different email"
+                  ]
+                }
+              )
+            ]
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "form",
+          {
+            onSubmit: handleSendLink,
+            className: "mt-8 flex flex-col gap-5",
+            "data-ocid": "enter_email.email_form",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label,
+                  {
+                    htmlFor: "email",
+                    className: "font-heading uppercase tracking-wide",
+                    children: "Email address"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input$1,
+                  {
+                    id: "email",
+                    type: "email",
+                    value: email,
+                    onChange: (e) => setEmailValue(e.target.value),
+                    placeholder: "you@example.com",
+                    autoComplete: "email",
+                    required: true,
+                    autoFocus: true,
+                    "data-ocid": "enter_email.email_input"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "submit",
+                  size: "lg",
+                  className: "w-full font-heading uppercase tracking-wide",
+                  disabled: !emailValid || stage === "sending",
+                  "data-ocid": "enter_email.send_link_button",
+                  children: stage === "sending" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                    "Sending…"
+                  ] }) : "Send verification link"
+                }
+              )
+            ]
+          }
+        ),
+        errorMessage && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            role: "alert",
+            className: "mt-4 font-body text-sm text-primary",
+            "data-ocid": "enter_email.error_state",
+            children: errorMessage
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "lg",
+            className: "mt-8 w-full font-heading uppercase tracking-wide",
+            onClick: handleSignOut,
+            disabled: isSigningOut,
+            "data-ocid": "enter_email.sign_out_button",
+            children: isSigningOut ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              "Signing out…"
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "size-4", "aria-hidden": true }),
+              "Sign out"
+            ] })
+          }
+        )
+      ] }) });
+    }
+    function PendingApprovalScreen() {
+      const { clear } = useAuth();
+      const [isSigningOut, setIsSigningOut] = reactExports.useState(false);
+      function handleSignOut() {
+        if (isSigningOut) return;
+        setIsSigningOut(true);
+        try {
+          clear();
+        } finally {
+          setIsSigningOut(false);
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh flex-col items-center justify-center bg-background px-6 py-10", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full max-w-sm flex-col items-center text-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "flex size-14 items-center justify-center rounded-full border border-border bg-card",
+            "data-ocid": "pending_approval.icon",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "size-7 text-primary", "aria-hidden": true })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "h1",
+          {
+            className: "mt-6 font-display text-4xl uppercase leading-none tracking-wide text-foreground",
+            "data-ocid": "pending_approval.title",
+            children: "Access pending"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "mt-3 font-body text-sm leading-relaxed text-muted-foreground",
+            "data-ocid": "pending_approval.message",
+            children: "An admin is reviewing your access request. You’ll be able to sign in and use Bubba’s 33 Roadie Training once your access is approved. Check back shortly, or sign out and try again later."
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "lg",
+            className: "mt-8 w-full font-heading uppercase tracking-wide",
+            onClick: handleSignOut,
+            disabled: isSigningOut,
+            "data-ocid": "pending_approval.sign_out_button",
+            children: isSigningOut ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              "Signing out…"
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "size-4", "aria-hidden": true }),
+              "Sign out"
+            ] })
+          }
+        )
+      ] }) });
+    }
     const DEFAULT_TITLE = "Something went wrong";
     const DEFAULT_DESCRIPTION = "We couldn't load this right now. Please try again.";
     function QueryErrorState({
@@ -40049,6 +40834,546 @@ variant ${k2} -> ${e.message}`, {
               }
             )
           ]
+        }
+      );
+    }
+    function RejectedAccessScreen() {
+      const { clear } = useAuth();
+      const [isSigningOut, setIsSigningOut] = reactExports.useState(false);
+      function handleSignOut() {
+        if (isSigningOut) return;
+        setIsSigningOut(true);
+        try {
+          clear();
+        } finally {
+          setIsSigningOut(false);
+        }
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh flex-col items-center justify-center bg-background px-6 py-10", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full max-w-sm flex-col items-center text-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "flex size-14 items-center justify-center rounded-full border border-border bg-card",
+            "data-ocid": "rejected_access.icon",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldX, { className: "size-7 text-primary", "aria-hidden": true })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "h1",
+          {
+            className: "mt-6 font-display text-4xl uppercase leading-none tracking-wide text-foreground",
+            "data-ocid": "rejected_access.title",
+            children: "Access denied"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "mt-3 font-body text-sm leading-relaxed text-muted-foreground",
+            "data-ocid": "rejected_access.message",
+            children: "Your access request was not approved. You can’t use Bubba’s 33 Roadie Training with this account. If you think this is a mistake, please contact an admin."
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "lg",
+            className: "mt-8 w-full font-heading uppercase tracking-wide",
+            onClick: handleSignOut,
+            disabled: isSigningOut,
+            "data-ocid": "rejected_access.sign_out_button",
+            children: isSigningOut ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              "Signing out…"
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "size-4", "aria-hidden": true }),
+              "Sign out"
+            ] })
+          }
+        )
+      ] }) });
+    }
+    function composeEventHandlers(originalEventHandler, ourEventHandler, { checkForDefaultPrevented = true } = {}) {
+      return function handleEvent(event) {
+        originalEventHandler == null ? void 0 : originalEventHandler(event);
+        if (checkForDefaultPrevented === false || !event.defaultPrevented) {
+          return ourEventHandler == null ? void 0 : ourEventHandler(event);
+        }
+      };
+    }
+    function createContextScope(scopeName, createContextScopeDeps = []) {
+      let defaultContexts = [];
+      function createContext3(rootComponentName, defaultContext) {
+        const BaseContext = reactExports.createContext(defaultContext);
+        BaseContext.displayName = rootComponentName + "Context";
+        const index2 = defaultContexts.length;
+        defaultContexts = [...defaultContexts, defaultContext];
+        const Provider = (props) => {
+          var _a2;
+          const { scope, children, ...context } = props;
+          const Context = ((_a2 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a2[index2]) || BaseContext;
+          const value = reactExports.useMemo(() => context, Object.values(context));
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
+        };
+        Provider.displayName = rootComponentName + "Provider";
+        function useContext2(consumerName, scope) {
+          var _a2;
+          const Context = ((_a2 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a2[index2]) || BaseContext;
+          const context = reactExports.useContext(Context);
+          if (context) return context;
+          if (defaultContext !== void 0) return defaultContext;
+          throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+        }
+        return [Provider, useContext2];
+      }
+      const createScope = () => {
+        const scopeContexts = defaultContexts.map((defaultContext) => {
+          return reactExports.createContext(defaultContext);
+        });
+        return function useScope(scope) {
+          const contexts = (scope == null ? void 0 : scope[scopeName]) || scopeContexts;
+          return reactExports.useMemo(
+            () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
+            [scope, contexts]
+          );
+        };
+      };
+      createScope.scopeName = scopeName;
+      return [createContext3, composeContextScopes(createScope, ...createContextScopeDeps)];
+    }
+    function composeContextScopes(...scopes) {
+      const baseScope = scopes[0];
+      if (scopes.length === 1) return baseScope;
+      const createScope = () => {
+        const scopeHooks = scopes.map((createScope2) => ({
+          useScope: createScope2(),
+          scopeName: createScope2.scopeName
+        }));
+        return function useComposedScopes(overrideScopes) {
+          const nextScopes = scopeHooks.reduce((nextScopes2, { useScope, scopeName }) => {
+            const scopeProps = useScope(overrideScopes);
+            const currentScope = scopeProps[`__scope${scopeName}`];
+            return { ...nextScopes2, ...currentScope };
+          }, {});
+          return reactExports.useMemo(() => ({ [`__scope${baseScope.scopeName}`]: nextScopes }), [nextScopes]);
+        };
+      };
+      createScope.scopeName = baseScope.scopeName;
+      return createScope;
+    }
+    var useLayoutEffect2 = (globalThis == null ? void 0 : globalThis.document) ? reactExports.useLayoutEffect : () => {
+    };
+    var useReactEffectEvent = React$5[" useEffectEvent ".trim().toString()];
+    var useReactInsertionEffect = React$5[" useInsertionEffect ".trim().toString()];
+    function useEffectEvent(callback) {
+      if (typeof useReactEffectEvent === "function") {
+        return useReactEffectEvent(callback);
+      }
+      const ref = reactExports.useRef(() => {
+        throw new Error("Cannot call an event handler while rendering.");
+      });
+      if (typeof useReactInsertionEffect === "function") {
+        useReactInsertionEffect(() => {
+          ref.current = callback;
+        });
+      } else {
+        useLayoutEffect2(() => {
+          ref.current = callback;
+        });
+      }
+      return reactExports.useMemo(() => (...args) => {
+        var _a2;
+        return (_a2 = ref.current) == null ? void 0 : _a2.call(ref, ...args);
+      }, []);
+    }
+    var useInsertionEffect = React$5[" useInsertionEffect ".trim().toString()] || useLayoutEffect2;
+    function useControllableState({
+      prop,
+      defaultProp,
+      onChange = () => {
+      },
+      caller
+    }) {
+      const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
+        defaultProp,
+        onChange
+      });
+      const isControlled = prop !== void 0;
+      const value = isControlled ? prop : uncontrolledProp;
+      {
+        const isControlledRef = reactExports.useRef(prop !== void 0);
+        reactExports.useEffect(() => {
+          const wasControlled = isControlledRef.current;
+          if (wasControlled !== isControlled) {
+            const from = wasControlled ? "controlled" : "uncontrolled";
+            const to = isControlled ? "controlled" : "uncontrolled";
+            console.warn(
+              `${caller} is changing from ${from} to ${to}. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.`
+            );
+          }
+          isControlledRef.current = isControlled;
+        }, [isControlled, caller]);
+      }
+      const setValue = reactExports.useCallback(
+        (nextValue) => {
+          var _a2;
+          if (isControlled) {
+            const value2 = isFunction$7(nextValue) ? nextValue(prop) : nextValue;
+            if (value2 !== prop) {
+              (_a2 = onChangeRef.current) == null ? void 0 : _a2.call(onChangeRef, value2);
+            }
+          } else {
+            setUncontrolledProp(nextValue);
+          }
+        },
+        [isControlled, prop, setUncontrolledProp, onChangeRef]
+      );
+      return [value, setValue];
+    }
+    function useUncontrolledState({
+      defaultProp,
+      onChange
+    }) {
+      const [value, setValue] = reactExports.useState(defaultProp);
+      const prevValueRef = reactExports.useRef(value);
+      const onChangeRef = reactExports.useRef(onChange);
+      useInsertionEffect(() => {
+        onChangeRef.current = onChange;
+      }, [onChange]);
+      reactExports.useEffect(() => {
+        var _a2;
+        if (prevValueRef.current !== value) {
+          (_a2 = onChangeRef.current) == null ? void 0 : _a2.call(onChangeRef, value);
+          prevValueRef.current = value;
+        }
+      }, [value, prevValueRef]);
+      return [value, setValue, onChangeRef];
+    }
+    function isFunction$7(value) {
+      return typeof value === "function";
+    }
+    function useStateMachine(initialState, machine) {
+      return reactExports.useReducer((state, event) => {
+        const nextState = machine[state][event];
+        return nextState ?? state;
+      }, initialState);
+    }
+    var Presence = (props) => {
+      const { present, children } = props;
+      const presence = usePresence(present);
+      const child = typeof children === "function" ? children({ present: presence.isPresent }) : reactExports.Children.only(children);
+      const ref = useStableComposedRefs(presence.ref, getElementRef(child));
+      const forceMount = typeof children === "function";
+      return forceMount || presence.isPresent ? reactExports.cloneElement(child, { ref }) : null;
+    };
+    Presence.displayName = "Presence";
+    function usePresence(present) {
+      const [node, setNode] = reactExports.useState();
+      const stylesRef = reactExports.useRef(null);
+      const prevPresentRef = reactExports.useRef(present);
+      const prevAnimationNameRef = reactExports.useRef("none");
+      const initialState = present ? "mounted" : "unmounted";
+      const [state, send] = useStateMachine(initialState, {
+        mounted: {
+          UNMOUNT: "unmounted",
+          ANIMATION_OUT: "unmountSuspended"
+        },
+        unmountSuspended: {
+          MOUNT: "mounted",
+          ANIMATION_END: "unmounted"
+        },
+        unmounted: {
+          MOUNT: "mounted"
+        }
+      });
+      reactExports.useEffect(() => {
+        const currentAnimationName = getAnimationName(stylesRef.current);
+        prevAnimationNameRef.current = state === "mounted" ? currentAnimationName : "none";
+      }, [state]);
+      useLayoutEffect2(() => {
+        const styles = stylesRef.current;
+        const wasPresent = prevPresentRef.current;
+        const hasPresentChanged = wasPresent !== present;
+        if (hasPresentChanged) {
+          const prevAnimationName = prevAnimationNameRef.current;
+          const currentAnimationName = getAnimationName(styles);
+          if (present) {
+            send("MOUNT");
+          } else if (currentAnimationName === "none" || (styles == null ? void 0 : styles.display) === "none") {
+            send("UNMOUNT");
+          } else {
+            const isAnimating = prevAnimationName !== currentAnimationName;
+            if (wasPresent && isAnimating) {
+              send("ANIMATION_OUT");
+            } else {
+              send("UNMOUNT");
+            }
+          }
+          prevPresentRef.current = present;
+        }
+      }, [present, send]);
+      useLayoutEffect2(() => {
+        if (node) {
+          let timeoutId;
+          const ownerWindow = node.ownerDocument.defaultView ?? window;
+          const handleAnimationEnd = (event) => {
+            const currentAnimationName = getAnimationName(stylesRef.current);
+            const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
+            if (event.target === node && isCurrentAnimation) {
+              send("ANIMATION_END");
+              if (!prevPresentRef.current) {
+                const currentFillMode = node.style.animationFillMode;
+                node.style.animationFillMode = "forwards";
+                timeoutId = ownerWindow.setTimeout(() => {
+                  if (node.style.animationFillMode === "forwards") {
+                    node.style.animationFillMode = currentFillMode;
+                  }
+                });
+              }
+            }
+          };
+          const handleAnimationStart = (event) => {
+            if (event.target === node) {
+              prevAnimationNameRef.current = getAnimationName(stylesRef.current);
+            }
+          };
+          node.addEventListener("animationstart", handleAnimationStart);
+          node.addEventListener("animationcancel", handleAnimationEnd);
+          node.addEventListener("animationend", handleAnimationEnd);
+          return () => {
+            ownerWindow.clearTimeout(timeoutId);
+            node.removeEventListener("animationstart", handleAnimationStart);
+            node.removeEventListener("animationcancel", handleAnimationEnd);
+            node.removeEventListener("animationend", handleAnimationEnd);
+          };
+        } else {
+          send("ANIMATION_END");
+        }
+      }, [node, send]);
+      return {
+        isPresent: ["mounted", "unmountSuspended"].includes(state),
+        ref: reactExports.useCallback((node2) => {
+          stylesRef.current = node2 ? getComputedStyle(node2) : null;
+          setNode(node2);
+        }, [])
+      };
+    }
+    function setRef(ref, value) {
+      if (typeof ref === "function") {
+        return ref(value);
+      } else if (ref !== null && ref !== void 0) {
+        ref.current = value;
+      }
+    }
+    function useStableComposedRefs(...refs) {
+      const refsRef = reactExports.useRef(refs);
+      refsRef.current = refs;
+      return reactExports.useCallback((node) => {
+        const currentRefs = refsRef.current;
+        let hasCleanup = false;
+        const cleanups = currentRefs.map((ref) => {
+          const cleanup = setRef(ref, node);
+          if (!hasCleanup && typeof cleanup === "function") {
+            hasCleanup = true;
+          }
+          return cleanup;
+        });
+        if (hasCleanup) {
+          return () => {
+            for (let i = 0; i < cleanups.length; i++) {
+              const cleanup = cleanups[i];
+              if (typeof cleanup === "function") {
+                cleanup();
+              } else {
+                setRef(currentRefs[i], null);
+              }
+            }
+          };
+        }
+      }, []);
+    }
+    function getAnimationName(styles) {
+      return (styles == null ? void 0 : styles.animationName) || "none";
+    }
+    function getElementRef(element) {
+      var _a2, _b2;
+      let getter = (_a2 = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a2.get;
+      let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
+      if (mayWarn) {
+        return element.ref;
+      }
+      getter = (_b2 = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b2.get;
+      mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
+      if (mayWarn) {
+        return element.props.ref;
+      }
+      return element.props.ref || element.ref;
+    }
+    var useReactId = React$5[" useId ".trim().toString()] || (() => void 0);
+    var count$1 = 0;
+    function useId(deterministicId) {
+      const [id, setId] = reactExports.useState(useReactId());
+      useLayoutEffect2(() => {
+        setId((reactId) => reactId ?? String(count$1++));
+      }, [deterministicId]);
+      return deterministicId || (id ? `radix-${id}` : "");
+    }
+    var COLLAPSIBLE_NAME = "Collapsible";
+    var [createCollapsibleContext] = createContextScope(COLLAPSIBLE_NAME);
+    var [CollapsibleProvider, useCollapsibleContext] = createCollapsibleContext(COLLAPSIBLE_NAME);
+    var Collapsible$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          __scopeCollapsible,
+          open: openProp,
+          defaultOpen,
+          disabled,
+          onOpenChange,
+          ...collapsibleProps
+        } = props;
+        const [open, setOpen] = useControllableState({
+          prop: openProp,
+          defaultProp: defaultOpen ?? false,
+          onChange: onOpenChange,
+          caller: COLLAPSIBLE_NAME
+        });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CollapsibleProvider,
+          {
+            scope: __scopeCollapsible,
+            disabled,
+            contentId: useId(),
+            open,
+            onOpenToggle: reactExports.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive.div,
+              {
+                "data-state": getState$4(open),
+                "data-disabled": disabled ? "" : void 0,
+                ...collapsibleProps,
+                ref: forwardedRef
+              }
+            )
+          }
+        );
+      }
+    );
+    Collapsible$1.displayName = COLLAPSIBLE_NAME;
+    var TRIGGER_NAME$6 = "CollapsibleTrigger";
+    var CollapsibleTrigger$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeCollapsible, ...triggerProps } = props;
+        const context = useCollapsibleContext(TRIGGER_NAME$6, __scopeCollapsible);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.button,
+          {
+            type: "button",
+            "aria-controls": context.open ? context.contentId : void 0,
+            "aria-expanded": context.open || false,
+            "data-state": getState$4(context.open),
+            "data-disabled": context.disabled ? "" : void 0,
+            disabled: context.disabled,
+            ...triggerProps,
+            ref: forwardedRef,
+            onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
+          }
+        );
+      }
+    );
+    CollapsibleTrigger$1.displayName = TRIGGER_NAME$6;
+    var CONTENT_NAME$4 = "CollapsibleContent";
+    var CollapsibleContent$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { forceMount, ...contentProps } = props;
+        const context = useCollapsibleContext(CONTENT_NAME$4, props.__scopeCollapsible);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || context.open, children: ({ present }) => /* @__PURE__ */ jsxRuntimeExports.jsx(CollapsibleContentImpl, { ...contentProps, ref: forwardedRef, present }) });
+      }
+    );
+    CollapsibleContent$1.displayName = CONTENT_NAME$4;
+    var CollapsibleContentImpl = reactExports.forwardRef((props, forwardedRef) => {
+      const { __scopeCollapsible, present, children, ...contentProps } = props;
+      const context = useCollapsibleContext(CONTENT_NAME$4, __scopeCollapsible);
+      const [isPresent, setIsPresent] = reactExports.useState(present);
+      const ref = reactExports.useRef(null);
+      const composedRefs = useComposedRefs(forwardedRef, ref);
+      const heightRef = reactExports.useRef(0);
+      const height = heightRef.current;
+      const widthRef = reactExports.useRef(0);
+      const width = widthRef.current;
+      const isOpen = context.open || isPresent;
+      const isMountAnimationPreventedRef = reactExports.useRef(isOpen);
+      const originalStylesRef = reactExports.useRef(void 0);
+      reactExports.useEffect(() => {
+        const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
+        return () => cancelAnimationFrame(rAF);
+      }, []);
+      useLayoutEffect2(() => {
+        const node = ref.current;
+        if (node) {
+          originalStylesRef.current = originalStylesRef.current || {
+            transitionDuration: node.style.transitionDuration,
+            animationName: node.style.animationName
+          };
+          node.style.transitionDuration = "0s";
+          node.style.animationName = "none";
+          const rect = node.getBoundingClientRect();
+          heightRef.current = rect.height;
+          widthRef.current = rect.width;
+          if (!isMountAnimationPreventedRef.current) {
+            node.style.transitionDuration = originalStylesRef.current.transitionDuration;
+            node.style.animationName = originalStylesRef.current.animationName;
+          }
+          setIsPresent(present);
+        }
+      }, [context.open, present]);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive.div,
+        {
+          "data-state": getState$4(context.open),
+          "data-disabled": context.disabled ? "" : void 0,
+          id: context.contentId,
+          hidden: !isOpen,
+          ...contentProps,
+          ref: composedRefs,
+          style: {
+            [`--radix-collapsible-content-height`]: height ? `${height}px` : void 0,
+            [`--radix-collapsible-content-width`]: width ? `${width}px` : void 0,
+            ...props.style
+          },
+          children: isOpen && children
+        }
+      );
+    });
+    function getState$4(open) {
+      return open ? "open" : "closed";
+    }
+    var Root$3 = Collapsible$1;
+    function Collapsible({
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$3, { "data-slot": "collapsible", ...props });
+    }
+    function CollapsibleTrigger({
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CollapsibleTrigger$1,
+        {
+          "data-slot": "collapsible-trigger",
+          ...props
+        }
+      );
+    }
+    function CollapsibleContent({
+      ...props
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CollapsibleContent$1,
+        {
+          "data-slot": "collapsible-content",
+          ...props
         }
       );
     }
@@ -40103,8 +41428,19 @@ variant ${k2} -> ${e.message}`, {
       const showRedirect = channelClosed || isMobile;
       const redirectIsPrimary = isMobile;
       const busy = isLoggingIn || isRedirecting;
+      const friendlyErrorCopy = channelClosed ? "The sign-in window closed before it finished. Tap Try again, or use the redirect sign-in below." : "That didn't go through — this can happen if the window closed early. Tap Try again.";
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-dvh flex-col items-center justify-center bg-background px-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full max-w-sm flex-col items-center text-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-5xl uppercase leading-none tracking-wide text-foreground", children: "Bubba’s 33" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: "/assets/brand/logo-horizontal.webp",
+            alt: "Bubba's 33",
+            width: 640,
+            height: 240,
+            className: "mt-2 h-auto w-full max-w-[20rem]",
+            "data-ocid": "signin.brand_logo"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-heading text-sm uppercase tracking-[0.2em] text-muted-foreground", children: "Roadie Training" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
@@ -40118,6 +41454,26 @@ variant ${k2} -> ${e.message}`, {
             ]
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "mt-6 w-full rounded-md border border-border bg-card p-4 text-left",
+            "data-ocid": "signin.guidance_card",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "size-4 text-primary", "aria-hidden": true }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-sm uppercase tracking-wide text-foreground", children: "First time? Here’s the easy way." })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-2 font-body text-sm leading-relaxed text-muted-foreground", children: [
+                "When the login window opens, choose",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-foreground", children: "Continue with Google" }),
+                " ",
+                "and use your personal Google account. There’s no password to remember, and it works on any device — your phone, a tablet, or the back-office computer."
+              ] })
+            ]
+          }
+        ),
         redirectIsPrimary ? (
           // Mobile/iOS: redirect is the primary action (popup is unreliable).
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -40125,14 +41481,17 @@ variant ${k2} -> ${e.message}`, {
             {
               variant: "default",
               size: "lg",
-              className: "mt-10 w-full font-heading uppercase tracking-wide",
+              className: "mt-6 w-full font-heading uppercase tracking-wide",
               onClick: loginWithRedirect,
               disabled: busy,
               "data-ocid": "signin.redirect_primary_button",
               children: isRedirecting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
                 "Redirecting…"
-              ] }) : "Sign in with Internet Identity"
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex flex-col items-center leading-tight", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Sign In / Get Started" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-[11px] font-normal normal-case tracking-normal opacity-70", children: "Secured by Internet Identity." })
+              ] })
             }
           )
         ) : (
@@ -40142,14 +41501,17 @@ variant ${k2} -> ${e.message}`, {
             {
               variant: "default",
               size: "lg",
-              className: "mt-10 w-full font-heading uppercase tracking-wide",
+              className: "mt-6 w-full font-heading uppercase tracking-wide",
               onClick: onSignIn,
               disabled: busy,
               "data-ocid": "signin.primary_button",
               children: isLoggingIn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
                 "Connecting…"
-              ] }) : "Sign in with Internet Identity"
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex flex-col items-center leading-tight", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Sign In / Get Started" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-[11px] font-normal normal-case tracking-normal opacity-70", children: "Secured by Internet Identity." })
+              ] })
             }
           )
         ),
@@ -40159,7 +41521,7 @@ variant ${k2} -> ${e.message}`, {
             role: "alert",
             className: "mt-4 font-body text-sm text-primary",
             "data-ocid": "signin.error_state",
-            children: error.message || "Sign-in failed. Try again."
+            children: friendlyErrorCopy
           }
         ),
         showRetry && channelClosed && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -40167,7 +41529,7 @@ variant ${k2} -> ${e.message}`, {
           {
             className: "mt-2 font-body text-sm text-muted-foreground",
             "data-ocid": "signin.channel_closed_message",
-            children: "The sign-in window closed before it could finish. This can happen on iPhone Safari when the popup is suspended. Use the redirect sign-in below to continue in this tab, or tap Try again to re-open the popup."
+            children: "The sign-in window closed before it finished. Tap Try again, or use the redirect sign-in below."
           }
         ),
         showRedirect && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -40199,7 +41561,67 @@ variant ${k2} -> ${e.message}`, {
               "Connecting…"
             ] }) : "Try again"
           }
-        )
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Collapsible, { className: "mt-6 w-full", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CollapsibleTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              className: "flex w-full items-center justify-center gap-2 rounded-md border border-border bg-card px-4 py-3 font-heading text-sm uppercase tracking-wide text-foreground transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              "data-ocid": "signin.help_toggle",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleHelp, { className: "size-4 text-primary", "aria-hidden": true }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Trouble signing in?" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  ChevronDown,
+                  {
+                    className: "size-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-180",
+                    "aria-hidden": true
+                  }
+                )
+              ]
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            CollapsibleContent,
+            {
+              className: "mt-2 w-full rounded-md border border-border bg-card p-4 text-left",
+              "data-ocid": "signin.help_content",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("ol", { className: "space-y-2 font-body text-sm text-muted-foreground", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading font-semibold text-primary", children: "1." }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Tap Sign In." })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading font-semibold text-primary", children: "2." }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                      "In the window that opens, choose",
+                      " ",
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-foreground", children: "Continue with Google" }),
+                      " ",
+                      "(Apple or Microsoft also work)."
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading font-semibold text-primary", children: "3." }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Pick your account and you’re in." })
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-3 flex items-start gap-2 border-t border-border pt-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Lightbulb,
+                    {
+                      className: "mt-0.5 size-4 shrink-0 text-primary",
+                      "aria-hidden": true
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm leading-relaxed text-foreground", children: "Avoid “Create a passkey” if you switch between devices — a passkey only works on the one device it was made on. Continue with Google follows you everywhere." })
+                ] })
+              ]
+            }
+          )
+        ] })
       ] }) });
     }
     function AuthGate({ children }) {
@@ -40278,6 +41700,15 @@ variant ${k2} -> ${e.message}`, {
       }
       if (!profile) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProfileScreen, {});
+      }
+      if (!profile.email) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(EnterEmailScreen, {});
+      }
+      if (profile.approvalStatus === "pending") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(PendingApprovalScreen, {});
+      }
+      if (profile.approvalStatus === "rejected") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(RejectedAccessScreen, {});
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
     }
@@ -45511,242 +46942,6 @@ variant ${k2} -> ${e.message}`, {
     function RouterProvider({ router: router2, ...rest }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(RouterContextProvider, { router: router2, ...rest, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Matches, {}) });
     }
-    function createContextScope(scopeName, createContextScopeDeps = []) {
-      let defaultContexts = [];
-      function createContext3(rootComponentName, defaultContext) {
-        const BaseContext = reactExports.createContext(defaultContext);
-        BaseContext.displayName = rootComponentName + "Context";
-        const index2 = defaultContexts.length;
-        defaultContexts = [...defaultContexts, defaultContext];
-        const Provider = (props) => {
-          var _a2;
-          const { scope, children, ...context } = props;
-          const Context = ((_a2 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a2[index2]) || BaseContext;
-          const value = reactExports.useMemo(() => context, Object.values(context));
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
-        };
-        Provider.displayName = rootComponentName + "Provider";
-        function useContext2(consumerName, scope) {
-          var _a2;
-          const Context = ((_a2 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a2[index2]) || BaseContext;
-          const context = reactExports.useContext(Context);
-          if (context) return context;
-          if (defaultContext !== void 0) return defaultContext;
-          throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
-        }
-        return [Provider, useContext2];
-      }
-      const createScope = () => {
-        const scopeContexts = defaultContexts.map((defaultContext) => {
-          return reactExports.createContext(defaultContext);
-        });
-        return function useScope(scope) {
-          const contexts = (scope == null ? void 0 : scope[scopeName]) || scopeContexts;
-          return reactExports.useMemo(
-            () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
-            [scope, contexts]
-          );
-        };
-      };
-      createScope.scopeName = scopeName;
-      return [createContext3, composeContextScopes(createScope, ...createContextScopeDeps)];
-    }
-    function composeContextScopes(...scopes) {
-      const baseScope = scopes[0];
-      if (scopes.length === 1) return baseScope;
-      const createScope = () => {
-        const scopeHooks = scopes.map((createScope2) => ({
-          useScope: createScope2(),
-          scopeName: createScope2.scopeName
-        }));
-        return function useComposedScopes(overrideScopes) {
-          const nextScopes = scopeHooks.reduce((nextScopes2, { useScope, scopeName }) => {
-            const scopeProps = useScope(overrideScopes);
-            const currentScope = scopeProps[`__scope${scopeName}`];
-            return { ...nextScopes2, ...currentScope };
-          }, {});
-          return reactExports.useMemo(() => ({ [`__scope${baseScope.scopeName}`]: nextScopes }), [nextScopes]);
-        };
-      };
-      createScope.scopeName = baseScope.scopeName;
-      return createScope;
-    }
-    function useCallbackRef$1(callback) {
-      const callbackRef = reactExports.useRef(callback);
-      reactExports.useEffect(() => {
-        callbackRef.current = callback;
-      });
-      return reactExports.useMemo(() => (...args) => {
-        var _a2;
-        return (_a2 = callbackRef.current) == null ? void 0 : _a2.call(callbackRef, ...args);
-      }, []);
-    }
-    var useLayoutEffect2 = (globalThis == null ? void 0 : globalThis.document) ? reactExports.useLayoutEffect : () => {
-    };
-    var AVATAR_NAME = "Avatar";
-    var [createAvatarContext] = createContextScope(AVATAR_NAME);
-    var STATIC_IMAGE_COUNT_STATE = [
-      0,
-      () => void 0
-    ];
-    var [AvatarProvider, useAvatarContext] = createAvatarContext(AVATAR_NAME);
-    var Avatar$1 = reactExports.forwardRef(
-      (props, forwardedRef) => {
-        const { __scopeAvatar, ...avatarProps } = props;
-        const [imageLoadingStatus, setImageLoadingStatus] = reactExports.useState("idle");
-        const [imageCount, setImageCount] = useImageCount();
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          AvatarProvider,
-          {
-            scope: __scopeAvatar,
-            imageLoadingStatus,
-            setImageLoadingStatus,
-            imageCount,
-            setImageCount,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { ...avatarProps, ref: forwardedRef })
-          }
-        );
-      }
-    );
-    Avatar$1.displayName = AVATAR_NAME;
-    var IMAGE_NAME = "AvatarImage";
-    var AvatarImage = reactExports.forwardRef(
-      (props, forwardedRef) => {
-        const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
-        const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-        useUpdateImageCount(context.setImageCount);
-        const imageLoadingStatus = useImageLoadingStatus(src, {
-          referrerPolicy: imageProps.referrerPolicy,
-          crossOrigin: imageProps.crossOrigin,
-          loadingStatus: context.imageLoadingStatus,
-          setLoadingStatus: context.setImageLoadingStatus
-        });
-        const handleLoadingStatusChange = useCallbackRef$1((status) => {
-          onLoadingStatusChange == null ? void 0 : onLoadingStatusChange(status);
-        });
-        const loadingStatusRef = reactExports.useRef(imageLoadingStatus);
-        useLayoutEffect2(() => {
-          const previousLoadingStatus = loadingStatusRef.current;
-          loadingStatusRef.current = imageLoadingStatus;
-          if (imageLoadingStatus !== previousLoadingStatus) {
-            handleLoadingStatusChange(imageLoadingStatus);
-          }
-        }, [imageLoadingStatus, handleLoadingStatusChange]);
-        return imageLoadingStatus === "loaded" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.img, { ...imageProps, ref: forwardedRef, src }) : null;
-      }
-    );
-    AvatarImage.displayName = IMAGE_NAME;
-    var FALLBACK_NAME = "AvatarFallback";
-    var AvatarFallback$1 = reactExports.forwardRef(
-      (props, forwardedRef) => {
-        const { __scopeAvatar, delayMs, ...fallbackProps } = props;
-        const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
-        const [canRender, setCanRender] = reactExports.useState(delayMs === void 0);
-        reactExports.useEffect(() => {
-          if (delayMs !== void 0) {
-            const timerId = window.setTimeout(() => setCanRender(true), delayMs);
-            return () => window.clearTimeout(timerId);
-          }
-        }, [delayMs]);
-        return canRender && context.imageLoadingStatus !== "loaded" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { ...fallbackProps, ref: forwardedRef }) : null;
-      }
-    );
-    AvatarFallback$1.displayName = FALLBACK_NAME;
-    function useImageLoadingStatus(src, {
-      loadingStatus,
-      setLoadingStatus,
-      referrerPolicy,
-      crossOrigin
-    }) {
-      useLayoutEffect2(() => {
-        if (!src) {
-          setLoadingStatus("error");
-          return;
-        }
-        const image = new window.Image();
-        const handleLoad = (event) => {
-          const image2 = event.currentTarget;
-          setLoadingStatus(getImageLoadingStatus(image2));
-        };
-        const handleError = () => setLoadingStatus("error");
-        image.addEventListener("load", handleLoad);
-        image.addEventListener("error", handleError);
-        if (referrerPolicy) {
-          image.referrerPolicy = referrerPolicy;
-        }
-        image.crossOrigin = crossOrigin ?? null;
-        image.src = src;
-        setLoadingStatus(getImageLoadingStatus(image));
-        return () => {
-          image.removeEventListener("load", handleLoad);
-          image.removeEventListener("error", handleError);
-          setLoadingStatus("idle");
-        };
-      }, [src, crossOrigin, referrerPolicy, setLoadingStatus]);
-      return loadingStatus;
-    }
-    function getImageLoadingStatus(image) {
-      return image.complete ? image.naturalWidth > 0 ? "loaded" : "error" : "loading";
-    }
-    function useImageCount() {
-      let state = STATIC_IMAGE_COUNT_STATE;
-      {
-        state = reactExports.useState(0);
-        const [imageCount] = state;
-        const hasWarnedRef = reactExports.useRef(false);
-        reactExports.useEffect(() => {
-          if (imageCount > 1 && !hasWarnedRef.current) {
-            hasWarnedRef.current = true;
-            console.warn(
-              "Avatar: Only one `Avatar.Image` component should be rendered per `Avatar.Root`, but multiple were detected. This will lead to unexpected behavior."
-            );
-          }
-        }, [imageCount]);
-      }
-      return state;
-    }
-    function useUpdateImageCount(setImageCount) {
-      {
-        reactExports.useEffect(() => {
-          setImageCount((imageCount) => imageCount + 1);
-          return () => {
-            setImageCount((imageCount) => imageCount - 1);
-          };
-        }, [setImageCount]);
-      }
-    }
-    function Avatar({
-      className,
-      ...props
-    }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Avatar$1,
-        {
-          "data-slot": "avatar",
-          className: cn(
-            "relative flex size-8 shrink-0 overflow-hidden rounded-full",
-            className
-          ),
-          ...props
-        }
-      );
-    }
-    function AvatarFallback({
-      className,
-      ...props
-    }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AvatarFallback$1,
-        {
-          "data-slot": "avatar-fallback",
-          className: cn(
-            "bg-muted flex size-full items-center justify-center rounded-full",
-            className
-          ),
-          ...props
-        }
-      );
-    }
     function Layout() {
       const { principal, clear } = useAuth();
       const { data: profile } = useMyProfile();
@@ -45755,7 +46950,7 @@ variant ${k2} -> ${e.message}`, {
         clear();
         queryClient2.clear();
       };
-      const initials = getInitials(profile == null ? void 0 : profile.name, principal);
+      const initials = getInitials$1(profile == null ? void 0 : profile.name, principal);
       const isAdmin = (profile == null ? void 0 : profile.role) === "admin";
       const isManager = (profile == null ? void 0 : profile.role) === "manager";
       const canOpenNewStore = isAdmin || isManager;
@@ -45772,9 +46967,19 @@ variant ${k2} -> ${e.message}`, {
                 Link$1,
                 {
                   to: "/",
-                  className: "font-display text-2xl uppercase leading-none tracking-wide text-foreground transition-colors duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
+                  "aria-label": "Bubba's 33 — home",
+                  className: "flex items-center transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
                   "data-ocid": "layout.brand_link",
-                  children: "Bubba’s 33"
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "img",
+                    {
+                      src: "/assets/brand/logo-horizontal.webp",
+                      alt: "Bubba's 33",
+                      width: 640,
+                      height: 240,
+                      className: "h-9 w-auto"
+                    }
+                  )
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
@@ -45810,11 +47015,37 @@ variant ${k2} -> ${e.message}`, {
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Avatar,
+                  Link$1,
                   {
-                    className: "size-8 border border-border",
+                    to: "/profile",
+                    className: cn(
+                      "rounded-md border border-primary/60 px-3 py-1.5",
+                      "font-heading text-xs uppercase tracking-wide text-foreground",
+                      "transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
+                    ),
+                    activeProps: {
+                      className: "bg-primary text-primary-foreground"
+                    },
+                    "data-ocid": "layout.profile_link",
+                    children: "Profile"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link$1,
+                  {
+                    to: "/profile",
+                    "aria-label": "View your profile",
                     "data-ocid": "layout.user_avatar",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, { className: "bg-card font-heading text-xs uppercase text-foreground", children: initials })
+                    className: "profile-avatar size-8 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
+                    children: (profile == null ? void 0 : profile.photo) ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "img",
+                      {
+                        src: profile.photo,
+                        alt: "",
+                        className: "size-8 rounded-full object-cover"
+                      }
+                    ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "profile-avatar-initials text-xs", children: initials })
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -45840,7 +47071,7 @@ variant ${k2} -> ${e.message}`, {
         /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 bg-background", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}) })
       ] });
     }
-    function getInitials(name, principal) {
+    function getInitials$1(name, principal) {
       if (name && name.trim().length > 0) {
         const parts = name.trim().split(/\s+/).slice(0, 2);
         return parts.map((p2) => {
@@ -45871,111 +47102,15 @@ variant ${k2} -> ${e.message}`, {
         }
       ) }) });
     }
-    function composeEventHandlers(originalEventHandler, ourEventHandler, { checkForDefaultPrevented = true } = {}) {
-      return function handleEvent(event) {
-        originalEventHandler == null ? void 0 : originalEventHandler(event);
-        if (checkForDefaultPrevented === false || !event.defaultPrevented) {
-          return ourEventHandler == null ? void 0 : ourEventHandler(event);
-        }
-      };
-    }
-    var useReactId = React$5[" useId ".trim().toString()] || (() => void 0);
-    var count$1 = 0;
-    function useId(deterministicId) {
-      const [id, setId] = reactExports.useState(useReactId());
-      useLayoutEffect2(() => {
-        setId((reactId) => reactId ?? String(count$1++));
-      }, [deterministicId]);
-      return deterministicId || (id ? `radix-${id}` : "");
-    }
-    var useReactEffectEvent = React$5[" useEffectEvent ".trim().toString()];
-    var useReactInsertionEffect = React$5[" useInsertionEffect ".trim().toString()];
-    function useEffectEvent(callback) {
-      if (typeof useReactEffectEvent === "function") {
-        return useReactEffectEvent(callback);
-      }
-      const ref = reactExports.useRef(() => {
-        throw new Error("Cannot call an event handler while rendering.");
+    function useCallbackRef$1(callback) {
+      const callbackRef = reactExports.useRef(callback);
+      reactExports.useEffect(() => {
+        callbackRef.current = callback;
       });
-      if (typeof useReactInsertionEffect === "function") {
-        useReactInsertionEffect(() => {
-          ref.current = callback;
-        });
-      } else {
-        useLayoutEffect2(() => {
-          ref.current = callback;
-        });
-      }
       return reactExports.useMemo(() => (...args) => {
         var _a2;
-        return (_a2 = ref.current) == null ? void 0 : _a2.call(ref, ...args);
+        return (_a2 = callbackRef.current) == null ? void 0 : _a2.call(callbackRef, ...args);
       }, []);
-    }
-    var useInsertionEffect = React$5[" useInsertionEffect ".trim().toString()] || useLayoutEffect2;
-    function useControllableState({
-      prop,
-      defaultProp,
-      onChange = () => {
-      },
-      caller
-    }) {
-      const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
-        defaultProp,
-        onChange
-      });
-      const isControlled = prop !== void 0;
-      const value = isControlled ? prop : uncontrolledProp;
-      {
-        const isControlledRef = reactExports.useRef(prop !== void 0);
-        reactExports.useEffect(() => {
-          const wasControlled = isControlledRef.current;
-          if (wasControlled !== isControlled) {
-            const from = wasControlled ? "controlled" : "uncontrolled";
-            const to = isControlled ? "controlled" : "uncontrolled";
-            console.warn(
-              `${caller} is changing from ${from} to ${to}. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.`
-            );
-          }
-          isControlledRef.current = isControlled;
-        }, [isControlled, caller]);
-      }
-      const setValue = reactExports.useCallback(
-        (nextValue) => {
-          var _a2;
-          if (isControlled) {
-            const value2 = isFunction$5(nextValue) ? nextValue(prop) : nextValue;
-            if (value2 !== prop) {
-              (_a2 = onChangeRef.current) == null ? void 0 : _a2.call(onChangeRef, value2);
-            }
-          } else {
-            setUncontrolledProp(nextValue);
-          }
-        },
-        [isControlled, prop, setUncontrolledProp, onChangeRef]
-      );
-      return [value, setValue];
-    }
-    function useUncontrolledState({
-      defaultProp,
-      onChange
-    }) {
-      const [value, setValue] = reactExports.useState(defaultProp);
-      const prevValueRef = reactExports.useRef(value);
-      const onChangeRef = reactExports.useRef(onChange);
-      useInsertionEffect(() => {
-        onChangeRef.current = onChange;
-      }, [onChange]);
-      reactExports.useEffect(() => {
-        var _a2;
-        if (prevValueRef.current !== value) {
-          (_a2 = onChangeRef.current) == null ? void 0 : _a2.call(onChangeRef, value);
-          prevValueRef.current = value;
-        }
-      }, [value, prevValueRef]);
-      return [value, setValue, onChangeRef];
-    }
-    function isFunction$5(value) {
-      return typeof value === "function";
     }
     var DISMISSABLE_LAYER_NAME = "DismissableLayer";
     var CONTEXT_UPDATE = "dismissableLayer.update";
@@ -46507,163 +47642,6 @@ variant ${k2} -> ${e.message}`, {
       return container ? reactDomExports.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...portalProps, ref: forwardedRef }), container) : null;
     });
     Portal.displayName = PORTAL_NAME$3;
-    function useStateMachine(initialState, machine) {
-      return reactExports.useReducer((state, event) => {
-        const nextState = machine[state][event];
-        return nextState ?? state;
-      }, initialState);
-    }
-    var Presence = (props) => {
-      const { present, children } = props;
-      const presence = usePresence(present);
-      const child = typeof children === "function" ? children({ present: presence.isPresent }) : reactExports.Children.only(children);
-      const ref = useStableComposedRefs(presence.ref, getElementRef(child));
-      const forceMount = typeof children === "function";
-      return forceMount || presence.isPresent ? reactExports.cloneElement(child, { ref }) : null;
-    };
-    Presence.displayName = "Presence";
-    function usePresence(present) {
-      const [node, setNode] = reactExports.useState();
-      const stylesRef = reactExports.useRef(null);
-      const prevPresentRef = reactExports.useRef(present);
-      const prevAnimationNameRef = reactExports.useRef("none");
-      const initialState = present ? "mounted" : "unmounted";
-      const [state, send] = useStateMachine(initialState, {
-        mounted: {
-          UNMOUNT: "unmounted",
-          ANIMATION_OUT: "unmountSuspended"
-        },
-        unmountSuspended: {
-          MOUNT: "mounted",
-          ANIMATION_END: "unmounted"
-        },
-        unmounted: {
-          MOUNT: "mounted"
-        }
-      });
-      reactExports.useEffect(() => {
-        const currentAnimationName = getAnimationName(stylesRef.current);
-        prevAnimationNameRef.current = state === "mounted" ? currentAnimationName : "none";
-      }, [state]);
-      useLayoutEffect2(() => {
-        const styles = stylesRef.current;
-        const wasPresent = prevPresentRef.current;
-        const hasPresentChanged = wasPresent !== present;
-        if (hasPresentChanged) {
-          const prevAnimationName = prevAnimationNameRef.current;
-          const currentAnimationName = getAnimationName(styles);
-          if (present) {
-            send("MOUNT");
-          } else if (currentAnimationName === "none" || (styles == null ? void 0 : styles.display) === "none") {
-            send("UNMOUNT");
-          } else {
-            const isAnimating = prevAnimationName !== currentAnimationName;
-            if (wasPresent && isAnimating) {
-              send("ANIMATION_OUT");
-            } else {
-              send("UNMOUNT");
-            }
-          }
-          prevPresentRef.current = present;
-        }
-      }, [present, send]);
-      useLayoutEffect2(() => {
-        if (node) {
-          let timeoutId;
-          const ownerWindow = node.ownerDocument.defaultView ?? window;
-          const handleAnimationEnd = (event) => {
-            const currentAnimationName = getAnimationName(stylesRef.current);
-            const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
-            if (event.target === node && isCurrentAnimation) {
-              send("ANIMATION_END");
-              if (!prevPresentRef.current) {
-                const currentFillMode = node.style.animationFillMode;
-                node.style.animationFillMode = "forwards";
-                timeoutId = ownerWindow.setTimeout(() => {
-                  if (node.style.animationFillMode === "forwards") {
-                    node.style.animationFillMode = currentFillMode;
-                  }
-                });
-              }
-            }
-          };
-          const handleAnimationStart = (event) => {
-            if (event.target === node) {
-              prevAnimationNameRef.current = getAnimationName(stylesRef.current);
-            }
-          };
-          node.addEventListener("animationstart", handleAnimationStart);
-          node.addEventListener("animationcancel", handleAnimationEnd);
-          node.addEventListener("animationend", handleAnimationEnd);
-          return () => {
-            ownerWindow.clearTimeout(timeoutId);
-            node.removeEventListener("animationstart", handleAnimationStart);
-            node.removeEventListener("animationcancel", handleAnimationEnd);
-            node.removeEventListener("animationend", handleAnimationEnd);
-          };
-        } else {
-          send("ANIMATION_END");
-        }
-      }, [node, send]);
-      return {
-        isPresent: ["mounted", "unmountSuspended"].includes(state),
-        ref: reactExports.useCallback((node2) => {
-          stylesRef.current = node2 ? getComputedStyle(node2) : null;
-          setNode(node2);
-        }, [])
-      };
-    }
-    function setRef(ref, value) {
-      if (typeof ref === "function") {
-        return ref(value);
-      } else if (ref !== null && ref !== void 0) {
-        ref.current = value;
-      }
-    }
-    function useStableComposedRefs(...refs) {
-      const refsRef = reactExports.useRef(refs);
-      refsRef.current = refs;
-      return reactExports.useCallback((node) => {
-        const currentRefs = refsRef.current;
-        let hasCleanup = false;
-        const cleanups = currentRefs.map((ref) => {
-          const cleanup = setRef(ref, node);
-          if (!hasCleanup && typeof cleanup === "function") {
-            hasCleanup = true;
-          }
-          return cleanup;
-        });
-        if (hasCleanup) {
-          return () => {
-            for (let i = 0; i < cleanups.length; i++) {
-              const cleanup = cleanups[i];
-              if (typeof cleanup === "function") {
-                cleanup();
-              } else {
-                setRef(currentRefs[i], null);
-              }
-            }
-          };
-        }
-      }, []);
-    }
-    function getAnimationName(styles) {
-      return (styles == null ? void 0 : styles.animationName) || "none";
-    }
-    function getElementRef(element) {
-      var _a2, _b2;
-      let getter = (_a2 = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a2.get;
-      let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-      if (mayWarn) {
-        return element.ref;
-      }
-      getter = (_b2 = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b2.get;
-      mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-      if (mayWarn) {
-        return element.props.ref;
-      }
-      return element.props.ref || element.ref;
-    }
     var count = 0;
     var guards = null;
     function useFocusGuards() {
@@ -49241,15 +50219,15 @@ variant ${k2} -> ${e.message}`, {
     var ENTRY_FOCUS = "rovingFocusGroup.onEntryFocus";
     var EVENT_OPTIONS = { bubbles: false, cancelable: true };
     var GROUP_NAME$1 = "RovingFocusGroup";
-    var [Collection$1, useCollection$1, createCollectionScope$1] = createCollection(GROUP_NAME$1);
+    var [Collection$2, useCollection$2, createCollectionScope$2] = createCollection(GROUP_NAME$1);
     var [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
       GROUP_NAME$1,
-      [createCollectionScope$1]
+      [createCollectionScope$2]
     );
     var [RovingFocusProvider, useRovingFocusContext] = createRovingFocusGroupContext(GROUP_NAME$1);
     var RovingFocusGroup = reactExports.forwardRef(
       (props, forwardedRef) => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Provider, { scope: props.__scopeRovingFocusGroup, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Slot, { scope: props.__scopeRovingFocusGroup, children: /* @__PURE__ */ jsxRuntimeExports.jsx(RovingFocusGroupImpl, { ...props, ref: forwardedRef }) }) });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$2.Provider, { scope: props.__scopeRovingFocusGroup, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$2.Slot, { scope: props.__scopeRovingFocusGroup, children: /* @__PURE__ */ jsxRuntimeExports.jsx(RovingFocusGroupImpl, { ...props, ref: forwardedRef }) }) });
       }
     );
     RovingFocusGroup.displayName = GROUP_NAME$1;
@@ -49277,7 +50255,7 @@ variant ${k2} -> ${e.message}`, {
       });
       const [isTabbingBackOut, setIsTabbingBackOut] = reactExports.useState(false);
       const handleEntryFocus = useCallbackRef$1(onEntryFocus);
-      const getItems = useCollection$1(__scopeRovingFocusGroup);
+      const getItems = useCollection$2(__scopeRovingFocusGroup);
       const isClickFocusRef = reactExports.useRef(false);
       const [focusableItemsCount, setFocusableItemsCount] = reactExports.useState(0);
       reactExports.useEffect(() => {
@@ -49358,7 +50336,7 @@ variant ${k2} -> ${e.message}`, {
         const id = tabStopId || autoId;
         const context = useRovingFocusContext(ITEM_NAME$2, __scopeRovingFocusGroup);
         const isCurrentTabStop = context.currentTabStopId === id;
-        const getItems = useCollection$1(__scopeRovingFocusGroup);
+        const getItems = useCollection$2(__scopeRovingFocusGroup);
         const { onFocusableItemAdd, onFocusableItemRemove, currentTabStopId } = context;
         reactExports.useEffect(() => {
           if (focusable) {
@@ -49367,7 +50345,7 @@ variant ${k2} -> ${e.message}`, {
           }
         }, [focusable, onFocusableItemAdd, onFocusableItemRemove]);
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Collection$1.ItemSlot,
+          Collection$2.ItemSlot,
           {
             scope: __scopeRovingFocusGroup,
             id,
@@ -49530,7 +50508,7 @@ variant ${k2} -> ${e.message}`, {
         setBubbleInput,
         onCheck: () => onCheck == null ? void 0 : onCheck()
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioProviderImpl, { scope: __scopeRadio, ...context, children: isFunction$4(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioProviderImpl, { scope: __scopeRadio, ...context, children: isFunction$5(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
     }
     var TRIGGER_NAME$3 = "RadioTrigger";
     var RadioTrigger = reactExports.forwardRef(
@@ -49622,7 +50600,7 @@ variant ${k2} -> ${e.message}`, {
       }
     );
     RadioIndicator.displayName = INDICATOR_NAME$2;
-    var BUBBLE_INPUT_NAME$3 = "RadioBubbleInput";
+    var BUBBLE_INPUT_NAME$4 = "RadioBubbleInput";
     var RadioBubbleInput = reactExports.forwardRef(
       ({ __scopeRadio, ...props }, forwardedRef) => {
         const {
@@ -49636,7 +50614,7 @@ variant ${k2} -> ${e.message}`, {
           bubbleInput,
           setBubbleInput,
           hasConsumerStoppedPropagationRef
-        } = useRadioContext(BUBBLE_INPUT_NAME$3, __scopeRadio);
+        } = useRadioContext(BUBBLE_INPUT_NAME$4, __scopeRadio);
         const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
         const prevChecked = usePrevious(checked);
         const controlSize = useSize(control);
@@ -49687,14 +50665,14 @@ variant ${k2} -> ${e.message}`, {
         );
       }
     );
-    RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$3;
-    function isFunction$4(value) {
+    RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$4;
+    function isFunction$5(value) {
       return typeof value === "function";
     }
     function getState$2(checked) {
       return checked ? "checked" : "unchecked";
     }
-    var ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+    var ARROW_KEYS$1 = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
     var RADIO_GROUP_NAME = "RadioGroup";
     var [createRadioGroupContext] = createContextScope(RADIO_GROUP_NAME, [
       createRovingFocusGroupScope,
@@ -49803,7 +50781,7 @@ variant ${k2} -> ${e.message}`, {
       const isArrowKeyPressedRef = reactExports.useRef(false);
       reactExports.useEffect(() => {
         const handleKeyDown = (event) => {
-          if (ARROW_KEYS.includes(event.key)) {
+          if (ARROW_KEYS$1.includes(event.key)) {
             isArrowKeyPressedRef.current = true;
           }
         };
@@ -52372,7 +53350,7 @@ variant ${k2} -> ${e.message}`, {
       return value;
     }
     var asyncTag = "[object AsyncFunction]", funcTag$2 = "[object Function]", genTag$1 = "[object GeneratorFunction]", proxyTag = "[object Proxy]";
-    function isFunction$3(value) {
+    function isFunction$4(value) {
       if (!isObject(value)) {
         return false;
       }
@@ -52414,7 +53392,7 @@ variant ${k2} -> ${e.message}`, {
       if (!isObject(value) || isMasked(value)) {
         return false;
       }
-      var pattern = isFunction$3(value) ? reIsNative : reIsHostCtor;
+      var pattern = isFunction$4(value) ? reIsNative : reIsHostCtor;
       return pattern.test(toSource(value));
     }
     function getValue(object, key) {
@@ -52584,7 +53562,7 @@ variant ${k2} -> ${e.message}`, {
       return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
     }
     function isArrayLike(value) {
-      return value != null && isLength(value.length) && !isFunction$3(value);
+      return value != null && isLength(value.length) && !isFunction$4(value);
     }
     function isIterateeCall(value, index2, object) {
       if (!isObject(object)) {
@@ -53461,7 +54439,7 @@ variant ${k2} -> ${e.message}`, {
           newValue = objValue;
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
-          } else if (!isObject(objValue) || isFunction$3(objValue)) {
+          } else if (!isObject(objValue) || isFunction$4(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         } else {
@@ -63682,7 +64660,7 @@ ${escapeText(this.code(index2, length))}
         bubbleInput,
         setBubbleInput
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchProviderImpl, { scope: __scopeSwitch, ...context, children: isFunction$2(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchProviderImpl, { scope: __scopeSwitch, ...context, children: isFunction$3(internal_do_not_use_render) ? internal_do_not_use_render(context) : children });
     }
     var TRIGGER_NAME$2 = "SwitchTrigger";
     var SwitchTrigger = reactExports.forwardRef(
@@ -63771,11 +64749,11 @@ ${escapeText(this.code(index2, length))}
       }
     );
     Switch$1.displayName = SWITCH_NAME;
-    var THUMB_NAME = "SwitchThumb";
+    var THUMB_NAME$1 = "SwitchThumb";
     var SwitchThumb = reactExports.forwardRef(
       (props, forwardedRef) => {
         const { __scopeSwitch, ...thumbProps } = props;
-        const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
+        const context = useSwitchContext(THUMB_NAME$1, __scopeSwitch);
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           Primitive.span,
           {
@@ -63787,8 +64765,8 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    SwitchThumb.displayName = THUMB_NAME;
-    var BUBBLE_INPUT_NAME$2 = "SwitchBubbleInput";
+    SwitchThumb.displayName = THUMB_NAME$1;
+    var BUBBLE_INPUT_NAME$3 = "SwitchBubbleInput";
     var SwitchBubbleInput = reactExports.forwardRef(
       ({ __scopeSwitch, ...props }, forwardedRef) => {
         const {
@@ -63803,7 +64781,7 @@ ${escapeText(this.code(index2, length))}
           form,
           bubbleInput,
           setBubbleInput
-        } = useSwitchContext(BUBBLE_INPUT_NAME$2, __scopeSwitch);
+        } = useSwitchContext(BUBBLE_INPUT_NAME$3, __scopeSwitch);
         const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
         const prevChecked = usePrevious(checked);
         const controlSize = useSize(control);
@@ -63854,8 +64832,8 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
-    function isFunction$2(value) {
+    SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$3;
+    function isFunction$3(value) {
       return typeof value === "function";
     }
     function getState$1(checked) {
@@ -65665,7 +66643,167 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
-    function clamp$1(value, [min2, max2]) {
+    const QUERY_KEY$1 = ["all-users"];
+    function toUserProfile(p2) {
+      return {
+        principal: p2.id.toString(),
+        name: p2.name,
+        storeLocation: p2.storeLocation,
+        role: p2.role,
+        approvalStatus: p2.approvalStatus,
+        email: p2.email,
+        photo: p2.photo
+      };
+    }
+    function useAllUsers() {
+      const { actor, isFetching } = useBackend();
+      return useQuery({
+        queryKey: QUERY_KEY$1,
+        queryFn: async () => {
+          if (!actor) return [];
+          const result = await actor.getAllUsers();
+          return result.map(toUserProfile);
+        },
+        enabled: !!actor && !isFetching
+      });
+    }
+    function useSetUserRole() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.setUserRole(
+            Principal$1.fromText(input.userPrincipal),
+            input.role
+          );
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+        }
+      });
+    }
+    function useApproveUser() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.approveUser(
+            Principal$1.fromText(input.userPrincipal)
+          );
+          return toUserProfile(result);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+        }
+      });
+    }
+    function useRejectUser() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.rejectUser(
+            Principal$1.fromText(input.userPrincipal)
+          );
+          return toUserProfile(result);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+        }
+      });
+    }
+    function useSetUserEmail() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.setUserEmail(
+            Principal$1.fromText(input.userPrincipal),
+            input.email
+          );
+          return toUserProfile(result);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+        }
+      });
+    }
+    function useSetUserPhoto() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          const result = await actor.setUserPhoto(
+            Principal$1.fromText(input.userPrincipal),
+            input.photo
+          );
+          return toUserProfile(result);
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+        }
+      });
+    }
+    function useResendApprovalEmail() {
+      const queryClient2 = useQueryClient();
+      const { actor } = useBackend();
+      return useMutation({
+        mutationFn: async (input) => {
+          if (!actor) throw new Error("Backend not ready");
+          await actor.resendApprovalEmail(Principal$1.fromText(input.userPrincipal));
+        },
+        onSuccess: () => {
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+        }
+      });
+    }
+    function ResendEmailButton({
+      user,
+      index: index2,
+      variant = "outline"
+    }) {
+      const resend = useResendApprovalEmail();
+      const handleResend = () => {
+        resend.mutate(
+          { userPrincipal: user.principal },
+          {
+            onSuccess: () => ue.success(
+              `Notification email re-sent to ${user.name || "user"}.`
+            ),
+            onError: () => ue.error("Couldn't send the email. Try again.")
+          }
+        );
+      };
+      const label = user.name || "user";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Button,
+        {
+          type: "button",
+          variant,
+          size: "sm",
+          disabled: resend.isPending,
+          onClick: handleResend,
+          className: "font-heading text-xs uppercase tracking-wide",
+          "data-ocid": `user.resend_email_button.${index2}`,
+          "aria-label": `Resend notification email to ${label}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "size-4", "aria-hidden": "true" }),
+            resend.isPending ? "Sending…" : "Resend"
+          ]
+        }
+      );
+    }
+    function clamp$2(value, [min2, max2]) {
       return Math.min(max2, Math.max(min2, value));
     }
     const sides = ["top", "right", "bottom", "left"];
@@ -65683,7 +66821,7 @@ ${escapeText(this.code(index2, length))}
       bottom: "top",
       top: "bottom"
     };
-    function clamp(start, value, end) {
+    function clamp$1(start, value, end) {
       return max(start, min(value, end));
     }
     function evaluate(value, param) {
@@ -66040,7 +67178,7 @@ ${escapeText(this.code(index2, length))}
         const min$1 = minPadding;
         const max2 = clientSize - arrowDimensions[length] - maxPadding;
         const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-        const offset2 = clamp(min$1, center, max2);
+        const offset2 = clamp$1(min$1, center, max2);
         const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset2 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
         const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max2 : 0;
         return {
@@ -66339,14 +67477,14 @@ ${escapeText(this.code(index2, length))}
             const maxSide = mainAxis === "y" ? "bottom" : "right";
             const min2 = mainAxisCoord + overflow[minSide];
             const max2 = mainAxisCoord - overflow[maxSide];
-            mainAxisCoord = clamp(min2, mainAxisCoord, max2);
+            mainAxisCoord = clamp$1(min2, mainAxisCoord, max2);
           }
           if (checkCrossAxis) {
             const minSide = crossAxis === "y" ? "top" : "left";
             const maxSide = crossAxis === "y" ? "bottom" : "right";
             const min2 = crossAxisCoord + overflow[minSide];
             const max2 = crossAxisCoord - overflow[maxSide];
-            crossAxisCoord = clamp(min2, crossAxisCoord, max2);
+            crossAxisCoord = clamp$1(min2, crossAxisCoord, max2);
           }
           const limitedCoords = limiter.fn({
             ...state,
@@ -67956,9 +69094,9 @@ ${escapeText(this.code(index2, length))}
     var OPEN_KEYS = [" ", "Enter", "ArrowUp", "ArrowDown"];
     var SELECTION_KEYS = [" ", "Enter"];
     var SELECT_NAME = "Select";
-    var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
+    var [Collection$1, useCollection$1, createCollectionScope$1] = createCollection(SELECT_NAME);
     var [createSelectContext] = createContextScope(SELECT_NAME, [
-      createCollectionScope,
+      createCollectionScope$1,
       createPopperScope
     ]);
     var usePopperScope = createPopperScope();
@@ -68039,13 +69177,13 @@ ${escapeText(this.code(index2, length))}
         nativeSelectKey,
         isFormControl
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectProviderImpl, { scope: __scopeSelect, ...context, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectProviderImpl, { scope: __scopeSelect, ...context, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Provider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         SelectNativeOptionsProvider,
         {
           scope: __scopeSelect,
           onNativeOptionAdd: handleNativeOptionAdd,
           onNativeOptionRemove: handleNativeOptionRemove,
-          children: isFunction$1(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
+          children: isFunction$2(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
         }
       ) }) }) });
     }
@@ -68078,7 +69216,7 @@ ${escapeText(this.code(index2, length))}
         const context = useSelectContext(TRIGGER_NAME$1, __scopeSelect);
         const isDisabled = context.disabled || disabled;
         const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
-        const getItems = useCollection(__scopeSelect);
+        const getItems = useCollection$1(__scopeSelect);
         const pointerTypeRef = reactExports.useRef("touch");
         const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
           const enabledItems = getItems().filter((item) => !item.disabled);
@@ -68208,7 +69346,7 @@ ${escapeText(this.code(index2, length))}
       const { __scopeSelect, children, fragment } = props;
       if (!fragment) return null;
       return reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentProvider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: forwardedRef, children }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentProvider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: forwardedRef, children }) }) }),
         fragment
       );
     });
@@ -68248,7 +69386,7 @@ ${escapeText(this.code(index2, length))}
         const [selectedItemText, setSelectedItemText] = reactExports.useState(
           null
         );
-        const getItems = useCollection(__scopeSelect);
+        const getItems = useCollection$1(__scopeSelect);
         const [isPositioned, setIsPositioned] = reactExports.useState(false);
         const firstValidItemFoundRef = reactExports.useRef(false);
         reactExports.useEffect(() => {
@@ -68463,7 +69601,7 @@ ${escapeText(this.code(index2, length))}
       const [contentWrapper, setContentWrapper] = reactExports.useState(null);
       const [content, setContent] = reactExports.useState(null);
       const composedRefs = useComposedRefs(forwardedRef, setContent);
-      const getItems = useCollection(__scopeSelect);
+      const getItems = useCollection$1(__scopeSelect);
       const shouldExpandOnScrollRef = reactExports.useRef(false);
       const shouldRepositionRef = reactExports.useRef(true);
       const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
@@ -68480,7 +69618,7 @@ ${escapeText(this.code(index2, length))}
             const minContentWidth = triggerRect.width + leftDelta;
             const contentWidth = Math.max(minContentWidth, contentRect.width);
             const rightEdge = window.innerWidth - CONTENT_MARGIN;
-            const clampedLeft = clamp$1(left, [
+            const clampedLeft = clamp$2(left, [
               CONTENT_MARGIN,
               // Prevents the content from going off the starting edge of the
               // viewport. It may still go off the ending edge, but this can be
@@ -68498,7 +69636,7 @@ ${escapeText(this.code(index2, length))}
             const minContentWidth = triggerRect.width + rightDelta;
             const contentWidth = Math.max(minContentWidth, contentRect.width);
             const leftEdge = window.innerWidth - CONTENT_MARGIN;
-            const clampedRight = clamp$1(right, [
+            const clampedRight = clamp$2(right, [
               CONTENT_MARGIN,
               Math.max(CONTENT_MARGIN, leftEdge - contentWidth)
             ]);
@@ -68672,7 +69810,7 @@ ${escapeText(this.code(index2, length))}
               nonce
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Collection$1.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             Primitive.div,
             {
               "data-radix-select-viewport": "",
@@ -68784,7 +69922,7 @@ ${escapeText(this.code(index2, length))}
               setTextValue((prevTextValue) => prevTextValue || ((node == null ? void 0 : node.textContent) ?? "").trim());
             }, []),
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Collection.ItemSlot,
+              Collection$1.ItemSlot,
               {
                 scope: __scopeSelect,
                 value,
@@ -68963,7 +70101,7 @@ ${escapeText(this.code(index2, length))}
       const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
       const contentContext = useSelectContentContext("SelectScrollButton", __scopeSelect);
       const autoScrollTimerRef = reactExports.useRef(null);
-      const getItems = useCollection(__scopeSelect);
+      const getItems = useCollection$1(__scopeSelect);
       const clearAutoScrollTimer = reactExports.useCallback(() => {
         if (autoScrollTimerRef.current !== null) {
           window.clearInterval(autoScrollTimerRef.current);
@@ -69021,10 +70159,10 @@ ${escapeText(this.code(index2, length))}
       }
     );
     SelectArrow.displayName = ARROW_NAME;
-    var BUBBLE_INPUT_NAME$1 = "SelectBubbleInput";
+    var BUBBLE_INPUT_NAME$2 = "SelectBubbleInput";
     var SelectBubbleInput = reactExports.forwardRef(
       ({ __scopeSelect, ...props }, forwardedRef) => {
-        const context = useSelectContext(BUBBLE_INPUT_NAME$1, __scopeSelect);
+        const context = useSelectContext(BUBBLE_INPUT_NAME$2, __scopeSelect);
         const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
         const { nativeOptions, nativeSelectKey } = context;
         const ref = reactExports.useRef(null);
@@ -69073,8 +70211,8 @@ ${escapeText(this.code(index2, length))}
         );
       }
     );
-    SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
-    function isFunction$1(value) {
+    SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
+    function isFunction$2(value) {
       return typeof value === "function";
     }
     function shouldShowPlaceholder(value) {
@@ -69401,7 +70539,7 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
-    const QUERY_KEY$1 = ["my-assignments"];
+    const QUERY_KEY = ["my-assignments"];
     function toAssignment(a2) {
       return {
         userPrincipal: a2.userId.toString(),
@@ -69412,7 +70550,7 @@ ${escapeText(this.code(index2, length))}
     function useMyAssignments() {
       const { actor, isFetching } = useBackend();
       return useQuery({
-        queryKey: QUERY_KEY$1,
+        queryKey: QUERY_KEY,
         queryFn: async () => {
           if (!actor) return [];
           const result = await actor.getMyAssignments();
@@ -69434,7 +70572,7 @@ ${escapeText(this.code(index2, length))}
           return toAssignment(result);
         },
         onSuccess: () => {
-          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY });
           queryClient2.invalidateQueries({ queryKey: ["user-assignments"] });
         }
       });
@@ -69451,7 +70589,7 @@ ${escapeText(this.code(index2, length))}
           );
         },
         onSuccess: () => {
-          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY });
           queryClient2.invalidateQueries({ queryKey: ["user-assignments"] });
         }
       });
@@ -69470,7 +70608,7 @@ ${escapeText(this.code(index2, length))}
           return toAssignment(result);
         },
         onSuccess: () => {
-          queryClient2.invalidateQueries({ queryKey: QUERY_KEY$1 });
+          queryClient2.invalidateQueries({ queryKey: QUERY_KEY });
           queryClient2.invalidateQueries({ queryKey: ["user-assignments"] });
         }
       });
@@ -69761,6 +70899,2439 @@ ${escapeText(this.code(index2, length))}
     function statusLabel(status) {
       return status === "certified" ? "Certified" : "In training";
     }
+    var PAGE_KEYS = ["PageUp", "PageDown"];
+    var ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+    var BACK_KEYS = {
+      "from-left": ["Home", "PageDown", "ArrowDown", "ArrowLeft"],
+      "from-right": ["Home", "PageDown", "ArrowDown", "ArrowRight"],
+      "from-bottom": ["Home", "PageDown", "ArrowDown", "ArrowLeft"],
+      "from-top": ["Home", "PageDown", "ArrowUp", "ArrowLeft"]
+    };
+    var SLIDER_NAME = "Slider";
+    var [Collection, useCollection, createCollectionScope] = createCollection(SLIDER_NAME);
+    var [createSliderContext] = createContextScope(SLIDER_NAME, [
+      createCollectionScope
+    ]);
+    var [SliderProvider, useSliderContext] = createSliderContext(SLIDER_NAME);
+    var Slider$1 = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          name,
+          min: min2 = 0,
+          max: max2 = 100,
+          step = 1,
+          orientation = "horizontal",
+          disabled = false,
+          minStepsBetweenThumbs = 0,
+          defaultValue = [min2],
+          value,
+          onValueChange = () => {
+          },
+          onValueCommit = () => {
+          },
+          inverted = false,
+          form,
+          ...sliderProps
+        } = props;
+        const thumbRefs = reactExports.useRef(/* @__PURE__ */ new Set());
+        const valueIndexToChangeRef = reactExports.useRef(0);
+        const isKeyboardInteractionRef = reactExports.useRef(false);
+        const isHorizontal = orientation === "horizontal";
+        const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
+        const [values = [], setValues] = useControllableState({
+          prop: value,
+          defaultProp: defaultValue,
+          onChange: (value2) => {
+            var _a2;
+            const thumbs = [...thumbRefs.current];
+            (_a2 = thumbs[valueIndexToChangeRef.current]) == null ? void 0 : _a2.focus({
+              preventScroll: true,
+              focusVisible: isKeyboardInteractionRef.current
+            });
+            isKeyboardInteractionRef.current = false;
+            onValueChange(value2);
+          }
+        });
+        const valuesBeforeSlideStartRef = reactExports.useRef(values);
+        function handleSlideStart(value2) {
+          const closestIndex = getClosestValueIndex(values, value2);
+          updateValues(value2, closestIndex);
+        }
+        function handleSlideMove(value2) {
+          updateValues(value2, valueIndexToChangeRef.current);
+        }
+        function handleSlideEnd() {
+          const prevValue = valuesBeforeSlideStartRef.current[valueIndexToChangeRef.current];
+          const nextValue = values[valueIndexToChangeRef.current];
+          const hasChanged = nextValue !== prevValue;
+          if (hasChanged) onValueCommit(values);
+        }
+        function updateValues(value2, atIndex, { commit } = { commit: false }) {
+          const decimalCount = getDecimalCount(step);
+          const snapToStep = roundValue(Math.round((value2 - min2) / step) * step + min2, decimalCount);
+          const nextValue = clamp$2(snapToStep, [min2, max2]);
+          setValues((prevValues = []) => {
+            const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
+            if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
+              valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+              const hasChanged = String(nextValues) !== String(prevValues);
+              if (hasChanged && commit) onValueCommit(nextValues);
+              return hasChanged ? nextValues : prevValues;
+            } else {
+              return prevValues;
+            }
+          });
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SliderProvider,
+          {
+            scope: props.__scopeSlider,
+            name,
+            disabled,
+            min: min2,
+            max: max2,
+            valueIndexToChangeRef,
+            thumbs: thumbRefs.current,
+            values,
+            orientation,
+            form,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: props.__scopeSlider, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: props.__scopeSlider, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              SliderOrientation,
+              {
+                "aria-disabled": disabled,
+                "data-disabled": disabled ? "" : void 0,
+                ...sliderProps,
+                ref: forwardedRef,
+                onPointerDown: composeEventHandlers(sliderProps.onPointerDown, () => {
+                  if (!disabled) {
+                    valuesBeforeSlideStartRef.current = values;
+                    isKeyboardInteractionRef.current = false;
+                  }
+                }),
+                min: min2,
+                max: max2,
+                inverted,
+                onSlideStart: disabled ? void 0 : handleSlideStart,
+                onSlideMove: disabled ? void 0 : handleSlideMove,
+                onSlideEnd: disabled ? void 0 : handleSlideEnd,
+                onHomeKeyDown: () => {
+                  if (!disabled) {
+                    isKeyboardInteractionRef.current = true;
+                    updateValues(min2, 0, { commit: true });
+                  }
+                },
+                onEndKeyDown: () => {
+                  if (!disabled) {
+                    isKeyboardInteractionRef.current = true;
+                    updateValues(max2, values.length - 1, { commit: true });
+                  }
+                },
+                onStepKeyDown: ({ event, direction: stepDirection }) => {
+                  if (!disabled) {
+                    isKeyboardInteractionRef.current = true;
+                    const isPageKey = PAGE_KEYS.includes(event.key);
+                    const isSkipKey = isPageKey || event.shiftKey && ARROW_KEYS.includes(event.key);
+                    const multiplier = isSkipKey ? 10 : 1;
+                    const atIndex = valueIndexToChangeRef.current;
+                    const value2 = values[atIndex];
+                    const stepInDirection = step * multiplier * stepDirection;
+                    updateValues(value2 + stepInDirection, atIndex, { commit: true });
+                  }
+                }
+              }
+            ) }) })
+          }
+        );
+      }
+    );
+    Slider$1.displayName = SLIDER_NAME;
+    var [SliderOrientationProvider, useSliderOrientationContext] = createSliderContext(SLIDER_NAME, {
+      startEdge: "left",
+      endEdge: "right",
+      size: "width",
+      direction: 1
+    });
+    var SliderHorizontal = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          min: min2,
+          max: max2,
+          dir,
+          inverted,
+          onSlideStart,
+          onSlideMove,
+          onSlideEnd,
+          onStepKeyDown,
+          ...sliderProps
+        } = props;
+        const [slider, setSlider] = reactExports.useState(null);
+        const composedRefs = useComposedRefs(forwardedRef, setSlider);
+        const rectRef = reactExports.useRef(void 0);
+        const direction = useDirection(dir);
+        const isDirectionLTR = direction === "ltr";
+        const isSlidingFromLeft = isDirectionLTR && !inverted || !isDirectionLTR && inverted;
+        function getValueFromPointer(pointerPosition) {
+          const rect = rectRef.current || slider.getBoundingClientRect();
+          const input = [0, rect.width];
+          const output = isSlidingFromLeft ? [min2, max2] : [max2, min2];
+          const value = linearScale(input, output);
+          rectRef.current = rect;
+          return value(pointerPosition - rect.left);
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SliderOrientationProvider,
+          {
+            scope: props.__scopeSlider,
+            startEdge: isSlidingFromLeft ? "left" : "right",
+            endEdge: isSlidingFromLeft ? "right" : "left",
+            direction: isSlidingFromLeft ? 1 : -1,
+            size: "width",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              SliderImpl,
+              {
+                dir: direction,
+                "data-orientation": "horizontal",
+                ...sliderProps,
+                ref: composedRefs,
+                style: {
+                  ...sliderProps.style,
+                  "--radix-slider-thumb-transform": "translateX(-50%)"
+                },
+                onSlideStart: (event) => {
+                  const value = getValueFromPointer(event.clientX);
+                  onSlideStart == null ? void 0 : onSlideStart(value);
+                },
+                onSlideMove: (event) => {
+                  const value = getValueFromPointer(event.clientX);
+                  onSlideMove == null ? void 0 : onSlideMove(value);
+                },
+                onSlideEnd: () => {
+                  rectRef.current = void 0;
+                  onSlideEnd == null ? void 0 : onSlideEnd();
+                },
+                onStepKeyDown: (event) => {
+                  const slideDirection = isSlidingFromLeft ? "from-left" : "from-right";
+                  const isBackKey = BACK_KEYS[slideDirection].includes(event.key);
+                  onStepKeyDown == null ? void 0 : onStepKeyDown({ event, direction: isBackKey ? -1 : 1 });
+                }
+              }
+            )
+          }
+        );
+      }
+    );
+    var SliderVertical = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          min: min2,
+          max: max2,
+          inverted,
+          onSlideStart,
+          onSlideMove,
+          onSlideEnd,
+          onStepKeyDown,
+          ...sliderProps
+        } = props;
+        const sliderRef = reactExports.useRef(null);
+        const ref = useComposedRefs(forwardedRef, sliderRef);
+        const rectRef = reactExports.useRef(void 0);
+        const isSlidingFromBottom = !inverted;
+        function getValueFromPointer(pointerPosition) {
+          const rect = rectRef.current || sliderRef.current.getBoundingClientRect();
+          const input = [0, rect.height];
+          const output = isSlidingFromBottom ? [max2, min2] : [min2, max2];
+          const value = linearScale(input, output);
+          rectRef.current = rect;
+          return value(pointerPosition - rect.top);
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SliderOrientationProvider,
+          {
+            scope: props.__scopeSlider,
+            startEdge: isSlidingFromBottom ? "bottom" : "top",
+            endEdge: isSlidingFromBottom ? "top" : "bottom",
+            size: "height",
+            direction: isSlidingFromBottom ? 1 : -1,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              SliderImpl,
+              {
+                "data-orientation": "vertical",
+                ...sliderProps,
+                ref,
+                style: {
+                  ...sliderProps.style,
+                  "--radix-slider-thumb-transform": "translateY(50%)"
+                },
+                onSlideStart: (event) => {
+                  const value = getValueFromPointer(event.clientY);
+                  onSlideStart == null ? void 0 : onSlideStart(value);
+                },
+                onSlideMove: (event) => {
+                  const value = getValueFromPointer(event.clientY);
+                  onSlideMove == null ? void 0 : onSlideMove(value);
+                },
+                onSlideEnd: () => {
+                  rectRef.current = void 0;
+                  onSlideEnd == null ? void 0 : onSlideEnd();
+                },
+                onStepKeyDown: (event) => {
+                  const slideDirection = isSlidingFromBottom ? "from-bottom" : "from-top";
+                  const isBackKey = BACK_KEYS[slideDirection].includes(event.key);
+                  onStepKeyDown == null ? void 0 : onStepKeyDown({ event, direction: isBackKey ? -1 : 1 });
+                }
+              }
+            )
+          }
+        );
+      }
+    );
+    var SliderImpl = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const {
+          __scopeSlider,
+          onSlideStart,
+          onSlideMove,
+          onSlideEnd,
+          onHomeKeyDown,
+          onEndKeyDown,
+          onStepKeyDown,
+          ...sliderProps
+        } = props;
+        const context = useSliderContext(SLIDER_NAME, __scopeSlider);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.span,
+          {
+            ...sliderProps,
+            ref: forwardedRef,
+            onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
+              if (event.key === "Home") {
+                onHomeKeyDown(event);
+                event.preventDefault();
+              } else if (event.key === "End") {
+                onEndKeyDown(event);
+                event.preventDefault();
+              } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
+                onStepKeyDown(event);
+                event.preventDefault();
+              }
+            }),
+            onPointerDown: composeEventHandlers(props.onPointerDown, (event) => {
+              const target = event.target;
+              target.setPointerCapture(event.pointerId);
+              event.preventDefault();
+              if (context.thumbs.has(target)) {
+                target.focus({ preventScroll: true, focusVisible: false });
+              } else {
+                onSlideStart(event);
+              }
+            }),
+            onPointerMove: composeEventHandlers(props.onPointerMove, (event) => {
+              const target = event.target;
+              if (target.hasPointerCapture(event.pointerId)) onSlideMove(event);
+            }),
+            onPointerUp: composeEventHandlers(props.onPointerUp, (event) => {
+              const target = event.target;
+              if (target.hasPointerCapture(event.pointerId)) {
+                target.releasePointerCapture(event.pointerId);
+                onSlideEnd(event);
+              }
+            })
+          }
+        );
+      }
+    );
+    var TRACK_NAME = "SliderTrack";
+    var SliderTrack = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeSlider, ...trackProps } = props;
+        const context = useSliderContext(TRACK_NAME, __scopeSlider);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.span,
+          {
+            "data-disabled": context.disabled ? "" : void 0,
+            "data-orientation": context.orientation,
+            ...trackProps,
+            ref: forwardedRef
+          }
+        );
+      }
+    );
+    SliderTrack.displayName = TRACK_NAME;
+    var RANGE_NAME = "SliderRange";
+    var SliderRange = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeSlider, ...rangeProps } = props;
+        const context = useSliderContext(RANGE_NAME, __scopeSlider);
+        const orientation = useSliderOrientationContext(RANGE_NAME, __scopeSlider);
+        const ref = reactExports.useRef(null);
+        const composedRefs = useComposedRefs(forwardedRef, ref);
+        const valuesCount = context.values.length;
+        const percentages = context.values.map(
+          (value) => convertValueToPercentage(value, context.min, context.max)
+        );
+        const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
+        const offsetEnd = 100 - Math.max(...percentages);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.span,
+          {
+            "data-orientation": context.orientation,
+            "data-disabled": context.disabled ? "" : void 0,
+            ...rangeProps,
+            ref: composedRefs,
+            style: {
+              ...props.style,
+              [orientation.startEdge]: offsetStart + "%",
+              [orientation.endEdge]: offsetEnd + "%"
+            }
+          }
+        );
+      }
+    );
+    SliderRange.displayName = RANGE_NAME;
+    var THUMB_NAME = "SliderThumb";
+    var [SliderThumbContextProvider, useSliderThumbContext] = createSliderContext(THUMB_NAME);
+    var THUMB_PROVIDER_NAME = "SliderThumbProvider";
+    function SliderThumbProvider(props) {
+      const {
+        __scopeSlider,
+        name,
+        children,
+        // @ts-expect-error internal render prop
+        internal_do_not_use_render
+      } = props;
+      const context = useSliderContext(THUMB_PROVIDER_NAME, __scopeSlider);
+      const getItems = useCollection(__scopeSlider);
+      const [thumb, setThumb] = reactExports.useState(null);
+      const index2 = reactExports.useMemo(
+        () => thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1,
+        [getItems, thumb]
+      );
+      const size2 = useSize(thumb);
+      const isFormControl = thumb ? !!context.form || !!thumb.closest("form") : true;
+      const value = context.values[index2];
+      const resolvedName = name ?? (context.name ? context.name + (context.values.length > 1 ? "[]" : "") : void 0);
+      const percent = value === void 0 ? 0 : convertValueToPercentage(value, context.min, context.max);
+      reactExports.useEffect(() => {
+        if (thumb) {
+          context.thumbs.add(thumb);
+          return () => {
+            context.thumbs.delete(thumb);
+          };
+        }
+      }, [thumb, context.thumbs]);
+      const thumbContext = {
+        value,
+        name: resolvedName,
+        form: context.form,
+        isFormControl,
+        index: index2,
+        thumb,
+        onThumbChange: setThumb,
+        percent,
+        size: size2
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SliderThumbContextProvider, { scope: __scopeSlider, ...thumbContext, children: isFunction$1(internal_do_not_use_render) ? internal_do_not_use_render(thumbContext) : children });
+    }
+    SliderThumbProvider.displayName = THUMB_PROVIDER_NAME;
+    var THUMB_TRIGGER_NAME = "SliderThumbTrigger";
+    var SliderThumbTrigger = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeSlider, ...thumbProps } = props;
+        const context = useSliderContext(THUMB_TRIGGER_NAME, __scopeSlider);
+        const orientation = useSliderOrientationContext(THUMB_TRIGGER_NAME, __scopeSlider);
+        const { index: index2, value, percent, size: size2, onThumbChange } = useSliderThumbContext(
+          THUMB_TRIGGER_NAME,
+          __scopeSlider
+        );
+        const composedRefs = useComposedRefs(forwardedRef, onThumbChange);
+        const label = getLabel(index2, context.values.length);
+        const orientationSize = size2 == null ? void 0 : size2[orientation.size];
+        const thumbInBoundsOffset = orientationSize ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction) : 0;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            style: {
+              transform: "var(--radix-slider-thumb-transform)",
+              position: "absolute",
+              [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.ItemSlot, { scope: __scopeSlider, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive.span,
+              {
+                role: "slider",
+                "aria-label": props["aria-label"] || label,
+                "aria-valuemin": context.min,
+                "aria-valuenow": value,
+                "aria-valuemax": context.max,
+                "aria-orientation": context.orientation,
+                "data-orientation": context.orientation,
+                "data-disabled": context.disabled ? "" : void 0,
+                tabIndex: context.disabled ? void 0 : 0,
+                ...thumbProps,
+                ref: composedRefs,
+                style: value === void 0 ? { display: "none" } : props.style,
+                onFocus: composeEventHandlers(props.onFocus, () => {
+                  context.valueIndexToChangeRef.current = index2;
+                })
+              }
+            ) })
+          }
+        );
+      }
+    );
+    SliderThumbTrigger.displayName = THUMB_TRIGGER_NAME;
+    var SliderThumb = reactExports.forwardRef(
+      (props, forwardedRef) => {
+        const { __scopeSlider, name, ...thumbProps } = props;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SliderThumbProvider,
+          {
+            __scopeSlider,
+            name,
+            internal_do_not_use_render: ({ index: index2, isFormControl }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SliderThumbTrigger,
+                {
+                  ...thumbProps,
+                  ref: forwardedRef,
+                  __scopeSlider
+                }
+              ),
+              isFormControl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SliderBubbleInput,
+                {
+                  __scopeSlider
+                },
+                index2
+              ) : null
+            ] })
+          }
+        );
+      }
+    );
+    SliderThumb.displayName = THUMB_NAME;
+    var BUBBLE_INPUT_NAME$1 = "SliderBubbleInput";
+    var SliderBubbleInput = reactExports.forwardRef(
+      ({ __scopeSlider, ...props }, forwardedRef) => {
+        const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME$1, __scopeSlider);
+        const ref = reactExports.useRef(null);
+        const composedRefs = useComposedRefs(ref, forwardedRef);
+        const prevValue = usePrevious(value);
+        reactExports.useEffect(() => {
+          const input = ref.current;
+          if (!input) return;
+          const inputProto = window.HTMLInputElement.prototype;
+          const descriptor = Object.getOwnPropertyDescriptor(inputProto, "value");
+          const setValue = descriptor.set;
+          if (prevValue !== value && setValue) {
+            const event = new Event("input", { bubbles: true });
+            setValue.call(input, value);
+            input.dispatchEvent(event);
+          }
+        }, [prevValue, value]);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.input,
+          {
+            style: { display: "none" },
+            name,
+            form,
+            ...props,
+            ref: composedRefs,
+            defaultValue: value
+          }
+        );
+      }
+    );
+    SliderBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+    function getNextSortedValues(prevValues = [], nextValue, atIndex) {
+      const nextValues = [...prevValues];
+      nextValues[atIndex] = nextValue;
+      return nextValues.sort((a2, b2) => a2 - b2);
+    }
+    function convertValueToPercentage(value, min2, max2) {
+      const maxSteps = max2 - min2;
+      const percentPerStep = 100 / maxSteps;
+      const percentage = percentPerStep * (value - min2);
+      return clamp$2(percentage, [0, 100]);
+    }
+    function getLabel(index2, totalValues) {
+      if (totalValues > 2) {
+        return `Value ${index2 + 1} of ${totalValues}`;
+      } else if (totalValues === 2) {
+        return ["Minimum", "Maximum"][index2];
+      } else {
+        return void 0;
+      }
+    }
+    function getClosestValueIndex(values, nextValue) {
+      if (values.length === 1) return 0;
+      const distances = values.map((value) => Math.abs(value - nextValue));
+      const closestDistance = Math.min(...distances);
+      return distances.indexOf(closestDistance);
+    }
+    function getThumbInBoundsOffset(width, left, direction) {
+      const halfWidth = width / 2;
+      const halfPercent = 50;
+      const offset2 = linearScale([0, halfPercent], [0, halfWidth]);
+      return (halfWidth - offset2(left) * direction) * direction;
+    }
+    function getStepsBetweenValues(values) {
+      return values.slice(0, -1).map((value, index2) => values[index2 + 1] - value);
+    }
+    function hasMinStepsBetweenValues(values, minStepsBetweenValues) {
+      if (minStepsBetweenValues > 0) {
+        const stepsBetweenValues = getStepsBetweenValues(values);
+        const actualMinStepsBetweenValues = Math.min(...stepsBetweenValues);
+        return actualMinStepsBetweenValues >= minStepsBetweenValues;
+      }
+      return true;
+    }
+    function linearScale(input, output) {
+      return (value) => {
+        if (input[0] === input[1] || output[0] === output[1]) return output[0];
+        const ratio = (output[1] - output[0]) / (input[1] - input[0]);
+        return output[0] + ratio * (value - input[0]);
+      };
+    }
+    function getDecimalCount(value) {
+      if (!Number.isFinite(value)) return 0;
+      const str = value.toString();
+      if (str.includes("e")) {
+        const [coefficient, exponent] = str.split("e");
+        const decimalPart2 = coefficient.split(".")[1] || "";
+        const exponentNum = Number(exponent);
+        return Math.max(0, decimalPart2.length - exponentNum);
+      }
+      const decimalPart = str.split(".")[1];
+      return decimalPart ? decimalPart.length : 0;
+    }
+    function roundValue(value, decimalCount) {
+      const rounder = Math.pow(10, decimalCount);
+      return Math.round(value * rounder) / rounder;
+    }
+    function isFunction$1(value) {
+      return typeof value === "function";
+    }
+    function Slider({
+      className,
+      defaultValue,
+      value,
+      min: min2 = 0,
+      max: max2 = 100,
+      ...props
+    }) {
+      const _values = reactExports.useMemo(
+        () => Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min2, max2],
+        [value, defaultValue, min2, max2]
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Slider$1,
+        {
+          "data-slot": "slider",
+          defaultValue,
+          value,
+          min: min2,
+          max: max2,
+          className: cn(
+            "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
+            className
+          ),
+          ...props,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              SliderTrack,
+              {
+                "data-slot": "slider-track",
+                className: cn(
+                  "bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+                ),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SliderRange,
+                  {
+                    "data-slot": "slider-range",
+                    className: cn(
+                      "bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+                    )
+                  }
+                )
+              }
+            ),
+            Array.from({ length: _values.length }, (value2, _2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              SliderThumb,
+              {
+                "data-slot": "slider-thumb",
+                className: "border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+              },
+              `${value2}`
+            ))
+          ]
+        }
+      );
+    }
+    async function cropImage(source, crop, options2 = {}) {
+      const { quality = 0.9 } = options2;
+      const cropW = Math.max(1, Math.round(crop.width));
+      const cropH = Math.max(1, Math.round(crop.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = cropW;
+      canvas.height = cropH;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Canvas 2D context unavailable in this environment.");
+      }
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, cropW, cropH);
+      ctx.drawImage(
+        source,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        cropW,
+        cropH
+      );
+      const blob = await new Promise(
+        (resolve) => canvas.toBlob(resolve, "image/jpeg", quality)
+      );
+      if (!blob) {
+        throw new Error("Failed to encode cropped image as JPEG.");
+      }
+      return blob;
+    }
+    function loadImageForCrop(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          resolve({
+            image: img,
+            cleanup: () => {
+            }
+          });
+        };
+        img.onerror = () => {
+          reject(new Error("Could not load the selected image for cropping."));
+        };
+        img.src = src;
+      });
+    }
+    var _populated = false;
+    var _ie, _firefox, _opera, _webkit, _chrome;
+    var _ie_real_version;
+    var _osx, _windows, _linux, _android;
+    var _win64;
+    var _iphone, _ipad, _native;
+    var _mobile;
+    function _populate() {
+      if (_populated) {
+        return;
+      }
+      _populated = true;
+      var uas = navigator.userAgent;
+      var agent = /(?:MSIE.(\d+\.\d+))|(?:(?:Firefox|GranParadiso|Iceweasel).(\d+\.\d+))|(?:Opera(?:.+Version.|.)(\d+\.\d+))|(?:AppleWebKit.(\d+(?:\.\d+)?))|(?:Trident\/\d+\.\d+.*rv:(\d+\.\d+))/.exec(uas);
+      var os = /(Mac OS X)|(Windows)|(Linux)/.exec(uas);
+      _iphone = /\b(iPhone|iP[ao]d)/.exec(uas);
+      _ipad = /\b(iP[ao]d)/.exec(uas);
+      _android = /Android/i.exec(uas);
+      _native = /FBAN\/\w+;/i.exec(uas);
+      _mobile = /Mobile/i.exec(uas);
+      _win64 = !!/Win64/.exec(uas);
+      if (agent) {
+        _ie = agent[1] ? parseFloat(agent[1]) : agent[5] ? parseFloat(agent[5]) : NaN;
+        if (_ie && document && document.documentMode) {
+          _ie = document.documentMode;
+        }
+        var trident = /(?:Trident\/(\d+.\d+))/.exec(uas);
+        _ie_real_version = trident ? parseFloat(trident[1]) + 4 : _ie;
+        _firefox = agent[2] ? parseFloat(agent[2]) : NaN;
+        _opera = agent[3] ? parseFloat(agent[3]) : NaN;
+        _webkit = agent[4] ? parseFloat(agent[4]) : NaN;
+        if (_webkit) {
+          agent = /(?:Chrome\/(\d+\.\d+))/.exec(uas);
+          _chrome = agent && agent[1] ? parseFloat(agent[1]) : NaN;
+        } else {
+          _chrome = NaN;
+        }
+      } else {
+        _ie = _firefox = _opera = _chrome = _webkit = NaN;
+      }
+      if (os) {
+        if (os[1]) {
+          var ver = /(?:Mac OS X (\d+(?:[._]\d+)?))/.exec(uas);
+          _osx = ver ? parseFloat(ver[1].replace("_", ".")) : true;
+        } else {
+          _osx = false;
+        }
+        _windows = !!os[2];
+        _linux = !!os[3];
+      } else {
+        _osx = _windows = _linux = false;
+      }
+    }
+    var UserAgent_DEPRECATED$1 = {
+      /**
+       *  Check if the UA is Internet Explorer.
+       *
+       *
+       *  @return float|NaN Version number (if match) or NaN.
+       */
+      ie: function() {
+        return _populate() || _ie;
+      },
+      /**
+       * Check if we're in Internet Explorer compatibility mode.
+       *
+       * @return bool true if in compatibility mode, false if
+       * not compatibility mode or not ie
+       */
+      ieCompatibilityMode: function() {
+        return _populate() || _ie_real_version > _ie;
+      },
+      /**
+       * Whether the browser is 64-bit IE.  Really, this is kind of weak sauce;  we
+       * only need this because Skype can't handle 64-bit IE yet.  We need to remove
+       * this when we don't need it -- tracked by #601957.
+       */
+      ie64: function() {
+        return UserAgent_DEPRECATED$1.ie() && _win64;
+      },
+      /**
+       *  Check if the UA is Firefox.
+       *
+       *
+       *  @return float|NaN Version number (if match) or NaN.
+       */
+      firefox: function() {
+        return _populate() || _firefox;
+      },
+      /**
+       *  Check if the UA is Opera.
+       *
+       *
+       *  @return float|NaN Version number (if match) or NaN.
+       */
+      opera: function() {
+        return _populate() || _opera;
+      },
+      /**
+       *  Check if the UA is WebKit.
+       *
+       *
+       *  @return float|NaN Version number (if match) or NaN.
+       */
+      webkit: function() {
+        return _populate() || _webkit;
+      },
+      /**
+       *  For Push
+       *  WILL BE REMOVED VERY SOON. Use UserAgent_DEPRECATED.webkit
+       */
+      safari: function() {
+        return UserAgent_DEPRECATED$1.webkit();
+      },
+      /**
+       *  Check if the UA is a Chrome browser.
+       *
+       *
+       *  @return float|NaN Version number (if match) or NaN.
+       */
+      chrome: function() {
+        return _populate() || _chrome;
+      },
+      /**
+       *  Check if the user is running Windows.
+       *
+       *  @return bool `true' if the user's OS is Windows.
+       */
+      windows: function() {
+        return _populate() || _windows;
+      },
+      /**
+       *  Check if the user is running Mac OS X.
+       *
+       *  @return float|bool   Returns a float if a version number is detected,
+       *                       otherwise true/false.
+       */
+      osx: function() {
+        return _populate() || _osx;
+      },
+      /**
+       * Check if the user is running Linux.
+       *
+       * @return bool `true' if the user's OS is some flavor of Linux.
+       */
+      linux: function() {
+        return _populate() || _linux;
+      },
+      /**
+       * Check if the user is running on an iPhone or iPod platform.
+       *
+       * @return bool `true' if the user is running some flavor of the
+       *    iPhone OS.
+       */
+      iphone: function() {
+        return _populate() || _iphone;
+      },
+      mobile: function() {
+        return _populate() || (_iphone || _ipad || _android || _mobile);
+      },
+      nativeApp: function() {
+        return _populate() || _native;
+      },
+      android: function() {
+        return _populate() || _android;
+      },
+      ipad: function() {
+        return _populate() || _ipad;
+      }
+    };
+    var UserAgent_DEPRECATED_1 = UserAgent_DEPRECATED$1;
+    var canUseDOM = !!(typeof window !== "undefined" && window.document && window.document.createElement);
+    var ExecutionEnvironment$1 = {
+      canUseDOM
+    };
+    var ExecutionEnvironment_1 = ExecutionEnvironment$1;
+    var ExecutionEnvironment = ExecutionEnvironment_1;
+    var useHasFeature;
+    if (ExecutionEnvironment.canUseDOM) {
+      useHasFeature = document.implementation && document.implementation.hasFeature && // always returns true in newer browsers as per the standard.
+      // @see http://dom.spec.whatwg.org/#dom-domimplementation-hasfeature
+      document.implementation.hasFeature("", "") !== true;
+    }
+    /**
+     * Checks if an event is supported in the current execution environment.
+     *
+     * NOTE: This will not work correctly for non-generic events such as `change`,
+     * `reset`, `load`, `error`, and `select`.
+     *
+     * Borrows from Modernizr.
+     *
+     * @param {string} eventNameSuffix Event name, e.g. "click".
+     * @param {?boolean} capture Check if the capture phase is supported.
+     * @return {boolean} True if the event is supported.
+     * @internal
+     * @license Modernizr 3.0.0pre (Custom Build) | MIT
+     */
+    function isEventSupported$1(eventNameSuffix, capture) {
+      if (!ExecutionEnvironment.canUseDOM || capture && !("addEventListener" in document)) {
+        return false;
+      }
+      var eventName = "on" + eventNameSuffix;
+      var isSupported = eventName in document;
+      if (!isSupported) {
+        var element = document.createElement("div");
+        element.setAttribute(eventName, "return;");
+        isSupported = typeof element[eventName] === "function";
+      }
+      if (!isSupported && useHasFeature && eventNameSuffix === "wheel") {
+        isSupported = document.implementation.hasFeature("Events.wheel", "3.0");
+      }
+      return isSupported;
+    }
+    var isEventSupported_1 = isEventSupported$1;
+    var UserAgent_DEPRECATED = UserAgent_DEPRECATED_1;
+    var isEventSupported = isEventSupported_1;
+    var PIXEL_STEP = 10;
+    var LINE_HEIGHT = 40;
+    var PAGE_HEIGHT = 800;
+    function normalizeWheel$2(event) {
+      var sX = 0, sY = 0, pX = 0, pY = 0;
+      if ("detail" in event) {
+        sY = event.detail;
+      }
+      if ("wheelDelta" in event) {
+        sY = -event.wheelDelta / 120;
+      }
+      if ("wheelDeltaY" in event) {
+        sY = -event.wheelDeltaY / 120;
+      }
+      if ("wheelDeltaX" in event) {
+        sX = -event.wheelDeltaX / 120;
+      }
+      if ("axis" in event && event.axis === event.HORIZONTAL_AXIS) {
+        sX = sY;
+        sY = 0;
+      }
+      pX = sX * PIXEL_STEP;
+      pY = sY * PIXEL_STEP;
+      if ("deltaY" in event) {
+        pY = event.deltaY;
+      }
+      if ("deltaX" in event) {
+        pX = event.deltaX;
+      }
+      if ((pX || pY) && event.deltaMode) {
+        if (event.deltaMode == 1) {
+          pX *= LINE_HEIGHT;
+          pY *= LINE_HEIGHT;
+        } else {
+          pX *= PAGE_HEIGHT;
+          pY *= PAGE_HEIGHT;
+        }
+      }
+      if (pX && !sX) {
+        sX = pX < 1 ? -1 : 1;
+      }
+      if (pY && !sY) {
+        sY = pY < 1 ? -1 : 1;
+      }
+      return {
+        spinX: sX,
+        spinY: sY,
+        pixelX: pX,
+        pixelY: pY
+      };
+    }
+    normalizeWheel$2.getEventType = function() {
+      return UserAgent_DEPRECATED.firefox() ? "DOMMouseScroll" : isEventSupported("wheel") ? "wheel" : "mousewheel";
+    };
+    var normalizeWheel_1 = normalizeWheel$2;
+    var normalizeWheel = normalizeWheel_1;
+    const normalizeWheel$1 = /* @__PURE__ */ getDefaultExportFromCjs(normalizeWheel);
+    function _typeof(o) {
+      "@babel/helpers - typeof";
+      return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+        return typeof o2;
+      } : function(o2) {
+        return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+      }, _typeof(o);
+    }
+    function toPrimitive(t, r2) {
+      if ("object" != _typeof(t) || !t) return t;
+      var e = t[Symbol.toPrimitive];
+      if (void 0 !== e) {
+        var i = e.call(t, r2);
+        if ("object" != _typeof(i)) return i;
+        throw new TypeError("@@toPrimitive must return a primitive value.");
+      }
+      return ("string" === r2 ? String : Number)(t);
+    }
+    function toPropertyKey(t) {
+      var i = toPrimitive(t, "string");
+      return "symbol" == _typeof(i) ? i : i + "";
+    }
+    function _defineProperty(e, r2, t) {
+      return (r2 = toPropertyKey(r2)) in e ? Object.defineProperty(e, r2, {
+        value: t,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      }) : e[r2] = t, e;
+    }
+    function ownKeys(e, r2) {
+      var t = Object.keys(e);
+      if (Object.getOwnPropertySymbols) {
+        var o = Object.getOwnPropertySymbols(e);
+        r2 && (o = o.filter(function(r3) {
+          return Object.getOwnPropertyDescriptor(e, r3).enumerable;
+        })), t.push.apply(t, o);
+      }
+      return t;
+    }
+    function _objectSpread2(e) {
+      for (var r2 = 1; r2 < arguments.length; r2++) {
+        var t = null != arguments[r2] ? arguments[r2] : {};
+        r2 % 2 ? ownKeys(Object(t), true).forEach(function(r3) {
+          _defineProperty(e, r3, t[r3]);
+        }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function(r3) {
+          Object.defineProperty(e, r3, Object.getOwnPropertyDescriptor(t, r3));
+        });
+      }
+      return e;
+    }
+    function getCropSize(mediaWidth, mediaHeight, containerWidth, containerHeight, aspect, rotation = 0) {
+      const { width, height } = rotateSize(mediaWidth, mediaHeight, rotation);
+      const fittingWidth = Math.min(width, containerWidth);
+      const fittingHeight = Math.min(height, containerHeight);
+      if (fittingWidth > fittingHeight * aspect) return {
+        width: fittingHeight * aspect,
+        height: fittingHeight
+      };
+      return {
+        width: fittingWidth,
+        height: fittingWidth / aspect
+      };
+    }
+    function getMediaZoom(mediaSize) {
+      return mediaSize.width > mediaSize.height ? mediaSize.width / mediaSize.naturalWidth : mediaSize.height / mediaSize.naturalHeight;
+    }
+    function restrictPosition(position, mediaSize, cropSize, zoom, rotation = 0) {
+      const { width, height } = rotateSize(mediaSize.width, mediaSize.height, rotation);
+      return {
+        x: restrictPositionCoord(position.x, width, cropSize.width, zoom),
+        y: restrictPositionCoord(position.y, height, cropSize.height, zoom)
+      };
+    }
+    function restrictPositionCoord(position, mediaSize, cropSize, zoom) {
+      const maxPosition = Math.abs(mediaSize * zoom / 2 - cropSize / 2);
+      return clamp(position, -maxPosition, maxPosition);
+    }
+    function getDistanceBetweenPoints(pointA, pointB) {
+      return Math.sqrt(Math.pow(pointA.y - pointB.y, 2) + Math.pow(pointA.x - pointB.x, 2));
+    }
+    function getRotationBetweenPoints(pointA, pointB) {
+      return Math.atan2(pointB.y - pointA.y, pointB.x - pointA.x) * 180 / Math.PI;
+    }
+    function computeCroppedArea(crop, mediaSize, cropSize, aspect, zoom, rotation = 0, restrictPosition2 = true) {
+      const limitAreaFn = restrictPosition2 ? limitArea : noOp;
+      const mediaBBoxSize = rotateSize(mediaSize.width, mediaSize.height, rotation);
+      const mediaNaturalBBoxSize = rotateSize(mediaSize.naturalWidth, mediaSize.naturalHeight, rotation);
+      const croppedAreaPercentages = {
+        x: limitAreaFn(100, ((mediaBBoxSize.width - cropSize.width / zoom) / 2 - crop.x / zoom) / mediaBBoxSize.width * 100),
+        y: limitAreaFn(100, ((mediaBBoxSize.height - cropSize.height / zoom) / 2 - crop.y / zoom) / mediaBBoxSize.height * 100),
+        width: limitAreaFn(100, cropSize.width / mediaBBoxSize.width * 100 / zoom),
+        height: limitAreaFn(100, cropSize.height / mediaBBoxSize.height * 100 / zoom)
+      };
+      const widthInPixels = Math.round(limitAreaFn(mediaNaturalBBoxSize.width, croppedAreaPercentages.width * mediaNaturalBBoxSize.width / 100));
+      const heightInPixels = Math.round(limitAreaFn(mediaNaturalBBoxSize.height, croppedAreaPercentages.height * mediaNaturalBBoxSize.height / 100));
+      const sizePixels = mediaNaturalBBoxSize.width >= mediaNaturalBBoxSize.height * aspect ? {
+        width: Math.round(heightInPixels * aspect),
+        height: heightInPixels
+      } : {
+        width: widthInPixels,
+        height: Math.round(widthInPixels / aspect)
+      };
+      return {
+        croppedAreaPercentages,
+        croppedAreaPixels: _objectSpread2(_objectSpread2({}, sizePixels), {}, {
+          x: Math.round(limitAreaFn(mediaNaturalBBoxSize.width - sizePixels.width, croppedAreaPercentages.x * mediaNaturalBBoxSize.width / 100)),
+          y: Math.round(limitAreaFn(mediaNaturalBBoxSize.height - sizePixels.height, croppedAreaPercentages.y * mediaNaturalBBoxSize.height / 100))
+        })
+      };
+    }
+    function limitArea(max2, value) {
+      return Math.min(max2, Math.max(0, value));
+    }
+    function noOp(_max, value) {
+      return value;
+    }
+    function getInitialCropFromCroppedAreaPercentages(croppedAreaPercentages, mediaSize, rotation, cropSize, minZoom, maxZoom) {
+      const mediaBBoxSize = rotateSize(mediaSize.width, mediaSize.height, rotation);
+      const zoom = clamp(cropSize.width / mediaBBoxSize.width * (100 / croppedAreaPercentages.width), minZoom, maxZoom);
+      return {
+        crop: {
+          x: zoom * mediaBBoxSize.width / 2 - cropSize.width / 2 - mediaBBoxSize.width * zoom * (croppedAreaPercentages.x / 100),
+          y: zoom * mediaBBoxSize.height / 2 - cropSize.height / 2 - mediaBBoxSize.height * zoom * (croppedAreaPercentages.y / 100)
+        },
+        zoom
+      };
+    }
+    function getZoomFromCroppedAreaPixels(croppedAreaPixels, mediaSize, cropSize) {
+      const mediaZoom = getMediaZoom(mediaSize);
+      return cropSize.height > cropSize.width ? cropSize.height / (croppedAreaPixels.height * mediaZoom) : cropSize.width / (croppedAreaPixels.width * mediaZoom);
+    }
+    function getInitialCropFromCroppedAreaPixels(croppedAreaPixels, mediaSize, rotation = 0, cropSize, minZoom, maxZoom) {
+      const mediaNaturalBBoxSize = rotateSize(mediaSize.naturalWidth, mediaSize.naturalHeight, rotation);
+      const zoom = clamp(getZoomFromCroppedAreaPixels(croppedAreaPixels, mediaSize, cropSize), minZoom, maxZoom);
+      const cropZoom = cropSize.height > cropSize.width ? cropSize.height / croppedAreaPixels.height : cropSize.width / croppedAreaPixels.width;
+      return {
+        crop: {
+          x: ((mediaNaturalBBoxSize.width - croppedAreaPixels.width) / 2 - croppedAreaPixels.x) * cropZoom,
+          y: ((mediaNaturalBBoxSize.height - croppedAreaPixels.height) / 2 - croppedAreaPixels.y) * cropZoom
+        },
+        zoom
+      };
+    }
+    function getCenter(a2, b2) {
+      return {
+        x: (b2.x + a2.x) / 2,
+        y: (b2.y + a2.y) / 2
+      };
+    }
+    function getRadianAngle(degreeValue) {
+      return degreeValue * Math.PI / 180;
+    }
+    function rotateSize(width, height, rotation) {
+      const rotRad = getRadianAngle(rotation);
+      return {
+        width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
+        height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height)
+      };
+    }
+    function clamp(value, min2, max2) {
+      return Math.min(Math.max(value, min2), max2);
+    }
+    function classNames(...args) {
+      return args.filter((value) => {
+        if (typeof value === "string" && value.length > 0) return true;
+        return false;
+      }).join(" ").trim();
+    }
+    var styles_default = ".reactEasyCrop_Container {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  overflow: hidden;\n  user-select: none;\n  touch-action: none;\n  cursor: move;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n.reactEasyCrop_Image,\n.reactEasyCrop_Video {\n  will-change: transform; /* this improves performances and prevent painting issues on iOS Chrome */\n  max-width: unset; /* prevent global img/video reset rules from constraining the cropper media */\n}\n\n.reactEasyCrop_Contain {\n  max-width: 100%;\n  max-height: 100%;\n  margin: auto;\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n}\n.reactEasyCrop_Cover_Horizontal {\n  width: 100%;\n  height: auto;\n}\n.reactEasyCrop_Cover_Vertical {\n  width: auto;\n  height: 100%;\n}\n\n.reactEasyCrop_CropArea {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  box-sizing: border-box;\n  box-shadow: 0 0 0 9999em;\n  color: rgba(0, 0, 0, 0.5);\n  overflow: hidden;\n}\n\n.reactEasyCrop_CropAreaRound {\n  border-radius: 50%;\n}\n\n.reactEasyCrop_CropAreaGrid::before {\n  content: ' ';\n  box-sizing: border-box;\n  position: absolute;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  top: 0;\n  bottom: 0;\n  left: 33.33%;\n  right: 33.33%;\n  border-top: 0;\n  border-bottom: 0;\n}\n\n.reactEasyCrop_CropAreaGrid::after {\n  content: ' ';\n  box-sizing: border-box;\n  position: absolute;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  top: 33.33%;\n  bottom: 33.33%;\n  left: 0;\n  right: 0;\n  border-left: 0;\n  border-right: 0;\n}\n";
+    const RESIZE_EMIT_DEBOUNCE_TIME = 250;
+    const MIN_ZOOM = 1;
+    const MAX_ZOOM = 3;
+    const KEYBOARD_STEP = 1;
+    var Cropper = class Cropper2 extends reactExports.Component {
+      constructor(..._args) {
+        super(..._args);
+        this.cropperRef = reactExports.createRef();
+        this.imageRef = reactExports.createRef();
+        this.videoRef = reactExports.createRef();
+        this.containerPosition = {
+          x: 0,
+          y: 0
+        };
+        this.containerRef = null;
+        this.styleRef = null;
+        this.containerRect = null;
+        this.mediaSize = {
+          width: 0,
+          height: 0,
+          naturalWidth: 0,
+          naturalHeight: 0
+        };
+        this.dragStartPosition = {
+          x: 0,
+          y: 0
+        };
+        this.dragStartCrop = {
+          x: 0,
+          y: 0
+        };
+        this.gestureZoomStart = 0;
+        this.gestureRotationStart = 0;
+        this.isTouching = false;
+        this.lastPinchDistance = 0;
+        this.lastPinchRotation = 0;
+        this.rafDragTimeout = null;
+        this.rafPinchTimeout = null;
+        this.wheelTimer = null;
+        this.resizeEmitTimer = null;
+        this.currentDoc = typeof document !== "undefined" ? document : null;
+        this.currentWindow = typeof window !== "undefined" ? window : null;
+        this.resizeObserver = null;
+        this.previousCropSize = null;
+        this.isInitialized = false;
+        this.dragInteractionSource = null;
+        this.state = {
+          cropSize: null,
+          hasWheelJustStarted: false,
+          mediaObjectFit: void 0
+        };
+        this.initResizeObserver = () => {
+          if (typeof window.ResizeObserver === "undefined" || !this.containerRef) return;
+          let isFirstResize = true;
+          this.resizeObserver = new window.ResizeObserver((entries) => {
+            if (isFirstResize) {
+              isFirstResize = false;
+              return;
+            }
+            this.computeSizes({ isResizeTriggered: true });
+          });
+          this.resizeObserver.observe(this.containerRef);
+        };
+        this.onWindowResize = () => {
+          this.computeSizes({ isResizeTriggered: true });
+        };
+        this.preventZoomSafari = (e) => e.preventDefault();
+        this.cleanEvents = () => {
+          if (!this.currentDoc) return;
+          this.currentDoc.removeEventListener("mousemove", this.onMouseMove);
+          this.currentDoc.removeEventListener("mouseup", this.onDragStopped);
+          this.currentDoc.removeEventListener("touchmove", this.onTouchMove);
+          this.currentDoc.removeEventListener("touchend", this.onDragStopped);
+          this.currentDoc.removeEventListener("gesturechange", this.onGestureChange);
+          this.currentDoc.removeEventListener("gestureend", this.onGestureEnd);
+          this.currentDoc.removeEventListener("scroll", this.onScroll);
+        };
+        this.clearScrollEvent = () => {
+          if (this.containerRef) this.containerRef.removeEventListener("wheel", this.onWheel);
+          if (this.wheelTimer) clearTimeout(this.wheelTimer);
+        };
+        this.onMediaLoad = () => {
+          const cropSize = this.computeSizes();
+          if (cropSize) {
+            this.previousCropSize = cropSize;
+            this.emitCropData();
+            this.setInitialCrop(cropSize);
+            this.isInitialized = true;
+          }
+          if (this.props.onMediaLoaded) this.props.onMediaLoaded(this.mediaSize);
+        };
+        this.setInitialCrop = (cropSize) => {
+          if (this.props.initialCroppedAreaPercentages) {
+            const { crop, zoom } = getInitialCropFromCroppedAreaPercentages(this.props.initialCroppedAreaPercentages, this.mediaSize, this.props.rotation, cropSize, this.props.minZoom, this.props.maxZoom);
+            this.props.onCropChange(crop);
+            this.props.onZoomChange && this.props.onZoomChange(zoom);
+          } else if (this.props.initialCroppedAreaPixels) {
+            const { crop, zoom } = getInitialCropFromCroppedAreaPixels(this.props.initialCroppedAreaPixels, this.mediaSize, this.props.rotation, cropSize, this.props.minZoom, this.props.maxZoom);
+            this.props.onCropChange(crop);
+            this.props.onZoomChange && this.props.onZoomChange(zoom);
+          }
+        };
+        this.computeSizes = ({ isResizeTriggered = false } = {}) => {
+          const mediaRef = this.imageRef.current || this.videoRef.current;
+          if (mediaRef && this.containerRef) {
+            var _this$imageRef$curren, _this$videoRef$curren, _this$imageRef$curren2, _this$videoRef$curren2, _this$state$cropSize, _this$state$cropSize2;
+            this.containerRect = this.containerRef.getBoundingClientRect();
+            this.saveContainerPosition();
+            const containerAspect = this.containerRect.width / this.containerRect.height;
+            const naturalWidth = ((_this$imageRef$curren = this.imageRef.current) === null || _this$imageRef$curren === void 0 ? void 0 : _this$imageRef$curren.naturalWidth) || ((_this$videoRef$curren = this.videoRef.current) === null || _this$videoRef$curren === void 0 ? void 0 : _this$videoRef$curren.videoWidth) || 0;
+            const naturalHeight = ((_this$imageRef$curren2 = this.imageRef.current) === null || _this$imageRef$curren2 === void 0 ? void 0 : _this$imageRef$curren2.naturalHeight) || ((_this$videoRef$curren2 = this.videoRef.current) === null || _this$videoRef$curren2 === void 0 ? void 0 : _this$videoRef$curren2.videoHeight) || 0;
+            const isMediaScaledDown = mediaRef.offsetWidth < naturalWidth || mediaRef.offsetHeight < naturalHeight;
+            const mediaAspect = naturalWidth / naturalHeight;
+            let renderedMediaSize;
+            if (isMediaScaledDown) switch (this.state.mediaObjectFit) {
+              default:
+              case "contain":
+                renderedMediaSize = containerAspect > mediaAspect ? {
+                  width: this.containerRect.height * mediaAspect,
+                  height: this.containerRect.height
+                } : {
+                  width: this.containerRect.width,
+                  height: this.containerRect.width / mediaAspect
+                };
+                break;
+              case "horizontal-cover":
+                renderedMediaSize = {
+                  width: this.containerRect.width,
+                  height: this.containerRect.width / mediaAspect
+                };
+                break;
+              case "vertical-cover":
+                renderedMediaSize = {
+                  width: this.containerRect.height * mediaAspect,
+                  height: this.containerRect.height
+                };
+                break;
+            }
+            else renderedMediaSize = {
+              width: mediaRef.offsetWidth,
+              height: mediaRef.offsetHeight
+            };
+            this.mediaSize = _objectSpread2(_objectSpread2({}, renderedMediaSize), {}, {
+              naturalWidth,
+              naturalHeight
+            });
+            if (this.props.setMediaSize) this.props.setMediaSize(this.mediaSize);
+            const cropSize = this.props.cropSize ? this.props.cropSize : getCropSize(this.mediaSize.width, this.mediaSize.height, this.containerRect.width, this.containerRect.height, this.props.aspect, this.props.rotation);
+            if (((_this$state$cropSize = this.state.cropSize) === null || _this$state$cropSize === void 0 ? void 0 : _this$state$cropSize.height) !== cropSize.height || ((_this$state$cropSize2 = this.state.cropSize) === null || _this$state$cropSize2 === void 0 ? void 0 : _this$state$cropSize2.width) !== cropSize.width) this.props.onCropSizeChange && this.props.onCropSizeChange(cropSize);
+            this.setState({ cropSize }, () => this.recomputeCropPosition({ isResizeTriggered }));
+            if (this.props.setCropSize) this.props.setCropSize(cropSize);
+            return cropSize;
+          }
+        };
+        this.saveContainerPosition = () => {
+          if (this.containerRef) {
+            const bounds = this.containerRef.getBoundingClientRect();
+            this.containerPosition = {
+              x: bounds.left,
+              y: bounds.top
+            };
+          }
+        };
+        this.onMouseDown = (e) => {
+          if (!this.currentDoc) return;
+          e.preventDefault();
+          this.currentDoc.addEventListener("mousemove", this.onMouseMove);
+          this.currentDoc.addEventListener("mouseup", this.onDragStopped);
+          this.saveContainerPosition();
+          this.onDragStart(Cropper2.getMousePoint(e), "mouse");
+        };
+        this.onMouseMove = (e) => this.onDrag(Cropper2.getMousePoint(e));
+        this.onScroll = (e) => {
+          if (!this.currentDoc) return;
+          e.preventDefault();
+          this.saveContainerPosition();
+        };
+        this.onTouchStart = (e) => {
+          if (!this.currentDoc) return;
+          this.isTouching = true;
+          if (this.props.onTouchRequest && !this.props.onTouchRequest(e)) return;
+          this.currentDoc.addEventListener("touchmove", this.onTouchMove, { passive: false });
+          this.currentDoc.addEventListener("touchend", this.onDragStopped);
+          this.saveContainerPosition();
+          if (e.touches.length === 2) this.onPinchStart(e);
+          else if (e.touches.length === 1) this.onDragStart(Cropper2.getTouchPoint(e.touches[0]), "touch");
+        };
+        this.onTouchMove = (e) => {
+          e.preventDefault();
+          if (e.touches.length === 2) this.onPinchMove(e);
+          else if (e.touches.length === 1) this.onDrag(Cropper2.getTouchPoint(e.touches[0]));
+        };
+        this.onGestureStart = (e) => {
+          if (!this.currentDoc) return;
+          e.preventDefault();
+          this.currentDoc.addEventListener("gesturechange", this.onGestureChange);
+          this.currentDoc.addEventListener("gestureend", this.onGestureEnd);
+          this.gestureZoomStart = this.props.zoom;
+          this.gestureRotationStart = this.props.rotation;
+        };
+        this.onGestureChange = (e) => {
+          e.preventDefault();
+          if (this.isTouching) return;
+          const point = Cropper2.getMousePoint(e);
+          const newZoom = this.gestureZoomStart - 1 + e.scale;
+          this.setNewZoom(newZoom, point, { shouldUpdatePosition: true });
+          if (this.props.onRotationChange) {
+            const newRotation = this.gestureRotationStart + e.rotation;
+            this.props.onRotationChange(newRotation);
+          }
+        };
+        this.onGestureEnd = (e) => {
+          this.cleanEvents();
+        };
+        this.onDragStart = ({ x: x2, y: y2 }, source) => {
+          var _this$props$onInterac, _this$props;
+          this.dragStartPosition = {
+            x: x2,
+            y: y2
+          };
+          this.dragStartCrop = _objectSpread2({}, this.props.crop);
+          this.dragInteractionSource = source;
+          (_this$props$onInterac = (_this$props = this.props).onInteractionStart) === null || _this$props$onInterac === void 0 || _this$props$onInterac.call(_this$props, { source });
+        };
+        this.onDrag = ({ x: x2, y: y2 }) => {
+          if (!this.currentWindow) return;
+          if (this.rafDragTimeout) this.currentWindow.cancelAnimationFrame(this.rafDragTimeout);
+          this.rafDragTimeout = this.currentWindow.requestAnimationFrame(() => {
+            if (!this.state.cropSize) return;
+            if (x2 === void 0 || y2 === void 0) return;
+            const offsetX = x2 - this.dragStartPosition.x;
+            const offsetY = y2 - this.dragStartPosition.y;
+            const requestedPosition = {
+              x: this.dragStartCrop.x + offsetX,
+              y: this.dragStartCrop.y + offsetY
+            };
+            const newPosition = this.props.restrictPosition ? restrictPosition(requestedPosition, this.mediaSize, this.state.cropSize, this.props.zoom, this.props.rotation) : requestedPosition;
+            this.props.onCropChange(newPosition);
+          });
+        };
+        this.onDragStopped = () => {
+          var _this$props$onInterac2, _this$props2, _this$dragInteraction;
+          this.isTouching = false;
+          this.cleanEvents();
+          this.emitCropData();
+          (_this$props$onInterac2 = (_this$props2 = this.props).onInteractionEnd) === null || _this$props$onInterac2 === void 0 || _this$props$onInterac2.call(_this$props2, { source: (_this$dragInteraction = this.dragInteractionSource) !== null && _this$dragInteraction !== void 0 ? _this$dragInteraction : "mouse" });
+          this.dragInteractionSource = null;
+        };
+        this.onWheel = (e) => {
+          if (!this.currentWindow) return;
+          if (this.props.onWheelRequest && !this.props.onWheelRequest(e)) return;
+          e.preventDefault();
+          const point = Cropper2.getMousePoint(e);
+          const { pixelY } = normalizeWheel$1(e);
+          const newZoom = this.props.zoom - pixelY * this.props.zoomSpeed / 200;
+          this.setNewZoom(newZoom, point, { shouldUpdatePosition: true });
+          if (!this.state.hasWheelJustStarted) this.setState({ hasWheelJustStarted: true }, () => {
+            var _this$props$onInterac3, _this$props3;
+            return (_this$props$onInterac3 = (_this$props3 = this.props).onInteractionStart) === null || _this$props$onInterac3 === void 0 ? void 0 : _this$props$onInterac3.call(_this$props3, { source: "wheel" });
+          });
+          if (this.wheelTimer) clearTimeout(this.wheelTimer);
+          this.wheelTimer = this.currentWindow.setTimeout(() => this.setState({ hasWheelJustStarted: false }, () => {
+            var _this$props$onInterac4, _this$props4;
+            return (_this$props$onInterac4 = (_this$props4 = this.props).onInteractionEnd) === null || _this$props$onInterac4 === void 0 ? void 0 : _this$props$onInterac4.call(_this$props4, { source: "wheel" });
+          }), 250);
+        };
+        this.getPointOnContainer = ({ x: x2, y: y2 }, containerTopLeft) => {
+          if (!this.containerRect) throw new Error("The Cropper is not mounted");
+          return {
+            x: this.containerRect.width / 2 - (x2 - containerTopLeft.x),
+            y: this.containerRect.height / 2 - (y2 - containerTopLeft.y)
+          };
+        };
+        this.getPointOnMedia = ({ x: x2, y: y2 }) => {
+          const { crop, zoom } = this.props;
+          return {
+            x: (x2 + crop.x) / zoom,
+            y: (y2 + crop.y) / zoom
+          };
+        };
+        this.setNewZoom = (zoom, point, { shouldUpdatePosition = true } = {}) => {
+          if (!this.state.cropSize || !this.props.onZoomChange) return;
+          const newZoom = clamp(zoom, this.props.minZoom, this.props.maxZoom);
+          if (shouldUpdatePosition) {
+            const zoomPoint = this.getPointOnContainer(point, this.containerPosition);
+            const zoomTarget = this.getPointOnMedia(zoomPoint);
+            const requestedPosition = {
+              x: zoomTarget.x * newZoom - zoomPoint.x,
+              y: zoomTarget.y * newZoom - zoomPoint.y
+            };
+            const newPosition = this.props.restrictPosition ? restrictPosition(requestedPosition, this.mediaSize, this.state.cropSize, newZoom, this.props.rotation) : requestedPosition;
+            this.props.onCropChange(newPosition);
+          }
+          this.props.onZoomChange(newZoom);
+        };
+        this.getCropData = () => {
+          if (!this.state.cropSize) return null;
+          return computeCroppedArea(this.props.restrictPosition ? restrictPosition(this.props.crop, this.mediaSize, this.state.cropSize, this.props.zoom, this.props.rotation) : this.props.crop, this.mediaSize, this.state.cropSize, this.getAspect(), this.props.zoom, this.props.rotation, this.props.restrictPosition);
+        };
+        this.emitCropData = () => {
+          if (this.resizeEmitTimer) {
+            clearTimeout(this.resizeEmitTimer);
+            this.resizeEmitTimer = null;
+          }
+          const cropData = this.getCropData();
+          if (!cropData) return;
+          const { croppedAreaPercentages, croppedAreaPixels } = cropData;
+          if (this.props.onCropComplete) this.props.onCropComplete(croppedAreaPercentages, croppedAreaPixels);
+          if (this.props.onCropAreaChange) this.props.onCropAreaChange(croppedAreaPercentages, croppedAreaPixels);
+        };
+        this.emitCropAreaChange = () => {
+          const cropData = this.getCropData();
+          if (!cropData) return;
+          const { croppedAreaPercentages, croppedAreaPixels } = cropData;
+          if (this.props.onCropAreaChange) this.props.onCropAreaChange(croppedAreaPercentages, croppedAreaPixels);
+        };
+        this.recomputeCropPosition = ({ isResizeTriggered = false } = {}) => {
+          var _this$previousCropSiz, _this$previousCropSiz2;
+          if (!this.state.cropSize) return;
+          let adjustedCrop = this.props.crop;
+          if (this.isInitialized && ((_this$previousCropSiz = this.previousCropSize) === null || _this$previousCropSiz === void 0 ? void 0 : _this$previousCropSiz.width) && ((_this$previousCropSiz2 = this.previousCropSize) === null || _this$previousCropSiz2 === void 0 ? void 0 : _this$previousCropSiz2.height)) {
+            if (Math.abs(this.previousCropSize.width - this.state.cropSize.width) > 1e-6 || Math.abs(this.previousCropSize.height - this.state.cropSize.height) > 1e-6) {
+              const scaleX = this.state.cropSize.width / this.previousCropSize.width;
+              const scaleY = this.state.cropSize.height / this.previousCropSize.height;
+              adjustedCrop = {
+                x: this.props.crop.x * scaleX,
+                y: this.props.crop.y * scaleY
+              };
+            }
+          }
+          const newPosition = this.props.restrictPosition ? restrictPosition(adjustedCrop, this.mediaSize, this.state.cropSize, this.props.zoom, this.props.rotation) : adjustedCrop;
+          this.previousCropSize = this.state.cropSize;
+          this.props.onCropChange(newPosition);
+          if (isResizeTriggered) this.debouncedEmitCropData();
+          else this.emitCropData();
+        };
+        this.debouncedEmitCropData = () => {
+          if (!this.currentWindow) return;
+          if (this.resizeEmitTimer) clearTimeout(this.resizeEmitTimer);
+          this.resizeEmitTimer = this.currentWindow.setTimeout(() => {
+            this.emitCropData();
+          }, RESIZE_EMIT_DEBOUNCE_TIME);
+        };
+        this.onKeyDown = (event) => {
+          const { crop, onCropChange, keyboardStep, zoom, rotation } = this.props;
+          let step = keyboardStep;
+          if (!this.state.cropSize) return;
+          if (event.shiftKey) step *= 0.2;
+          let newCrop = _objectSpread2({}, crop);
+          switch (event.key) {
+            case "ArrowUp":
+              newCrop.y -= step;
+              event.preventDefault();
+              break;
+            case "ArrowDown":
+              newCrop.y += step;
+              event.preventDefault();
+              break;
+            case "ArrowLeft":
+              newCrop.x -= step;
+              event.preventDefault();
+              break;
+            case "ArrowRight":
+              newCrop.x += step;
+              event.preventDefault();
+              break;
+            default:
+              return;
+          }
+          if (this.props.restrictPosition) newCrop = restrictPosition(newCrop, this.mediaSize, this.state.cropSize, zoom, rotation);
+          if (!event.repeat) {
+            var _this$props$onInterac5, _this$props5;
+            (_this$props$onInterac5 = (_this$props5 = this.props).onInteractionStart) === null || _this$props$onInterac5 === void 0 || _this$props$onInterac5.call(_this$props5, { source: "keyboard" });
+          }
+          onCropChange(newCrop);
+        };
+        this.onKeyUp = (event) => {
+          var _this$props$onInterac6, _this$props6;
+          switch (event.key) {
+            case "ArrowUp":
+            case "ArrowDown":
+            case "ArrowLeft":
+            case "ArrowRight":
+              event.preventDefault();
+              break;
+            default:
+              return;
+          }
+          this.emitCropData();
+          (_this$props$onInterac6 = (_this$props6 = this.props).onInteractionEnd) === null || _this$props$onInterac6 === void 0 || _this$props$onInterac6.call(_this$props6, { source: "keyboard" });
+        };
+      }
+      componentDidMount() {
+        if (!this.currentDoc || !this.currentWindow) return;
+        if (this.containerRef) {
+          if (this.containerRef.ownerDocument) this.currentDoc = this.containerRef.ownerDocument;
+          if (this.currentDoc.defaultView) this.currentWindow = this.currentDoc.defaultView;
+          this.initResizeObserver();
+          if (typeof window.ResizeObserver === "undefined") this.currentWindow.addEventListener("resize", this.onWindowResize);
+          this.props.zoomWithScroll && this.containerRef.addEventListener("wheel", this.onWheel, { passive: false });
+          this.containerRef.addEventListener("gesturestart", this.onGestureStart);
+        }
+        this.currentDoc.addEventListener("scroll", this.onScroll);
+        if (!this.props.disableAutomaticStylesInjection) {
+          this.styleRef = this.currentDoc.createElement("style");
+          this.styleRef.setAttribute("type", "text/css");
+          if (this.props.nonce) this.styleRef.setAttribute("nonce", this.props.nonce);
+          this.styleRef.innerHTML = styles_default;
+          this.currentDoc.head.appendChild(this.styleRef);
+        }
+        if (this.imageRef.current && this.imageRef.current.complete) this.onMediaLoad();
+        if (this.props.setImageRef) this.props.setImageRef(this.imageRef);
+        if (this.props.setVideoRef) this.props.setVideoRef(this.videoRef);
+        if (this.props.setCropperRef) this.props.setCropperRef(this.cropperRef);
+      }
+      componentWillUnmount() {
+        var _this$resizeObserver;
+        if (!this.currentDoc || !this.currentWindow) return;
+        if (typeof window.ResizeObserver === "undefined") this.currentWindow.removeEventListener("resize", this.onWindowResize);
+        (_this$resizeObserver = this.resizeObserver) === null || _this$resizeObserver === void 0 || _this$resizeObserver.disconnect();
+        if (this.resizeEmitTimer) clearTimeout(this.resizeEmitTimer);
+        if (this.containerRef) this.containerRef.removeEventListener("gesturestart", this.preventZoomSafari);
+        if (this.styleRef) {
+          var _this$styleRef$parent;
+          (_this$styleRef$parent = this.styleRef.parentNode) === null || _this$styleRef$parent === void 0 || _this$styleRef$parent.removeChild(this.styleRef);
+        }
+        this.cleanEvents();
+        this.props.zoomWithScroll && this.clearScrollEvent();
+      }
+      componentDidUpdate(prevProps) {
+        var _prevProps$cropSize, _this$props$cropSize, _prevProps$cropSize2, _this$props$cropSize2, _prevProps$crop, _this$props$crop, _prevProps$crop2, _this$props$crop2;
+        if (prevProps.rotation !== this.props.rotation) {
+          this.computeSizes();
+          this.recomputeCropPosition();
+        } else if (prevProps.aspect !== this.props.aspect) this.computeSizes();
+        else if (prevProps.objectFit !== this.props.objectFit) this.computeSizes();
+        else if (prevProps.zoom !== this.props.zoom) this.recomputeCropPosition();
+        else if (((_prevProps$cropSize = prevProps.cropSize) === null || _prevProps$cropSize === void 0 ? void 0 : _prevProps$cropSize.height) !== ((_this$props$cropSize = this.props.cropSize) === null || _this$props$cropSize === void 0 ? void 0 : _this$props$cropSize.height) || ((_prevProps$cropSize2 = prevProps.cropSize) === null || _prevProps$cropSize2 === void 0 ? void 0 : _prevProps$cropSize2.width) !== ((_this$props$cropSize2 = this.props.cropSize) === null || _this$props$cropSize2 === void 0 ? void 0 : _this$props$cropSize2.width)) this.computeSizes();
+        else if (((_prevProps$crop = prevProps.crop) === null || _prevProps$crop === void 0 ? void 0 : _prevProps$crop.x) !== ((_this$props$crop = this.props.crop) === null || _this$props$crop === void 0 ? void 0 : _this$props$crop.x) || ((_prevProps$crop2 = prevProps.crop) === null || _prevProps$crop2 === void 0 ? void 0 : _prevProps$crop2.y) !== ((_this$props$crop2 = this.props.crop) === null || _this$props$crop2 === void 0 ? void 0 : _this$props$crop2.y)) this.emitCropAreaChange();
+        if (prevProps.zoomWithScroll !== this.props.zoomWithScroll && this.containerRef) this.props.zoomWithScroll ? this.containerRef.addEventListener("wheel", this.onWheel, { passive: false }) : this.clearScrollEvent();
+        if (prevProps.video !== this.props.video) {
+          var _this$videoRef$curren3;
+          (_this$videoRef$curren3 = this.videoRef.current) === null || _this$videoRef$curren3 === void 0 || _this$videoRef$curren3.load();
+        }
+        const objectFit = this.getObjectFit();
+        if (objectFit !== this.state.mediaObjectFit) this.setState({ mediaObjectFit: objectFit }, this.computeSizes);
+      }
+      getAspect() {
+        const { cropSize, aspect } = this.props;
+        if (cropSize) return cropSize.width / cropSize.height;
+        return aspect;
+      }
+      getObjectFit() {
+        if (this.props.objectFit === "cover") {
+          if ((this.imageRef.current || this.videoRef.current) && this.containerRef) {
+            var _this$imageRef$curren3, _this$videoRef$curren4, _this$imageRef$curren4, _this$videoRef$curren5;
+            this.containerRect = this.containerRef.getBoundingClientRect();
+            const containerAspect = this.containerRect.width / this.containerRect.height;
+            return (((_this$imageRef$curren3 = this.imageRef.current) === null || _this$imageRef$curren3 === void 0 ? void 0 : _this$imageRef$curren3.naturalWidth) || ((_this$videoRef$curren4 = this.videoRef.current) === null || _this$videoRef$curren4 === void 0 ? void 0 : _this$videoRef$curren4.videoWidth) || 0) / (((_this$imageRef$curren4 = this.imageRef.current) === null || _this$imageRef$curren4 === void 0 ? void 0 : _this$imageRef$curren4.naturalHeight) || ((_this$videoRef$curren5 = this.videoRef.current) === null || _this$videoRef$curren5 === void 0 ? void 0 : _this$videoRef$curren5.videoHeight) || 0) < containerAspect ? "horizontal-cover" : "vertical-cover";
+          }
+          return "horizontal-cover";
+        }
+        return this.props.objectFit;
+      }
+      onPinchStart(e) {
+        const pointA = Cropper2.getTouchPoint(e.touches[0]);
+        const pointB = Cropper2.getTouchPoint(e.touches[1]);
+        this.lastPinchDistance = getDistanceBetweenPoints(pointA, pointB);
+        this.lastPinchRotation = getRotationBetweenPoints(pointA, pointB);
+        this.onDragStart(getCenter(pointA, pointB), "touch");
+      }
+      onPinchMove(e) {
+        if (!this.currentDoc || !this.currentWindow) return;
+        const pointA = Cropper2.getTouchPoint(e.touches[0]);
+        const pointB = Cropper2.getTouchPoint(e.touches[1]);
+        const center = getCenter(pointA, pointB);
+        this.onDrag(center);
+        if (this.rafPinchTimeout) this.currentWindow.cancelAnimationFrame(this.rafPinchTimeout);
+        this.rafPinchTimeout = this.currentWindow.requestAnimationFrame(() => {
+          const distance = getDistanceBetweenPoints(pointA, pointB);
+          const newZoom = this.props.zoom * (distance / this.lastPinchDistance);
+          this.setNewZoom(newZoom, center, { shouldUpdatePosition: false });
+          this.lastPinchDistance = distance;
+          const rotation = getRotationBetweenPoints(pointA, pointB);
+          const newRotation = this.props.rotation + (rotation - this.lastPinchRotation);
+          this.props.onRotationChange && this.props.onRotationChange(newRotation);
+          this.lastPinchRotation = rotation;
+        });
+      }
+      render() {
+        var _this$state$mediaObje;
+        const { image, video, mediaProps, cropperProps, transform, crop: { x: x2, y: y2 }, rotation, zoom, cropShape, showGrid, roundCropAreaPixels, style: { containerStyle, cropAreaStyle, mediaStyle }, classes: { containerClassName, cropAreaClassName, mediaClassName } } = this.props;
+        const objectFit = (_this$state$mediaObje = this.state.mediaObjectFit) !== null && _this$state$mediaObje !== void 0 ? _this$state$mediaObje : this.getObjectFit();
+        return /* @__PURE__ */ reactExports.createElement("div", {
+          onMouseDown: this.onMouseDown,
+          onTouchStart: this.onTouchStart,
+          ref: (el) => this.containerRef = el,
+          "data-testid": "container",
+          style: containerStyle,
+          className: classNames("reactEasyCrop_Container", containerClassName)
+        }, image ? /* @__PURE__ */ reactExports.createElement("img", _objectSpread2(_objectSpread2({
+          alt: "",
+          className: classNames("reactEasyCrop_Image", objectFit === "contain" && "reactEasyCrop_Contain", objectFit === "horizontal-cover" && "reactEasyCrop_Cover_Horizontal", objectFit === "vertical-cover" && "reactEasyCrop_Cover_Vertical", mediaClassName)
+        }, mediaProps), {}, {
+          src: image,
+          ref: this.imageRef,
+          style: _objectSpread2(_objectSpread2({}, mediaStyle), {}, { transform: transform || `translate(${x2}px, ${y2}px) rotate(${rotation}deg) scale(${zoom})` }),
+          onLoad: this.onMediaLoad
+        })) : video && /* @__PURE__ */ reactExports.createElement("video", _objectSpread2(_objectSpread2({
+          autoPlay: true,
+          playsInline: true,
+          loop: true,
+          muted: true,
+          className: classNames("reactEasyCrop_Video", objectFit === "contain" && "reactEasyCrop_Contain", objectFit === "horizontal-cover" && "reactEasyCrop_Cover_Horizontal", objectFit === "vertical-cover" && "reactEasyCrop_Cover_Vertical", mediaClassName)
+        }, mediaProps), {}, {
+          ref: this.videoRef,
+          onLoadedMetadata: this.onMediaLoad,
+          style: _objectSpread2(_objectSpread2({}, mediaStyle), {}, { transform: transform || `translate(${x2}px, ${y2}px) rotate(${rotation}deg) scale(${zoom})` }),
+          controls: false
+        }), (Array.isArray(video) ? video : [{ src: video }]).map((item) => /* @__PURE__ */ reactExports.createElement("source", _objectSpread2({ key: item.src }, item)))), this.state.cropSize && /* @__PURE__ */ reactExports.createElement("div", _objectSpread2({
+          ref: this.cropperRef,
+          style: _objectSpread2(_objectSpread2({}, cropAreaStyle), {}, {
+            width: roundCropAreaPixels ? Math.round(this.state.cropSize.width) : this.state.cropSize.width,
+            height: roundCropAreaPixels ? Math.round(this.state.cropSize.height) : this.state.cropSize.height
+          }),
+          tabIndex: 0,
+          onKeyDown: this.onKeyDown,
+          onKeyUp: this.onKeyUp,
+          "data-testid": "cropper",
+          className: classNames("reactEasyCrop_CropArea", cropShape === "round" && "reactEasyCrop_CropAreaRound", showGrid && "reactEasyCrop_CropAreaGrid", cropAreaClassName)
+        }, cropperProps)));
+      }
+    };
+    Cropper.defaultProps = {
+      zoom: 1,
+      rotation: 0,
+      aspect: 4 / 3,
+      maxZoom: MAX_ZOOM,
+      minZoom: MIN_ZOOM,
+      cropShape: "rect",
+      objectFit: "contain",
+      showGrid: true,
+      style: {},
+      classes: {},
+      mediaProps: {},
+      cropperProps: {},
+      zoomSpeed: 1,
+      restrictPosition: true,
+      zoomWithScroll: true,
+      keyboardStep: KEYBOARD_STEP
+    };
+    Cropper.getMousePoint = (e) => ({
+      x: Number(e.clientX),
+      y: Number(e.clientY)
+    });
+    Cropper.getTouchPoint = (touch) => ({
+      x: Number(touch.clientX),
+      y: Number(touch.clientY)
+    });
+    var src_default = Cropper;
+    function CropPhotoModal({
+      imageSrc,
+      onConfirm,
+      onCancel
+    }) {
+      const [crop, setCrop] = reactExports.useState({ x: 0, y: 0 });
+      const [zoom, setZoom] = reactExports.useState(1);
+      const [croppedAreaPixels, setCroppedAreaPixels] = reactExports.useState(
+        null
+      );
+      const [isProcessing, setIsProcessing] = reactExports.useState(false);
+      const [loadError, setLoadError] = reactExports.useState(null);
+      const imageRef = reactExports.useRef(null);
+      reactExports.useEffect(() => {
+        let active = true;
+        setLoadError(null);
+        loadImageForCrop(imageSrc).then(({ image, cleanup }) => {
+          if (!active) {
+            cleanup();
+            return;
+          }
+          imageRef.current = image;
+        }).catch((err) => {
+          if (!active) return;
+          setLoadError(
+            err instanceof Error ? err.message : "Could not load the image."
+          );
+        });
+        return () => {
+          active = false;
+        };
+      }, [imageSrc]);
+      const onCropComplete = (_2, pixels) => {
+        setCroppedAreaPixels(pixels);
+      };
+      const handleConfirm = async () => {
+        const image = imageRef.current;
+        if (!image || !croppedAreaPixels) return;
+        setIsProcessing(true);
+        try {
+          const blob = await cropImage(image, croppedAreaPixels);
+          onConfirm(blob);
+        } catch (err) {
+          setLoadError(
+            err instanceof Error ? err.message : "Could not crop the image."
+          );
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Dialog,
+        {
+          open: true,
+          onOpenChange: (open) => {
+            if (!open && !isProcessing) onCancel();
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DialogContent,
+            {
+              className: "sm:max-w-md",
+              showCloseButton: false,
+              "data-ocid": "crop_photo_modal",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { "data-ocid": "crop_photo_modal.title", children: "Crop photo" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { "data-ocid": "crop_photo_modal.description", children: "Drag to reposition and use the slider to zoom. The crop is square — what you see in the frame is what gets saved." })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: cn(
+                      "relative aspect-square w-full overflow-hidden rounded-md",
+                      "bg-card border border-border"
+                    ),
+                    "data-ocid": "crop_photo_modal.stage",
+                    children: loadError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        className: "flex h-full w-full items-center justify-center px-4 text-center text-sm text-destructive",
+                        "data-ocid": "crop_photo_modal.error_state",
+                        children: loadError
+                      }
+                    ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      src_default,
+                      {
+                        image: imageSrc,
+                        crop,
+                        zoom,
+                        aspect: 1,
+                        onCropChange: setCrop,
+                        onZoomChange: setZoom,
+                        onCropComplete,
+                        cropShape: "rect",
+                        showGrid: true,
+                        classes: {
+                          containerClassName: "bg-card",
+                          cropAreaClassName: "border-2 border-primary"
+                        }
+                      }
+                    )
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    ZoomIn,
+                    {
+                      className: "size-4 shrink-0 text-muted-foreground",
+                      "aria-hidden": true
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Slider,
+                    {
+                      value: [zoom],
+                      min: 1,
+                      max: 3,
+                      step: 0.01,
+                      onValueChange: (values) => setZoom(values[0] ?? 1),
+                      disabled: isProcessing || !!loadError,
+                      "aria-label": "Zoom",
+                      "data-ocid": "crop_photo_modal.zoom_slider"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "outline",
+                      onClick: onCancel,
+                      disabled: isProcessing,
+                      "data-ocid": "crop_photo_modal.cancel_button",
+                      children: "Cancel"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      type: "button",
+                      onClick: handleConfirm,
+                      disabled: isProcessing || !!loadError || !croppedAreaPixels,
+                      "data-ocid": "crop_photo_modal.confirm_button",
+                      children: isProcessing ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                        "Cropping…"
+                      ] }) : "Confirm"
+                    }
+                  )
+                ] })
+              ]
+            }
+          )
+        }
+      );
+    }
+    function UserEditSheet({
+      user,
+      index: index2
+    }) {
+      const [open, setOpen] = reactExports.useState(false);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Sheet, { open, onOpenChange: setOpen, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SheetTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            variant: "outline",
+            size: "sm",
+            className: "font-heading text-xs uppercase tracking-wide",
+            "data-ocid": `user.edit_button.${index2}`,
+            "aria-label": `Edit ${user.name}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-3.5" }),
+              "Edit"
+            ]
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SheetContent,
+          {
+            side: "right",
+            className: "w-full gap-0 p-0 sm:max-w-md",
+            "data-ocid": `user.edit_dialog.${index2}`,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              UserEditSheetBody,
+              {
+                user,
+                index: index2,
+                onClose: () => setOpen(false)
+              }
+            )
+          }
+        )
+      ] });
+    }
+    function UserEditSheetBody({
+      user,
+      index: index2,
+      onClose
+    }) {
+      const setEmail = useSetUserEmail();
+      const setPhoto = useSetUserPhoto();
+      const [emailDraft, setEmailDraft] = reactExports.useState(user.email ?? "");
+      const [photoDraft, setPhotoDraft] = reactExports.useState(
+        user.photo
+      );
+      const trimmedEmail = emailDraft.trim();
+      const emailChanged = trimmedEmail !== (user.email ?? "");
+      const photoChanged = photoDraft !== (user.photo ?? void 0);
+      const hasChanges = emailChanged || photoChanged;
+      const busy = setEmail.isPending || setPhoto.isPending;
+      const handleSave = () => {
+        if (!hasChanges || busy) return;
+        const run = async () => {
+          try {
+            if (emailChanged) {
+              await setEmail.mutateAsync({
+                userPrincipal: user.principal,
+                email: trimmedEmail
+              });
+            }
+            if (photoChanged) {
+              await setPhoto.mutateAsync({
+                userPrincipal: user.principal,
+                photo: photoDraft ?? null
+              });
+            }
+            ue.success(`${user.name || "User"} updated.`);
+            onClose();
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "Couldn't save changes.";
+            ue.error(msg);
+          }
+        };
+        void run();
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(SheetHeader, { className: "border-b border-border bg-card", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SheetTitle, { className: "font-heading text-lg uppercase tracking-wide text-foreground", children: user.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SheetDescription, { className: "font-body text-sm text-muted-foreground", children: "Edit this user’s photo and email." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto px-4 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            PhotoEditor,
+            {
+              user,
+              index: index2,
+              value: photoDraft,
+              onChange: setPhotoDraft
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            EmailEditor,
+            {
+              user,
+              index: index2,
+              value: emailDraft,
+              onChange: setEmailDraft
+            }
+          )
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(SheetFooter, { className: "border-t border-border bg-card", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SheetClose, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              type: "button",
+              variant: "outline",
+              className: "font-heading text-sm uppercase tracking-wide",
+              disabled: busy,
+              "data-ocid": `user.cancel_button.${index2}`,
+              children: "Cancel"
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              type: "button",
+              variant: "default",
+              className: "font-heading text-sm uppercase tracking-wide",
+              disabled: !hasChanges || busy,
+              onClick: handleSave,
+              "data-ocid": `user.save_button.${index2}`,
+              children: busy ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "size-4 animate-spin" }),
+                "Saving…"
+              ] }) : "Save"
+            }
+          )
+        ] })
+      ] });
+    }
+    function PhotoEditor({
+      user,
+      index: index2,
+      value,
+      onChange
+    }) {
+      const fileInputRef = reactExports.useRef(null);
+      const urlInputRef = reactExports.useRef(null);
+      const [mode, setMode] = reactExports.useState(value ? "url" : "upload");
+      const [processing, setProcessing] = reactExports.useState(false);
+      const [localError, setLocalError] = reactExports.useState(null);
+      const [broken, setBroken] = reactExports.useState(false);
+      const [cropSrc, setCropSrc] = reactExports.useState(null);
+      const cropUrlRef = reactExports.useRef(null);
+      const {
+        uploadPhoto,
+        isUploading,
+        error: uploadError,
+        reset
+      } = usePhotoUpload();
+      reactExports.useEffect(() => {
+        setBroken(false);
+      }, [value]);
+      reactExports.useEffect(() => {
+        return () => {
+          if (cropUrlRef.current) {
+            URL.revokeObjectURL(cropUrlRef.current);
+            cropUrlRef.current = null;
+          }
+        };
+      }, []);
+      const openFilePicker = reactExports.useCallback(() => {
+        var _a2;
+        setLocalError(null);
+        (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+      }, []);
+      const focusUrlInput = reactExports.useCallback(() => {
+        var _a2, _b2;
+        setMode("url");
+        (_a2 = urlInputRef.current) == null ? void 0 : _a2.focus();
+        (_b2 = urlInputRef.current) == null ? void 0 : _b2.select();
+      }, []);
+      const handleFileChange = reactExports.useCallback(
+        async (e) => {
+          var _a2;
+          const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
+          e.target.value = "";
+          if (!file) return;
+          if (!file.type.startsWith("image/")) {
+            setLocalError("Please choose an image file (JPEG, PNG, or WebP).");
+            return;
+          }
+          setLocalError(null);
+          if (cropUrlRef.current) {
+            URL.revokeObjectURL(cropUrlRef.current);
+          }
+          const url = URL.createObjectURL(file);
+          cropUrlRef.current = url;
+          setCropSrc(url);
+        },
+        []
+      );
+      const handleCropConfirm = reactExports.useCallback(
+        async (croppedBlob) => {
+          if (cropUrlRef.current) {
+            URL.revokeObjectURL(cropUrlRef.current);
+            cropUrlRef.current = null;
+          }
+          setCropSrc(null);
+          setProcessing(true);
+          try {
+            const resized = await resizeImage(
+              new File([croppedBlob], "crop.jpg", { type: "image/jpeg" }),
+              1600,
+              0.8
+            );
+            const url = await uploadPhoto(resized);
+            onChange(url);
+            setMode("upload");
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "Could not upload the photo.";
+            setLocalError(msg);
+          } finally {
+            setProcessing(false);
+          }
+        },
+        [onChange, uploadPhoto]
+      );
+      const handleCropCancel = reactExports.useCallback(() => {
+        if (cropUrlRef.current) {
+          URL.revokeObjectURL(cropUrlRef.current);
+          cropUrlRef.current = null;
+        }
+        setCropSrc(null);
+      }, []);
+      const handleUrlChange = reactExports.useCallback(
+        (e) => {
+          const v2 = e.target.value.trim();
+          setLocalError(null);
+          onChange(v2.length ? v2 : void 0);
+          setMode("url");
+        },
+        [onChange]
+      );
+      const handleRemove = reactExports.useCallback(() => {
+        setLocalError(null);
+        reset();
+        onChange(void 0);
+        setBroken(false);
+      }, [onChange, reset]);
+      const handleImgError = reactExports.useCallback(() => {
+        setBroken(true);
+      }, []);
+      const activeError = localError ?? uploadError;
+      const hasValue = Boolean(value);
+      const busy = processing || isUploading;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "flex flex-col gap-2",
+          "data-ocid": `user.photo.section.${index2}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "label",
+                {
+                  htmlFor: `user-photo-url-${index2}`,
+                  className: "font-display text-xs uppercase tracking-[0.18em] text-foreground/80",
+                  children: "Photo"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-[10px] uppercase tracking-[0.16em] text-muted-foreground", children: "Optional" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              PhotoSegmentedToggle,
+              {
+                mode,
+                disabled: busy,
+                onUploadClick: openFilePicker,
+                onUrlClick: focusUrlInput,
+                index: index2
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: mode === "url" ? "block" : "hidden", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input$1,
+                {
+                  id: `user-photo-url-${index2}`,
+                  ref: urlInputRef,
+                  type: "url",
+                  inputMode: "url",
+                  autoComplete: "off",
+                  spellCheck: false,
+                  placeholder: "https://…",
+                  value: mode === "url" ? value ?? "" : "",
+                  onChange: handleUrlChange,
+                  disabled: busy,
+                  "aria-label": "Paste image URL",
+                  "data-ocid": `user.photo.input.${index2}`,
+                  className: "font-body placeholder:text-muted-foreground/60"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 font-body text-[11px] text-muted-foreground", children: "Paste an image URL. You can save without a photo." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                ref: fileInputRef,
+                type: "file",
+                accept: "image/jpeg,image/png,image/webp",
+                className: "hidden",
+                onChange: handleFileChange,
+                "aria-label": "Upload photo",
+                "data-ocid": `user.photo.upload_button.${index2}`
+              }
+            ),
+            busy ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "photo-field-processing flex h-24 w-24 animate-photo-shimmer items-center gap-2 px-3 py-2",
+                "aria-live": "polite",
+                "data-ocid": `user.photo.loading_state.${index2}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "h-5 w-5 animate-spin", "aria-hidden": "true" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-xs uppercase tracking-[0.18em]", children: processing ? "Resizing…" : "Uploading…" })
+                ]
+              }
+            ) : hasValue ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "photo-field-preview relative h-24 w-24 shrink-0", children: broken ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "photo-field-broken flex h-full w-full items-center justify-center",
+                  "data-ocid": `user.photo.error_state.${index2}`,
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5", "aria-hidden": "true" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-[10px] uppercase tracking-[0.16em]", children: "Couldn't load" })
+                  ]
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: value ?? void 0,
+                  alt: `${user.name || "User"} preview`,
+                  className: "h-full w-full object-cover",
+                  onError: handleImgError
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "secondary",
+                    size: "sm",
+                    onClick: openFilePicker,
+                    disabled: busy,
+                    "data-ocid": `user.photo.replace_button.${index2}`,
+                    className: "font-display text-[11px] uppercase tracking-[0.16em]",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "h-3.5 w-3.5", "aria-hidden": "true" }),
+                      "Replace"
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "sm",
+                    onClick: handleRemove,
+                    disabled: busy,
+                    "data-ocid": `user.photo.delete_button.${index2}`,
+                    className: "font-display text-[11px] uppercase tracking-[0.16em] text-muted-foreground hover:text-foreground",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-3.5 w-3.5", "aria-hidden": "true" }),
+                      "Remove"
+                    ]
+                  }
+                )
+              ] })
+            ] }) : mode === "upload" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: openFilePicker,
+                disabled: busy,
+                className: "photo-field-empty flex min-h-[44px] w-full items-center justify-center gap-2 px-3 py-3 text-left transition-colors hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                "aria-label": "Choose a photo to upload",
+                "data-ocid": `user.photo.empty_state.${index2}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "h-5 w-5", "aria-hidden": "true" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-xs uppercase tracking-[0.18em]", children: "Choose a photo…" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-[10px] text-muted-foreground", children: "JPEG, PNG, or WebP — square crop, resized to 1600px max" })
+                ]
+              }
+            ) : null,
+            activeError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "photo-field-error",
+                role: "alert",
+                "data-ocid": `user.photo.field_error.${index2}`,
+                children: activeError
+              }
+            ) : null,
+            cropSrc ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              CropPhotoModal,
+              {
+                imageSrc: cropSrc,
+                onConfirm: handleCropConfirm,
+                onCancel: handleCropCancel
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function EmailEditor({
+      user,
+      index: index2,
+      value,
+      onChange
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "flex flex-col gap-2",
+          "data-ocid": `user.email.section.${index2}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "label",
+              {
+                htmlFor: `user-email-${index2}`,
+                className: "font-display text-xs uppercase tracking-[0.18em] text-foreground/80",
+                children: "Email"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Input$1,
+              {
+                id: `user-email-${index2}`,
+                type: "email",
+                inputMode: "email",
+                autoComplete: "off",
+                spellCheck: false,
+                placeholder: `${user.name || "User"}'s email`,
+                value,
+                onChange: (e) => onChange(e.target.value),
+                "aria-label": `Email for ${user.name || "user"}`,
+                "data-ocid": `user.email.input.${index2}`,
+                className: "font-body placeholder:text-muted-foreground/60"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-[11px] text-muted-foreground", children: "Replaces the email on record. Leave blank to clear it." })
+          ]
+        }
+      );
+    }
+    const PhotoSegmentedToggle = ({
+      mode,
+      disabled,
+      onUploadClick,
+      onUrlClick,
+      index: index2
+    }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "fieldset",
+        {
+          className: "m-0 inline-flex overflow-hidden rounded-[4px] border border-border bg-card p-0",
+          "data-ocid": `user.photo.toggle.${index2}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("legend", { className: "sr-only", children: "Photo input mode" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              PhotoToggleButton,
+              {
+                active: mode === "upload",
+                disabled,
+                onClick: onUploadClick,
+                dataOcid: `user.photo.toggle.upload.${index2}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "h-3.5 w-3.5", "aria-hidden": "true" }),
+                  "Upload"
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              PhotoToggleButton,
+              {
+                active: mode === "url",
+                disabled,
+                onClick: onUrlClick,
+                dataOcid: `user.photo.toggle.url.${index2}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-3.5 w-3.5", "aria-hidden": "true" }),
+                  "Paste URL"
+                ]
+              }
+            )
+          ]
+        }
+      );
+    };
+    const PhotoToggleButton = ({
+      active,
+      disabled,
+      onClick,
+      children,
+      dataOcid
+    }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick,
+          disabled,
+          "aria-pressed": active,
+          "data-ocid": dataOcid,
+          className: cn(
+            "flex cursor-pointer items-center gap-1.5 px-3 py-1.5 font-display text-[11px] uppercase tracking-[0.16em] transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+            active ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+            disabled && "cursor-not-allowed opacity-50"
+          ),
+          children
+        }
+      );
+    };
+    const badgeVariants = cva(
+      "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+      {
+        variants: {
+          variant: {
+            default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+            secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+            destructive: "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+            outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground"
+          }
+        },
+        defaultVariants: {
+          variant: "default"
+        }
+      }
+    );
+    function Badge({
+      className,
+      variant,
+      asChild = false,
+      ...props
+    }) {
+      const Comp = asChild ? Slot$2 : "span";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Comp,
+        {
+          "data-slot": "badge",
+          className: cn(badgeVariants({ variant }), className),
+          ...props
+        }
+      );
+    }
     function Table({ className, ...props }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
@@ -69837,44 +73408,6 @@ ${escapeText(this.code(index2, length))}
         }
       );
     }
-    const QUERY_KEY = ["all-users"];
-    function toUserProfile(p2) {
-      return {
-        principal: p2.id.toString(),
-        name: p2.name,
-        storeLocation: p2.storeLocation,
-        role: p2.role
-      };
-    }
-    function useAllUsers() {
-      const { actor, isFetching } = useBackend();
-      return useQuery({
-        queryKey: QUERY_KEY,
-        queryFn: async () => {
-          if (!actor) return [];
-          const result = await actor.getAllUsers();
-          return result.map(toUserProfile);
-        },
-        enabled: !!actor && !isFetching
-      });
-    }
-    function useSetUserRole() {
-      const queryClient2 = useQueryClient();
-      const { actor } = useBackend();
-      return useMutation({
-        mutationFn: async (input) => {
-          if (!actor) throw new Error("Backend not ready");
-          await actor.setUserRole(
-            Principal$1.fromText(input.userPrincipal),
-            input.role
-          );
-        },
-        onSuccess: () => {
-          queryClient2.invalidateQueries({ queryKey: QUERY_KEY });
-          queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
-        }
-      });
-    }
     function AdminUsersPage() {
       const { data: myProfile } = useMyProfile();
       const { data: users, isLoading } = useAllUsers();
@@ -69884,14 +73417,20 @@ ${escapeText(this.code(index2, length))}
       if (myProfile && myProfile.role !== "admin") {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(AccessDenied$1, {});
       }
+      const all = users ?? [];
+      const pending = all.filter((u2) => u2.approvalStatus === "pending");
+      const approved = all.filter((u2) => u2.approvalStatus === "approved");
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-4xl px-4 py-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Header, {}),
-        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(UsersSkeleton, {}) : (users ?? []).length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyUsers, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(UsersTable, { users: users ?? [] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Header, { pendingCount: pending.length }),
+        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(UsersSkeleton, {}) : all.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyUsers, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(PendingApprovalSection, { users: pending }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ApprovedUsersSection, { users: approved })
+        ] })
       ] });
     }
-    function Header() {
+    function Header({ pendingCount }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "pb-4", "data-ocid": "admin_users.header.section", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "size-6 text-primary" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "h1",
@@ -69900,10 +73439,194 @@ ${escapeText(this.code(index2, length))}
               "data-ocid": "admin_users.title",
               children: "Users & roles"
             }
+          ),
+          pendingCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Badge,
+            {
+              variant: "default",
+              className: "ml-1 bg-primary font-heading text-xs uppercase tracking-wide",
+              "data-ocid": "admin_users.pending_count_badge",
+              children: [
+                pendingCount,
+                " pending"
+              ]
+            }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body text-sm text-muted-foreground", children: "Set each user’s role and manage their position assignments." })
       ] });
+    }
+    function PendingApprovalSection({ users }) {
+      if (users.length === 0) return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "flex flex-col gap-3",
+          "data-ocid": "admin_users.pending.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(UserCheck, { className: "size-5 text-primary" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h2",
+                {
+                  className: "font-display text-xl uppercase leading-none tracking-wide text-foreground",
+                  "data-ocid": "admin_users.pending.title",
+                  children: "Awaiting approval"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Badge,
+                {
+                  variant: "default",
+                  className: "bg-primary font-heading text-xs uppercase tracking-wide",
+                  "data-ocid": "admin_users.pending.section_badge",
+                  children: users.length
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-muted-foreground", children: "New sign-ups are blocked until you approve them. Rejecting denies access to the app." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "overflow-hidden border border-primary/40 bg-card",
+                "data-ocid": "admin_users.pending.table.section",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-border bg-primary/10 hover:bg-primary/10", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Name" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Store / location" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Actions" })
+                  ] }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: users.map((user, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(PendingUserRow, { user, index: i + 1 }, user.principal)) })
+                ] })
+              }
+            )
+          ]
+        }
+      );
+    }
+    function PendingUserRow({ user, index: index2 }) {
+      const approve = useApproveUser();
+      const reject = useRejectUser();
+      const handleApprove = () => {
+        approve.mutate(
+          { userPrincipal: user.principal },
+          {
+            onSuccess: () => ue.success(
+              `${user.name || "User"} approved. They can now sign in.`
+            ),
+            onError: () => ue.error("Couldn't approve. Try again.")
+          }
+        );
+      };
+      const handleReject = () => {
+        reject.mutate(
+          { userPrincipal: user.principal },
+          {
+            onSuccess: () => ue.success(`${user.name || "User"} rejected. Access denied.`),
+            onError: () => ue.error("Couldn't reject. Try again.")
+          }
+        );
+      };
+      const busy = approve.isPending || reject.isPending;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-border", "data-ocid": `pending_user.row.${index2}`, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-2.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(UserAvatar, { user, index: index2, variant: "pending" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "font-heading text-sm uppercase tracking-wide text-foreground",
+                "data-ocid": `pending_user.name.${index2}`,
+                children: user.name
+              }
+            ),
+            user.email ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mt-0.5 max-w-[14rem] truncate font-body text-xs text-muted-foreground",
+                "data-ocid": `pending_user.email.${index2}`,
+                title: user.email,
+                children: user.email
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-0.5 max-w-[12rem] truncate font-mono text-[0.65rem] text-muted-foreground", children: user.principal })
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "font-body text-sm text-foreground",
+            "data-ocid": `pending_user.store.${index2}`,
+            children: user.storeLocation || "—"
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              size: "sm",
+              variant: "default",
+              disabled: busy,
+              onClick: handleApprove,
+              "data-ocid": `pending_user.approve_button.${index2}`,
+              "aria-label": `Approve ${user.name}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4" }),
+                approve.isPending ? "Approving…" : "Approve"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              size: "sm",
+              variant: "destructive",
+              disabled: busy,
+              onClick: handleReject,
+              "data-ocid": `pending_user.reject_button.${index2}`,
+              "aria-label": `Reject ${user.name}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" }),
+                reject.isPending ? "Rejecting…" : "Reject"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ResendEmailButton, { user, index: index2, variant: "secondary" })
+        ] }) })
+      ] });
+    }
+    function ApprovedUsersSection({ users }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "section",
+        {
+          className: "flex flex-col gap-3",
+          "data-ocid": "admin_users.approved.section",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "size-5 text-secondary" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h2",
+                {
+                  className: "font-display text-xl uppercase leading-none tracking-wide text-foreground",
+                  "data-ocid": "admin_users.approved.title",
+                  children: "Approved users"
+                }
+              )
+            ] }),
+            users.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "flex flex-col items-center justify-center gap-2 border border-dashed border-border bg-card px-6 py-10 text-center",
+                "data-ocid": "admin_users.approved.empty_state",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-sm uppercase tracking-wide text-foreground", children: "No approved users yet" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs font-body text-xs text-muted-foreground", children: "Approve pending requests above to populate this list." })
+                ]
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(UsersTable, { users })
+          ]
+        }
+      );
     }
     function UsersTable({ users }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -69916,6 +73639,7 @@ ${escapeText(this.code(index2, length))}
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Name" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Store / location" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Role" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Status" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Positions" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Manage" })
             ] }) }),
@@ -69939,17 +73663,29 @@ ${escapeText(this.code(index2, length))}
         );
       };
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-border", "data-ocid": `user.row.${index2}`, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(TableCell, { className: "align-top", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "p",
-            {
-              className: "font-heading text-sm uppercase tracking-wide text-foreground",
-              "data-ocid": `user.name.${index2}`,
-              children: user.name
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-0.5 max-w-[12rem] truncate font-mono text-[0.65rem] text-muted-foreground", children: user.principal })
-        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-2.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(UserAvatar, { user, index: index2, variant: "approved" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "font-heading text-sm uppercase tracking-wide text-foreground",
+                "data-ocid": `user.name.${index2}`,
+                children: user.name
+              }
+            ),
+            user.email ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mt-0.5 max-w-[14rem] truncate font-body text-xs text-muted-foreground",
+                "data-ocid": `user.email.${index2}`,
+                title: user.email,
+                children: user.email
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-0.5 max-w-[12rem] truncate font-mono text-[0.65rem] text-muted-foreground", children: user.principal })
+          ] })
+        ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "p",
           {
@@ -69968,6 +73704,7 @@ ${escapeText(this.code(index2, length))}
             userLabel
           }
         ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ApprovalStatusBadge, { status: user.approvalStatus, index: index2 }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           AssignmentSummary,
           {
@@ -69976,8 +73713,32 @@ ${escapeText(this.code(index2, length))}
             index: index2
           }
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx(UserAssignmentEditor, { user, index: index2 }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-top text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ResendEmailButton, { user, index: index2, variant: "outline" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(UserEditSheet, { user, index: index2 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(UserAssignmentEditor, { user, index: index2 })
+        ] }) })
       ] });
+    }
+    function ApprovalStatusBadge({
+      status,
+      index: index2
+    }) {
+      const label = approvalLabel(status);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Badge,
+        {
+          variant: "outline",
+          className: cn(
+            "border-border font-heading text-[0.65rem] uppercase tracking-wide",
+            status === "approved" && "border-secondary/50 text-secondary",
+            status === "pending" && "border-primary/50 text-primary",
+            status === "rejected" && "border-destructive/50 text-destructive"
+          ),
+          "data-ocid": `user.status.badge.${index2}`,
+          children: label
+        }
+      );
     }
     function AssignmentSummary({
       assignments,
@@ -70077,6 +73838,40 @@ ${escapeText(this.code(index2, length))}
         default:
           return "Trainee";
       }
+    }
+    function approvalLabel(status) {
+      switch (status) {
+        case "approved":
+          return "Approved";
+        case "pending":
+          return "Pending";
+        case "rejected":
+          return "Rejected";
+      }
+    }
+    function initialsFor(name) {
+      const trimmed = (name ?? "").trim();
+      if (!trimmed) return "?";
+      const parts = trimmed.split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    function UserAvatar({
+      user,
+      size: size2 = "size-9",
+      index: index2,
+      variant
+    }) {
+      const alt = `${user.name || "User"} profile photo`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: cn("profile-avatar shrink-0", size2),
+          "data-ocid": `${variant}_user.avatar.${index2}`,
+          "aria-label": alt,
+          children: user.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: user.photo, alt, loading: "lazy" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "profile-avatar-initials text-xs", children: initialsFor(user.name) })
+        }
+      );
     }
     function HeroStripe({ className }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, role: "presentation", "aria-hidden": true, children: [
@@ -70414,7 +74209,9 @@ ${escapeText(this.code(index2, length))}
             principal: p2.id.toString(),
             name: p2.name,
             storeLocation: p2.storeLocation,
-            role: p2.role
+            role: p2.role,
+            approvalStatus: p2.approvalStatus,
+            email: p2.email
           }));
         },
         enabled: !!actor && !isFetching
@@ -73038,6 +76835,7 @@ Defaulting to \`null\`.`;
     const OPERATIONAL_GOALS_NAME = "Operational Goals";
     const SERVICE_PRIORITIES_NAME = "Service Priorities";
     const FOOD_PRIORITIES_NAME = "Food Priorities";
+    const MARKETING_PRIORITIES_NAME = "Marketing / Community Priorities";
     function findField(item, needle) {
       const lower = needle.toLowerCase();
       const hit = item.details.find(
@@ -73079,12 +76877,22 @@ Defaulting to \`null\`.`;
         return idx;
       }, [categories]);
       const findCategory = (name) => nameIndex.get(name.trim().toLowerCase()) ?? null;
+      const findCommunityCategory = () => {
+        const exact = nameIndex.get(MARKETING_PRIORITIES_NAME.trim().toLowerCase());
+        if (exact) return exact;
+        for (const c2 of categories) {
+          const key = c2.name.trim().toLowerCase();
+          if (key.includes("community")) return c2;
+        }
+        return null;
+      };
       const missionCategory = findCategory(MISSION_NAME);
       const coreValuesCategory = findCategory(CORE_VALUES_NAME);
       const ourStoryCategory = findCategory(OUR_STORY_NAME);
       const operationalGoalsCategory = findCategory(OPERATIONAL_GOALS_NAME);
       const servicePrioritiesCategory = findCategory(SERVICE_PRIORITIES_NAME);
       const foodPrioritiesCategory = findCategory(FOOD_PRIORITIES_NAME);
+      const marketingPrioritiesCategory = findCommunityCategory();
       const heroCategoryIds = new Set(
         [
           missionCategory,
@@ -73092,7 +76900,8 @@ Defaulting to \`null\`.`;
           ourStoryCategory,
           operationalGoalsCategory,
           servicePrioritiesCategory,
-          foodPrioritiesCategory
+          foodPrioritiesCategory,
+          marketingPrioritiesCategory
         ].filter((c2) => c2 !== null).map((c2) => c2.id)
       );
       const rulesCategories = categories.filter((c2) => !heroCategoryIds.has(c2.id));
@@ -73125,12 +76934,13 @@ Defaulting to \`null\`.`;
             category: operationalGoalsCategory
           }
         ) : null,
-        servicePrioritiesCategory || foodPrioritiesCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        servicePrioritiesCategory || foodPrioritiesCategory || marketingPrioritiesCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           PrioritiesSection,
           {
             positionId,
             serviceCategory: servicePrioritiesCategory,
-            foodCategory: foodPrioritiesCategory
+            foodCategory: foodPrioritiesCategory,
+            marketingCategory: marketingPrioritiesCategory
           }
         ) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsx(BeLegendaryCta, { positionId }),
@@ -73391,7 +77201,7 @@ Defaulting to \`null\`.`;
       );
     }
     function OurStorySection({
-      positionId,
+      positionId: _positionId,
       category
     }) {
       const itemsQuery = useItemsByCategory(category.id);
@@ -73404,143 +77214,153 @@ Defaulting to \`null\`.`;
         return decodeHtmlEntities(thisMeans).split(";").map((s) => s.trim()).filter((s) => s.length > 0);
       }, [thisMeans]);
       if (!item) return null;
-      const to = `/position/${positionId}/library/${category.id}/item/${item.id}`;
       const knownForText = knownFor ? decodeHtmlEntities(knownFor) : null;
+      const hasPhoto = typeof item.photo === "string" && item.photo.trim().length > 0;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.our_story.section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "02", heading: "Our Story" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
+        hasPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OurStoryPhoto,
           {
-            className: "mt-5 rounded-lg border border-border bg-card p-6 sm:p-8",
-            "data-ocid": "orientation.our_story.card",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "bubba-poster-frame",
-                "data-ocid": "orientation.our_story.frame",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
-                  {
-                    className: "bubba-poster-field",
-                    "data-ocid": "orientation.our_story.field",
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "orientation.our_story.logo", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "span",
-                        {
-                          className: "bubba-poster-logo text-4xl sm:text-5xl",
-                          "aria-label": "Bubba's 33",
-                          children: "Bubba's 33"
-                        }
-                      ) }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "div",
-                        {
-                          className: "bubba-poster-hero",
-                          "data-ocid": "orientation.our_story.hero",
-                          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-hero-img", "aria-hidden": true })
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "div",
-                        {
-                          className: "bubba-poster-banner text-sm sm:text-base",
-                          "data-ocid": "orientation.our_story.banner",
-                          children: "Scratch-Made"
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                        "div",
-                        {
-                          className: "bubba-poster-headline",
-                          "data-ocid": "orientation.our_story.headline",
-                          children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-headline-script text-5xl sm:text-6xl", children: "Food" }),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-headline-block text-3xl sm:text-4xl", children: "FOR" }),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-headline-script text-5xl sm:text-6xl", children: "All" })
-                          ]
-                        }
-                      ),
-                      knownForText ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { "data-ocid": "orientation.our_story.known_for", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
-                          "p",
-                          {
-                            className: "bubba-poster-knownfor-kicker",
-                            "data-ocid": "orientation.our_story.known_for.label",
-                            children: "Known For"
-                          }
-                        ),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
-                          "p",
-                          {
-                            className: "bubba-poster-knownfor-body text-sm sm:text-base",
-                            "data-ocid": "orientation.our_story.known_for.value",
-                            children: knownForText
-                          }
-                        )
-                      ] }) : null,
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "div",
-                        {
-                          className: "bubba-poster-cluster",
-                          "data-ocid": "orientation.our_story.cluster",
-                          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bubba-poster-cluster-img", "aria-hidden": true })
-                        }
-                      ),
-                      thisMeansItems.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
-                          "p",
-                          {
-                            className: "bubba-poster-list-label text-xl sm:text-2xl",
-                            "data-ocid": "orientation.our_story.list_label",
-                            children: "This means we have:"
-                          }
-                        ),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
-                          "ul",
-                          {
-                            className: "bubba-poster-list text-sm sm:text-base",
-                            "data-ocid": "orientation.our_story.list",
-                            children: thisMeansItems.map((line, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              "li",
-                              {
-                                className: "bubba-poster-list-item",
-                                "data-ocid": `orientation.our_story.list.item.${index2 + 1}`,
-                                children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: line })
-                              },
-                              line
-                            ))
-                          }
-                        )
-                      ] }) : null,
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "div",
-                        {
-                          className: "bubba-poster-footer",
-                          "data-ocid": "orientation.our_story.footer",
-                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            Button,
-                            {
-                              variant: "ghost",
-                              size: "sm",
-                              asChild: true,
-                              className: "text-patriotic-cream/80 hover:text-patriotic-cream",
-                              "data-ocid": "orientation.our_story.back_button",
-                              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to, children: [
-                                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
-                                "Back to category"
-                              ] })
-                            }
-                          )
-                        }
-                      )
-                    ]
-                  }
-                )
-              }
-            )
+            src: item.photo,
+            knownForText,
+            thisMeansItems,
+            tags: item.tags
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OurStoryTextFallback,
+          {
+            knownForText,
+            thisMeansItems,
+            tags: item.tags
           }
         )
       ] });
+    }
+    function OurStoryPhoto({
+      src,
+      knownForText,
+      thisMeansItems,
+      tags
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mt-5 flex flex-col items-center",
+          "data-ocid": "orientation.our_story.photo_wrap",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src,
+                alt: "Our Story — Scratch-Made, Food For All",
+                className: "orientation-our-story-photo",
+                "data-ocid": "orientation.our_story.photo",
+                loading: "lazy"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OurStoryCaption,
+              {
+                knownForText,
+                thisMeansItems,
+                tags
+              }
+            )
+          ]
+        }
+      );
+    }
+    function OurStoryTextFallback({
+      knownForText,
+      thisMeansItems,
+      tags
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "mt-5 rounded-lg border border-border bg-card p-6 sm:p-8",
+          "data-ocid": "orientation.our_story.fallback",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OurStoryCaption,
+            {
+              knownForText,
+              thisMeansItems,
+              tags,
+              prominent: true
+            }
+          )
+        }
+      );
+    }
+    function OurStoryCaption({
+      knownForText,
+      thisMeansItems,
+      tags,
+      prominent = false
+    }) {
+      const hasCaption = !!knownForText || thisMeansItems.length > 0 || tags.length > 0;
+      if (!hasCaption) return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: cn(
+            "mt-4 flex flex-col gap-3 text-center",
+            prominent ? "" : "max-w-2xl"
+          ),
+          "data-ocid": "orientation.our_story.caption",
+          children: [
+            knownForText ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: cn(
+                  "font-body leading-relaxed text-patriotic-cream/80",
+                  prominent ? "text-base sm:text-lg" : "text-xs sm:text-sm"
+                ),
+                "data-ocid": "orientation.our_story.caption.known_for",
+                children: knownForText
+              }
+            ) : null,
+            thisMeansItems.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "ul",
+              {
+                className: cn(
+                  "mx-auto flex flex-col gap-1 text-left",
+                  prominent ? "text-sm sm:text-base" : "text-xs sm:text-sm"
+                ),
+                "data-ocid": "orientation.our_story.caption.list",
+                children: thisMeansItems.map((line, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "li",
+                  {
+                    className: "flex items-baseline gap-2 font-body text-patriotic-cream/70",
+                    "data-ocid": `orientation.our_story.caption.list.item.${index2 + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": true, className: "text-patriotic-gold", children: "★" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: line })
+                    ]
+                  },
+                  line
+                ))
+              }
+            ) : null,
+            tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "flex flex-wrap justify-center gap-2",
+                "data-ocid": "orientation.our_story.caption.tags",
+                children: tags.map((tag, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "orientation-chip text-xs",
+                    "data-ocid": `orientation.our_story.caption.tag.${index2 + 1}`,
+                    children: tag
+                  },
+                  tag
+                ))
+              }
+            ) : null
+          ]
+        }
+      );
     }
     function OperationalGoalsSection({
       positionId,
@@ -73615,14 +77435,21 @@ Defaulting to \`null\`.`;
     function PrioritiesSection({
       positionId,
       serviceCategory,
-      foodCategory
+      foodCategory,
+      marketingCategory
     }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.priorities.section", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "04", heading: "Service & Food Priorities" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SectionDivider,
+          {
+            number: "04",
+            heading: "Service, Food & Community Priorities"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: "mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2",
+            className: "mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3",
             "data-ocid": "orientation.priorities.grid",
             children: [
               serviceCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -73641,6 +77468,15 @@ Defaulting to \`null\`.`;
                   positionId,
                   tone: "blue",
                   label: "10 Daily Essentials"
+                }
+              ) : null,
+              marketingCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                PriorityCard,
+                {
+                  category: marketingCategory,
+                  positionId,
+                  tone: "gold",
+                  label: "10 Community Priorities"
                 }
               ) : null
             ]
@@ -73661,7 +77497,7 @@ Defaulting to \`null\`.`;
           to,
           className: cn(
             "orientation-priority-card group block p-5 transition-smooth hover:brightness-110",
-            tone === "red" ? "is-red" : "is-blue",
+            tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           ),
           "data-ocid": `orientation.priorities.card.${tone}`,
@@ -75769,38 +79605,6 @@ Defaulting to \`null\`.`;
           "data-ocid": "legendary.editor.dialog.categories.loading_state",
           "aria-hidden": true,
           children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-12 w-full rounded-md" }, k2))
-        }
-      );
-    }
-    const badgeVariants = cva(
-      "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
-      {
-        variants: {
-          variant: {
-            default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-            secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
-            destructive: "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-            outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground"
-          }
-        },
-        defaultVariants: {
-          variant: "default"
-        }
-      }
-    );
-    function Badge({
-      className,
-      variant,
-      asChild = false,
-      ...props
-    }) {
-      const Comp = asChild ? Slot$2 : "span";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Comp,
-        {
-          "data-slot": "badge",
-          className: cn(badgeVariants({ variant }), className),
-          ...props
         }
       );
     }
@@ -79674,7 +83478,16 @@ Defaulting to \`null\`.`;
                 children: item.subtitle
               }
             ) : null,
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10", children: [
+            item.photo && !hasSubstantialRecipeText(recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6", "data-ocid": "library.item.print_photo_hero", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: item.photo,
+                alt: item.title,
+                className: "recipe-print-card-photo mx-auto block h-auto w-full object-contain",
+                style: { maxWidth: "640px" },
+                loading: "lazy"
+              }
+            ) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10", children: [
               item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "div",
                 {
@@ -79723,6 +83536,24 @@ Defaulting to \`null\`.`;
           ]
         }
       );
+    }
+    function hasSubstantialItemText(item) {
+      if (item.notes && item.notes.trim().length > 0) return true;
+      if (item.details.length >= 2) return true;
+      if (item.details.some((field) => field.value.trim().length > 80)) {
+        return true;
+      }
+      return false;
+    }
+    function hasSubstantialRecipeText(recipe) {
+      if (recipe.glassware.trim().length > 0) return true;
+      if (recipe.specs.length > 0) return true;
+      if (recipe.assembly.length > 0) return true;
+      if (recipe.garnish.length > 0) return true;
+      if (recipe.variants.some((v2) => v2.variantLabel.trim().length > 0)) {
+        return true;
+      }
+      return false;
     }
     function isBulkMix(recipe) {
       const hasGlassware = recipe.glassware.trim().length > 0;
@@ -80041,36 +83872,43 @@ Defaulting to \`null\`.`;
                 children: item.subtitle
               }
             ) : null,
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
+            item.photo && !hasSubstantialItemText(item) ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6", "data-ocid": "library.item.photo_hero", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border border-border bg-card p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title }) }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0 order-2 lg:order-1", children: [
-                item.details.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("dl", { className: "flex flex-col gap-7", "data-ocid": "library.item.fields", children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
+                item.details.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "dl",
                   {
-                    className: "flex flex-col gap-1.5",
-                    "data-ocid": `library.item.field.${index2 + 1}`,
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "dt",
-                        {
-                          className: "font-heading text-sm uppercase tracking-wider text-secondary",
-                          "data-ocid": `library.item.field_label.${index2 + 1}`,
-                          children: field.fieldLabel
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "dd",
-                        {
-                          className: "font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
-                          "data-ocid": `library.item.field_value.${index2 + 1}`,
-                          dangerouslySetInnerHTML: {
-                            __html: sanitizeHtml(field.value)
-                          }
-                        }
-                      )
-                    ]
-                  },
-                  `${field.fieldLabel}-${index2}`
-                )) }) : null,
+                    className: "flex flex-col gap-7",
+                    "data-ocid": "library.item.fields",
+                    children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: "flex flex-col gap-1.5",
+                        "data-ocid": `library.item.field.${index2 + 1}`,
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "dt",
+                            {
+                              className: "font-heading text-sm uppercase tracking-wider text-secondary",
+                              "data-ocid": `library.item.field_label.${index2 + 1}`,
+                              children: field.fieldLabel
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "dd",
+                            {
+                              className: "font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
+                              "data-ocid": `library.item.field_value.${index2 + 1}`,
+                              dangerouslySetInnerHTML: {
+                                __html: sanitizeHtml(field.value)
+                              }
+                            }
+                          )
+                        ]
+                      },
+                      `${field.fieldLabel}-${index2}`
+                    ))
+                  }
+                ) : null,
                 item.notes ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "section",
                   {
@@ -80197,6 +84035,747 @@ Defaulting to \`null\`.`;
           itemId: String(itemId ?? "")
         }
       );
+    }
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const ROLE_LABELS = {
+      trainee: "Trainee",
+      trainer: "Trainer",
+      manager: "Manager",
+      admin: "Admin"
+    };
+    function getInitials(name, principal) {
+      if (name && name.trim().length > 0) {
+        const parts = name.trim().split(/\s+/).slice(0, 2);
+        return parts.map((p2) => {
+          var _a2;
+          return ((_a2 = p2[0]) == null ? void 0 : _a2.toUpperCase()) ?? "";
+        }).join("") || "?";
+      }
+      if (principal) {
+        return principal.slice(0, 2).toUpperCase();
+      }
+      return "?";
+    }
+    function ProfileRoute() {
+      const { principal } = useAuth();
+      const { data: profile, isError, error, refetch } = useMyProfile();
+      const queryClient2 = useQueryClient();
+      const updateProfile = useUpdateMyProfile();
+      const [name, setName] = reactExports.useState("");
+      const [storeLocation, setStoreLocation] = reactExports.useState("");
+      const [profileTouched, setProfileTouched] = reactExports.useState(false);
+      reactExports.useEffect(() => {
+        if (profile) {
+          setName(profile.name);
+          setStoreLocation(profile.storeLocation);
+          setProfileTouched(false);
+        }
+      }, [profile]);
+      const setMyPhoto = useSetMyPhoto();
+      const {
+        uploadPhoto,
+        isUploading,
+        error: uploadError,
+        reset
+      } = usePhotoUpload();
+      const fileInputRef = reactExports.useRef(null);
+      const [photoProcessing, setPhotoProcessing] = reactExports.useState(false);
+      const [photoError, setPhotoError] = reactExports.useState(null);
+      const [cropImageSrc, setCropImageSrc] = reactExports.useState(null);
+      const initiateVerification = useInitiateEmailVerification();
+      const setEmail = useSetEmailForUser();
+      const [emailFormOpen, setEmailFormOpen] = reactExports.useState(false);
+      const [newEmail, setNewEmail] = reactExports.useState("");
+      const [emailStage, setEmailStage] = reactExports.useState("idle");
+      const [emailError, setEmailError] = reactExports.useState(null);
+      const initials = getInitials(profile == null ? void 0 : profile.name, principal);
+      const photoBusy = photoProcessing || isUploading;
+      const trimmedNewEmail = newEmail.trim();
+      const newEmailValid = EMAIL_RE.test(trimmedNewEmail);
+      const nameValid = name.trim().length > 0;
+      const storeValid = storeLocation.trim().length > 0;
+      const profileChanged = profileTouched && (name.trim() !== ((profile == null ? void 0 : profile.name) ?? "") || storeLocation.trim() !== ((profile == null ? void 0 : profile.storeLocation) ?? ""));
+      const canSaveProfile = nameValid && storeValid && profileChanged;
+      if (isError) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-md px-4 py-12", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-md border border-border bg-card p-6 text-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl uppercase text-foreground", children: "Couldn't load your profile" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body text-sm text-muted-foreground", children: "We couldn't load your profile right now. Please try again." }),
+          error ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body text-xs text-primary", children: error.message }) : null,
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              type: "button",
+              className: "mt-4 font-heading uppercase tracking-wide",
+              onClick: () => void refetch(),
+              "data-ocid": "profile.error.retry_button",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "size-4", "aria-hidden": true }),
+                "Retry"
+              ]
+            }
+          )
+        ] }) });
+      }
+      if (profile === void 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "mx-auto w-full max-w-3xl px-4 py-12",
+            "aria-busy": "true",
+            "data-ocid": "profile.loading_state",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 font-body text-sm text-muted-foreground", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-5 animate-spin", "aria-hidden": true }),
+              "Loading your profile…"
+            ] })
+          }
+        );
+      }
+      if (profile === null) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-md px-4 py-12 text-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl uppercase text-foreground", children: "No profile yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 font-body text-sm text-muted-foreground", children: "We couldn't find a profile for your account. Please sign in again." })
+        ] });
+      }
+      async function handlePhotoChange(e) {
+        var _a2;
+        const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
+        e.target.value = "";
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          setPhotoError("Please choose an image file (JPEG, PNG, or WebP).");
+          return;
+        }
+        setPhotoError(null);
+        setCropImageSrc(URL.createObjectURL(file));
+      }
+      async function handleCropConfirm(croppedBlob) {
+        if (!cropImageSrc) return;
+        setPhotoProcessing(true);
+        try {
+          const croppedFile = new File([croppedBlob], "cropped-photo.jpg", {
+            type: "image/jpeg"
+          });
+          const resized = await resizeImage(croppedFile, 1600, 0.8);
+          const url = await uploadPhoto(resized);
+          await new Promise((resolve, reject) => {
+            setMyPhoto.mutate(
+              { photo: url },
+              {
+                onSuccess: () => resolve(),
+                onError: (err) => reject(err)
+              }
+            );
+          });
+          ue.success("Profile photo updated.");
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Could not upload the photo.";
+          setPhotoError(msg);
+          ue.error("Photo upload failed. Please try again.");
+        } finally {
+          setPhotoProcessing(false);
+          URL.revokeObjectURL(cropImageSrc);
+          setCropImageSrc(null);
+        }
+      }
+      function handleCropCancel() {
+        if (cropImageSrc) {
+          URL.revokeObjectURL(cropImageSrc);
+        }
+        setCropImageSrc(null);
+      }
+      function handleRemovePhoto() {
+        setPhotoError(null);
+        reset();
+        setMyPhoto.mutate(
+          { photo: null },
+          {
+            onSuccess: () => ue.success("Profile photo removed."),
+            onError: () => ue.error("Could not remove the photo.")
+          }
+        );
+      }
+      function handleSaveProfile(e) {
+        e.preventDefault();
+        if (!canSaveProfile || updateProfile.isPending) return;
+        updateProfile.mutate(
+          { name: name.trim(), storeLocation: storeLocation.trim() },
+          {
+            onSuccess: () => {
+              ue.success("Profile saved.");
+              setProfileTouched(false);
+            },
+            onError: (err) => ue.error(err.message || "Could not save your profile.")
+          }
+        );
+      }
+      function handleOpenEmailForm() {
+        setEmailFormOpen(true);
+        setNewEmail("");
+        setEmailStage("idle");
+        setEmailError(null);
+      }
+      function handleCloseEmailForm() {
+        setEmailFormOpen(false);
+        setNewEmail("");
+        setEmailStage("idle");
+        setEmailError(null);
+      }
+      function handleSendLink(e) {
+        e.preventDefault();
+        if (!newEmailValid || emailStage === "sending") return;
+        setEmailError(null);
+        setEmailStage("sending");
+        initiateVerification.mutate(trimmedNewEmail, {
+          onSuccess: (result) => {
+            if (result && typeof result === "object" && "__kind__" in result) {
+              if (result.__kind__ === "ok") {
+                setEmailStage("awaiting-confirmation");
+                ue.success("Verification link sent. Check your inbox.");
+              } else if (result.__kind__ === "err") {
+                const errText = "err" in result ? String(result.err) : "";
+                setEmailStage("idle");
+                setEmailError(
+                  errText || "Could not send verification link. Try again."
+                );
+              } else {
+                setEmailStage("idle");
+                setEmailError("Could not send verification link. Try again.");
+              }
+            } else {
+              setEmailStage("awaiting-confirmation");
+              ue.success("Verification link sent. Check your inbox.");
+            }
+          },
+          onError: (err) => {
+            setEmailStage("idle");
+            setEmailError(err.message || "Could not send verification link.");
+          }
+        });
+      }
+      function handleConfirmVerification(e) {
+        e.preventDefault();
+        if (emailStage === "verifying") return;
+        setEmailError(null);
+        setEmailStage("verifying");
+        setEmail.mutate(trimmedNewEmail, {
+          onSuccess: () => {
+            setEmailStage("success");
+            ue.success("Email verified and saved.");
+            queryClient2.invalidateQueries({ queryKey: ["my-profile"] });
+            setTimeout(() => {
+              handleCloseEmailForm();
+            }, 1200);
+          },
+          onError: (err) => {
+            setEmailStage("awaiting-confirmation");
+            setEmailError(
+              err.message || "We couldn't verify that email yet. Click the link in your email, then try again."
+            );
+          }
+        });
+      }
+      function handleBackToEmail() {
+        setEmailStage("idle");
+        setEmailError(null);
+      }
+      const emailVerified = Boolean(profile.email);
+      const roleLabel2 = ROLE_LABELS[profile.role] ?? profile.role;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-8", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "h1",
+          {
+            className: "font-display text-4xl uppercase leading-none tracking-wide text-foreground",
+            "data-ocid": "profile.page.title",
+            children: "Profile"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "mt-2 font-body text-sm text-muted-foreground",
+            "data-ocid": "profile.page.subtitle",
+            children: "Your photo, contact email, and store details."
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-6 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6",
+            "data-ocid": "profile.avatar_section",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative shrink-0", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => {
+                      var _a2;
+                      return (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+                    },
+                    disabled: photoBusy,
+                    "aria-label": profile.photo ? "Change profile photo" : "Upload profile photo",
+                    "data-ocid": "profile.avatar.upload_button",
+                    className: cn(
+                      "profile-avatar size-28 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      photoBusy && "animate-profile-avatar-ring",
+                      photoBusy && "cursor-progress"
+                    ),
+                    children: [
+                      profile.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: profile.photo, alt: "" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "profile-avatar-initials text-3xl", children: initials }),
+                      !photoBusy ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "profile-avatar-upload", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { className: "size-6", "aria-hidden": true }) }) : null
+                    ]
+                  }
+                ),
+                photoBusy ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "absolute inset-0 flex items-center justify-center rounded-full bg-background/60",
+                    "aria-live": "polite",
+                    "data-ocid": "profile.avatar.loading_state",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      LoaderCircle,
+                      {
+                        className: "size-7 animate-spin text-primary",
+                        "aria-hidden": true
+                      }
+                    )
+                  }
+                ) : null,
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    ref: fileInputRef,
+                    type: "file",
+                    accept: "image/jpeg,image/png,image/webp",
+                    className: "hidden",
+                    onChange: (e) => void handlePhotoChange(e),
+                    "aria-label": "Upload profile photo",
+                    "data-ocid": "profile.avatar.file_input"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-2 sm:items-start", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "font-heading text-xl uppercase tracking-wide text-foreground",
+                    "data-ocid": "profile.avatar.name",
+                    children: profile.name || "Unnamed Roadie"
+                  }
+                ) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+                  profile.photo ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "ghost",
+                      size: "sm",
+                      onClick: handleRemovePhoto,
+                      disabled: photoBusy,
+                      "data-ocid": "profile.avatar.remove_button",
+                      className: "font-heading text-xs uppercase tracking-wide text-muted-foreground hover:text-foreground",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-3.5", "aria-hidden": true }),
+                        "Remove photo"
+                      ]
+                    }
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "ghost",
+                      size: "sm",
+                      onClick: () => {
+                        var _a2;
+                        return (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+                      },
+                      disabled: photoBusy,
+                      "data-ocid": "profile.avatar.choose_button",
+                      className: "font-heading text-xs uppercase tracking-wide text-muted-foreground hover:text-foreground",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "size-3.5", "aria-hidden": true }),
+                        "Upload photo"
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: "font-body text-[11px] uppercase tracking-[0.14em] text-muted-foreground",
+                      "data-ocid": "profile.avatar.hint",
+                      children: "Optional · resized to 1600px"
+                    }
+                  )
+                ] }),
+                photoError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    role: "alert",
+                    className: "font-body text-sm text-primary",
+                    "data-ocid": "profile.avatar.error_state",
+                    children: photoError
+                  }
+                ) : uploadError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    role: "alert",
+                    className: "font-body text-sm text-primary",
+                    "data-ocid": "profile.avatar.upload_error_state",
+                    children: uploadError
+                  }
+                ) : null
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-8 rounded-md border border-border bg-card p-5",
+            "data-ocid": "profile.details_section",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-sm uppercase tracking-[0.18em] text-foreground/80", children: "Your details" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "form",
+                {
+                  onSubmit: handleSaveProfile,
+                  className: "mt-4 flex flex-col gap-4",
+                  "data-ocid": "profile.details_form",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Label,
+                        {
+                          htmlFor: "profile-name",
+                          className: "font-heading uppercase tracking-wide",
+                          children: "Name"
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input$1,
+                        {
+                          id: "profile-name",
+                          value: name,
+                          onChange: (e) => {
+                            setName(e.target.value);
+                            setProfileTouched(true);
+                          },
+                          autoComplete: "name",
+                          required: true,
+                          disabled: updateProfile.isPending,
+                          "data-ocid": "profile.details.name_input"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Label,
+                        {
+                          htmlFor: "profile-store",
+                          className: "font-heading uppercase tracking-wide",
+                          children: "Store location"
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input$1,
+                        {
+                          id: "profile-store",
+                          value: storeLocation,
+                          onChange: (e) => {
+                            setStoreLocation(e.target.value);
+                            setProfileTouched(true);
+                          },
+                          autoComplete: "organization",
+                          required: true,
+                          disabled: updateProfile.isPending,
+                          "data-ocid": "profile.details.store_input"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Button,
+                        {
+                          type: "submit",
+                          disabled: !canSaveProfile || updateProfile.isPending,
+                          className: "font-heading uppercase tracking-wide",
+                          "data-ocid": "profile.details.save_button",
+                          children: updateProfile.isPending ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                            "Saving…"
+                          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4", "aria-hidden": true }),
+                            "Save changes"
+                          ] })
+                        }
+                      ),
+                      profileChanged && !updateProfile.isPending ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => {
+                            setName(profile.name);
+                            setStoreLocation(profile.storeLocation);
+                            setProfileTouched(false);
+                          },
+                          className: "font-heading text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          "data-ocid": "profile.details.cancel_button",
+                          children: "Cancel"
+                        }
+                      ) : null
+                    ] })
+                  ]
+                }
+              )
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-6 rounded-md border border-border bg-card p-5",
+            "data-ocid": "profile.email_section",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-sm uppercase tracking-[0.18em] text-foreground/80", children: "Contact email" }),
+              !emailFormOpen ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "mt-4 flex flex-col gap-3",
+                  "data-ocid": "profile.email.display",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center gap-2", children: profile.email ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "size-4 text-muted-foreground", "aria-hidden": true }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          className: "font-body text-sm text-foreground",
+                          "data-ocid": "profile.email.value",
+                          children: profile.email
+                        }
+                      ),
+                      emailVerified ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "span",
+                        {
+                          className: "inline-flex items-center gap-1 rounded-full bg-profile-email-verified px-2.5 py-0.5 text-profile-email-verified-fg font-heading text-[10px] uppercase tracking-[0.14em]",
+                          "data-ocid": "profile.email.verified_badge",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "size-3", "aria-hidden": true }),
+                            "Verified"
+                          ]
+                        }
+                      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          className: "inline-flex items-center gap-1 rounded-full bg-profile-email-pending px-2.5 py-0.5 text-profile-email-pending-fg font-heading text-[10px] uppercase tracking-[0.14em]",
+                          "data-ocid": "profile.email.pending_badge",
+                          children: "Pending"
+                        }
+                      )
+                    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "span",
+                      {
+                        className: "font-body text-sm text-muted-foreground",
+                        "data-ocid": "profile.email.empty_state",
+                        children: "No email on file."
+                      }
+                    ) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Button,
+                      {
+                        type: "button",
+                        variant: "outline",
+                        size: "sm",
+                        onClick: handleOpenEmailForm,
+                        className: "w-fit font-heading uppercase tracking-wide",
+                        "data-ocid": "profile.email.change_button",
+                        children: profile.email ? "Change email" : "Add email"
+                      }
+                    )
+                  ]
+                }
+              ) : emailStage === "success" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "mt-4 flex flex-col gap-3",
+                  "data-ocid": "profile.email.success_state",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-5 text-primary", "aria-hidden": true }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm uppercase tracking-wide text-foreground", children: trimmedNewEmail })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-body text-sm text-muted-foreground", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin", "aria-hidden": true }),
+                      "Saving…"
+                    ] })
+                  ]
+                }
+              ) : emailStage === "awaiting-confirmation" || emailStage === "verifying" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "mt-4 flex flex-col gap-4",
+                  "data-ocid": "profile.email.confirm_form",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 rounded-md border border-border bg-background px-4 py-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(MailCheck, { className: "size-4 text-primary", "aria-hidden": true }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-[0.14em] text-foreground/80", children: "Check your inbox" })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-sm text-muted-foreground", children: [
+                        "We sent a verification link to",
+                        " ",
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground", children: trimmedNewEmail }),
+                        ". Click the link in your email, then come back and click Confirm."
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Button,
+                        {
+                          type: "button",
+                          onClick: handleConfirmVerification,
+                          disabled: emailStage === "verifying",
+                          className: "font-heading uppercase tracking-wide",
+                          "data-ocid": "profile.email.confirm_button",
+                          children: emailStage === "verifying" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                            "Verifying…"
+                          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(MailCheck, { className: "size-4", "aria-hidden": true }),
+                            "Confirm verification"
+                          ] })
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: handleBackToEmail,
+                          className: "inline-flex items-center gap-1.5 font-heading text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          "data-ocid": "profile.email.back_to_email_button",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+                            "Use a different email"
+                          ]
+                        }
+                      )
+                    ] })
+                  ]
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "form",
+                {
+                  onSubmit: handleSendLink,
+                  className: "mt-4 flex flex-col gap-4",
+                  "data-ocid": "profile.email.email_form",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Label,
+                        {
+                          htmlFor: "profile-new-email",
+                          className: "font-heading uppercase tracking-wide",
+                          children: profile.email ? "New email address" : "Email address"
+                        }
+                      ),
+                      profile.email ? /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-xs text-muted-foreground", children: [
+                        "Current:",
+                        " ",
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground", children: profile.email }),
+                        ". We'll verify the new address before replacing it."
+                      ] }) : null,
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input$1,
+                        {
+                          id: "profile-new-email",
+                          type: "email",
+                          value: newEmail,
+                          onChange: (e) => setNewEmail(e.target.value),
+                          placeholder: "you@example.com",
+                          autoComplete: "email",
+                          required: true,
+                          autoFocus: true,
+                          disabled: emailStage === "sending",
+                          "data-ocid": "profile.email.new_email_input"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Button,
+                        {
+                          type: "submit",
+                          disabled: !newEmailValid || emailStage === "sending",
+                          className: "font-heading uppercase tracking-wide",
+                          "data-ocid": "profile.email.send_link_button",
+                          children: emailStage === "sending" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                            "Sending…"
+                          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "size-4", "aria-hidden": true }),
+                            "Send verification link"
+                          ] })
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: handleCloseEmailForm,
+                          className: "inline-flex items-center gap-1.5 font-heading text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          "data-ocid": "profile.email.cancel_button",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4", "aria-hidden": true }),
+                            "Cancel"
+                          ]
+                        }
+                      )
+                    ] })
+                  ]
+                }
+              ),
+              emailError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  role: "alert",
+                  className: "mt-3 font-body text-sm text-primary",
+                  "data-ocid": "profile.email.error_state",
+                  children: emailError
+                }
+              ) : null
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "section",
+          {
+            className: "mt-6 rounded-md border border-border bg-card p-5",
+            "data-ocid": "profile.role_section",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-sm uppercase tracking-[0.18em] text-foreground/80", children: "Role" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-3 flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "size-4 text-muted-foreground", "aria-hidden": true }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "font-body text-sm text-foreground",
+                    "data-ocid": "profile.role.value",
+                    children: roleLabel2
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: "· set by an admin" })
+              ] })
+            ]
+          }
+        ),
+        cropImageSrc ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CropPhotoModal,
+          {
+            imageSrc: cropImageSrc,
+            onConfirm: (blob) => void handleCropConfirm(blob),
+            onCancel: handleCropCancel
+          }
+        ) : null
+      ] });
     }
     const ADMIN_SUB_NAV = [
       { to: "/admin/positions", label: "Positions" },
@@ -80364,6 +84943,12 @@ Defaulting to \`null\`.`;
       component: NsoPage,
       errorComponent: RouteErrorComponent
     });
+    const profileRoute = createRoute({
+      getParentRoute: () => Route,
+      path: "/profile",
+      component: ProfileRoute,
+      errorComponent: RouteErrorComponent
+    });
     const itemDetailRoute = createRoute({
       getParentRoute: () => Route,
       path: "/position/$id/library/$categoryId/item/$itemId",
@@ -80416,6 +85001,7 @@ Defaulting to \`null\`.`;
       heartShowcaseRoute,
       itemDetailRoute,
       nsoRoute,
+      profileRoute,
       adminRoute.addChildren([
         adminIndexRoute,
         adminPositionsRoute,

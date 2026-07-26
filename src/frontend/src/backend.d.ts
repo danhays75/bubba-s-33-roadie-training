@@ -41,6 +41,13 @@ export interface Task {
     notes?: string;
     phaseId: bigint;
 }
+export type SendResult = {
+    __kind__: "ok";
+    ok: null;
+} | {
+    __kind__: "err";
+    err: string;
+};
 export type Result__1 = {
     __kind__: "ok";
     ok: null;
@@ -188,16 +195,6 @@ export type ActivityContent = {
     __kind__: "flashcardContent";
     flashcardContent: FlashcardContent;
 };
-export interface Activity {
-    id: bigint;
-    activityType: ActivityType;
-    content: ActivityContent;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    positionId: bigint;
-    sourceCategoryIds: Array<bigint>;
-}
 export interface Result {
     hasMore: boolean;
     rows: Array<Array<Cell>>;
@@ -238,6 +235,16 @@ export interface Flashcard {
     itemPhoto?: string;
     recipe?: FlashcardRecipe;
 }
+export interface Activity {
+    id: bigint;
+    activityType: ActivityType;
+    content: ActivityContent;
+    name: string;
+    createdAt: bigint;
+    createdBy: Principal;
+    positionId: bigint;
+    sourceCategoryIds: Array<bigint>;
+}
 export interface Recipe {
     equipment: Array<string>;
     glassware: string;
@@ -276,12 +283,20 @@ export interface UserProfile {
     id: Principal;
     name: string;
     role: Role;
+    email?: string;
+    approvalStatus: ApprovalStatus;
     storeLocation: string;
+    photo?: string;
 }
 export enum ActivityType {
     drinksBuilder = "drinksBuilder",
     quiz = "quiz",
     flashcards = "flashcards"
+}
+export enum ApprovalStatus {
+    pending = "pending",
+    approved = "approved",
+    rejected = "rejected"
 }
 export enum AssignmentStatus {
     inTraining = "inTraining",
@@ -307,6 +322,7 @@ export enum Variant_up_down {
     down = "down"
 }
 export interface backendInterface {
+    approveUser(userId: Principal): Promise<UserProfile>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignPosition(userId: Principal, positionId: bigint): Promise<PositionAssignment>;
     buildLegendaryActivity(input: BuildActivityInput): Promise<Activity>;
@@ -350,18 +366,25 @@ export interface backendInterface {
     getUserAssignments(userId: Principal): Promise<Array<PositionAssignment>>;
     getUserRole(userId: Principal): Promise<Role | null>;
     importNsoTasks(input: NsoImportInput): Promise<NsoImportSummary>;
+    initiateEmailVerification(email: string): Promise<SendResult>;
     isCallerAdmin(): Promise<boolean>;
     rebuildLegendaryActivity(id: bigint): Promise<Activity>;
+    rejectUser(userId: Principal): Promise<UserProfile>;
     reorderCategories(positionId: bigint, orderedCategoryIds: Array<bigint>): Promise<Array<Category>>;
     reorderItems(categoryId: bigint, orderedItemIds: Array<bigint>): Promise<Array<LibraryItem>>;
     reorderNsoPhases(id: bigint, direction: Variant_up_down): Promise<void>;
     reorderNsoTasks(id: bigint, direction: Variant_up_down): Promise<void>;
     reorderPositions(orderedIds: Array<bigint>): Promise<Array<Position>>;
+    resendApprovalEmail(userId: Principal): Promise<void>;
     schema(): Promise<string>;
     searchLibrary(positionId: bigint, searchText: string): Promise<Array<LibraryItem>>;
     setAssignmentStatus(userId: Principal, positionId: bigint, status: AssignmentStatus): Promise<PositionAssignment>;
+    setEmailForUser(newEmail: string): Promise<UserProfile>;
+    setMyPhoto(photo: string | null): Promise<UserProfile>;
     setNsoTaskAssignment(id: bigint, assignedTo: Principal | null): Promise<void>;
     setNsoTaskCompletionDate(id: bigint, completionDate: string | null): Promise<void>;
+    setUserEmail(userId: Principal, email: string): Promise<UserProfile>;
+    setUserPhoto(userId: Principal, photo: string | null): Promise<UserProfile>;
     setUserRole(userId: Principal, role: Role): Promise<UserProfile>;
     toggleNsoTask(id: bigint, done: boolean, completionDate: string | null): Promise<void>;
     unassignPosition(userId: Principal, positionId: bigint): Promise<void>;
@@ -369,6 +392,7 @@ export interface backendInterface {
     updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null): Promise<LibraryItem>;
     updateLegendaryActivity(input: UpdateActivityInput): Promise<Activity>;
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
+    updateMyProfileWithPhoto(name: string, storeLocation: string, photo: string | null): Promise<UserProfile>;
     updateNsoPhase(id: bigint, name: string): Promise<void>;
     updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;
     updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null, layoutStyle: LayoutStyle): Promise<Position>;

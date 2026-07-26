@@ -7,9 +7,21 @@ import Nat "mo:core/Nat";
 import MixinViews "mo:caffeineai-data-viewer/MixinViews";
 import AccessControl "mo:caffeineai-authorization/access-control";
 import MixinAuthorization "mo:caffeineai-authorization/MixinAuthorization";
+import Verify "mo:identity-attributes/Internal/Verify";
 import OQL "mo:caffeineai-oql";
+import Entity "mo:caffeineai-oql/Entity";
 import Expose "mo:caffeineai-oql/Expose";
+// Direct *Value module imports so the compiler resolves the implicit
+// `_toRow : V -> Value` arguments of Entity.payload(...) calls. Motoko's
+// implicit search walks directly-imported modules for a matching
+// `public func _toRow`; the OQL re-export (`public let TextValue = ...`)
+// does not surface the function as a top-level implicit candidate.
+import TextValue "mo:caffeineai-oql/TextValue";
+import NatValue "mo:caffeineai-oql/NatValue";
+import BoolValue "mo:caffeineai-oql/BoolValue";
 import MixinObjectStorage "mo:caffeineai-object-storage/Mixin";
+import MixinEmailVerification "mo:caffeineai-email-verification/verificationMixin";
+import VerifiedEmails "mo:caffeineai-email-verification/verifiedEmails";
 import Foundation "lib/foundation";
 import Library "lib/library";
 import Nso "lib/nso";
@@ -22,6 +34,25 @@ import LegendaryApi "mixins/legendary-api";
 actor {
   include MixinViews();
   include MixinObjectStorage();
+  // --- Email-verification extension state ---
+  // Tracks which manually-typed email addresses have been verified via a
+  // click-through challenge. The MixinEmailVerification callback (included
+  // below) records verified addresses here; setEmailForUser checks
+  // VerifiedEmails.contains before replacing the stored email. SSO-verified
+  // emails are captured separately via the identity-attributes
+  // onAttributesVerified callback and are NEVER re-verified through this
+  // flow. Initial value comes from the migration chain.
+  // Declared BEFORE the MixinEmailVerification include so the binding is in
+  // scope at the include site (Motoko requires a binding to be defined before
+  // it is referenced, even for actor-field includes).
+  let verifiedEmails : VerifiedEmails.State;
+  // Email-verification callback handler. Records a manually-typed email
+  // address into verifiedEmails when the user clicks the verification link.
+  // The challenge is initiated by initiateEmailVerification in the
+  // foundation API mixin; the click lands here and marks the address
+  // verified. setEmailForUser then checks verifiedEmails.contains before
+  // replacing the stored email.
+  include MixinEmailVerification(verifiedEmails);
 
   let accessControlState : AccessControl.AccessControlState;
 
@@ -62,15 +93,26 @@ actor {
 
   // Access-control sign-in mixin. The unsuppressable contract rule from
   // the caffeineai-authorization package requires this exact include.
+  // The onAttributesVerified callback captures the verified email from the
+  // identity-attributes package into the caller's UserProfile so admin
+  // notification emails (and any per-user correspondence) have an address
+  // to send to. Idempotent — re-runs on every SSO sign-in; Foundation.setEmail
+  // is a no-op when the profile does not yet exist (the createMyProfile path
+  // captures the email from the caller's arguments in that case).
   // The admin-guard repair for the B-tree corruption left by the frozen
   // migration 20260703_000001 is applied additively inside getMyProfile
   // (see mixins/foundation-api.mo) via AccessControlAdminGuard.initialize,
   // which runs before the existing role-sync read and re-grants #admin to
   // a caller whose stored profile.role == #admin but whose userRoles entry
   // is missing/corrupted.
-  include MixinAuthorization(accessControlState, null);
+  include MixinAuthorization(
+    accessControlState,
+    ?(func(caller : Principal, attrs : Verify.IdentityAttributes) : () {
+      ignore Foundation.setEmail(profiles, caller, attrs.email);
+    }),
+  );
 
-  include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId);
+  include FoundationApi(accessControlState, profiles, positions, assignments, nextPositionId, verifiedEmails);
   include LibraryApi(accessControlState, positions, categories, items, nextCategoryId, nextItemId);
   include NsoApi(accessControlState, profiles, nsoPhases, nsoTasks, nextPhaseId, nextTaskId);
   include LegendaryApi(accessControlState, positions, categories, items, legendaryActivities, nextLegendaryActivityId);
@@ -88,7 +130,7 @@ actor {
       // storeLocation, role) so it stays #controllerOnly — the agent reads
       // everything; end users read their own profile via getMyProfile.
       // id is the Principal rendered as text (canonical form).
-      OQL.Entity.manual<Foundation.UserProfile>(
+      Entity.manual<Foundation.UserProfile>(
         "userProfile",
         func () = profiles.values(),
         "UserProfile",
@@ -103,11 +145,21 @@ actor {
           case (#manager) "manager";
           case (#admin) "admin";
         })
+        .payload("approvalStatus", func (p) = switch (p.approvalStatus) {
+          case (#pending) "pending";
+          case (#approved) "approved";
+          case (#rejected) "rejected";
+        })
+        .payload("email", func (p) = switch (p.email) { case null ""; case (?t) t })
+        .payload("photo", func (p) = switch (p.photo) { case null ""; case (?t) t })
         .sample({
           id = Principal.fromText("aaaaa-aa");
           name = "";
           storeLocation = "";
           role = #trainee;
+          approvalStatus = #pending;
+          email = null;
+          photo = null;
         })
         .build(),
       // Position: public-read (matches getAllPositions / getPosition query
@@ -115,7 +167,7 @@ actor {
         // ("library" / "orientation"). description and coverPhoto are
         // optional ?Text exposed as empty text when null (mirrors the
         // coverPhoto/photo handling on category/libraryItem).
-      OQL.Entity.manual<Foundation.Position>(
+      Entity.manual<Foundation.Position>(
         "position",
         func () = positions.values(),
         "Position",
@@ -147,7 +199,7 @@ actor {
         // rendered as text and tagged #owner in schema(). status is the
         // AssignmentStatus variant exposed as text ("inTraining" /
         // "certified").
-      OQL.Entity.manual<Foundation.PositionAssignment>(
+      Entity.manual<Foundation.PositionAssignment>(
         "positionAssignment",
         func () = assignments.values(),
         "PositionAssignment",
@@ -171,7 +223,7 @@ actor {
       // foundation "position" entity (declared elsewhere); kept as a plain
       // payload here since the foundation entity is outside this domain's
       // OQL scope.
-      OQL.Entity.manual<Library.Category>(
+      Entity.manual<Library.Category>(
         "category",
         func () = categories.values(),
         "Category",
@@ -193,7 +245,7 @@ actor {
       // LibraryItem: belongs to a category. details and tags are collection
       // fields — exposed as a count and a joined text column respectively so
       // they remain queryable without a nested-record _toRow.
-      OQL.Entity.manual<Library.LibraryItem>(
+      Entity.manual<Library.LibraryItem>(
         "libraryItem",
         func () = items.values(),
         "LibraryItem",
@@ -232,7 +284,7 @@ actor {
       // NsoPhase: an ordered stage of a new store opening. Manager/admin-only
       // domain; authorization is the default #controllerOnly — the agent reads
       // everything, end users browse via the explicit getNsoPhases query method.
-      OQL.Entity.manual<Nso.Phase>(
+      Entity.manual<Nso.Phase>(
         "nsoPhase",
         func () = nsoPhases.values(),
         "Phase",
@@ -251,7 +303,7 @@ actor {
       // above; kept as a plain payload here for consistency with the
       // category/libraryItem pattern. assignedTo is a ?Principal exposed as
       // empty text when null (mirrors the coverPhoto/photo handling above).
-      OQL.Entity.manual<Nso.Task>(
+      Entity.manual<Nso.Task>(
         "nsoTask",
         func () = nsoTasks.values(),
         "Task",
@@ -288,7 +340,7 @@ actor {
       // Principal who triggered generation. Authorization is the default
       // #controllerOnly — the agent reads everything; end users browse via the
       // explicit getLegendaryActivitiesByPosition query method.
-      OQL.Entity.manual<Legendary.Activity>(
+      Entity.manual<Legendary.Activity>(
         "legendaryActivity",
         func () = legendaryActivities.values(),
         "Activity",

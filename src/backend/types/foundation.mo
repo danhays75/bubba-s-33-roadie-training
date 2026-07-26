@@ -18,12 +18,38 @@ module {
     #certified;
   };
 
+  // Approval gate status for a user's access. New sign-ups start #pending and
+  // are blocked from app access until an admin approves (#approved) or rejects
+  // (#rejected) them. The first user (auto-admin) and pre-existing users are
+  // #approved so the app is never locked out.
+  public type ApprovalStatus = {
+    #pending;
+    #approved;
+    #rejected;
+  };
+
   // A user's profile. Created on first login.
+  // email is the verified email captured from the identity-attributes
+  // onVerified callback at SSO sign-in (null when the user signed in
+  // without a verified email, e.g. plain II without an email claim). It
+  // is the source of admin recipient addresses for the approval
+  // notification email sent from createMyProfile, and the Roadie
+  // recipient address for the approve/reject notification emails sent
+  // from approveUser/rejectUser.
+  // photo is an optional object-storage URL for the user's profile
+  // photo. The frontend uploads the photo via the object-storage client
+  // and persists the resulting URL here. When null the frontend falls
+  // back to an initials avatar. Optional — never required to save a
+  // profile. Set by the user themselves via setMyPhoto (or folded into
+  // updateMyProfile); admins never edit a Roadie's photo.
   public type UserProfile = {
     id : Principal;
     name : Text;
     storeLocation : Text;
     role : Role;
+    approvalStatus : ApprovalStatus;
+    email : ?Text;
+    photo : ?Text;
   };
 
   // Per-position presentation hint for the "Legendary Starts Here" area.

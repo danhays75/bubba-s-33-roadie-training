@@ -4,7 +4,10 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { CreateProfileScreen } from "./CreateProfileScreen";
+import { EnterEmailScreen } from "./EnterEmailScreen";
+import { PendingApprovalScreen } from "./PendingApprovalScreen";
 import { QueryErrorState } from "./QueryErrorState";
+import { RejectedAccessScreen } from "./RejectedAccessScreen";
 import { SignInScreen } from "./SignInScreen";
 
 /**
@@ -12,7 +15,13 @@ import { SignInScreen } from "./SignInScreen";
  *
  * - Not signed in → Internet Identity sign-in screen.
  * - Signed in but no profile → profile-creation form.
- * - Signed in with a profile → render the router outlet (children).
+ * - Signed in with a profile whose approval is `pending` → pending-approval
+ *   screen (the app is fully blocked; no routes or admin features are
+ *   reachable).
+ * - Signed in with a profile whose approval is `rejected` → access-denied
+ *   screen (the app is fully blocked).
+ * - Signed in with an `approved` profile → render the router outlet
+ *   (children).
  *
  * No splash/loading screen — we open directly on the appropriate screen.
  *
@@ -20,6 +29,12 @@ import { SignInScreen } from "./SignInScreen";
  * is read/created. It is idempotent and ensures the first user is registered
  * as admin before `createMyProfile` runs (the backend assigns the admin role
  * in its `getMyProfile`/`createMyProfile` path based on access-control state).
+ *
+ * The approval status is re-checked on each sign-in (and on session refresh)
+ * because the existing `_initialize_access_control` + `getMyProfile` flow
+ * re-runs and the `useMyProfile` query is invalidated after init. A pending
+ * user who is later approved by an admin will see the app on their next
+ * sign-in or session refresh.
  */
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isInitializing, isLoggingIn, login, loginError } =
@@ -158,5 +173,30 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     return <CreateProfileScreen />;
   }
 
+  // Email-collection gate — plain-II users with no email on record must
+  // enter and verify one before proceeding. This runs BEFORE the
+  // approval-status gate so a pending user can enter their email while
+  // they wait for admin approval (per the email-collection requirement).
+  // SSO users already have a verified email and never reach this branch.
+  // The EnterEmailScreen invalidates ['my-profile'] on success, so once
+  // the email is saved the gate re-evaluates and falls through to the
+  // approval-status branches below.
+  if (!profile.email) {
+    return <EnterEmailScreen />;
+  }
+
+  // Approval-status gate — fully blocks the app for non-approved users.
+  // Pending users see a "an admin is reviewing your access request" screen;
+  // rejected users see an "access denied" screen. Both offer a sign-out. No
+  // app routes or admin features are reachable in either state.
+  if (profile.approvalStatus === "pending") {
+    return <PendingApprovalScreen />;
+  }
+
+  if (profile.approvalStatus === "rejected") {
+    return <RejectedAccessScreen />;
+  }
+
+  // Approved (or any future status that should default to access) — proceed.
   return <>{children}</>;
 }

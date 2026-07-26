@@ -257,6 +257,27 @@
     --drinks-confetti-navy: 0.285 0.094 254;
     --drinks-confetti-green: 0.72 0.16 145;
     --drinks-confetti-cream: 0.948 0.012 90;
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Profile page + admin Users card — ADDITIVE tokens.
+       Circular avatar (distinct from rectangular photo-field preview),
+       email-verification-pending inline state, photo-upload affordance.
+       Reuses existing card/border/primary/in-training tokens; only adds
+       what the new surfaces need. Does NOT alter any existing token.
+       ═══════════════════════════════════════════════════════════════════ */
+    --profile-avatar-bg: 0.31 0.006 95; /* empty-avatar fill (library-card) */
+    --profile-avatar-fg: 0.948 0.012 90; /* initials text on empty avatar */
+    --profile-avatar-ring: 0.34 0.006 95; /* 1px ring around avatar (border) */
+    --profile-avatar-ring-active: 0.595 0.232 27; /* red ring on hover/active */
+    /* Email-verification pending — distinct from in-training gold. A muted
+       amber that reads as "in progress, action needed" without claiming the
+       gold semantic reserved for the In-training state. */
+    --profile-email-pending: 0.72 0.11 65;
+    --profile-email-pending-fg: 0.16 0.02 65;
+    --profile-email-pending-border: 0.72 0.11 65;
+    /* Email-verified check — reuses seasonal green family for "confirmed". */
+    --profile-email-verified: 0.62 0.09 145;
+    --profile-email-verified-fg: 0.16 0.02 145;
   }
 
   .dark {
@@ -400,6 +421,18 @@
     --drinks-confetti-navy: 0.285 0.094 254;
     --drinks-confetti-green: 0.72 0.16 145;
     --drinks-confetti-cream: 0.948 0.012 90;
+
+    /* Profile page + admin Users card — mirror :root additive tokens
+       (dark is the only theme). */
+    --profile-avatar-bg: 0.31 0.006 95;
+    --profile-avatar-fg: 0.948 0.012 90;
+    --profile-avatar-ring: 0.34 0.006 95;
+    --profile-avatar-ring-active: 0.595 0.232 27;
+    --profile-email-pending: 0.72 0.11 65;
+    --profile-email-pending-fg: 0.16 0.02 65;
+    --profile-email-pending-border: 0.72 0.11 65;
+    --profile-email-verified: 0.62 0.09 145;
+    --profile-email-verified-fg: 0.16 0.02 145;
   }
 }
 
@@ -1262,6 +1295,125 @@
       transition: none;
     }
   }
+
+  /* ════════════════════════════════════════════════════════════════════
+     Profile page + admin Users card — ADDITIVE utilities.
+     Circular avatar (distinct from the rectangular .photo-field-preview),
+     email-verification inline states, photo-upload affordance. Reuses
+     existing card/border/primary tokens; flat roadhouse rules intact.
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* Circular avatar — used on Profile header AND admin Users cards.
+     1px low-chroma ring (border), full radius, object-cover img. The ring
+     shifts to red on hover/active via .is-active so the upload affordance
+     reads clearly. Falls back to initials on a library-card fill when no
+     photo is set. */
+  .profile-avatar {
+    background-color: oklch(var(--profile-avatar-bg));
+    border: 1px solid oklch(var(--profile-avatar-ring));
+    border-radius: 9999px;
+    color: oklch(var(--profile-avatar-fg));
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .profile-avatar.is-active,
+  .profile-avatar:hover {
+    border-color: oklch(var(--profile-avatar-ring-active));
+  }
+
+  /* Initials fallback inside the avatar — Oswald uppercase, centered.
+     Used when no photo is set; photo is optional everywhere. */
+  .profile-avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Photo-upload affordance overlay — a dashed ring + camera glyph that
+     appears on hover over an empty avatar, signaling "tap to upload".
+     Reuses the photo-empty dashed pattern; no gradient, no glow. */
+  .profile-avatar-upload {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px dashed oklch(var(--profile-avatar-ring-active));
+    background-color: oklch(var(--profile-avatar-bg) / 0.7);
+    color: oklch(var(--profile-avatar-ring-active));
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .profile-avatar:hover .profile-avatar-upload,
+  .profile-avatar:focus-within .profile-avatar-upload {
+    opacity: 1;
+  }
+
+  /* Email-verification pending inline badge — muted amber fill, dark text,
+     flat (no pulse, no gradient). Distinct from in-training gold. Shown on
+     the Profile page next to a newly-entered email awaiting verification. */
+  .bg-profile-email-pending {
+    background-color: oklch(var(--profile-email-pending));
+  }
+  .text-profile-email-pending {
+    color: oklch(var(--profile-email-pending));
+  }
+  .text-profile-email-pending-fg {
+    color: oklch(var(--profile-email-pending-fg));
+  }
+  .border-profile-email-pending {
+    border-color: oklch(var(--profile-email-pending-border));
+  }
+
+  /* Email-verified inline check — seasonal-green family, dark text, flat.
+     Shown next to a confirmed email on the Profile page and admin cards. */
+  .bg-profile-email-verified {
+    background-color: oklch(var(--profile-email-verified));
+  }
+  .text-profile-email-verified {
+    color: oklch(var(--profile-email-verified));
+  }
+  .text-profile-email-verified-fg {
+    color: oklch(var(--profile-email-verified-fg));
+  }
+
+  /* Avatar ring breathing — a slow, subtle red ring pulse on the Profile
+     header avatar ONLY while a photo is uploading, so the user sees
+     progress. Single-purpose; pauses under reduced motion. */
+  .animate-profile-avatar-ring {
+    animation: profile-avatar-ring 1.4s ease-in-out infinite;
+  }
+  @keyframes profile-avatar-ring {
+    0%,
+    100% {
+      border-color: oklch(var(--profile-avatar-ring));
+    }
+    50% {
+      border-color: oklch(var(--profile-avatar-ring-active));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-profile-avatar-ring {
+      animation: none;
+    }
+    .profile-avatar,
+    .profile-avatar-upload {
+      transition: none;
+    }
+  }
 }
 
 /* ── Bubba's 33 Quill — dark rich-text editor for detail field values ──
@@ -1919,6 +2071,24 @@
   line-height: 1;
 }
 
+/* ── (6b) Our Story — uploaded poster photo (photo-dominant view) ───
+   Plain responsive image for the Our Story section when the Library item
+   has an uploaded photo. Centered, max-width 560px on desktop / full
+   width on mobile, height auto, object-fit: contain (never cropped),
+   rounded corners, subtle shadow. NO extra border or background — the
+   poster already has its own frame. */
+.orientation-our-story-photo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.35);
+}
+
 /* ── (7) Operational Goals ──────────────────────────────────────────
    Glowing navy cards, gold ★ corner, goal name + tag. */
 .orientation-goal-card {
@@ -1976,6 +2146,9 @@
 }
 .orientation-priority-card.is-blue::before {
   background-color: oklch(var(--patriotic-blue));
+}
+.orientation-priority-card.is-gold::before {
+  background-color: oklch(var(--patriotic-gold));
 }
 .orientation-priority-number {
   font-family: var(--font-display);
@@ -2044,398 +2217,7 @@
    star-twinkle / waving-flag). Hover transition on ENTER is the only
    motion and is short enough to leave intact. */
 
-/* =====================================================================
-   Bubba's 33 'Food For All' poster — Our Story interior (additive)
-   ADDITIVE only — no existing token altered. The poster look is the
-   INTERIOR of the existing dark Orientation card (bg-card + border-border
-   + '02 / Our Story' divider stay). The dark card wrapper frames the
-   poster; the poster styles the card's inner content. All classes
-   prefixed `bubba-poster-*` so they never collide. Gradients/textures
-   are permitted here (poster is a print-style surface, like the recipe
-   print card and Be Legendary banner). Mobile-first: poster zones stack
-   vertically on phone with no horizontal overflow.
-   ===================================================================== */
-:root {
-  /* Weathered blue wood-grain frame — painted-plank grain on a faded
-     patriotic blue, with distressed lighter streaks. Sits as the
-     outermost poster layer inside the dark card. */
-  --bubba-frame-blue: 0.42 0.16 264; /* patriotic blue base */
-  --bubba-frame-blue-light: 0.52 0.14 264; /* lighter grain streak */
-  --bubba-frame-blue-dark: 0.32 0.12 264; /* darker plank shadow */
-  --bubba-frame-distress: 0.78 0.02 264; /* near-white distressed edge */
-
-  /* Red-to-orange radial poster field — the warm background filling the
-     framed area behind all poster content. */
-  --bubba-field-red: 0.595 0.232 27; /* patriotic red (center) */
-  --bubba-field-orange: 0.68 0.19 50; /* warm orange (outer edge) */
-  --bubba-field-deep: 0.46 0.21 25; /* deep red vignette corners */
-
-  /* Script logo wordmark — red Pacifico, with a subtle dark drop shadow
-     so it lifts off the warm field. */
-  --bubba-logo-red: 0.595 0.232 27;
-  --bubba-logo-shadow: 0.18 0.02 25;
-
-  /* Navy SCRATCH-MADE banner — solid patriotic blue bar, white block
-     caps text. */
-  --bubba-banner-blue: 0.32 0.11 264;
-  --bubba-banner-cream: 0.948 0.012 90;
-
-  /* 'Food FOR All' headline — script words in deep red, block 'FOR' in
-     cream block caps. */
-  --bubba-headline-script: 0.46 0.21 25;
-  --bubba-headline-block: 0.948 0.012 90;
-
-  /* Food photo placeholder slots — warm gradient fills evoking the
-     poster's food tones (burger/pizza golden browns, beer/cocktail
-     ambers). No images; reserved <img> slot drops in later. */
-  --bubba-photo-hero-from: 0.55 0.12 55; /* golden-brown hero top */
-  --bubba-photo-hero-to: 0.42 0.14 35; /* deeper burger brown */
-  --bubba-photo-cluster-from: 0.6 0.13 70; /* amber cluster top */
-  --bubba-photo-cluster-to: 0.45 0.12 45; /* deeper amber base */
-  --bubba-photo-frame: 0.948 0.012 90; /* cream inner border on slots */
-
-  /* Feature list — cream body text on the warm field, red bullet stars. */
-  --bubba-list-cream: 0.948 0.012 90;
-  --bubba-list-star: 0.948 0.012 90;
-}
-.dark {
-  --bubba-frame-blue: 0.42 0.16 264;
-  --bubba-frame-blue-light: 0.52 0.14 264;
-  --bubba-frame-blue-dark: 0.32 0.12 264;
-  --bubba-frame-distress: 0.78 0.02 264;
-
-  --bubba-field-red: 0.595 0.232 27;
-  --bubba-field-orange: 0.68 0.19 50;
-  --bubba-field-deep: 0.46 0.21 25;
-
-  --bubba-logo-red: 0.595 0.232 27;
-  --bubba-logo-shadow: 0.18 0.02 25;
-
-  --bubba-banner-blue: 0.32 0.11 264;
-  --bubba-banner-cream: 0.948 0.012 90;
-
-  --bubba-headline-script: 0.46 0.21 25;
-  --bubba-headline-block: 0.948 0.012 90;
-
-  --bubba-photo-hero-from: 0.55 0.12 55;
-  --bubba-photo-hero-to: 0.42 0.14 35;
-  --bubba-photo-cluster-from: 0.6 0.13 70;
-  --bubba-photo-cluster-to: 0.45 0.12 45;
-  --bubba-photo-frame: 0.948 0.012 90;
-
-  --bubba-list-cream: 0.948 0.012 90;
-  --bubba-list-star: 0.948 0.012 90;
-}
-
-/* ── (1) Wood-grain frame ───────────────────────────────────────────
-   Outermost poster layer. Painted-plank grain on a faded patriotic blue
-   via stacked repeating-linear-gradients (vertical planks + horizontal
-   grain streaks), plus a distressed lighter edge via inset box-shadow.
-   No images. Sits inside the dark card; the card's bg-card + border
-   remain visible as a thin dark reveal around the frame. Mobile-first:
-   full-width on phone, padding scales down. */
-.bubba-poster-frame {
-  position: relative;
-  border-radius: var(--radius);
-  padding: 0.75rem;
-  background-color: oklch(var(--bubba-frame-blue));
-  /* Vertical plank seams (every ~64px) + horizontal grain streaks +
-     a soft top-light wash. Three layered gradients = painted wood. */
-  /* vertical plank seams — darker thin lines every 64px */
-  background-image: repeating-linear-gradient(
-      90deg,
-      oklch(var(--bubba-frame-blue-dark) / 0.55) 0,
-      oklch(var(--bubba-frame-blue-dark) / 0.55) 1px,
-      transparent 1px,
-      transparent 64px
-    ), /* horizontal grain streaks — light + dark alternating every few px */
-    repeating-linear-gradient(
-      0deg,
-      oklch(var(--bubba-frame-blue-light) / 0.18) 0,
-      oklch(var(--bubba-frame-blue-light) / 0.18) 2px,
-      transparent 2px,
-      transparent 5px,
-      oklch(var(--bubba-frame-blue-dark) / 0.22) 5px,
-      oklch(var(--bubba-frame-blue-dark) / 0.22) 6px,
-      transparent 6px,
-      transparent 11px
-    ), /* soft top-light wash so the grain reads as lit from above */
-    linear-gradient(
-      180deg,
-      oklch(var(--bubba-frame-blue-light) / 0.35) 0%,
-      oklch(var(--bubba-frame-blue) / 0) 40%,
-      oklch(var(--bubba-frame-blue-dark) / 0.3) 100%
-    );
-  /* distressed lighter edge — inset cream-tinted ring, uneven via two
-     stacked shadows of different blur/offset. */
-  box-shadow:
-    inset 0 0 0 2px oklch(var(--bubba-frame-distress) / 0.4),
-    inset 0 2px 6px oklch(var(--bubba-frame-distress) / 0.25),
-    inset 0 -3px 8px oklch(var(--bubba-frame-blue-dark) / 0.6),
-    0 1px 3px oklch(0 0 0 / 0.4);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-/* ── (2) Red-to-orange radial poster field ──────────────────────────
-   Fills the framed area. Radial red center fading to warm orange at the
-   edges, with a deep-red vignette in the corners for poster depth. */
-.bubba-poster-field {
-  position: relative;
-  border-radius: calc(var(--radius) - 1px);
-  padding: 1.25rem 1rem 1.5rem;
-  background-color: oklch(var(--bubba-field-red));
-  /* radial red→orange — warm poster glow from center out */
-  background-image: radial-gradient(
-      ellipse 80% 70% at 50% 40%,
-      oklch(var(--bubba-field-red)) 0%,
-      oklch(var(--bubba-field-orange)) 70%,
-      oklch(var(--bubba-field-deep)) 100%
-    ), /* corner vignette — deeper red in all four corners */
-    radial-gradient(
-      ellipse 60% 60% at 50% 50%,
-      transparent 60%,
-      oklch(var(--bubba-field-deep) / 0.55) 100%
-    );
-  color: oklch(var(--bubba-list-cream));
-  text-align: center;
-  overflow: hidden;
-}
-
-/* ── (3) Red Pacifico script logo wordmark ──────────────────────────
-   "Bubba's 33" in red Pacifico script at the top of the poster. Slight
-   drop shadow lifts it off the warm field. Reuses --font-script. */
-.bubba-poster-logo {
-  font-family: var(--font-script);
-  color: oklch(var(--bubba-logo-red));
-  line-height: 1;
-  text-shadow: 0 2px 0 oklch(var(--bubba-logo-shadow) / 0.5), 0 3px 6px
-    oklch(var(--bubba-logo-shadow) / 0.4);
-  /* slight tilt for the hand-painted poster feel */
-  transform: rotate(-2deg);
-  display: inline-block;
-}
-
-/* ── (4) Navy SCRATCH-MADE banner ───────────────────────────────────
-   Solid patriotic-blue bar across the upper poster area, white block
-   caps text in Oswald. Full-width inside the field, slight negative
-   margin so it bleeds to the field edges like a real poster banner. */
-.bubba-poster-banner {
-  background-color: oklch(var(--bubba-banner-blue));
-  color: oklch(var(--bubba-banner-cream));
-  font-family: var(--font-heading);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  /* bleed to field edges */
-  margin: 0.5rem -1rem 0.75rem;
-  padding: 0.3rem 1rem;
-  /* subtle top/bottom inner highlight for the printed-bar look */
-  box-shadow: inset 0 1px 0 oklch(var(--bubba-banner-cream) / 0.18), inset 0
-    -1px 0 oklch(0 0 0 / 0.25);
-}
-
-/* ── (5) 'Food FOR All' headline ────────────────────────────────────
-   Single line mixing Pacifico script ('Food' and 'All') with bold block
-   caps ('FOR'). Script words in deep red, block word in cream Oswald.
-   Inline-flex so the three words sit on one line and wrap cleanly on
-   phone (each word is its own inline element). */
-.bubba-poster-headline {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  line-height: 1;
-  margin: 0.25rem 0 0.75rem;
-}
-.bubba-poster-headline-script {
-  font-family: var(--font-script);
-  color: oklch(var(--bubba-headline-script));
-  text-shadow: 0 2px 0 oklch(var(--bubba-logo-shadow) / 0.45), 0 3px 5px
-    oklch(var(--bubba-logo-shadow) / 0.35);
-  line-height: 0.9;
-}
-.bubba-poster-headline-block {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: oklch(var(--bubba-headline-block));
-  line-height: 0.9;
-  /* slight outline so the block caps read over the warm field */
-  text-shadow: 0 1px 0 oklch(var(--bubba-logo-shadow) / 0.4), 0 2px 3px
-    oklch(var(--bubba-logo-shadow) / 0.35);
-}
-
-/* ── (6) Hero food photo slot (burger + fries) ──────────────────────
-   Warm CSS/gradient placeholder evoking golden-brown burger tones.
-   Container carries the gradient; an empty .bubba-poster-hero-img slot
-   inside lets a real <img> drop in later without layout shift. The
-   slot is empty by default (no broken-image icon). Cream inner border
-   frames the photo like the poster. Mobile-first: full-width, 16:9-ish
-   aspect via aspect-ratio. */
-.bubba-poster-hero {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  border: 3px solid oklch(var(--bubba-photo-frame));
-  border-radius: 2px;
-  background-color: oklch(var(--bubba-photo-hero-to));
-  background-image: linear-gradient(
-    160deg,
-    oklch(var(--bubba-photo-hero-from)) 0%,
-    oklch(var(--bubba-photo-hero-to)) 100%
-  );
-  /* faint warm radial glow center, like a food photo hotspot */
-  box-shadow: inset 0 0 24px oklch(var(--bubba-photo-hero-from) / 0.35), 0 1px
-    4px oklch(0 0 0 / 0.4);
-  overflow: hidden;
-  margin: 0.5rem 0 0.75rem;
-}
-.bubba-poster-hero-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* empty by default — no broken-image icon. When a real <img src>
-     drops in, it fills the slot cleanly. */
-}
-
-/* ── (7) 'This means we have:' Pacifico label ───────────────────────
-   Handwritten-style label in Pacifico script above the feature list,
-   replacing the old uppercase 'This Means We Have' label. Deep red on
-   the warm field. */
-.bubba-poster-list-label {
-  font-family: var(--font-script);
-  color: oklch(var(--bubba-headline-script));
-  text-align: left;
-  line-height: 1;
-  margin: 0.5rem 0 0.4rem;
-  text-shadow: 0 1px 0 oklch(var(--bubba-logo-shadow) / 0.4), 0 2px 3px
-    oklch(var(--bubba-logo-shadow) / 0.3);
-}
-
-/* ── (8) Feature list ───────────────────────────────────────────────
-   Cream body text on the warm field, cream ★ bullets. Left-aligned,
-   Oswald semibold for the poster-print look. Bound to the Library
-   'This means we have' field via the existing data pipeline. */
-.bubba-poster-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-.bubba-poster-list-item {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  font-family: var(--font-heading);
-  font-weight: 600;
-  color: oklch(var(--bubba-list-cream));
-  line-height: 1.25;
-  letter-spacing: 0.02em;
-}
-.bubba-poster-list-item::before {
-  content: "★";
-  color: oklch(var(--bubba-list-star));
-  font-size: 0.85em;
-  flex-shrink: 0;
-}
-
-/* ── (9) Lower food cluster slot (pizza / beer / cocktails) ─────────
-   Warm amber gradient placeholder for the lower cluster photo. Same
-   slot pattern as the hero — empty .bubba-poster-cluster-img inside
-   for a future <img>. Slightly wider aspect (21/9) to read as a strip
-   of three food/drink items. */
-.bubba-poster-cluster {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 21 / 9;
-  border: 3px solid oklch(var(--bubba-photo-frame));
-  border-radius: 2px;
-  background-color: oklch(var(--bubba-photo-cluster-to));
-  background-image: linear-gradient(
-    160deg,
-    oklch(var(--bubba-photo-cluster-from)) 0%,
-    oklch(var(--bubba-photo-cluster-to)) 100%
-  );
-  box-shadow: inset 0 0 24px oklch(var(--bubba-photo-cluster-from) / 0.35), 0
-    1px 4px oklch(0 0 0 / 0.4);
-  overflow: hidden;
-  margin: 0.75rem 0 0.5rem;
-}
-.bubba-poster-cluster-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ── (10) Known-for supporting copy ─────────────────────────────────
-   Poster-style tagline area where the poster's tagline sits. Bound to
-   the Library 'Known for' field. Oswald uppercase kicker + cream body. */
-.bubba-poster-knownfor-kicker {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: oklch(var(--bubba-banner-cream));
-  font-size: 0.7rem;
-  text-align: left;
-  margin-top: 0.25rem;
-}
-.bubba-poster-knownfor-body {
-  font-family: var(--font-body);
-  font-weight: 500;
-  color: oklch(var(--bubba-list-cream));
-  text-align: left;
-  line-height: 1.4;
-  margin-top: 0.2rem;
-}
-
-/* ── (11) Card footer Back link zone ───────────────────────────────
-   The Back-to-category link stays inside the card footer (not floating
-   above). This wrapper sits at the bottom of the field, separated by a
-   thin cream rule, so the link reads as part of the poster card. */
-.bubba-poster-footer {
-  margin-top: 0.75rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid oklch(var(--bubba-photo-frame) / 0.4);
-  display: flex;
-  justify-content: flex-start;
-}
-
-/* ── Mobile-first responsive ────────────────────────────────────────
-   On phone, the poster zones stack vertically and the banner bleeds to
-   the field edges. No horizontal overflow: all zones are width:100%
-   and the field padding is 1rem on phone. Larger screens get slightly
-   more generous padding and a max-width on the headline words so the
-   script doesn't get oversized. */
-@media (min-width: 640px) {
-  .bubba-poster-frame {
-    padding: 1rem;
-  }
-  .bubba-poster-field {
-    padding: 1.75rem 1.5rem 2rem;
-  }
-  .bubba-poster-banner {
-    margin: 0.75rem -1.5rem 1rem;
-    padding: 0.4rem 1.5rem;
-  }
-}
-
-/* Reduced motion — the poster is static by design (doNotBuild:
-   distressed-texture overlay animation). No animations to pause; this
-   block exists for symmetry with the other additive sections. */
-@media (prefers-reduced-motion: reduce) {
-  .bubba-poster-logo,
-  .bubba-poster-headline-script,
-  .bubba-poster-headline-block {
-    transform: none;
-  }
-}
+/* The Bubba's 33 'Food For All' code-drawn poster CSS block was removed
+   when OurStorySection switched to rendering the uploaded poster photo
+   directly (photo-dominant view) with a display-only text/chips fallback.
+   See .orientation-our-story-photo above. */

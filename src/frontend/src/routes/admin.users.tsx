@@ -1,5 +1,8 @@
+import { ResendEmailButton } from "@/components/admin/ResendEmailButton";
 import { RoleSelect } from "@/components/admin/RoleSelect";
 import { UserAssignmentEditor } from "@/components/admin/UserAssignmentEditor";
+import { UserEditSheet } from "@/components/admin/UserEditSheet";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -11,13 +14,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAllPositions } from "@/hooks/useAllPositions";
-import { useAllUsers, useSetUserRole } from "@/hooks/useAllUsers";
+import {
+  useAllUsers,
+  useApproveUser,
+  useRejectUser,
+  useSetUserRole,
+} from "@/hooks/useAllUsers";
 import { useUserAssignments } from "@/hooks/useMyAssignments";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
-import type { PositionAssignment, Role, UserProfile } from "@/types/foundation";
+import type {
+  ApprovalStatus,
+  PositionAssignment,
+  Role,
+  UserProfile,
+} from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
-import { ShieldAlert, Users } from "lucide-react";
+import { Check, ShieldAlert, UserCheck, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
 /**
@@ -28,10 +41,15 @@ import { toast } from "sonner";
  * assignments with status. A "Manage" button opens the UserAssignmentEditor
  * Sheet to assign/unassign positions and toggle In training / Certified.
  *
+ * Above the approved-users table, a pending-approval section surfaces users
+ * awaiting access. Admins can approve (grants access) or reject (denies
+ * access) each pending request. A pending count badge in the header keeps
+ * awaiting requests visible at a glance.
+ *
  * Gated on the signed-in user's role being admin. Non-admins see a clear
  * access-denied state with a link home — no dead end.
  *
- * Mobile-first: the table scrolls horizontally on small screens; the editor
+ * Mobile-first: the tables scroll horizontally on small screens; the editor
  * is a full-width right drawer.
  */
 export function AdminUsersPage() {
@@ -48,25 +66,32 @@ export function AdminUsersPage() {
     return <AccessDenied />;
   }
 
+  const all = users ?? [];
+  const pending = all.filter((u) => u.approvalStatus === "pending");
+  const approved = all.filter((u) => u.approvalStatus === "approved");
+
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6">
-      <Header />
+      <Header pendingCount={pending.length} />
 
       {isLoading ? (
         <UsersSkeleton />
-      ) : (users ?? []).length === 0 ? (
+      ) : all.length === 0 ? (
         <EmptyUsers />
       ) : (
-        <UsersTable users={users ?? []} />
+        <div className="flex flex-col gap-8">
+          <PendingApprovalSection users={pending} />
+          <ApprovedUsersSection users={approved} />
+        </div>
       )}
     </div>
   );
 }
 
-function Header() {
+function Header({ pendingCount }: { pendingCount: number }) {
   return (
     <header className="pb-4" data-ocid="admin_users.header.section">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Users className="size-6 text-primary" />
         <h1
           className="font-display text-3xl uppercase leading-none tracking-wide text-foreground"
@@ -74,11 +99,220 @@ function Header() {
         >
           Users &amp; roles
         </h1>
+        {pendingCount > 0 && (
+          <Badge
+            variant="default"
+            className="ml-1 bg-primary font-heading text-xs uppercase tracking-wide"
+            data-ocid="admin_users.pending_count_badge"
+          >
+            {pendingCount} pending
+          </Badge>
+        )}
       </div>
       <p className="mt-2 font-body text-sm text-muted-foreground">
         Set each user&rsquo;s role and manage their position assignments.
       </p>
     </header>
+  );
+}
+
+/**
+ * Pending-approval section. Surfaces users awaiting access at the top of
+ * the page so admins notice them before the approved-users table. Each
+ * row shows the user's name, store/location, and Approve / Reject actions.
+ * Hidden entirely when there are no pending users — no empty state needed
+ * here (the absence is the desired signal).
+ */
+function PendingApprovalSection({ users }: { users: UserProfile[] }) {
+  if (users.length === 0) return null;
+
+  return (
+    <section
+      className="flex flex-col gap-3"
+      data-ocid="admin_users.pending.section"
+    >
+      <div className="flex items-center gap-2">
+        <UserCheck className="size-5 text-primary" />
+        <h2
+          className="font-display text-xl uppercase leading-none tracking-wide text-foreground"
+          data-ocid="admin_users.pending.title"
+        >
+          Awaiting approval
+        </h2>
+        <Badge
+          variant="default"
+          className="bg-primary font-heading text-xs uppercase tracking-wide"
+          data-ocid="admin_users.pending.section_badge"
+        >
+          {users.length}
+        </Badge>
+      </div>
+      <p className="font-body text-sm text-muted-foreground">
+        New sign-ups are blocked until you approve them. Rejecting denies access
+        to the app.
+      </p>
+      <div
+        className="overflow-hidden border border-primary/40 bg-card"
+        data-ocid="admin_users.pending.table.section"
+      >
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border bg-primary/10 hover:bg-primary/10">
+              <TableHead className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
+                Name
+              </TableHead>
+              <TableHead className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
+                Store / location
+              </TableHead>
+              <TableHead className="text-right font-heading text-xs uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users.map((user, i) => (
+              <PendingUserRow key={user.principal} user={user} index={i + 1} />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </section>
+  );
+}
+
+function PendingUserRow({ user, index }: { user: UserProfile; index: number }) {
+  const approve = useApproveUser();
+  const reject = useRejectUser();
+
+  const handleApprove = () => {
+    approve.mutate(
+      { userPrincipal: user.principal },
+      {
+        onSuccess: () =>
+          toast.success(
+            `${user.name || "User"} approved. They can now sign in.`,
+          ),
+        onError: () => toast.error("Couldn't approve. Try again."),
+      },
+    );
+  };
+
+  const handleReject = () => {
+    reject.mutate(
+      { userPrincipal: user.principal },
+      {
+        onSuccess: () =>
+          toast.success(`${user.name || "User"} rejected. Access denied.`),
+        onError: () => toast.error("Couldn't reject. Try again."),
+      },
+    );
+  };
+
+  const busy = approve.isPending || reject.isPending;
+
+  return (
+    <TableRow className="border-border" data-ocid={`pending_user.row.${index}`}>
+      <TableCell className="align-top">
+        <div className="flex items-start gap-2.5">
+          <UserAvatar user={user} index={index} variant="pending" />
+          <div className="min-w-0">
+            <p
+              className="font-heading text-sm uppercase tracking-wide text-foreground"
+              data-ocid={`pending_user.name.${index}`}
+            >
+              {user.name}
+            </p>
+            {user.email ? (
+              <p
+                className="mt-0.5 max-w-[14rem] truncate font-body text-xs text-muted-foreground"
+                data-ocid={`pending_user.email.${index}`}
+                title={user.email}
+              >
+                {user.email}
+              </p>
+            ) : null}
+            <p className="mt-0.5 max-w-[12rem] truncate font-mono text-[0.65rem] text-muted-foreground">
+              {user.principal}
+            </p>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="align-top">
+        <p
+          className="font-body text-sm text-foreground"
+          data-ocid={`pending_user.store.${index}`}
+        >
+          {user.storeLocation || "—"}
+        </p>
+      </TableCell>
+      <TableCell className="align-top text-right">
+        <div className="flex justify-end gap-2">
+          <Button
+            size="sm"
+            variant="default"
+            disabled={busy}
+            onClick={handleApprove}
+            data-ocid={`pending_user.approve_button.${index}`}
+            aria-label={`Approve ${user.name}`}
+          >
+            <Check className="size-4" />
+            {approve.isPending ? "Approving…" : "Approve"}
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            disabled={busy}
+            onClick={handleReject}
+            data-ocid={`pending_user.reject_button.${index}`}
+            aria-label={`Reject ${user.name}`}
+          >
+            <X className="size-4" />
+            {reject.isPending ? "Rejecting…" : "Reject"}
+          </Button>
+          <ResendEmailButton user={user} index={index} variant="secondary" />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+/**
+ * Approved-users section. The existing users table, now scoped to approved
+ * users only (pending users live in their own section above). Adds an
+ * approval-status column so admins can see each user's current status at a
+ * glance.
+ */
+function ApprovedUsersSection({ users }: { users: UserProfile[] }) {
+  return (
+    <section
+      className="flex flex-col gap-3"
+      data-ocid="admin_users.approved.section"
+    >
+      <div className="flex items-center gap-2">
+        <Users className="size-5 text-secondary" />
+        <h2
+          className="font-display text-xl uppercase leading-none tracking-wide text-foreground"
+          data-ocid="admin_users.approved.title"
+        >
+          Approved users
+        </h2>
+      </div>
+      {users.length === 0 ? (
+        <div
+          className="flex flex-col items-center justify-center gap-2 border border-dashed border-border bg-card px-6 py-10 text-center"
+          data-ocid="admin_users.approved.empty_state"
+        >
+          <p className="font-heading text-sm uppercase tracking-wide text-foreground">
+            No approved users yet
+          </p>
+          <p className="max-w-xs font-body text-xs text-muted-foreground">
+            Approve pending requests above to populate this list.
+          </p>
+        </div>
+      ) : (
+        <UsersTable users={users} />
+      )}
+    </section>
   );
 }
 
@@ -99,6 +333,9 @@ function UsersTable({ users }: { users: UserProfile[] }) {
             </TableHead>
             <TableHead className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
               Role
+            </TableHead>
+            <TableHead className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
+              Status
             </TableHead>
             <TableHead className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
               Positions
@@ -145,15 +382,29 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
   return (
     <TableRow className="border-border" data-ocid={`user.row.${index}`}>
       <TableCell className="align-top">
-        <p
-          className="font-heading text-sm uppercase tracking-wide text-foreground"
-          data-ocid={`user.name.${index}`}
-        >
-          {user.name}
-        </p>
-        <p className="mt-0.5 max-w-[12rem] truncate font-mono text-[0.65rem] text-muted-foreground">
-          {user.principal}
-        </p>
+        <div className="flex items-start gap-2.5">
+          <UserAvatar user={user} index={index} variant="approved" />
+          <div className="min-w-0">
+            <p
+              className="font-heading text-sm uppercase tracking-wide text-foreground"
+              data-ocid={`user.name.${index}`}
+            >
+              {user.name}
+            </p>
+            {user.email ? (
+              <p
+                className="mt-0.5 max-w-[14rem] truncate font-body text-xs text-muted-foreground"
+                data-ocid={`user.email.${index}`}
+                title={user.email}
+              >
+                {user.email}
+              </p>
+            ) : null}
+            <p className="mt-0.5 max-w-[12rem] truncate font-mono text-[0.65rem] text-muted-foreground">
+              {user.principal}
+            </p>
+          </div>
+        </div>
       </TableCell>
       <TableCell className="align-top">
         <p
@@ -173,6 +424,9 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
         />
       </TableCell>
       <TableCell className="align-top">
+        <ApprovalStatusBadge status={user.approvalStatus} index={index} />
+      </TableCell>
+      <TableCell className="align-top">
         <AssignmentSummary
           assignments={assignments ?? []}
           positions={positions ?? []}
@@ -180,9 +434,38 @@ function UserRow({ user, index }: { user: UserProfile; index: number }) {
         />
       </TableCell>
       <TableCell className="align-top text-right">
-        <UserAssignmentEditor user={user} index={index} />
+        <div className="flex justify-end gap-2">
+          <ResendEmailButton user={user} index={index} variant="outline" />
+          <UserEditSheet user={user} index={index} />
+          <UserAssignmentEditor user={user} index={index} />
+        </div>
       </TableCell>
     </TableRow>
+  );
+}
+
+/** Approval-status badge shown in the approved-users table. */
+function ApprovalStatusBadge({
+  status,
+  index,
+}: {
+  status: ApprovalStatus;
+  index: number;
+}) {
+  const label = approvalLabel(status);
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        "border-border font-heading text-[0.65rem] uppercase tracking-wide",
+        status === "approved" && "border-secondary/50 text-secondary",
+        status === "pending" && "border-primary/50 text-primary",
+        status === "rejected" && "border-destructive/50 text-destructive",
+      )}
+      data-ocid={`user.status.badge.${index}`}
+    >
+      {label}
+    </Badge>
   );
 }
 
@@ -301,6 +584,65 @@ function roleLabel(role: Role): string {
     default:
       return "Trainee";
   }
+}
+
+function approvalLabel(status: ApprovalStatus): string {
+  switch (status) {
+    case "approved":
+      return "Approved";
+    case "pending":
+      return "Pending";
+    case "rejected":
+      return "Rejected";
+  }
+}
+
+/**
+ * Builds up-to-two-character initials from a name for the avatar fallback.
+ * Returns "?" when the name is empty/whitespace so the avatar is never blank.
+ */
+function initialsFor(name: string): string {
+  const trimmed = (name ?? "").trim();
+  if (!trimmed) return "?";
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+  return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
+}
+
+/**
+ * Small circular avatar for an admin Users row. Shows the user's profile
+ * photo when set, otherwise the Oswald-uppercase initials fallback. Uses
+ * the shared `.profile-avatar` / `.profile-avatar-initials` classes so the
+ * look matches the Profile page. View-only — admins cannot edit the photo
+ * or email from this page.
+ */
+function UserAvatar({
+  user,
+  size = "size-9",
+  index,
+  variant,
+}: {
+  user: UserProfile;
+  size?: string;
+  index: number;
+  variant: "pending" | "approved";
+}) {
+  const alt = `${user.name || "User"} profile photo`;
+  return (
+    <div
+      className={cn("profile-avatar shrink-0", size)}
+      data-ocid={`${variant}_user.avatar.${index}`}
+      aria-label={alt}
+    >
+      {user.photo ? (
+        <img src={user.photo} alt={alt} loading="lazy" />
+      ) : (
+        <span className="profile-avatar-initials text-xs">
+          {initialsFor(user.name)}
+        </span>
+      )}
+    </div>
+  );
 }
 
 export default AdminUsersPage;

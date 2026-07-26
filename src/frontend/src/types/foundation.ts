@@ -11,18 +11,52 @@ export type Role = "trainee" | "trainer" | "manager" | "admin";
 export type AssignmentStatus = "inTraining" | "certified";
 
 /**
+ * Approval status for a user's access request.
+ *
+ * New sign-ups start as `pending` and are fully blocked behind the
+ * pending-approval screen until an admin approves them. The first user
+ * (auto-admin) and pre-existing users retain full access (the backend
+ * defaults them to `approved`). Admins can move a pending user to
+ * `approved` (grants access) or `rejected` (denies access).
+ *
+ * Mirrors the backend Candid `ApprovalStatus` variant surfaced in
+ * backend.d.ts. The hook layer translates the enum to this plain string
+ * union and back to the enum on the way in, so components stay in
+ * string-land.
+ */
+export type ApprovalStatus = "pending" | "approved" | "rejected";
+
+/**
  * A user's profile. Created on first sign-in. The very first user to sign
  * up becomes Admin (handled backend-side); the rest default to trainee.
  *
  * `principal` is the stringified Principal (`user.id.toString()`) — set by
  * the hook layer when translating the Candid UserProfile (which has
  * `id: Principal`).
+ *
+ * `approvalStatus` controls whether the user can enter the app. Pending
+ * users see a pending-approval screen; rejected users see an access-denied
+ * screen; approved users proceed through AuthGate as before. The hook
+ * layer translates the backend `ApprovalStatus` enum to the plain string
+ * union here.
+ *
+ * `email` is the optional contact address the user provided during
+ * sign-up. The backend stores it as `?Text`; the hook layer surfaces it as
+ * `string | undefined`.
+ *
+ * `photo` is the optional profile-photo URL (object-storage gateway URL
+ * uploaded via the Profile page). The backend stores it as `?Text`; the
+ * hook layer surfaces it as `string | undefined`. When absent, the UI
+ * falls back to the initials avatar.
  */
 export interface UserProfile {
   principal: string;
   name: string;
   storeLocation: string;
   role: Role;
+  approvalStatus: ApprovalStatus;
+  email?: string;
+  photo?: string;
 }
 
 /**

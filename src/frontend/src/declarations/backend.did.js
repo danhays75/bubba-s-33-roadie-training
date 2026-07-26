@@ -162,11 +162,19 @@ export const Role = IDL.Variant({
   'trainee' : IDL.Null,
   'trainer' : IDL.Null,
 });
+export const ApprovalStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'approved' : IDL.Null,
+  'rejected' : IDL.Null,
+});
 export const UserProfile = IDL.Record({
   'id' : IDL.Principal,
   'name' : IDL.Text,
   'role' : Role,
+  'email' : IDL.Opt(IDL.Text),
+  'approvalStatus' : ApprovalStatus,
   'storeLocation' : IDL.Text,
+  'photo' : IDL.Opt(IDL.Text),
 });
 export const _ImmutableObjectStorageCreateCertificateResult = IDL.Record({
   'method' : IDL.Text,
@@ -249,6 +257,7 @@ export const NsoImportSummary = IDL.Record({
   'phasesReused' : IDL.Nat,
   'tasksAdded' : IDL.Nat,
 });
+export const SendResult = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
 export const UpdateActivityInput = IDL.Record({
   'id' : IDL.Nat,
   'content' : IDL.Opt(ActivityContent),
@@ -304,6 +313,8 @@ export const idlService = IDL.Service({
       [IDL.Vec(IDL.Tuple(IDL.Principal, UserProfile))],
       ['query'],
     ),
+  '__verifiedEmails' : IDL.Func([], [IDL.Reserved], ['query']),
+  '_caffeineEmailVerify' : IDL.Func([IDL.Text], [], []),
   '_immutableObjectStorageBlobsAreLive' : IDL.Func(
       [IDL.Vec(IDL.Vec(IDL.Nat8))],
       [IDL.Vec(IDL.Bool)],
@@ -333,6 +344,7 @@ export const idlService = IDL.Service({
   '_initialize_access_control' : IDL.Func([], [], []),
   '_internet_identity_sign_in_finish' : IDL.Func([], [Result__1], []),
   '_internet_identity_sign_in_start' : IDL.Func([], [IDL.Vec(IDL.Nat8)], []),
+  'approveUser' : IDL.Func([IDL.Principal], [UserProfile], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'assignPosition' : IDL.Func(
       [IDL.Principal, IDL.Nat],
@@ -431,8 +443,10 @@ export const idlService = IDL.Service({
     ),
   'getUserRole' : IDL.Func([IDL.Principal], [IDL.Opt(Role)], []),
   'importNsoTasks' : IDL.Func([NsoImportInput], [NsoImportSummary], []),
+  'initiateEmailVerification' : IDL.Func([IDL.Text], [SendResult], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'rebuildLegendaryActivity' : IDL.Func([IDL.Nat], [Activity], []),
+  'rejectUser' : IDL.Func([IDL.Principal], [UserProfile], []),
   'reorderCategories' : IDL.Func(
       [IDL.Nat, IDL.Vec(IDL.Nat)],
       [IDL.Vec(Category)],
@@ -454,6 +468,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'reorderPositions' : IDL.Func([IDL.Vec(IDL.Nat)], [IDL.Vec(Position)], []),
+  'resendApprovalEmail' : IDL.Func([IDL.Principal], [], []),
   'schema' : IDL.Func([], [IDL.Text], ['query']),
   'searchLibrary' : IDL.Func(
       [IDL.Nat, IDL.Text],
@@ -465,8 +480,16 @@ export const idlService = IDL.Service({
       [PositionAssignment],
       [],
     ),
+  'setEmailForUser' : IDL.Func([IDL.Text], [UserProfile], []),
+  'setMyPhoto' : IDL.Func([IDL.Opt(IDL.Text)], [UserProfile], []),
   'setNsoTaskAssignment' : IDL.Func([IDL.Nat, IDL.Opt(IDL.Principal)], [], []),
   'setNsoTaskCompletionDate' : IDL.Func([IDL.Nat, IDL.Opt(IDL.Text)], [], []),
+  'setUserEmail' : IDL.Func([IDL.Principal, IDL.Text], [UserProfile], []),
+  'setUserPhoto' : IDL.Func(
+      [IDL.Principal, IDL.Opt(IDL.Text)],
+      [UserProfile],
+      [],
+    ),
   'setUserRole' : IDL.Func([IDL.Principal, Role], [UserProfile], []),
   'toggleNsoTask' : IDL.Func([IDL.Nat, IDL.Bool, IDL.Opt(IDL.Text)], [], []),
   'unassignPosition' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
@@ -492,6 +515,11 @@ export const idlService = IDL.Service({
     ),
   'updateLegendaryActivity' : IDL.Func([UpdateActivityInput], [Activity], []),
   'updateMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
+  'updateMyProfileWithPhoto' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Opt(IDL.Text)],
+      [UserProfile],
+      [],
+    ),
   'updateNsoPhase' : IDL.Func([IDL.Nat, IDL.Text], [], []),
   'updateNsoTask' : IDL.Func(
       [
@@ -670,11 +698,19 @@ export const idlFactory = ({ IDL }) => {
     'trainee' : IDL.Null,
     'trainer' : IDL.Null,
   });
+  const ApprovalStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'approved' : IDL.Null,
+    'rejected' : IDL.Null,
+  });
   const UserProfile = IDL.Record({
     'id' : IDL.Principal,
     'name' : IDL.Text,
     'role' : Role,
+    'email' : IDL.Opt(IDL.Text),
+    'approvalStatus' : ApprovalStatus,
     'storeLocation' : IDL.Text,
+    'photo' : IDL.Opt(IDL.Text),
   });
   const _ImmutableObjectStorageCreateCertificateResult = IDL.Record({
     'method' : IDL.Text,
@@ -757,6 +793,7 @@ export const idlFactory = ({ IDL }) => {
     'phasesReused' : IDL.Nat,
     'tasksAdded' : IDL.Nat,
   });
+  const SendResult = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const UpdateActivityInput = IDL.Record({
     'id' : IDL.Nat,
     'content' : IDL.Opt(ActivityContent),
@@ -812,6 +849,8 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Principal, UserProfile))],
         ['query'],
       ),
+    '__verifiedEmails' : IDL.Func([], [IDL.Reserved], ['query']),
+    '_caffeineEmailVerify' : IDL.Func([IDL.Text], [], []),
     '_immutableObjectStorageBlobsAreLive' : IDL.Func(
         [IDL.Vec(IDL.Vec(IDL.Nat8))],
         [IDL.Vec(IDL.Bool)],
@@ -841,6 +880,7 @@ export const idlFactory = ({ IDL }) => {
     '_initialize_access_control' : IDL.Func([], [], []),
     '_internet_identity_sign_in_finish' : IDL.Func([], [Result__1], []),
     '_internet_identity_sign_in_start' : IDL.Func([], [IDL.Vec(IDL.Nat8)], []),
+    'approveUser' : IDL.Func([IDL.Principal], [UserProfile], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'assignPosition' : IDL.Func(
         [IDL.Principal, IDL.Nat],
@@ -947,8 +987,10 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getUserRole' : IDL.Func([IDL.Principal], [IDL.Opt(Role)], []),
     'importNsoTasks' : IDL.Func([NsoImportInput], [NsoImportSummary], []),
+    'initiateEmailVerification' : IDL.Func([IDL.Text], [SendResult], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'rebuildLegendaryActivity' : IDL.Func([IDL.Nat], [Activity], []),
+    'rejectUser' : IDL.Func([IDL.Principal], [UserProfile], []),
     'reorderCategories' : IDL.Func(
         [IDL.Nat, IDL.Vec(IDL.Nat)],
         [IDL.Vec(Category)],
@@ -970,6 +1012,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'reorderPositions' : IDL.Func([IDL.Vec(IDL.Nat)], [IDL.Vec(Position)], []),
+    'resendApprovalEmail' : IDL.Func([IDL.Principal], [], []),
     'schema' : IDL.Func([], [IDL.Text], ['query']),
     'searchLibrary' : IDL.Func(
         [IDL.Nat, IDL.Text],
@@ -981,12 +1024,20 @@ export const idlFactory = ({ IDL }) => {
         [PositionAssignment],
         [],
       ),
+    'setEmailForUser' : IDL.Func([IDL.Text], [UserProfile], []),
+    'setMyPhoto' : IDL.Func([IDL.Opt(IDL.Text)], [UserProfile], []),
     'setNsoTaskAssignment' : IDL.Func(
         [IDL.Nat, IDL.Opt(IDL.Principal)],
         [],
         [],
       ),
     'setNsoTaskCompletionDate' : IDL.Func([IDL.Nat, IDL.Opt(IDL.Text)], [], []),
+    'setUserEmail' : IDL.Func([IDL.Principal, IDL.Text], [UserProfile], []),
+    'setUserPhoto' : IDL.Func(
+        [IDL.Principal, IDL.Opt(IDL.Text)],
+        [UserProfile],
+        [],
+      ),
     'setUserRole' : IDL.Func([IDL.Principal, Role], [UserProfile], []),
     'toggleNsoTask' : IDL.Func([IDL.Nat, IDL.Bool, IDL.Opt(IDL.Text)], [], []),
     'unassignPosition' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
@@ -1012,6 +1063,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'updateLegendaryActivity' : IDL.Func([UpdateActivityInput], [Activity], []),
     'updateMyProfile' : IDL.Func([IDL.Text, IDL.Text], [UserProfile], []),
+    'updateMyProfileWithPhoto' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Opt(IDL.Text)],
+        [UserProfile],
+        [],
+      ),
     'updateNsoPhase' : IDL.Func([IDL.Nat, IDL.Text], [], []),
     'updateNsoTask' : IDL.Func(
         [

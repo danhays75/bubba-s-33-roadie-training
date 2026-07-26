@@ -136,8 +136,9 @@ const categories = [
   // Position 5 — Legendary Starts Here (orientation layout). Categories are
   // mapped by NAME in OrientationLayout, so the names below must match the
   // constants in OrientationLayout.tsx (Mission Statement, Core Values,
-  // Our Story, Operational Goals, Service Priorities, Food Priorities). Every
-  // category NOT in that hero set falls through to "The Rules of the Road".
+  // Our Story, Operational Goals, Service Priorities, Food Priorities,
+  // Marketing / Community Priorities). Every category NOT in that hero set
+  // falls through to "The Rules of the Road".
   {
     id: 50n,
     sortOrder: 0n,
@@ -180,87 +181,94 @@ const categories = [
     positionId: 5n,
     coverPhoto: undefined,
   },
+  {
+    id: 68n,
+    sortOrder: 6n,
+    name: "Marketing / Community Priorities",
+    positionId: 5n,
+    coverPhoto: undefined,
+  },
   // Rules of the Road categories — these fall through to the compact grid.
   {
     id: 56n,
-    sortOrder: 6n,
+    sortOrder: 7n,
     name: "10-4 With Heart",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 57n,
-    sortOrder: 7n,
+    sortOrder: 8n,
     name: "The Roadie Mentality",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 58n,
-    sortOrder: 8n,
+    sortOrder: 9n,
     name: "Legendary For All",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 59n,
-    sortOrder: 9n,
+    sortOrder: 10n,
     name: "EEO & Harassment Prevention",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 60n,
-    sortOrder: 10n,
+    sortOrder: 11n,
     name: "Reporting a Concern",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 61n,
-    sortOrder: 11n,
+    sortOrder: 12n,
     name: "Work Performance & Behaviors",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 62n,
-    sortOrder: 12n,
+    sortOrder: 13n,
     name: "Reporting an Illness / Food Safety",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 63n,
-    sortOrder: 13n,
+    sortOrder: 14n,
     name: "Alcohol Awareness & Responsible Service",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 64n,
-    sortOrder: 14n,
+    sortOrder: 15n,
     name: "Attendance & Scheduling",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 65n,
-    sortOrder: 15n,
+    sortOrder: 16n,
     name: "Dress & Appearance",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 66n,
-    sortOrder: 16n,
+    sortOrder: 17n,
     name: "Internet & Social Media Use",
     positionId: 5n,
     coverPhoto: undefined,
   },
   {
     id: 67n,
-    sortOrder: 17n,
+    sortOrder: 18n,
     name: "Employee Timekeeping",
     positionId: 5n,
     coverPhoto: undefined,
@@ -601,6 +609,23 @@ const items = [
     seasonal: false,
     sortOrder: 0n,
   },
+  {
+    id: 680n,
+    categoryId: 68n,
+    title: "10 Community Priorities",
+    subtitle: undefined,
+    photo: undefined,
+    details: [
+      { fieldLabel: "01", value: "Know your neighborhood." },
+      { fieldLabel: "02", value: "Support local causes." },
+      { fieldLabel: "03", value: "Be a good neighbor." },
+    ],
+    notes:
+      "The ten community priorities that keep Roadie Nation rooted in the towns we serve.",
+    tags: ["community", "marketing"],
+    seasonal: false,
+    sortOrder: 0n,
+  },
   // Rules of the Road categories — one item each so the destination route
   // has content. These render as the compact 2-column reference grid.
   {
@@ -881,13 +906,118 @@ const allLegendaryActivities = [
 ];
 
 // --- Profile + assignments --------------------------------------------------
+//
+// Visual-QA scenario switch. The mock reads a `?qa=` query param at module
+// load so a single dev server can render every approval-flow screen without
+// a restart:
+//   - qa=pending        acting user is a PENDING non-admin → AuthGate shows
+//                       PendingApprovalScreen.
+//   - qa=rejected       acting user is a REJECTED non-admin → AuthGate shows
+//                       RejectedAccessScreen.
+//   - qa=admin-pending  acting user is an APPROVED admin; getAllUsers returns
+//                       a mix of approved + pending users so the admin Users
+//                       page renders the "Awaiting approval" section with the
+//                       pending-count badge and Approve/Reject buttons.
+//   - (default)        acting user is an APPROVED admin with no pending users
+//                     (the original mock behaviour).
+//
+// The scenario is read once at module load; changing it requires a navigation
+// to a URL with the new `?qa=` value followed by a reload (the actor query is
+// cached with staleTime=Infinity, so a fresh load is required to re-resolve
+// the mock).
 
-const myProfile = {
-  id: FAKE_PRINCIPAL,
-  name: "Alex Roadie",
-  storeLocation: "Fort Worth, TX",
-  role: "admin" as const,
-};
+type QaScenario = "default" | "pending" | "rejected" | "admin-pending";
+
+function readQaScenario(): QaScenario {
+  if (typeof window === "undefined") return "default";
+  const params = new URLSearchParams(window.location.search);
+  const qa = params.get("qa");
+  if (qa === "pending" || qa === "rejected" || qa === "admin-pending") {
+    return qa;
+  }
+  return "default";
+}
+
+const QA_SCENARIO = readQaScenario();
+
+// A second fake principal used for the "other users" in the admin-pending
+// scenario so the pending table has multiple rows with distinct principals.
+const FAKE_PRINCIPAL_2 = {
+  toString: () => "2vxsx-faeaaa-aaaaq-aaaca-cab" as unknown as string,
+  toText: () => "2vxsx-faeaaa-aaaaq-aaaca-cab",
+} as never;
+
+const FAKE_PRINCIPAL_3 = {
+  toString: () => "2vxsx-faeaaa-aaaaq-aaaca-cac" as unknown as string,
+  toText: () => "2vxsx-faeaaa-aaaaq-aaaca-cac",
+} as never;
+
+// The acting user's profile, shaped by the active QA scenario. The
+// `approvalStatus` field is what AuthGate gates on; `role` controls whether
+// the admin Users page is reachable.
+function buildMyProfile() {
+  const base = {
+    id: FAKE_PRINCIPAL,
+    name: "Alex Roadie",
+    storeLocation: "Fort Worth, TX",
+    email: "alex@bubbas33.example",
+  };
+  switch (QA_SCENARIO) {
+    case "pending":
+      return {
+        ...base,
+        role: "trainee" as const,
+        approvalStatus: "pending" as const,
+      };
+    case "rejected":
+      return {
+        ...base,
+        role: "trainee" as const,
+        approvalStatus: "rejected" as const,
+      };
+    case "admin-pending":
+    case "default":
+    default:
+      return {
+        ...base,
+        role: "admin" as const,
+        approvalStatus: "approved" as const,
+      };
+  }
+}
+
+const myProfile = buildMyProfile();
+
+// The full user list returned by getAllUsers. In the admin-pending scenario
+// it includes pending users so the admin Users page renders the "Awaiting
+// approval" section + pending-count badge. In the pending/rejected scenarios
+// the acting user is the only user (the admin page isn't reachable anyway).
+function buildAllUsers() {
+  if (QA_SCENARIO === "admin-pending") {
+    return [
+      myProfile,
+      {
+        id: FAKE_PRINCIPAL_2,
+        name: "Jordan Lee",
+        storeLocation: "Dallas, TX",
+        email: "jordan@bubbas33.example",
+        role: "trainee" as const,
+        approvalStatus: "pending" as const,
+      },
+      {
+        id: FAKE_PRINCIPAL_3,
+        name: "Sam Rivera",
+        storeLocation: "Austin, TX",
+        email: "sam@bubbas33.example",
+        role: "trainee" as const,
+        approvalStatus: "pending" as const,
+      },
+    ];
+  }
+  return [myProfile];
+}
+
+const allUsers = buildAllUsers();
 
 const myAssignments = [
   {
@@ -915,7 +1045,7 @@ export const mockBackend: backendInterface = {
   __nsoPhases: async () => [],
   __nsoTasks: async () => [],
   __positions: async () => positions,
-  __profiles: async () => [[FAKE_PRINCIPAL, myProfile]],
+  __profiles: async () => allUsers.map((u) => [u.id, u]),
   _immutableObjectStorageBlobsAreLive: async () => [],
   _immutableObjectStorageBlobsToDelete: async () => [],
   _immutableObjectStorageConfirmBlobDeletion: async () => undefined,
@@ -971,10 +1101,48 @@ export const mockBackend: backendInterface = {
   }),
   deletePosition: async () => undefined,
   reorderPositions: async () => positions,
-  getAllUsers: async () => [myProfile],
-  getCallerUserRole: async () => "admin" as never,
-  getUserRole: async () => "admin" as never,
-  setUserRole: async (_userId, role) => ({ ...myProfile, role }),
+  getAllUsers: async () => allUsers,
+  getCallerUserRole: async () => myProfile.role as never,
+  getUserRole: async (userId) =>
+    (allUsers.find((u) => u.id === userId)?.role ?? null) as never,
+  setUserRole: async (userId, role) => {
+    const u = allUsers.find((x) => x.id === userId) ?? myProfile;
+    return { ...u, role } as never;
+  },
+  approveUser: async (userId) => {
+    const u = allUsers.find((x) => x.id === userId) ?? myProfile;
+    return { ...u, approvalStatus: "approved" as const } as never;
+  },
+  rejectUser: async (userId) => {
+    const u = allUsers.find((x) => x.id === userId) ?? myProfile;
+    return { ...u, approvalStatus: "rejected" as const } as never;
+  },
+  // Admin per-user email/photo edit (UserEditSheet) + Resend email action.
+  setUserEmail: async (userId, email) => {
+    const u = allUsers.find((x) => x.id === userId) ?? myProfile;
+    return { ...u, email } as never;
+  },
+  setUserPhoto: async (userId, photo) => {
+    const u = allUsers.find((x) => x.id === userId) ?? myProfile;
+    return { ...u, photo: photo ?? undefined } as never;
+  },
+  resendApprovalEmail: async () => undefined,
+  // Profile page photo + email-change flows.
+  setMyPhoto: async (photo) => ({
+    ...myProfile,
+    photo: photo ?? undefined,
+  }),
+  setEmailForUser: async (newEmail) => ({
+    ...myProfile,
+    email: newEmail,
+  }),
+  updateMyProfileWithPhoto: async (name, storeLocation, photo) => ({
+    ...myProfile,
+    name,
+    storeLocation,
+    photo: photo ?? undefined,
+  }),
+  initiateEmailVerification: async () => ({ __kind__: "ok" as const, ok: null }),
   getUserAssignments: async () => myAssignments,
   setAssignmentStatus: async (_userId, positionId, status) => ({
     userId: FAKE_PRINCIPAL,

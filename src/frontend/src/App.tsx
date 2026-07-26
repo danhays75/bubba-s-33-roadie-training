@@ -29,6 +29,7 @@ import { LegendaryFlashcardsRoute } from "./routes/position.$id.legendary.flashc
 import { LegendaryQuizRoute } from "./routes/position.$id.legendary.quiz.$activityId";
 import { CategoryDetailRoute } from "./routes/position.$id.library.$categoryId";
 import { ItemDetailRoute } from "./routes/position.$id.library.$categoryId.item.$itemId";
+import { ProfileRoute } from "./routes/profile";
 
 /**
  * App entry: TanStack Router with a root route, the position detail route,
@@ -287,6 +288,17 @@ const nsoRoute = createRoute({
   errorComponent: RouteErrorComponent,
 });
 
+// Profile page — placeholder route for now. The full Profile UI (photo
+// upload, email change, name/store edits) is a separate page task; this
+// just makes the route exist so the nav "Profile" link resolves and the
+// foundation compiles. Accessible to all signed-in approved Roadies.
+const profileRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/profile",
+  component: ProfileRoute,
+  errorComponent: RouteErrorComponent,
+});
+
 const itemDetailRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/position/$id/library/$categoryId/item/$itemId",
@@ -352,6 +364,7 @@ const routeTree = RootRoute.addChildren([
   heartShowcaseRoute,
   itemDetailRoute,
   nsoRoute,
+  profileRoute,
   adminRoute.addChildren([
     adminIndexRoute,
     adminPositionsRoute,

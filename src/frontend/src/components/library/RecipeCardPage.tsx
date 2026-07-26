@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCategory, useItem } from "@/hooks/useLibrary";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
-import type { Recipe, RecipeSpec, RecipeVariant } from "@/types/foundation";
+import type {
+  LibraryItem,
+  Recipe,
+  RecipeSpec,
+  RecipeVariant,
+} from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReactElement } from "react";
@@ -118,32 +123,47 @@ function PrintRecipeCard({
         </p>
       ) : null}
 
-      {/* Two-column body: content left, photo right (stacks on mobile) */}
-      <div className="mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
-        {/* Photo — stacks on top on mobile, right column on desktop. Omitted
-            entirely when there is no photo (no empty blue frame). */}
-        {item.photo ? (
-          <div
-            className="order-1 sm:order-2 sm:w-[320px] sm:shrink-0"
-            data-ocid="library.item.print_photo"
-          >
-            <img
-              src={item.photo}
-              alt={item.title}
-              className="recipe-print-card-photo block h-auto w-full object-contain"
-              loading="lazy"
-            />
-          </div>
-        ) : null}
-
-        {/* Content — spans full width when there is no photo */}
-        <div
-          className="order-2 min-w-0 sm:order-1 sm:flex-1"
-          data-ocid="library.item.print_content"
-        >
-          <RecipeContent recipe={recipe} />
+      {/* Photo placement: when the recipe has little or no text content, the
+          photo dominates as a large centered hero. When there is substantial
+          recipe text (glassware/specs/assembly/garnish/variants), keep the
+          existing two-column layout (content left, framed photo right). */}
+      {item.photo && !hasSubstantialRecipeText(recipe) ? (
+        <div className="mt-6" data-ocid="library.item.print_photo_hero">
+          <img
+            src={item.photo}
+            alt={item.title}
+            className="recipe-print-card-photo mx-auto block h-auto w-full object-contain"
+            style={{ maxWidth: "640px" }}
+            loading="lazy"
+          />
         </div>
-      </div>
+      ) : (
+        <div className="mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
+          {/* Photo — stacks on top on mobile, right column on desktop. Omitted
+              entirely when there is no photo (no empty blue frame). */}
+          {item.photo ? (
+            <div
+              className="order-1 sm:order-2 sm:w-[320px] sm:shrink-0"
+              data-ocid="library.item.print_photo"
+            >
+              <img
+                src={item.photo}
+                alt={item.title}
+                className="recipe-print-card-photo block h-auto w-full object-contain"
+                loading="lazy"
+              />
+            </div>
+          ) : null}
+
+          {/* Content — spans full width when there is no photo */}
+          <div
+            className="order-2 min-w-0 sm:order-1 sm:flex-1"
+            data-ocid="library.item.print_content"
+          >
+            <RecipeContent recipe={recipe} />
+          </div>
+        </div>
+      )}
 
       {/* Footer brand lockup */}
       <p
@@ -169,6 +189,42 @@ function PrintRecipeCard({
 }
 
 /* --------------------------- Bulk mix recipe card ----------------------- */
+
+/**
+ * Detects whether a non-recipe Library item carries enough text content to
+ * justify the side-by-side text/photo two-column layout. "Substantial text"
+ * means: more than one short detail field, OR any detail field with
+ * paragraph-length content (>80 chars), OR non-empty notes. When none of
+ * these hold the item is photo-dominant and the photo should render as a
+ * large centered hero instead of being pinned to a narrow right column.
+ */
+function hasSubstantialItemText(item: LibraryItem): boolean {
+  if (item.notes && item.notes.trim().length > 0) return true;
+  if (item.details.length >= 2) return true;
+  if (item.details.some((field) => field.value.trim().length > 80)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Detects whether a recipe carries enough text content to justify the
+ * side-by-side text/photo two-column layout. "Substantial text" means the
+ * recipe has any of: glassware, specs, assembly steps, garnish, or at least
+ * one non-blank variant. When none of these are present the item is
+ * photo-dominant and the photo should render as a large centered hero
+ * instead of being pinned to a narrow right column.
+ */
+function hasSubstantialRecipeText(recipe: Recipe): boolean {
+  if (recipe.glassware.trim().length > 0) return true;
+  if (recipe.specs.length > 0) return true;
+  if (recipe.assembly.length > 0) return true;
+  if (recipe.garnish.length > 0) return true;
+  if (recipe.variants.some((v) => v.variantLabel.trim().length > 0)) {
+    return true;
+  }
+  return false;
+}
 
 /**
  * Detects whether a recipe should render as a Bulk Mix card. A real drink
@@ -589,91 +645,104 @@ function RecipeCard({
         </p>
       ) : null}
 
-      {/* Two-column body: text left, framed photo right. Stacks on mobile
-          (photo first, then text). */}
-      <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
-        {/* LEFT — recipe text (detail fields, notes, tags) */}
-        <div className="flex-1 min-w-0 order-2 lg:order-1">
-          {/* Labeled detail fields */}
-          {item.details.length > 0 ? (
-            <dl className="flex flex-col gap-7" data-ocid="library.item.fields">
-              {item.details.map((field, index) => (
-                <div
-                  key={`${field.fieldLabel}-${index}`}
-                  className="flex flex-col gap-1.5"
-                  data-ocid={`library.item.field.${index + 1}`}
-                >
-                  <dt
-                    className="font-heading text-sm uppercase tracking-wider text-secondary"
-                    data-ocid={`library.item.field_label.${index + 1}`}
+      {/* Photo placement: when the item has a photo AND little or no text
+          content (few/no detail fields, no notes), the photo dominates as a
+          large centered hero. When there is substantial text, keep the
+          existing two-column layout (text left, framed photo right). */}
+      {item.photo && !hasSubstantialItemText(item) ? (
+        <div className="mt-6" data-ocid="library.item.photo_hero">
+          <div className="overflow-hidden rounded-md border border-border bg-card p-2">
+            <PhotoButton photo={item.photo} title={item.title} />
+          </div>
+        </div>
+      ) : (
+        <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
+          {/* LEFT — recipe text (detail fields, notes, tags) */}
+          <div className="flex-1 min-w-0 order-2 lg:order-1">
+            {/* Labeled detail fields */}
+            {item.details.length > 0 ? (
+              <dl
+                className="flex flex-col gap-7"
+                data-ocid="library.item.fields"
+              >
+                {item.details.map((field, index) => (
+                  <div
+                    key={`${field.fieldLabel}-${index}`}
+                    className="flex flex-col gap-1.5"
+                    data-ocid={`library.item.field.${index + 1}`}
                   >
-                    {field.fieldLabel}
-                  </dt>
-                  <dd
-                    className="font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0"
-                    data-ocid={`library.item.field_value.${index + 1}`}
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: value is sanitized at render time via sanitizeHtml, which strips every tag outside the minimal safe set (b, i, u, strong, em, ul, ol, li, p, br) and every on* handler / javascript: URL / style attribute. Defense in depth — the bulk importer also sanitizes at write time.
-                    dangerouslySetInnerHTML={{
-                      __html: sanitizeHtml(field.value),
-                    }}
-                  />
-                </div>
-              ))}
-            </dl>
-          ) : null}
-
-          {/* Notes */}
-          {item.notes ? (
-            <section
-              className={item.details.length > 0 ? "mt-8" : "mt-0"}
-              data-ocid="library.item.notes"
-            >
-              <h2 className="font-heading text-sm uppercase tracking-wider text-secondary">
-                Notes
-              </h2>
-              <p className="mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground">
-                {item.notes}
-              </p>
-            </section>
-          ) : null}
-
-          {/* Tags as outlined chips */}
-          {item.tags.length > 0 ? (
-            <section
-              className={
-                item.details.length > 0 || item.notes ? "mt-8" : "mt-0"
-              }
-              data-ocid="library.item.tags"
-            >
-              <ul className="flex flex-wrap gap-2">
-                {item.tags.map((tag, index) => (
-                  <li
-                    key={tag}
-                    className="rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground"
-                    data-ocid={`library.item.tag.${index + 1}`}
-                  >
-                    {tag}
-                  </li>
+                    <dt
+                      className="font-heading text-sm uppercase tracking-wider text-secondary"
+                      data-ocid={`library.item.field_label.${index + 1}`}
+                    >
+                      {field.fieldLabel}
+                    </dt>
+                    <dd
+                      className="font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0"
+                      data-ocid={`library.item.field_value.${index + 1}`}
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: value is sanitized at render time via sanitizeHtml, which strips every tag outside the minimal safe set (b, i, u, strong, em, ul, ol, li, p, br) and every on* handler / javascript: URL / style attribute. Defense in depth — the bulk importer also sanitizes at write time.
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeHtml(field.value),
+                      }}
+                    />
+                  </div>
                 ))}
-              </ul>
-            </section>
+              </dl>
+            ) : null}
+
+            {/* Notes */}
+            {item.notes ? (
+              <section
+                className={item.details.length > 0 ? "mt-8" : "mt-0"}
+                data-ocid="library.item.notes"
+              >
+                <h2 className="font-heading text-sm uppercase tracking-wider text-secondary">
+                  Notes
+                </h2>
+                <p className="mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground">
+                  {item.notes}
+                </p>
+              </section>
+            ) : null}
+
+            {/* Tags as outlined chips */}
+            {item.tags.length > 0 ? (
+              <section
+                className={
+                  item.details.length > 0 || item.notes ? "mt-8" : "mt-0"
+                }
+                data-ocid="library.item.tags"
+              >
+                <ul className="flex flex-wrap gap-2">
+                  {item.tags.map((tag, index) => (
+                    <li
+                      key={tag}
+                      className="rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground"
+                      data-ocid={`library.item.tag.${index + 1}`}
+                    >
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+
+          {/* RIGHT — full drink photo in a thin bordered frame, sticky on
+              desktop so it stays visible while reading the text. Tap to open
+              full-size. On mobile it stacks above the text (order-1). */}
+          {item.photo ? (
+            <div
+              className="order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0"
+              data-ocid="library.item.photo"
+            >
+              <div className="overflow-hidden rounded-md border border-border bg-card p-2">
+                <PhotoButton photo={item.photo} title={item.title} />
+              </div>
+            </div>
           ) : null}
         </div>
-
-        {/* RIGHT — full drink photo in a thin bordered frame, sticky on
-            desktop so it stays visible while reading the text. Tap to open
-            full-size. On mobile it stacks above the text (order-1). */}
-        {item.photo ? (
-          <div
-            className="order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0"
-            data-ocid="library.item.photo"
-          >
-            <div className="overflow-hidden rounded-md border border-border bg-card p-2">
-              <PhotoButton photo={item.photo} title={item.title} />
-            </div>
-          </div>
-        ) : null}
-      </div>
+      )}
     </article>
   );
 }

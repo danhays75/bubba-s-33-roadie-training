@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "mopsTomlDepsHash": "c012e8319f64be07288e58dec0ce7139c3d37d6a74bd76f26b00a2ce59e6bc1a",
+  "mopsTomlDepsHash": "2ed56cf0ebb2d7fe500a49faa6a4eef2780a8d6faca987d5520925c4d2380d7f",
   "deps": {
     "core": "2.6.0",
     "caffeineai-data-viewer": "0.1.0",
@@ -11,7 +11,9 @@
     "json": "1.4.0",
     "xtended-numbers": "0.3.1",
     "base": "0.11.1",
-    "caffeineai-object-storage": "1.1.0"
+    "caffeineai-object-storage": "1.1.0",
+    "caffeineai-email": "0.1.1",
+    "caffeineai-email-verification": "0.1.1"
   },
   "hashes": {
     "core@2.6.0": {
@@ -223,6 +225,18 @@
       "caffeineai-object-storage@1.1.0/mops.toml": "b8f3eabbada7ce116715e332ec3bf0e64c58fe9695eecfb1807174a4a5404437",
       "caffeineai-object-storage@1.1.0/rules/no-redeclare-caffeine-storage-gateway.toml": "8a232d3119adc5d29ff9cfeaea5ba4dedd96c6e7d9a6c1b544723bc666e923be",
       "caffeineai-object-storage@1.1.0/src/Mixin.mo": "175c6b98672a83054fc08855062d1a7b7f2bd3713bf11a60d5319ac5afefe2b3"
+    },
+    "caffeineai-email@0.1.1": {
+      "caffeineai-email@0.1.1/README.md": "7bc10bb86dc7b577268d48cdcc2f877ea8cbc15ee9af57199232121ad242159b",
+      "caffeineai-email@0.1.1/src/emailService.mo": "789ff9fe602991267ff872bea66531cce0c7b430c18162e2e2225f5ff9dfdfc5",
+      "caffeineai-email@0.1.1/mops.toml": "f09770f92b1bebd47650a26b42738ade255a5b4a37c6a0d15f69b89a1ac29d10",
+      "caffeineai-email@0.1.1/src/emailClient.mo": "25b691a930fae1dc13d998e105abbe76268d1c3666d5c6f9687d67e88c7168d2"
+    },
+    "caffeineai-email-verification@0.1.1": {
+      "caffeineai-email-verification@0.1.1/README.md": "39e38e9ecfa71eed5f60d2b4b28a4a76b952f9b28ad37dffd34c9ec0715b46a7",
+      "caffeineai-email-verification@0.1.1/mops.toml": "509541fb9582455f63d20016b58288edb172a6bcc9fa605e61cc33699ed215c6",
+      "caffeineai-email-verification@0.1.1/src/verificationMixin.mo": "c8ab70d121528e0911d47a1a274bcdf97532fb3654a44d5178895144ea417997",
+      "caffeineai-email-verification@0.1.1/src/verifiedEmails.mo": "5bb1b99cbd0e742ea8eb4d7e4c317921c42542398388669bc35e127a4f6e726a"
     }
   }
 }

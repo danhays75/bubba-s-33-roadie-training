@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
@@ -39,10 +38,25 @@ export function Layout() {
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-4">
           <Link
             to="/"
-            className="font-display text-2xl uppercase leading-none tracking-wide text-foreground transition-colors duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
+            aria-label="Bubba's 33 — home"
+            className="flex items-center transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
             data-ocid="layout.brand_link"
           >
-            Bubba&rsquo;s 33
+            {/*
+              Brand wordmark — horizontal Bubba's 33 logo with a transparent
+              background, so it reads as an integrated nav wordmark with no
+              frame. Height-clamped to 2.25rem (36px) so it fits the 56px
+              sticky header with vertical breathing room; width auto preserves
+              the aspect ratio. Intrinsic width/height reserve layout space to
+              avoid CLS.
+            */}
+            <img
+              src="/assets/brand/logo-horizontal.webp"
+              alt="Bubba's 33"
+              width={640}
+              height={240}
+              className="h-9 w-auto"
+            />
           </Link>
           <div className="flex items-center gap-3">
             {canOpenNewStore && (
@@ -76,14 +90,39 @@ export function Layout() {
                 Admin
               </Link>
             )}
-            <Avatar
-              className="size-8 border border-border"
-              data-ocid="layout.user_avatar"
+            <Link
+              to="/profile"
+              className={cn(
+                "rounded-md border border-primary/60 px-3 py-1.5",
+                "font-heading text-xs uppercase tracking-wide text-foreground",
+                "transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
+              )}
+              activeProps={{
+                className: "bg-primary text-primary-foreground",
+              }}
+              data-ocid="layout.profile_link"
             >
-              <AvatarFallback className="bg-card font-heading text-xs uppercase text-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+              Profile
+            </Link>
+            <Link
+              to="/profile"
+              aria-label="View your profile"
+              data-ocid="layout.user_avatar"
+              className="profile-avatar size-8 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
+            >
+              {profile?.photo ? (
+                <img
+                  src={profile.photo}
+                  alt=""
+                  className="size-8 rounded-full object-cover"
+                />
+              ) : (
+                <span className="profile-avatar-initials text-xs">
+                  {initials}
+                </span>
+              )}
+            </Link>
             <button
               type="button"
               onClick={handleLogout}

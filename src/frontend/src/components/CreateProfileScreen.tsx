@@ -41,9 +41,21 @@ export function CreateProfileScreen() {
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-6 py-10">
       <div className="w-full max-w-sm">
         <div className="text-center">
-          <h1 className="font-display text-4xl uppercase leading-none tracking-wide text-foreground">
-            Bubba&rsquo;s 33
-          </h1>
+          {/*
+            Brand wordmark — horizontal Bubba's 33 logo with a transparent
+            background. Sized between the sign-in (largest) and nav (smallest)
+            treatments — prominent enough to anchor the "one last step"
+            screen without dominating the form. Intrinsic width/height
+            reserve layout space to avoid CLS.
+          */}
+          <img
+            src="/assets/brand/logo-horizontal.webp"
+            alt="Bubba's 33"
+            width={640}
+            height={240}
+            className="mx-auto h-auto w-full max-w-[16rem]"
+            data-ocid="create_profile.brand_logo"
+          />
           <p className="mt-2 font-heading text-sm uppercase tracking-[0.2em] text-muted-foreground">
             One last step
           </p>

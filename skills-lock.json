@@ -4,12 +4,12 @@
     "connector-googlecalendar": {
       "source": "caffeinelabs/skills",
       "sourceType": "github",
-      "computedHash": "90772c74a8e0a6e9922e21b241a57d606aadcdff08dda3a6c130804a72ebb1f3"
+      "computedHash": "e809d2fce480b04d369962e73d1dcd6aa522480d2064472993de2a655a154da7"
     },
     "connector-googlemail": {
       "source": "caffeinelabs/skills",
       "sourceType": "github",
-      "computedHash": "ef7244db0543069912176f10d32ac095afefb6f175358e0c260e2bd03c12fed1"
+      "computedHash": "437ceda6e91f43f7170e98a3b2d454fd8a070ae337eece0b977dade8a9ca2262"
     },
     "extension-authorization": {
       "source": "caffeinelabs/skills",
