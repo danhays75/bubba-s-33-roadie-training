@@ -291,7 +291,7 @@ function Hero({
 /* ----------------------------- Mission band ---------------------------- */
 
 function MissionBand({
-  positionId,
+  positionId: _positionId,
   category,
 }: {
   positionId: string;
@@ -306,10 +306,6 @@ function MissionBand({
   const missionSubtitle = missionItem?.notes ?? null;
 
   if (!missionText) return null;
-
-  const itemTo = missionItem
-    ? `/position/${positionId}/library/${category.id}/item/${missionItem.id}`
-    : `/position/${positionId}/library/${category.id}`;
 
   return (
     <section
@@ -327,19 +323,14 @@ function MissionBand({
       >
         ★ Our Mission ★
       </p>
-      <Link
-        to={itemTo}
-        className="mt-4 block rounded-md transition-smooth hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        data-ocid="orientation.mission.headline_link"
-        aria-label="Open mission item"
-      >
+      <div className="mt-4 block">
         <h2
           className="orientation-mission-headline text-4xl sm:text-5xl md:text-6xl"
           data-ocid="orientation.mission.headline"
         >
           {missionText}
         </h2>
-      </Link>
+      </div>
       <div
         className="orientation-star-row mt-4 text-xl"
         aria-hidden
@@ -423,8 +414,8 @@ function CoreValuesSection({
 
 function ValueCard({
   item,
-  positionId,
-  categoryId,
+  positionId: _positionId,
+  categoryId: _categoryId,
   index,
 }: {
   item: LibraryItem;
@@ -433,17 +424,10 @@ function ValueCard({
   index: number;
 }): ReactElement {
   const meaning = findField(item, "Meaning") ?? item.notes ?? "";
-  const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
   return (
-    <Link
-      to={to}
-      className={cn(
-        "orientation-value-card group block py-4 pr-4 transition-smooth",
-        "hover:border-patriotic-blue/60",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-      )}
+    <div
+      className={cn("orientation-value-card group block py-4 pr-4")}
       data-ocid={`orientation.core_values.card.${index + 1}`}
-      aria-label={`Open ${item.title}`}
     >
       <div className="flex items-center gap-2">
         <Star
@@ -458,29 +442,26 @@ function ValueCard({
           {meaning}
         </p>
       ) : null}
-    </Link>
+    </div>
   );
 }
 
 function CapstoneBar({
   item,
-  positionId,
-  categoryId,
+  positionId: _positionId,
+  categoryId: _categoryId,
 }: {
   item: LibraryItem;
   positionId: string;
   categoryId: string;
 }): ReactElement {
-  const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
   return (
-    <Link
-      to={to}
-      className="orientation-capstone mt-4 block px-5 py-4 text-center transition-smooth hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    <div
+      className="orientation-capstone mt-4 block px-5 py-4 text-center"
       data-ocid="orientation.core_values.capstone"
-      aria-label={`Open ${item.title}`}
     >
       {item.title}
-    </Link>
+    </div>
   );
 }
 
@@ -703,7 +684,7 @@ function OurStoryCaption({
 /* -------------------------- Operational Goals -------------------------- */
 
 function OperationalGoalsSection({
-  positionId,
+  positionId: _positionId,
   category,
 }: {
   positionId: string;
@@ -714,8 +695,6 @@ function OperationalGoalsSection({
   const item = items[0] ?? null;
 
   if (!item || item.details.length === 0) return null;
-
-  const to = `/position/${positionId}/library/${category.id}/item/${item.id}`;
 
   return (
     <section data-ocid="orientation.operational_goals.section">
@@ -729,7 +708,6 @@ function OperationalGoalsSection({
             key={field.id}
             label={field.fieldLabel}
             value={field.value}
-            to={to}
             index={index}
           />
         ))}
@@ -741,24 +719,17 @@ function OperationalGoalsSection({
 function GoalCard({
   label,
   value,
-  to,
   index,
 }: {
   label: string;
   value: string;
-  to: string;
   index: number;
 }): ReactElement {
   const abbr = abbreviate(label);
   return (
-    <Link
-      to={to}
-      className={cn(
-        "orientation-goal-card group block p-4 transition-smooth hover:brightness-110",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-      )}
+    <div
+      className={cn("orientation-goal-card group block p-4")}
       data-ocid={`orientation.operational_goals.card.${index + 1}`}
-      aria-label={`Open ${label} goal`}
     >
       <Star
         className="orientation-goal-star size-4"
@@ -777,7 +748,7 @@ function GoalCard({
           {value}
         </p>
       ) : null}
-    </Link>
+    </div>
   );
 }
 
@@ -809,7 +780,6 @@ function PrioritiesSection({
             category={serviceCategory}
             positionId={positionId}
             tone="red"
-            label="10 Steps to Service"
           />
         ) : null}
         {foodCategory ? (
@@ -817,7 +787,6 @@ function PrioritiesSection({
             category={foodCategory}
             positionId={positionId}
             tone="blue"
-            label="10 Daily Essentials"
           />
         ) : null}
         {marketingCategory ? (
@@ -825,7 +794,6 @@ function PrioritiesSection({
             category={marketingCategory}
             positionId={positionId}
             tone="gold"
-            label="10 Community Priorities"
           />
         ) : null}
       </div>
@@ -837,12 +805,10 @@ function PriorityCard({
   category,
   positionId,
   tone,
-  label,
 }: {
   category: Category;
   positionId: string;
   tone: "red" | "blue" | "gold";
-  label: string;
 }): ReactElement {
   const to = `/position/${positionId}/library/${category.id}`;
   return (
@@ -864,14 +830,11 @@ function PriorityCard({
           10
         </span>
         <h3
-          className="mt-2 font-heading text-lg uppercase tracking-wide text-patriotic-cream"
+          className="mt-2 font-heading text-xl font-semibold uppercase tracking-wide text-patriotic-cream sm:text-2xl"
           data-ocid={`orientation.priorities.label.${tone}`}
         >
-          {label}
-        </h3>
-        <p className="mt-1 font-body text-sm text-patriotic-cream/70">
           {category.name}
-        </p>
+        </h3>
       </div>
     </Link>
   );

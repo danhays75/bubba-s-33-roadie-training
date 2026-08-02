@@ -27,7 +27,7 @@ extends = true
 args = [ "-E=M0254", "-W=M0235,M0223,M0236,M0237", "-A=M0241", "--default-persistent-actors", "--actor-idl=src/backend/system-idl", "--implicit-package=core", "-no-check-ir", "--generate-view-queries" ]
 
 [dependencies]
-core = "2.6.0"
+core = "2.6.1"
 caffeineai-data-viewer = "0.1.0"
 caffeineai-authorization = "1.0.0"
 caffeineai-lints = "0.1.0"

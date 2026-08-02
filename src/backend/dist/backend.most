@@ -2,92 +2,92 @@
 type AccessControlState__22568020 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__287066177>
+    userRoles : Map__386906547<Principal, UserRole__287066177>
   };
 type AccessControlState__358562109 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__504591452>
+    userRoles : Map__386906547<Principal, UserRole__504591452>
   };
 type AccessControlState__366191313 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__123453044>
+    userRoles : Map__386906547<Principal, UserRole__123453044>
   };
 type AccessControlState__388652228 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__137770035>
+    userRoles : Map__386906547<Principal, UserRole__137770035>
   };
 type AccessControlState__435094964 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__893334230>
+    userRoles : Map__386906547<Principal, UserRole__893334230>
   };
 type AccessControlState__467613519 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__127019868>
+    userRoles : Map__386906547<Principal, UserRole__127019868>
   };
 type AccessControlState__470099793 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__514476249>
+    userRoles : Map__386906547<Principal, UserRole__514476249>
   };
 type AccessControlState__623790961 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__324529758>
+    userRoles : Map__386906547<Principal, UserRole__324529758>
   };
 type AccessControlState__690678898 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__488381355>
+    userRoles : Map__386906547<Principal, UserRole__488381355>
   };
 type AccessControlState__695342702 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__646337209>
+    userRoles : Map__386906547<Principal, UserRole__646337209>
   };
 type AccessControlState__75059763 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__663019211>
+    userRoles : Map__386906547<Principal, UserRole__663019211>
   };
 type AccessControlState__80168300 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__851322309>
+    userRoles : Map__386906547<Principal, UserRole__851322309>
   };
 type AccessControlState__803439430 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__163450367>
+    userRoles : Map__386906547<Principal, UserRole__163450367>
   };
 type AccessControlState__825338347 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__33289320>
+    userRoles : Map__386906547<Principal, UserRole__33289320>
   };
 type AccessControlState__89091136 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__275970964>
+    userRoles : Map__386906547<Principal, UserRole__275970964>
   };
 type AccessControlState__899840439 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__241738365>
+    userRoles : Map__386906547<Principal, UserRole__241738365>
   };
 type AccessControlState__943352191 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__786984507>
+    userRoles : Map__386906547<Principal, UserRole__786984507>
   };
 type AccessControlState__954572192 =
   {
     var adminAssigned : Bool;
-    userRoles : Map__246123559<Principal, UserRole__199018766>
+    userRoles : Map__386906547<Principal, UserRole__199018766>
   };
 type ActivityContent__1041715483 =
   {
@@ -416,8 +416,8 @@ type Category__836745655 =
     sortOrder : Nat
   };
 type Category__877266824 = Category__756272159;
-type Data__547710445<T> = {var count : Nat__93962160; elements : [var ?T]};
-type Data__552063367<K, V> = {var count : Nat__93962160; kvs : [var ?(K, V)]};
+type Data__265875254<K, V> = {var count : Nat__58649523; kvs : [var ?(K, V)]};
+type Data__859131645<T> = {var count : Nat__58649523; elements : [var ?T]};
 type DetailField__140315401 = {fieldLabel : Text; value : Text};
 type DetailField__180695552 = {fieldLabel : Text; value : Text};
 type DetailField__256025502 = {fieldLabel : Text; value : Text};
@@ -745,10 +745,10 @@ type Flashcard__972452812 =
     itemTitle : Text;
     recipe : ?FlashcardRecipe__730295543
   };
-type Internal__141955830<T> =
-  {children : [var ?Node__656343714<T>]; data : Data__547710445<T>};
-type Internal__455405067<K, V> =
-  {children : [var ?Node__279997185<K, V>]; data : Data__552063367<K, V>};
+type Internal__161573640<K, V> =
+  {children : [var ?Node__430031793<K, V>]; data : Data__265875254<K, V>};
+type Internal__778364379<T> =
+  {children : [var ?Node__1045371124<T>]; data : Data__859131645<T>};
 type LayoutStyle__45915257 = {#library; #orientation};
 type LayoutStyle__570789996 = {#library; #orientation};
 type LayoutStyle__628133593 = {#library; #orientation};
@@ -758,8 +758,8 @@ type LayoutStyle__773368137 = {#library; #orientation};
 type LayoutStyle__775610075 = {#library; #orientation};
 type LayoutStyle__787520165 = {#library; #orientation};
 type LayoutStyle__914178928 = {#library; #orientation};
-type Leaf__114713147<K, V> = {data : Data__552063367<K, V>};
-type Leaf__384956168<T> = {data : Data__547710445<T>};
+type Leaf__1045638083<K, V> = {data : Data__265875254<K, V>};
+type Leaf__776840865<T> = {data : Data__859131645<T>};
 type LibraryItem__1007264199 =
   {
     categoryId : Nat;
@@ -951,19 +951,19 @@ type LibraryItem__950249397 =
     tags : [Text];
     title : Text
   };
-type List__716101829<T> =
+type List__1004628775<T> =
   {
-    var blockIndex : Nat__93962160;
+    var blockIndex : Nat__58649523;
     var blocks : [var [var ?T]];
-    var elementIndex : Nat__93962160
+    var elementIndex : Nat__58649523
   };
-type List__852723865<T> = List__716101829<T>;
-type Map__190625089<K, V> = Map__719753394<K, V>;
-type Map__246123559<K, V> = Map__190625089<K, V>;
-type Map__719753394<K, V> =
-  {var root : Node__279997185<K, V>; var size : Nat__93962160};
+type List__89170296<T> = List__1004628775<T>;
+type Map__13625999<K, V> =
+  {var root : Node__430031793<K, V>; var size : Nat__58649523};
+type Map__386906547<K, V> = Map__670138087<K, V>;
+type Map__670138087<K, V> = Map__13625999<K, V>;
+type Nat__58649523 = Nat__920180692;
 type Nat__920180692 = Nat;
-type Nat__93962160 = Nat__920180692;
 type NewActivityContent__511699307 =
   {
     #drinksBuilderContent : NewDrinksBuilderContent__396608228;
@@ -1068,301 +1068,301 @@ type NewActivity__919166140 =
 type NewActor__1047215954 =
   {
     var accessControlState : AccessControlState__467613519;
-    assignments : List__852723865<PositionAssignment__1021565344>;
-    categories : List__852723865<Category__1020215759>;
-    items : List__852723865<LibraryItem__1007264199>;
-    legendaryActivities : List__852723865<Activity__427748870>;
+    assignments : List__89170296<PositionAssignment__1021565344>;
+    categories : List__89170296<Category__1020215759>;
+    items : List__89170296<LibraryItem__1007264199>;
+    legendaryActivities : List__89170296<Activity__427748870>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__993472986>;
-    nsoTasks : List__852723865<Task__451306388>;
-    positions : List__852723865<Position__977649915>;
-    profiles : Map__246123559<Principal, NewUserProfile__293201780>;
+    nsoPhases : List__89170296<Phase__993472986>;
+    nsoTasks : List__89170296<Task__451306388>;
+    positions : List__89170296<Position__977649915>;
+    profiles : Map__386906547<Principal, NewUserProfile__293201780>;
     verifiedEmails : VerifiedEmailsState__382335030
   };
 type NewActor__180733458 =
   {
     var accessControlState : AccessControlState__695342702;
-    assignments : List__852723865<PositionAssignment__616949047>;
-    categories : List__852723865<Category__288702680>;
-    items : List__852723865<NewLibraryItem__87850365>;
-    legendaryActivities : List__852723865<Activity__48101340>;
+    assignments : List__89170296<PositionAssignment__616949047>;
+    categories : List__89170296<Category__288702680>;
+    items : List__89170296<NewLibraryItem__87850365>;
+    legendaryActivities : List__89170296<Activity__48101340>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__928744096>;
-    nsoTasks : List__852723865<Task__179304481>;
-    positions : List__852723865<Position__200429189>;
-    profiles : Map__246123559<Principal, UserProfile__278634132>
+    nsoPhases : List__89170296<Phase__928744096>;
+    nsoTasks : List__89170296<Task__179304481>;
+    positions : List__89170296<Position__200429189>;
+    profiles : Map__386906547<Principal, UserProfile__278634132>
   };
 type NewActor__204237839 =
   {
     var accessControlState : AccessControlState__943352191;
-    assignments : List__852723865<PositionAssignment__349748336>;
-    categories : List__852723865<Category__170373213>;
-    items : List__852723865<LibraryItem__64332672>;
-    legendaryActivities : List__852723865<NewActivity__252644926>;
+    assignments : List__89170296<PositionAssignment__349748336>;
+    categories : List__89170296<Category__170373213>;
+    items : List__89170296<LibraryItem__64332672>;
+    legendaryActivities : List__89170296<NewActivity__252644926>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__496045583>;
-    nsoTasks : List__852723865<Task__497933695>;
-    positions : List__852723865<Position__418445021>;
-    profiles : Map__246123559<Principal, UserProfile__30192772>
+    nsoPhases : List__89170296<Phase__496045583>;
+    nsoTasks : List__89170296<Task__497933695>;
+    positions : List__89170296<Position__418445021>;
+    profiles : Map__386906547<Principal, UserProfile__30192772>
   };
 type NewActor__222500057 =
   {
     var accessControlState : AccessControlState__623790961;
-    assignments : List__852723865<PositionAssignment__919811250>;
-    categories : List__852723865<Category__273555389>;
-    items : List__852723865<LibraryItem__950249397>;
-    legendaryActivities : List__852723865<NewActivity__233244927>;
+    assignments : List__89170296<PositionAssignment__919811250>;
+    categories : List__89170296<Category__273555389>;
+    items : List__89170296<LibraryItem__950249397>;
+    legendaryActivities : List__89170296<NewActivity__233244927>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__50981955>;
-    nsoTasks : List__852723865<Task__235568049>;
-    positions : List__852723865<Position__318830573>;
-    profiles : Map__246123559<Principal, UserProfile__142651752>
+    nsoPhases : List__89170296<Phase__50981955>;
+    nsoTasks : List__89170296<Task__235568049>;
+    positions : List__89170296<Position__318830573>;
+    profiles : Map__386906547<Principal, UserProfile__142651752>
   };
 type NewActor__260861700 =
   {
     var accessControlState : AccessControlState__358562109;
-    assignments : List__852723865<PositionAssignment__587140765>;
-    categories : List__852723865<Category__70877766>;
-    items : List__852723865<LibraryItem__607428111>;
-    legendaryActivities : List__852723865<Activity__991720636>;
+    assignments : List__89170296<PositionAssignment__587140765>;
+    categories : List__89170296<Category__70877766>;
+    items : List__89170296<LibraryItem__607428111>;
+    legendaryActivities : List__89170296<Activity__991720636>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__262852273>;
-    nsoTasks : List__852723865<Task__804749763>;
-    positions : List__852723865<Position__421746050>;
-    profiles : Map__246123559<Principal, NewUserProfile__425867312>
+    nsoPhases : List__89170296<Phase__262852273>;
+    nsoTasks : List__89170296<Task__804749763>;
+    positions : List__89170296<Position__421746050>;
+    profiles : Map__386906547<Principal, NewUserProfile__425867312>
   };
 type NewActor__287315175 =
   {
     var accessControlState : AccessControlState__435094964;
-    assignments : List__852723865<PositionAssignment__647428577>;
-    categories : List__852723865<Category__199623099>;
-    items : List__852723865<LibraryItem__432517672>;
-    legendaryActivities : List__852723865<Activity__564896493>;
+    assignments : List__89170296<PositionAssignment__647428577>;
+    categories : List__89170296<Category__199623099>;
+    items : List__89170296<LibraryItem__432517672>;
+    legendaryActivities : List__89170296<Activity__564896493>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__383498313>;
-    nsoTasks : List__852723865<Task__156210726>;
-    positions : List__852723865<NewPosition__515693293>;
-    profiles : Map__246123559<Principal, UserProfile__255476170>
+    nsoPhases : List__89170296<Phase__383498313>;
+    nsoTasks : List__89170296<Task__156210726>;
+    positions : List__89170296<NewPosition__515693293>;
+    profiles : Map__386906547<Principal, UserProfile__255476170>
   };
 type NewActor__292081718 =
   {
     var accessControlState : AccessControlState__690678898;
-    assignments : List__852723865<PositionAssignment__527873470>;
-    categories : List__852723865<Category__681034651>;
-    items : List__852723865<LibraryItem__742094707>;
+    assignments : List__89170296<PositionAssignment__527873470>;
+    categories : List__89170296<Category__681034651>;
+    items : List__89170296<LibraryItem__742094707>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__507482950>;
-    profiles : Map__246123559<Principal, UserProfile__201697168>
+    positions : List__89170296<Position__507482950>;
+    profiles : Map__386906547<Principal, UserProfile__201697168>
   };
 type NewActor__299107891 =
   {
     var accessControlState : AccessControlState__954572192;
-    assignments : List__852723865<PositionAssignment__184245974>;
-    categories : List__852723865<Category__126721063>;
-    items : List__852723865<LibraryItem__758195292>;
-    legendaryActivities : List__852723865<Activity__149814726>;
+    assignments : List__89170296<PositionAssignment__184245974>;
+    categories : List__89170296<Category__126721063>;
+    items : List__89170296<LibraryItem__758195292>;
+    legendaryActivities : List__89170296<Activity__149814726>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__385781890>;
-    nsoTasks : List__852723865<Task__205849316>;
-    positions : List__852723865<Position__572056758>;
-    profiles : Map__246123559<Principal, UserProfile__921863851>
+    nsoPhases : List__89170296<Phase__385781890>;
+    nsoTasks : List__89170296<Task__205849316>;
+    positions : List__89170296<Position__572056758>;
+    profiles : Map__386906547<Principal, UserProfile__921863851>
   };
 type NewActor__414348551 =
   {
     var accessControlState : AccessControlState__22568020;
-    assignments : List__852723865<PositionAssignment__800954170>;
-    categories : List__852723865<Category__111731656>;
-    items : List__852723865<LibraryItem__313927053>;
-    legendaryActivities : List__852723865<NewActivity__919166140>;
+    assignments : List__89170296<PositionAssignment__800954170>;
+    categories : List__89170296<Category__111731656>;
+    items : List__89170296<LibraryItem__313927053>;
+    legendaryActivities : List__89170296<NewActivity__919166140>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__454293786>;
-    nsoTasks : List__852723865<Task__1031673085>;
-    positions : List__852723865<Position__10277161>;
-    profiles : Map__246123559<Principal, UserProfile__92741012>;
+    nsoPhases : List__89170296<Phase__454293786>;
+    nsoTasks : List__89170296<Task__1031673085>;
+    positions : List__89170296<Position__10277161>;
+    profiles : Map__386906547<Principal, UserProfile__92741012>;
     verifiedEmails : VerifiedEmailsState__533945037
   };
 type NewActor__544122477 =
   {
     var accessControlState : AccessControlState__825338347;
-    assignments : List__852723865<PositionAssignment__876916776>;
-    categories : List__852723865<Category__360939907>;
-    items : List__852723865<LibraryItem__557945265>;
+    assignments : List__89170296<PositionAssignment__876916776>;
+    categories : List__89170296<Category__360939907>;
+    items : List__89170296<LibraryItem__557945265>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__371037758>;
-    profiles : Map__246123559<Principal, UserProfile__946597095>
+    positions : List__89170296<Position__371037758>;
+    profiles : Map__386906547<Principal, UserProfile__946597095>
   };
 type NewActor__560426525 =
   {
     var accessControlState : AccessControlState__89091136;
-    assignments : List__852723865<PositionAssignment__283393706>;
-    categories : List__852723865<Category__836745655>;
-    items : List__852723865<NewLibraryItem__405667518>;
-    legendaryActivities : List__852723865<NewActivity__73628156>;
+    assignments : List__89170296<PositionAssignment__283393706>;
+    categories : List__89170296<Category__836745655>;
+    items : List__89170296<NewLibraryItem__405667518>;
+    legendaryActivities : List__89170296<NewActivity__73628156>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__680823036>;
-    nsoTasks : List__852723865<Task__605668722>;
-    positions : List__852723865<Position__493066204>;
-    profiles : Map__246123559<Principal, NewUserProfile__548466249>;
+    nsoPhases : List__89170296<Phase__680823036>;
+    nsoTasks : List__89170296<Task__605668722>;
+    positions : List__89170296<Position__493066204>;
+    profiles : Map__386906547<Principal, NewUserProfile__548466249>;
     verifiedEmails : VerifiedEmailsState__789855390
   };
 type NewActor__57786907 =
   {
     var accessControlState : AccessControlState__803439430;
-    assignments : List__852723865<PositionAssignment__686122253>;
-    categories : List__852723865<Category__691747777>;
-    items : List__852723865<NewLibraryItem__381126491>;
-    legendaryActivities : List__852723865<Activity__891148727>;
+    assignments : List__89170296<PositionAssignment__686122253>;
+    categories : List__89170296<Category__691747777>;
+    items : List__89170296<NewLibraryItem__381126491>;
+    legendaryActivities : List__89170296<Activity__891148727>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__151503348>;
-    nsoTasks : List__852723865<Task__615126471>;
-    positions : List__852723865<Position__834311727>;
-    profiles : Map__246123559<Principal, UserProfile__306774772>
+    nsoPhases : List__89170296<Phase__151503348>;
+    nsoTasks : List__89170296<Task__615126471>;
+    positions : List__89170296<Position__834311727>;
+    profiles : Map__386906547<Principal, UserProfile__306774772>
   };
 type NewActor__625870533 =
   {
     var accessControlState : AccessControlState__75059763;
-    assignments : List__852723865<PositionAssignment__165074627>;
+    assignments : List__89170296<PositionAssignment__165074627>;
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__727886607>;
-    profiles : Map__246123559<Principal, UserProfile__624142439>
+    positions : List__89170296<Position__727886607>;
+    profiles : Map__386906547<Principal, UserProfile__624142439>
   };
 type NewActor__662364540 =
   {
     var accessControlState : AccessControlState__470099793;
-    assignments : List__852723865<PositionAssignment__41900785>;
-    categories : List__852723865<Category__407260773>;
-    items : List__852723865<LibraryItem__82254653>;
+    assignments : List__89170296<PositionAssignment__41900785>;
+    categories : List__89170296<Category__407260773>;
+    items : List__89170296<LibraryItem__82254653>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__585612074>;
-    nsoTasks : List__852723865<Task__701012125>;
-    positions : List__852723865<Position__258863425>;
-    profiles : Map__246123559<Principal, UserProfile__678953854>
+    nsoPhases : List__89170296<Phase__585612074>;
+    nsoTasks : List__89170296<Task__701012125>;
+    positions : List__89170296<Position__258863425>;
+    profiles : Map__386906547<Principal, UserProfile__678953854>
   };
 type NewActor__738918276 =
   {
     var accessControlState : AccessControlState__899840439;
-    assignments : List__852723865<PositionAssignment__142455647>;
-    categories : List__852723865<Category__555855975>;
-    items : List__852723865<NewLibraryItem__1067740653>;
-    legendaryActivities : List__852723865<Activity__362206064>;
+    assignments : List__89170296<PositionAssignment__142455647>;
+    categories : List__89170296<Category__555855975>;
+    items : List__89170296<NewLibraryItem__1067740653>;
+    legendaryActivities : List__89170296<Activity__362206064>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__493625523>;
-    nsoTasks : List__852723865<Task__298569252>;
-    positions : List__852723865<Position__1007899447>;
-    profiles : Map__246123559<Principal, UserProfile__561918465>;
+    nsoPhases : List__89170296<Phase__493625523>;
+    nsoTasks : List__89170296<Task__298569252>;
+    positions : List__89170296<Position__1007899447>;
+    profiles : Map__386906547<Principal, UserProfile__561918465>;
     verifiedEmails : VerifiedEmailsState__284758939
   };
 type NewActor__746619218 =
   {
     var accessControlState : AccessControlState__80168300;
-    assignments : List__852723865<PositionAssignment__1060231071>;
-    categories : List__852723865<Category__160512014>;
-    items : List__852723865<LibraryItem__935798410>;
+    assignments : List__89170296<PositionAssignment__1060231071>;
+    categories : List__89170296<Category__160512014>;
+    items : List__89170296<LibraryItem__935798410>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__404825400>;
-    profiles : Map__246123559<Principal, UserProfile__789457244>
+    positions : List__89170296<Position__404825400>;
+    profiles : Map__386906547<Principal, UserProfile__789457244>
   };
 type NewActor__88030381 =
   {
     var accessControlState : AccessControlState__366191313;
-    assignments : List__852723865<PositionAssignment__929565473>;
-    categories : List__852723865<Category__456273125>;
-    items : List__852723865<LibraryItem__254666467>;
-    legendaryActivities : List__852723865<NewActivity__365166609>;
+    assignments : List__89170296<PositionAssignment__929565473>;
+    categories : List__89170296<Category__456273125>;
+    items : List__89170296<LibraryItem__254666467>;
+    legendaryActivities : List__89170296<NewActivity__365166609>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__80574558>;
-    nsoTasks : List__852723865<Task__1046937043>;
-    positions : List__852723865<Position__820110026>;
-    profiles : Map__246123559<Principal, UserProfile__812730314>;
+    nsoPhases : List__89170296<Phase__80574558>;
+    nsoTasks : List__89170296<Task__1046937043>;
+    positions : List__89170296<Position__820110026>;
+    profiles : Map__386906547<Principal, UserProfile__812730314>;
     verifiedEmails : VerifiedEmailsState__195130915
   };
 type NewActor__882126555 =
   {
     var accessControlState : AccessControlState__388652228;
-    assignments : List__852723865<PositionAssignment__319725470>;
-    categories : List__852723865<Category__56484344>;
-    items : List__852723865<LibraryItem__756318205>;
-    legendaryActivities : List__852723865<NewActivity__100651268>;
+    assignments : List__89170296<PositionAssignment__319725470>;
+    categories : List__89170296<Category__56484344>;
+    items : List__89170296<LibraryItem__756318205>;
+    legendaryActivities : List__89170296<NewActivity__100651268>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__703539362>;
-    nsoTasks : List__852723865<Task__180617430>;
-    positions : List__852723865<Position__942064189>;
-    profiles : Map__246123559<Principal, UserProfile__307360238>;
+    nsoPhases : List__89170296<Phase__703539362>;
+    nsoTasks : List__89170296<Task__180617430>;
+    positions : List__89170296<Position__942064189>;
+    profiles : Map__386906547<Principal, UserProfile__307360238>;
     verifiedEmails : VerifiedEmailsState__32073611
   };
 type NewDrinksBuilderAnswerClip__109595668 = {answer : Text; audioUrl : Text};
@@ -1561,10 +1561,10 @@ type NewUserProfile__425867312 =
     storeLocation : Text
   };
 type NewUserProfile__548466249 = OldUserProfile__1022476640;
-type Node__279997185<K, V> =
-  {#internal : Internal__455405067<K, V>; #leaf : Leaf__114713147<K, V>};
-type Node__656343714<T> =
-  {#internal : Internal__141955830<T>; #leaf : Leaf__384956168<T>};
+type Node__1045371124<T> =
+  {#internal : Internal__778364379<T>; #leaf : Leaf__776840865<T>};
+type Node__430031793<K, V> =
+  {#internal : Internal__161573640<K, V>; #leaf : Leaf__1045638083<K, V>};
 type OldActivityContent__1031218613 =
   {
     #drinksBuilderContent : DrinksBuilderContent__502390584;
@@ -1667,284 +1667,284 @@ type OldActivity__829449521 =
 type OldActor__1006822680 =
   {
     var accessControlState : AccessControlState__358562109;
-    assignments : List__852723865<PositionAssignment__587140765>;
-    categories : List__852723865<Category__70877766>;
-    items : List__852723865<LibraryItem__607428111>;
-    legendaryActivities : List__852723865<Activity__991720636>;
+    assignments : List__89170296<PositionAssignment__587140765>;
+    categories : List__89170296<Category__70877766>;
+    items : List__89170296<LibraryItem__607428111>;
+    legendaryActivities : List__89170296<Activity__991720636>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__262852273>;
-    nsoTasks : List__852723865<Task__804749763>;
-    positions : List__852723865<Position__421746050>;
-    profiles : Map__246123559<Principal, OldUserProfile__202123711>
+    nsoPhases : List__89170296<Phase__262852273>;
+    nsoTasks : List__89170296<Task__804749763>;
+    positions : List__89170296<Position__421746050>;
+    profiles : Map__386906547<Principal, OldUserProfile__202123711>
   };
 type OldActor__150656829 =
   {
     var accessControlState : AccessControlState__954572192;
-    assignments : List__852723865<PositionAssignment__184245974>;
-    categories : List__852723865<Category__126721063>;
-    items : List__852723865<LibraryItem__758195292>;
+    assignments : List__89170296<PositionAssignment__184245974>;
+    categories : List__89170296<Category__126721063>;
+    items : List__89170296<LibraryItem__758195292>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__385781890>;
-    nsoTasks : List__852723865<Task__205849316>;
-    positions : List__852723865<Position__572056758>;
-    profiles : Map__246123559<Principal, UserProfile__921863851>
+    nsoPhases : List__89170296<Phase__385781890>;
+    nsoTasks : List__89170296<Task__205849316>;
+    positions : List__89170296<Position__572056758>;
+    profiles : Map__386906547<Principal, UserProfile__921863851>
   };
 type OldActor__170508836 =
   {
     var accessControlState : AccessControlState__22568020;
-    assignments : List__852723865<PositionAssignment__800954170>;
-    categories : List__852723865<Category__111731656>;
-    items : List__852723865<LibraryItem__313927053>;
-    legendaryActivities : List__852723865<OldActivity__584480665>;
+    assignments : List__89170296<PositionAssignment__800954170>;
+    categories : List__89170296<Category__111731656>;
+    items : List__89170296<LibraryItem__313927053>;
+    legendaryActivities : List__89170296<OldActivity__584480665>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__454293786>;
-    nsoTasks : List__852723865<Task__1031673085>;
-    positions : List__852723865<Position__10277161>;
-    profiles : Map__246123559<Principal, UserProfile__92741012>;
+    nsoPhases : List__89170296<Phase__454293786>;
+    nsoTasks : List__89170296<Task__1031673085>;
+    positions : List__89170296<Position__10277161>;
+    profiles : Map__386906547<Principal, UserProfile__92741012>;
     verifiedEmails : VerifiedEmailsState__533945037
   };
 type OldActor__198466139 =
   {
     var accessControlState : AccessControlState__695342702;
-    assignments : List__852723865<PositionAssignment__616949047>;
-    categories : List__852723865<Category__288702680>;
-    items : List__852723865<OldLibraryItem__176234150>;
-    legendaryActivities : List__852723865<Activity__48101340>;
+    assignments : List__89170296<PositionAssignment__616949047>;
+    categories : List__89170296<Category__288702680>;
+    items : List__89170296<OldLibraryItem__176234150>;
+    legendaryActivities : List__89170296<Activity__48101340>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__928744096>;
-    nsoTasks : List__852723865<Task__179304481>;
-    positions : List__852723865<Position__200429189>;
-    profiles : Map__246123559<Principal, UserProfile__278634132>
+    nsoPhases : List__89170296<Phase__928744096>;
+    nsoTasks : List__89170296<Task__179304481>;
+    positions : List__89170296<Position__200429189>;
+    profiles : Map__386906547<Principal, UserProfile__278634132>
   };
 type OldActor__231051231 =
   {
     var accessControlState : AccessControlState__89091136;
-    assignments : List__852723865<PositionAssignment__283393706>;
-    categories : List__852723865<Category__836745655>;
-    items : List__852723865<OldLibraryItem__260092956>;
-    legendaryActivities : List__852723865<OldActivity__339766109>;
+    assignments : List__89170296<PositionAssignment__283393706>;
+    categories : List__89170296<Category__836745655>;
+    items : List__89170296<OldLibraryItem__260092956>;
+    legendaryActivities : List__89170296<OldActivity__339766109>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__680823036>;
-    nsoTasks : List__852723865<Task__605668722>;
-    positions : List__852723865<Position__493066204>;
-    profiles : Map__246123559<Principal, OldUserProfile__1022476640>;
+    nsoPhases : List__89170296<Phase__680823036>;
+    nsoTasks : List__89170296<Task__605668722>;
+    positions : List__89170296<Position__493066204>;
+    profiles : Map__386906547<Principal, OldUserProfile__1022476640>;
     verifiedEmails : VerifiedEmailsState__789855390
   };
 type OldActor__28634626 =
   {
     var accessControlState : AccessControlState__366191313;
-    assignments : List__852723865<PositionAssignment__929565473>;
-    categories : List__852723865<Category__456273125>;
-    items : List__852723865<LibraryItem__254666467>;
-    legendaryActivities : List__852723865<OldActivity__176228982>;
+    assignments : List__89170296<PositionAssignment__929565473>;
+    categories : List__89170296<Category__456273125>;
+    items : List__89170296<LibraryItem__254666467>;
+    legendaryActivities : List__89170296<OldActivity__176228982>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__80574558>;
-    nsoTasks : List__852723865<Task__1046937043>;
-    positions : List__852723865<Position__820110026>;
-    profiles : Map__246123559<Principal, UserProfile__812730314>;
+    nsoPhases : List__89170296<Phase__80574558>;
+    nsoTasks : List__89170296<Task__1046937043>;
+    positions : List__89170296<Position__820110026>;
+    profiles : Map__386906547<Principal, UserProfile__812730314>;
     verifiedEmails : VerifiedEmailsState__195130915
   };
 type OldActor__331980100 =
   {
     var accessControlState : AccessControlState__825338347;
-    assignments : List__852723865<PositionAssignment__876916776>;
-    categories : List__852723865<Category__360939907>;
-    items : List__852723865<OldLibraryItem__32705546>;
+    assignments : List__89170296<PositionAssignment__876916776>;
+    categories : List__89170296<Category__360939907>;
+    items : List__89170296<OldLibraryItem__32705546>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__371037758>;
-    profiles : Map__246123559<Principal, UserProfile__946597095>
+    positions : List__89170296<Position__371037758>;
+    profiles : Map__386906547<Principal, UserProfile__946597095>
   };
 type OldActor__356507366 =
   {
     var accessControlState : AccessControlState__80168300;
-    assignments : List__852723865<PositionAssignment__1060231071>;
-    categories : List__852723865<Category__160512014>;
-    items : List__852723865<LibraryItem__935798410>;
+    assignments : List__89170296<PositionAssignment__1060231071>;
+    categories : List__89170296<Category__160512014>;
+    items : List__89170296<LibraryItem__935798410>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__404825400>;
-    profiles : Map__246123559<Principal, UserProfile__789457244>
+    positions : List__89170296<Position__404825400>;
+    profiles : Map__386906547<Principal, UserProfile__789457244>
   };
 type OldActor__472261015 = {};
 type OldActor__477246813 =
   {
     var accessControlState : AccessControlState__943352191;
-    assignments : List__852723865<PositionAssignment__349748336>;
-    categories : List__852723865<Category__170373213>;
-    items : List__852723865<LibraryItem__64332672>;
-    legendaryActivities : List__852723865<OldActivity__165273146>;
+    assignments : List__89170296<PositionAssignment__349748336>;
+    categories : List__89170296<Category__170373213>;
+    items : List__89170296<LibraryItem__64332672>;
+    legendaryActivities : List__89170296<OldActivity__165273146>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__496045583>;
-    nsoTasks : List__852723865<Task__497933695>;
-    positions : List__852723865<Position__418445021>;
-    profiles : Map__246123559<Principal, UserProfile__30192772>
+    nsoPhases : List__89170296<Phase__496045583>;
+    nsoTasks : List__89170296<Task__497933695>;
+    positions : List__89170296<Position__418445021>;
+    profiles : Map__386906547<Principal, UserProfile__30192772>
   };
 type OldActor__519317552 =
   {
     var accessControlState : AccessControlState__435094964;
-    assignments : List__852723865<PositionAssignment__647428577>;
-    categories : List__852723865<Category__199623099>;
-    items : List__852723865<LibraryItem__432517672>;
-    legendaryActivities : List__852723865<Activity__564896493>;
+    assignments : List__89170296<PositionAssignment__647428577>;
+    categories : List__89170296<Category__199623099>;
+    items : List__89170296<LibraryItem__432517672>;
+    legendaryActivities : List__89170296<Activity__564896493>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__383498313>;
-    nsoTasks : List__852723865<Task__156210726>;
-    positions : List__852723865<OldPosition__1015359148>;
-    profiles : Map__246123559<Principal, UserProfile__255476170>
+    nsoPhases : List__89170296<Phase__383498313>;
+    nsoTasks : List__89170296<Task__156210726>;
+    positions : List__89170296<OldPosition__1015359148>;
+    profiles : Map__386906547<Principal, UserProfile__255476170>
   };
 type OldActor__644677411 =
   {
     var accessControlState : AccessControlState__690678898;
-    assignments : List__852723865<PositionAssignment__527873470>;
+    assignments : List__89170296<PositionAssignment__527873470>;
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__507482950>;
-    profiles : Map__246123559<Principal, UserProfile__201697168>
+    positions : List__89170296<Position__507482950>;
+    profiles : Map__386906547<Principal, UserProfile__201697168>
   };
 type OldActor__650741527 =
   {
     var accessControlState : AccessControlState__803439430;
-    assignments : List__852723865<PositionAssignment__686122253>;
-    categories : List__852723865<Category__691747777>;
-    items : List__852723865<OldLibraryItem__142332632>;
-    legendaryActivities : List__852723865<Activity__891148727>;
+    assignments : List__89170296<PositionAssignment__686122253>;
+    categories : List__89170296<Category__691747777>;
+    items : List__89170296<OldLibraryItem__142332632>;
+    legendaryActivities : List__89170296<Activity__891148727>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__151503348>;
-    nsoTasks : List__852723865<Task__615126471>;
-    positions : List__852723865<Position__834311727>;
-    profiles : Map__246123559<Principal, UserProfile__306774772>
+    nsoPhases : List__89170296<Phase__151503348>;
+    nsoTasks : List__89170296<Task__615126471>;
+    positions : List__89170296<Position__834311727>;
+    profiles : Map__386906547<Principal, UserProfile__306774772>
   };
 type OldActor__732394136 =
   {
     var accessControlState : AccessControlState__470099793;
-    assignments : List__852723865<PositionAssignment__41900785>;
-    categories : List__852723865<Category__407260773>;
-    items : List__852723865<LibraryItem__82254653>;
+    assignments : List__89170296<PositionAssignment__41900785>;
+    categories : List__89170296<Category__407260773>;
+    items : List__89170296<LibraryItem__82254653>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextPositionId : {var value : Nat};
-    positions : List__852723865<Position__258863425>;
-    profiles : Map__246123559<Principal, UserProfile__678953854>
+    positions : List__89170296<Position__258863425>;
+    profiles : Map__386906547<Principal, UserProfile__678953854>
   };
 type OldActor__788791632 =
   {
     var accessControlState : AccessControlState__899840439;
-    assignments : List__852723865<PositionAssignment__142455647>;
-    categories : List__852723865<Category__555855975>;
-    items : List__852723865<OldLibraryItem__471373874>;
-    legendaryActivities : List__852723865<Activity__362206064>;
+    assignments : List__89170296<PositionAssignment__142455647>;
+    categories : List__89170296<Category__555855975>;
+    items : List__89170296<OldLibraryItem__471373874>;
+    legendaryActivities : List__89170296<Activity__362206064>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__493625523>;
-    nsoTasks : List__852723865<Task__298569252>;
-    positions : List__852723865<Position__1007899447>;
-    profiles : Map__246123559<Principal, UserProfile__561918465>;
+    nsoPhases : List__89170296<Phase__493625523>;
+    nsoTasks : List__89170296<Task__298569252>;
+    positions : List__89170296<Position__1007899447>;
+    profiles : Map__386906547<Principal, UserProfile__561918465>;
     verifiedEmails : VerifiedEmailsState__284758939
   };
 type OldActor__797743004 =
   {
     var accessControlState : AccessControlState__467613519;
-    assignments : List__852723865<PositionAssignment__1021565344>;
-    categories : List__852723865<Category__1020215759>;
-    items : List__852723865<LibraryItem__1007264199>;
-    legendaryActivities : List__852723865<Activity__427748870>;
+    assignments : List__89170296<PositionAssignment__1021565344>;
+    categories : List__89170296<Category__1020215759>;
+    items : List__89170296<LibraryItem__1007264199>;
+    legendaryActivities : List__89170296<Activity__427748870>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__993472986>;
-    nsoTasks : List__852723865<Task__451306388>;
-    positions : List__852723865<Position__977649915>;
-    profiles : Map__246123559<Principal, OldUserProfile__715461423>
+    nsoPhases : List__89170296<Phase__993472986>;
+    nsoTasks : List__89170296<Task__451306388>;
+    positions : List__89170296<Position__977649915>;
+    profiles : Map__386906547<Principal, OldUserProfile__715461423>
   };
 type OldActor__838338160 =
   {
     var accessControlState : AccessControlState__388652228;
-    assignments : List__852723865<PositionAssignment__319725470>;
-    categories : List__852723865<Category__56484344>;
-    items : List__852723865<LibraryItem__756318205>;
-    legendaryActivities : List__852723865<OldActivity__829449521>;
+    assignments : List__89170296<PositionAssignment__319725470>;
+    categories : List__89170296<Category__56484344>;
+    items : List__89170296<LibraryItem__756318205>;
+    legendaryActivities : List__89170296<OldActivity__829449521>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__703539362>;
-    nsoTasks : List__852723865<Task__180617430>;
-    positions : List__852723865<Position__942064189>;
-    profiles : Map__246123559<Principal, UserProfile__307360238>;
+    nsoPhases : List__89170296<Phase__703539362>;
+    nsoTasks : List__89170296<Task__180617430>;
+    positions : List__89170296<Position__942064189>;
+    profiles : Map__386906547<Principal, UserProfile__307360238>;
     verifiedEmails : VerifiedEmailsState__32073611
   };
 type OldActor__845032218 =
   {
     var accessControlState : AccessControlState__623790961;
-    assignments : List__852723865<PositionAssignment__919811250>;
-    categories : List__852723865<Category__273555389>;
-    items : List__852723865<LibraryItem__950249397>;
-    legendaryActivities : List__852723865<OldActivity__156533604>;
+    assignments : List__89170296<PositionAssignment__919811250>;
+    categories : List__89170296<Category__273555389>;
+    items : List__89170296<LibraryItem__950249397>;
+    legendaryActivities : List__89170296<OldActivity__156533604>;
     nextCategoryId : {var value : Nat};
     nextItemId : {var value : Nat};
     nextLegendaryActivityId : {var value : Nat};
     nextPhaseId : {var value : Nat};
     nextPositionId : {var value : Nat};
     nextTaskId : {var value : Nat};
-    nsoPhases : List__852723865<Phase__50981955>;
-    nsoTasks : List__852723865<Task__235568049>;
-    positions : List__852723865<Position__318830573>;
-    profiles : Map__246123559<Principal, UserProfile__142651752>
+    nsoPhases : List__89170296<Phase__50981955>;
+    nsoTasks : List__89170296<Task__235568049>;
+    positions : List__89170296<Position__318830573>;
+    profiles : Map__386906547<Principal, UserProfile__142651752>
   };
 type OldDrinksBuilderContent__1064436548 =
   {settings : OldDrinksBuilderSettings__746124191};
@@ -2785,9 +2785,9 @@ type Role__878966967 = {#admin; #manager; #trainee; #trainer};
 type Role__886952273 = {#admin; #manager; #trainee; #trainer};
 type Role__906047977 = {#admin; #manager; #trainee; #trainer};
 type Role__911687572 = {#admin; #manager; #trainee; #trainer};
-type Set__557760698<T> =
-  {var root : Node__656343714<T>; var size : Nat__93962160};
-type Set__726347137<T> = Set__557760698<T>;
+type Set__195681557<T> = Set__29061695<T>;
+type Set__29061695<T> =
+  {var root : Node__1045371124<T>; var size : Nat__58649523};
 type Task__1031673085 =
   {
     assignedTo : ?Principal;
@@ -3066,12 +3066,12 @@ type UserRole__686137147 = {#admin; #guest; #user};
 type UserRole__786984507 = {#admin; #guest; #user};
 type UserRole__851322309 = {#admin; #guest; #user};
 type UserRole__893334230 = {#admin; #guest; #user};
-type VerifiedEmailsState__195130915 = {verifiedEmails : Set__726347137<Text>};
-type VerifiedEmailsState__284758939 = {verifiedEmails : Set__726347137<Text>};
-type VerifiedEmailsState__32073611 = {verifiedEmails : Set__726347137<Text>};
-type VerifiedEmailsState__382335030 = {verifiedEmails : Set__726347137<Text>};
-type VerifiedEmailsState__533945037 = {verifiedEmails : Set__726347137<Text>};
-type VerifiedEmailsState__789855390 = {verifiedEmails : Set__726347137<Text>};
+type VerifiedEmailsState__195130915 = {verifiedEmails : Set__195681557<Text>};
+type VerifiedEmailsState__284758939 = {verifiedEmails : Set__195681557<Text>};
+type VerifiedEmailsState__32073611 = {verifiedEmails : Set__195681557<Text>};
+type VerifiedEmailsState__382335030 = {verifiedEmails : Set__195681557<Text>};
+type VerifiedEmailsState__533945037 = {verifiedEmails : Set__195681557<Text>};
+type VerifiedEmailsState__789855390 = {verifiedEmails : Set__195681557<Text>};
 {
   "20260702_162129" : (old : OldActor__472261015) -> NewActor__625870533;
   "20260702_173441" : (old : OldActor__644677411) -> NewActor__292081718;
@@ -3096,31 +3096,31 @@ actor  {
   stable accessControlState :
     {
       var adminAssigned : Bool;
-      userRoles : Map__246123559<Principal, UserRole__686137147>
+      userRoles : Map__386906547<Principal, UserRole__686137147>
     };
   stable assignments :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?PositionAssignment__19141584]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable categories :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?Category__877266824]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable items :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?LibraryItem__125372000]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable legendaryActivities :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?Activity__616495317]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable nextCategoryId : {var value : Nat};
   stable nextItemId : {var value : Nat};
@@ -3130,26 +3130,26 @@ actor  {
   stable nextTaskId : {var value : Nat};
   stable nsoPhases :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?Phase__744141695]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable nsoTasks :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?Task__578812480]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable positions :
     {
-      var blockIndex : Nat__93962160;
+      var blockIndex : Nat__58649523;
       var blocks : [var [var ?Position__915296267]];
-      var elementIndex : Nat__93962160
+      var elementIndex : Nat__58649523
     };
   stable profiles :
     {
-      var root : Node__279997185<Principal, UserProfile__472152495>;
-      var size : Nat__93962160
+      var root : Node__430031793<Principal, UserProfile__472152495>;
+      var size : Nat__58649523
     };
-  stable verifiedEmails : {verifiedEmails : Set__726347137<Text>}
+  stable verifiedEmails : {verifiedEmails : Set__195681557<Text>}
 };

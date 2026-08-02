@@ -2247,3 +2247,470 @@
    when OurStorySection switched to rendering the uploaded poster photo
    directly (photo-dominant view) with a display-only text/chips fallback.
    See .orientation-our-story-photo above. */
+
+/* =====================================================================
+   Patriotic Category Detail Page (additive — Service / Food / Community
+   Priorities detail screens)
+   ADDITIVE only — no existing token altered. Mirrors the Orientation
+   page's patriotic roadhouse treatment so the category detail screen
+   that the Orientation priority cards link INTO matches the onboarding
+   aesthetic. Sits on the dark roadhouse base and reuses the existing
+   orientation-* / patriotic-* tokens; new utilities are prefixed
+   `orientation-detail-*` so they never collide with existing classes.
+   Gradients/glow are NOT introduced here — the detail screen uses the
+   same flat patriotic accents (tri-stripe, flag-bar, gold star, tone
+   top stripe) as the Orientation priority cards.
+   ===================================================================== */
+
+/* Page wrapper — dark roadhouse background, centered, generous vertical
+   rhythm. max-w-3xl keeps the numbered card list readable on wide
+   screens; the patriotic header spans the same width. */
+.orientation-detail-page {
+  background-color: oklch(var(--background));
+}
+
+/* Back-to-position button — mirrors .orientation-cta-enter (red fill,
+   cream Oswald uppercase, tracked, hard radius) but sized as a small
+   ghost-style affordance with an arrow. Reuses patriotic-red so it
+   reads as the same "ENTER" affordance family from Orientation. */
+.orientation-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: oklch(var(--patriotic-red));
+  color: oklch(var(--patriotic-cream));
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.orientation-detail-back:hover {
+  background-color: oklch(var(--primary-hover));
+}
+
+/* Patriotic header — tri-stripe top edge, Anton category-name headline,
+   flag-bar underline. Sits on the dark roadhouse card surface so the
+   tri-stripe and flag-bar read as crisp patriotic accents, not a full
+   flag panel. */
+.orientation-detail-header {
+  position: relative;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Tri-stripe top edge — reuses the Orientation tri-stripe pattern
+   (red/cream/blue, 6px). Kept as a dedicated class so the detail
+   header can apply it independently of .orientation-tri-stripe-top's
+   bottom margin. */
+.orientation-detail-tri-stripe {
+  display: flex;
+  height: 6px;
+  width: 100%;
+}
+.orientation-detail-tri-stripe > span:nth-child(1) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-red));
+}
+.orientation-detail-tri-stripe > span:nth-child(2) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-tri-stripe > span:nth-child(3) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-blue));
+}
+
+/* Anton category-name headline — cream, uppercase, tight line-height.
+   Mirrors .orientation-hero-title sizing on a smaller scale. */
+.orientation-detail-headline {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 0.95;
+  color: oklch(var(--patriotic-cream));
+}
+
+/* Pacifico script flourish — a small handwritten accent under the
+   headline. Used sparingly (one word) per the design contract. */
+.orientation-detail-flourish {
+  font-family: var(--font-script);
+  color: oklch(var(--patriotic-gold));
+  line-height: 1.1;
+}
+
+/* Flag-bar underline — three solid segments red/cream/blue. Reuses the
+   Orientation flag-bar pattern; dedicated class so the detail header
+   can size it independently. */
+.orientation-detail-flag-bar {
+  display: flex;
+  height: 4px;
+  width: 100%;
+  max-width: 16rem;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.orientation-detail-flag-bar > span:nth-child(1) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-red));
+}
+.orientation-detail-flag-bar > span:nth-child(2) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-flag-bar > span:nth-child(3) {
+  flex: 1;
+  background-color: oklch(var(--patriotic-blue));
+}
+
+/* Cover photo frame — dark roadhouse frame around the optional category
+   cover photo. Sits above the tri-stripe header so the photo reads as
+   a banner, not a card. */
+.orientation-detail-cover {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid oklch(var(--border));
+  background-color: oklch(var(--card));
+}
+.orientation-detail-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Numbered priority item card — mirrors .orientation-priority-card
+   (tone top stripe, Anton numeral, cream title) but laid out as a
+   horizontal row: big Anton index numeral on the left, thumbnail +
+   Oswald title + tag preview on the right, gold star accent, optional
+   seasonal badge. Tone is set via .is-red / .is-blue / .is-gold on
+   the card (same modifiers as .orientation-priority-card). */
+.orientation-detail-item-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s
+    cubic-bezier(0.4, 0, 0.2, 1);
+}
+.orientation-detail-item-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  z-index: 1;
+}
+.orientation-detail-item-card.is-red::before {
+  background-color: oklch(var(--patriotic-red));
+}
+.orientation-detail-item-card.is-blue::before {
+  background-color: oklch(var(--patriotic-blue));
+}
+.orientation-detail-item-card.is-gold::before {
+  background-color: oklch(var(--patriotic-gold));
+}
+.orientation-detail-item-card:hover {
+  border-color: oklch(var(--patriotic-blue) / 0.6);
+  box-shadow: 0 0 0 1px oklch(var(--patriotic-blue) / 0.25);
+}
+.orientation-detail-item-card.is-red:hover {
+  border-color: oklch(var(--patriotic-red) / 0.6);
+  box-shadow: 0 0 0 1px oklch(var(--patriotic-red) / 0.25);
+}
+.orientation-detail-item-card.is-gold:hover {
+  border-color: oklch(var(--patriotic-gold) / 0.6);
+  box-shadow: 0 0 0 1px oklch(var(--patriotic-gold) / 0.25);
+}
+
+/* Numeral column — big Anton index numeral in the category's tone
+   color, cream fallback. Sits on a dark navy backdrop so the numeral
+   pops. Vertically centered, fixed width so single and double digits
+   align. */
+.orientation-detail-item-number-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 4.5rem;
+  background-color: oklch(var(--nav));
+  padding-top: 6px; /* clear the tone top stripe */
+}
+@media (min-width: 640px) {
+  .orientation-detail-item-number-col {
+    width: 5.5rem;
+  }
+}
+.orientation-detail-item-number {
+  font-family: var(--font-display);
+  line-height: 0.9;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-item-card.is-red .orientation-detail-item-number {
+  color: oklch(var(--patriotic-red));
+}
+.orientation-detail-item-card.is-blue .orientation-detail-item-number {
+  color: oklch(var(--patriotic-blue));
+}
+.orientation-detail-item-card.is-gold .orientation-detail-item-number {
+  color: oklch(var(--patriotic-gold));
+}
+
+/* Body column — thumbnail + title + tag preview + seasonal badge.
+   Padding-top clears the tone top stripe. min-w-0 lets the title
+   truncate on narrow screens. */
+.orientation-detail-item-body {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.875rem 1rem;
+  padding-top: calc(0.875rem + 6px);
+}
+
+/* Thumbnail — 48px square, navy backdrop, object-cover. Falls back to
+   an Anton initial in the tone color when no photo is set. */
+.orientation-detail-item-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background-color: oklch(var(--nav));
+}
+.orientation-detail-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.orientation-detail-item-thumb-initial {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-item-card.is-red .orientation-detail-item-thumb-initial {
+  color: oklch(var(--patriotic-red));
+}
+.orientation-detail-item-card.is-blue .orientation-detail-item-thumb-initial {
+  color: oklch(var(--patriotic-blue));
+}
+.orientation-detail-item-card.is-gold .orientation-detail-item-thumb-initial {
+  color: oklch(var(--patriotic-gold));
+}
+
+/* Title + tag preview stack — Oswald uppercase title, Barlow tag
+   preview. min-w-0 lets both truncate. */
+.orientation-detail-item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.orientation-detail-item-title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-item-meta {
+  font-family: var(--font-body);
+  color: oklch(var(--muted-foreground));
+}
+
+/* Gold star accent — small ★ in the tone column header, mirroring the
+   Orientation goal-card star. Sits above the numeral. */
+.orientation-detail-item-star {
+  color: oklch(var(--patriotic-gold));
+  line-height: 1;
+}
+
+/* Empty + not-found states — patriotic-styled panels that match the
+   header treatment without the full card chrome. */
+.orientation-detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  background-color: oklch(var(--card));
+  border: 1px dashed oklch(var(--border));
+  border-radius: var(--radius);
+  padding: 3rem 1.5rem;
+}
+.orientation-detail-empty-title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-empty-body {
+  font-family: var(--font-body);
+  color: oklch(var(--muted-foreground));
+  max-width: 20rem;
+}
+
+.orientation-detail-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.orientation-detail-not-found-title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-not-found-body {
+  font-family: var(--font-body);
+  color: oklch(var(--muted-foreground));
+}
+
+/* Skeletons — match the patriotic header + numbered card shapes so the
+   loading state reads as the same surface filling in. */
+.orientation-detail-header-skeleton {
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.orientation-detail-item-skeleton {
+  display: flex;
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.orientation-detail-item-skeleton-num {
+  flex-shrink: 0;
+  width: 4.5rem;
+  background-color: oklch(var(--nav));
+}
+@media (min-width: 640px) {
+  .orientation-detail-item-skeleton-num {
+    width: 5.5rem;
+  }
+}
+
+/* Fix: bare <li> (display:list-item) inside a display:flex <ul> can
+   collapse subsequent rows in some browsers, leaving only item #1
+   visible. These additive rules normalize the list + row to block
+   layout so every numbered patriotic card renders. */
+.orientation-detail-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.orientation-detail-item-row {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Recipe content sections (inside .orientation-detail-item-card) ──
+   These small helpers style the recipe / item-detail content rendered
+   inside a patriotic tone-stripe card. They replace the old
+   .recipe-print-card-* classes (which were tied to the white print-faithful
+   look) so the recipe sections read on the dark roadhouse card surface.
+   Kept adjacent to the .orientation-detail-* block per the restyle brief. */
+
+/* Section heading — Oswald uppercase, tracked, in the card's tone color.
+   Inherits the tone from the enclosing .is-red / .is-blue / .is-gold card
+   so Glassware / Specs / Assembly / Garnish / Notes / Equipment / etc. all
+   read in the same tone as the top stripe. */
+.recipe-section-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: oklch(var(--patriotic-cream));
+}
+.orientation-detail-item-card.is-red .recipe-section-heading {
+  color: oklch(var(--patriotic-red));
+}
+.orientation-detail-item-card.is-blue .recipe-section-heading {
+  color: oklch(var(--patriotic-blue));
+}
+.orientation-detail-item-card.is-gold .recipe-section-heading {
+  color: oklch(var(--patriotic-gold));
+}
+
+/* Square-bullet list — Barlow body, cream text, tone square bullets. */
+.recipe-square-bullet {
+  list-style: square;
+  color: oklch(var(--patriotic-cream));
+}
+.recipe-square-bullet > li {
+  font-family: var(--font-body);
+  color: oklch(var(--foreground));
+}
+.recipe-square-bullet > li::marker {
+  color: oklch(var(--patriotic-gold));
+}
+.orientation-detail-item-card.is-red .recipe-square-bullet > li::marker {
+  color: oklch(var(--patriotic-red));
+}
+.orientation-detail-item-card.is-blue .recipe-square-bullet > li::marker {
+  color: oklch(var(--patriotic-blue));
+}
+.orientation-detail-item-card.is-gold .recipe-square-bullet > li::marker {
+  color: oklch(var(--patriotic-gold));
+}
+
+/* Specs row — amount on the left (nowrap), ingredient right-aligned. */
+.recipe-specs-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.recipe-specs-row .amount {
+  font-weight: 600;
+  color: oklch(var(--patriotic-cream));
+}
+.recipe-specs-row .ingredient {
+  text-align: right;
+  color: oklch(var(--foreground));
+}
+
+/* Variant divider — Oswald uppercase label with a tone underline rule. */
+.recipe-variant-divider {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: oklch(var(--patriotic-cream));
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid oklch(var(--border));
+}
+.orientation-detail-item-card.is-red .recipe-variant-divider {
+  border-bottom-color: oklch(var(--patriotic-red) / 0.5);
+}
+.orientation-detail-item-card.is-blue .recipe-variant-divider {
+  border-bottom-color: oklch(var(--patriotic-blue) / 0.5);
+}
+.orientation-detail-item-card.is-gold .recipe-variant-divider {
+  border-bottom-color: oklch(var(--patriotic-gold) / 0.5);
+}

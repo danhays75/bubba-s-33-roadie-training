@@ -11,7 +11,7 @@ import type {
   RecipeVariant,
 } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 
@@ -19,17 +19,48 @@ import type { ReactElement } from "react";
  * Recipe card detail page — the full item view.
  *
  * Rendered by the /position/$id/library/$categoryId/item/$itemId route. Uses
- * useItem(itemId) to fetch the item and renders on a .bg-library-card surface
- * (one step lighter than the page): title in Anton, photo if present, each
- * labeled detail field as a label (Oswald, uppercase, BLUE) + value (Barlow)
- * pair, the notes section (if present), tags as outlined chips, and the
- * SeasonalBadge if seasonal. Breadcrumb links back to the category page.
+ * useItem(itemId) to fetch the item and renders it in the patriotic roadhouse
+ * treatment that already dresses the sibling priorities detail screens
+ * (CategoryDetailPage + ItemListItem): dark theme, red/blue/gold accents,
+ * Anton + Pacifico brand fonts, a tone top-stripe card, and a tri-stripe +
+ * flag-bar header.
  *
- * LAYOUT: two-column on desktop (text left, framed photo right). On mobile the
- * columns stack: title + photo first, then the text sections below in a
- * readable single column. Section headers (Glassware, Specs, Assembly,
- * Garnish, Notes) render in BLUE via the existing --secondary token.
+ * The category's tone (red / blue / gold) is derived from the category name
+ * using the same toneForCategoryName() convention as CategoryDetailPage
+ * (Service → red, Food → blue, Community → gold). The Service Priorities page
+ * (item 243) therefore renders in the red tone.
+ *
+ * The page preserves every data-binding path of the previous flat-list
+ * implementation: recipe vs. bulk-mix vs. plain item, photo hero vs.
+ * two-column, recap audio, seasonal badge, tags, notes, and labeled detail
+ * fields. Only the chrome is restyled — the route file is unchanged and the
+ * "Back to category" navigation is kept intact.
  */
+
+/* Category name → tone mapping. Mirrors CategoryDetailPage so the item
+   detail screen's tone matches the category list the user came from. */
+const SERVICE_PRIORITIES_NAME = "Service Priorities";
+const FOOD_PRIORITIES_NAME = "Food Priorities";
+const MARKETING_PRIORITIES_NAME = "Marketing / Community Priorities";
+
+type PriorityTone = "red" | "blue" | "gold";
+
+/**
+ * Derives the patriotic tone for a category from its name. Service
+ * Priorities → red, Food Priorities → blue, Community Priorities → gold.
+ * Mirrors CategoryDetailPage.toneForCategoryName exactly so the item
+ * detail screen's tone matches the category list the user tapped through
+ * from. Defaults to red when the name does not match.
+ */
+function toneForCategoryName(name: string): PriorityTone {
+  const key = name.trim().toLowerCase();
+  if (key === SERVICE_PRIORITIES_NAME.trim().toLowerCase()) return "red";
+  if (key === FOOD_PRIORITIES_NAME.trim().toLowerCase()) return "blue";
+  if (key === MARKETING_PRIORITIES_NAME.trim().toLowerCase()) return "gold";
+  if (key.includes("community")) return "gold";
+  return "red";
+}
+
 export function RecipeCardPage({
   positionId,
   categoryId,
@@ -40,7 +71,9 @@ export function RecipeCardPage({
   itemId: string;
 }): ReactElement {
   const itemQuery = useItem(itemId);
+  const categoryQuery = useCategory(categoryId);
   const item = itemQuery.data ?? null;
+  const categoryName = categoryQuery.data?.name ?? "";
   const isLoading = itemQuery.isLoading;
   const isError = itemQuery.isError;
   // Only treat as "not found" when the read succeeded and returned null — a
@@ -48,8 +81,17 @@ export function RecipeCardPage({
   // terminal "this item doesn't exist" message.
   const notFound = !isLoading && !isError && !item;
 
+  // Tone follows the category the user tapped through from, defaulting to
+  // red so a still-loading category never flashes the wrong tone.
+  const tone: PriorityTone = categoryName
+    ? toneForCategoryName(categoryName)
+    : "red";
+
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6">
+    <div
+      className="orientation-detail-page mx-auto w-full max-w-3xl px-4 py-6"
+      data-ocid="library.item.detail.page"
+    >
       <BackToCategory positionId={positionId} categoryId={categoryId} />
 
       {isLoading ? (
@@ -63,142 +105,228 @@ export function RecipeCardPage({
         />
       ) : notFound ? (
         <ItemNotFound positionId={positionId} categoryId={categoryId} />
-      ) : item!.recipe ? (
-        isBulkMix(item!.recipe) ? (
-          <BulkMixRecipeCard item={item!} />
-        ) : (
-          <PrintRecipeCard item={item!} />
-        )
       ) : (
-        <RecipeCard item={item!} />
+        <div className="mt-4" data-ocid="library.item.detail.body">
+          <PatrioticItemHeader
+            title={item!.title}
+            subtitle={item!.subtitle}
+            tone={tone}
+            seasonal={item!.seasonal}
+            photo={item!.photo}
+          />
+
+          {item!.recipe ? (
+            isBulkMix(item!.recipe) ? (
+              <BulkMixRecipeCard item={item!} tone={tone} />
+            ) : (
+              <PrintRecipeCard item={item!} tone={tone} />
+            )
+          ) : (
+            <RecipeCard item={item!} tone={tone} />
+          )}
+        </div>
       )}
     </div>
+  );
+}
+
+/* --------------------------- Patriotic header --------------------------- */
+
+/**
+ * Patriotic item header — tri-stripe top edge, Pacifico script flourish,
+ * Anton item-title headline, flag-bar underline. Mirrors
+ * CategoryDetailPage.PatrioticHeader so the item detail screen reads as
+ * the same surface as the category list the user came from. The optional
+ * SeasonalBadge rides the headline row so it stays visible without
+ * fighting the title.
+ */
+function PatrioticItemHeader({
+  title,
+  subtitle,
+  tone,
+  seasonal,
+  photo,
+}: {
+  title: string;
+  subtitle: string | null;
+  tone: PriorityTone;
+  seasonal: boolean;
+  photo: string | null;
+}): ReactElement {
+  return (
+    <header
+      className="orientation-detail-header"
+      data-ocid="library.item.header"
+    >
+      {/* Optional photo banner above the tri-stripe — mirrors the
+          category cover photo treatment. */}
+      {photo ? (
+        <div
+          className="orientation-detail-cover"
+          style={{ maxHeight: "16rem" }}
+          data-ocid="library.item.header_photo"
+        >
+          <img
+            src={photo}
+            alt={title}
+            className="h-48 w-full object-cover sm:h-64"
+            loading="lazy"
+          />
+        </div>
+      ) : null}
+
+      <div
+        className="orientation-detail-tri-stripe"
+        aria-hidden
+        data-ocid="library.item.tri_stripe"
+      >
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <div className="px-5 py-6 sm:px-7 sm:py-8">
+        <p
+          className="orientation-detail-flourish text-xl sm:text-2xl"
+          data-ocid="library.item.flourish"
+        >
+          {tone === "red"
+            ? "Service"
+            : tone === "blue"
+              ? "Food"
+              : tone === "gold"
+                ? "Community"
+                : "Priority"}
+        </p>
+
+        <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+          <h1
+            className="orientation-detail-headline text-3xl sm:text-5xl"
+            data-ocid="library.item.title"
+          >
+            {title}
+          </h1>
+          {seasonal ? (
+            <SeasonalBadge
+              className="shrink-0"
+              // keep a header-scoped marker for deterministic coverage
+            />
+          ) : null}
+        </div>
+
+        {subtitle && subtitle.trim().length > 0 ? (
+          <p
+            className="mt-3 font-body text-base sm:text-lg text-muted-foreground"
+            data-ocid="library.item.subtitle"
+          >
+            {subtitle}
+          </p>
+        ) : null}
+
+        <div
+          className="orientation-detail-flag-bar mt-4"
+          aria-hidden
+          data-ocid="library.item.flag_bar"
+        >
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    </header>
   );
 }
 
 /* --------------------------- Print recipe card -------------------------- */
 
 /**
- * Print-faithful LIGHT island recipe card. Rendered when the loaded item has
- * a recipe payload. This is an intentional light-blue card centered in the
- * dark app — it does NOT use the app's dark tokens. All chrome comes from the
- * .recipe-print-card* utilities + --rpc-* tokens in index.css.
+ * Patriotic recipe card — the recipe payload rendered inside a tone
+ * top-stripe card (.orientation-detail-item-card .is-red/.is-blue/.is-gold).
+ * Reuses the existing patriotic roadhouse classes; section headings render
+ * in the tone color via the .orientation-detail-item-card.is-* scope so
+ * the card reads as the same surface as the numbered priority rows.
  *
- * Structure: white panel → title block (slab small-caps + 2px black rule) →
- * optional subtitle → two-column body (content left, framed photo right; photo
- * stacks on top on mobile; no photo → content spans full width) → footer
- * brand lockup → 3-col legal row (category left/blue, confidential center,
- * page+LTO marker right/blue).
+ * Structure: tone-stripe card → optional recap audio pill → two-column
+ * body (content left, framed photo right; photo stacks on top on mobile,
+ * or dominates as a hero when the recipe has little/no text). Section
+ * headers (Glassware, Specs, Assembly, Garnish, Notes) render in the
+ * category tone.
  */
 function PrintRecipeCard({
   item,
+  tone,
 }: {
   item: NonNullable<ReturnType<typeof useItem>["data"]>;
+  tone: PriorityTone;
 }): ReactElement {
   const recipe = item.recipe as Recipe;
-  const categoryQuery = useCategory(item.categoryId);
-  const categoryName = categoryQuery.data?.name ?? "";
-  const isLTO =
-    item.seasonal || item.tags.some((t) => t.toUpperCase() === "LTO");
 
   return (
     <article
-      className="recipe-print-card mx-auto mt-4 w-full max-w-3xl rounded-md p-6 shadow-lg sm:p-10"
+      className={`orientation-detail-item-card mt-4 flex-col ${
+        tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold"
+      }`}
       data-ocid="library.item.print_card"
     >
-      {/* Title block */}
-      <h1
-        className="recipe-print-card-title text-3xl sm:text-4xl"
-        data-ocid="library.item.print_title"
-      >
-        {item.title}
-      </h1>
-
-      {/* Recap audio button — screen-only (print:hidden), shown only when the
-          recipe carries a non-empty recapAudio clip. Visually quiet pill that
-          matches the card's Barlow body font. Toggles playback via a dedicated
-          local HTMLAudioElement (mirrors the LegendaryBanner pattern). */}
-      <RecapAudioButton
-        recapAudio={recipe.recapAudio}
-        className="recipe-print-card-recap-button mt-3"
-      />
-
-      {/* Optional subtitle */}
-      {item.subtitle && item.subtitle.trim().length > 0 ? (
-        <p
-          className="recipe-print-card-subtitle mt-3 text-base sm:text-lg"
-          data-ocid="library.item.print_subtitle"
-        >
-          {item.subtitle}
-        </p>
-      ) : null}
-
-      {/* Photo placement: when the recipe has little or no text content, the
-          photo dominates as a large centered hero. When there is substantial
-          recipe text (glassware/specs/assembly/garnish/variants), keep the
-          existing two-column layout (content left, framed photo right). */}
-      {item.photo && !hasSubstantialRecipeText(recipe) ? (
-        <div className="mt-6" data-ocid="library.item.print_photo_hero">
-          <img
-            src={item.photo}
-            alt={item.title}
-            className="recipe-print-card-photo mx-auto block h-auto w-full object-contain"
-            style={{ maxWidth: "640px" }}
-            loading="lazy"
-          />
-        </div>
-      ) : (
-        <div className="mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
-          {/* Photo — stacks on top on mobile, right column on desktop. Omitted
-              entirely when there is no photo (no empty blue frame). */}
-          {item.photo ? (
-            <div
-              className="order-1 sm:order-2 sm:w-[320px] sm:shrink-0"
-              data-ocid="library.item.print_photo"
-            >
-              <img
-                src={item.photo}
-                alt={item.title}
-                className="recipe-print-card-photo block h-auto w-full object-contain"
-                loading="lazy"
-              />
-            </div>
-          ) : null}
-
-          {/* Content — spans full width when there is no photo */}
-          <div
-            className="order-2 min-w-0 sm:order-1 sm:flex-1"
-            data-ocid="library.item.print_content"
-          >
-            <RecipeContent recipe={recipe} />
-          </div>
-        </div>
-      )}
-
-      {/* Footer brand lockup */}
-      <p
-        className="mt-8 text-center text-sm font-semibold"
-        data-ocid="library.item.print_brand"
-      >
-        Bubba&rsquo;s 33 &middot; Be Legendary / Serve Responsibly
-      </p>
-
-      {/* Legal row */}
       <div
-        className="recipe-print-card-footer-legal mt-4 text-xs"
-        data-ocid="library.item.print_legal"
+        className="flex w-full flex-col gap-6 px-5 py-6 sm:px-7 sm:py-8"
+        style={{ paddingTop: "calc(1.5rem + 6px)" }}
+        data-ocid="library.item.print_body"
       >
-        <span className="left">{categoryName}</span>
-        <span className="center">
-          CONFIDENTIAL AND PROPRIETARY &copy; Bubba&rsquo;s 33
-        </span>
-        <span className="right">{isLTO ? "LTO" : ""}</span>
+        {/* Recap audio button — screen-only, shown only when the recipe
+            carries a non-empty recapAudio clip. */}
+        <RecapAudioButton
+          recapAudio={recipe.recapAudio}
+          className="self-start"
+        />
+
+        {/* Photo placement: when the recipe has little or no text content,
+            the photo dominates as a large centered hero. When there is
+            substantial recipe text, keep the two-column layout (content
+            left, framed photo right). */}
+        {item.photo && !hasSubstantialRecipeText(recipe) ? (
+          <div data-ocid="library.item.print_photo_hero">
+            <img
+              src={item.photo}
+              alt={item.title}
+              className="mx-auto block h-auto w-full rounded-md border border-border object-contain"
+              style={{ maxWidth: "640px" }}
+              loading="lazy"
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
+            {/* Photo — stacks on top on mobile, right column on desktop.
+                Omitted entirely when there is no photo. */}
+            {item.photo ? (
+              <div
+                className="order-1 sm:order-2 sm:w-[320px] sm:shrink-0"
+                data-ocid="library.item.print_photo"
+              >
+                <img
+                  src={item.photo}
+                  alt={item.title}
+                  className="block h-auto w-full rounded-md border border-border object-contain"
+                  loading="lazy"
+                />
+              </div>
+            ) : null}
+
+            {/* Content — spans full width when there is no photo */}
+            <div
+              className="order-2 min-w-0 sm:order-1 sm:flex-1"
+              data-ocid="library.item.print_content"
+            >
+              <RecipeContent recipe={recipe} />
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );
 }
 
-/* --------------------------- Bulk mix recipe card ----------------------- */
+/* --------------------------- Recap audio button ------------------------- */
 
 /**
  * RecapAudioButton — a small, screen-only "Play recap" / "Stop" toggle that
@@ -215,14 +343,6 @@ function PrintRecipeCard({
  * setPlaying(false), play() wrapped in a best-effort .catch (user click, so
  * no autoplay-policy issue), stop+reset discipline before setting src, and
  * cleanup on unmount so the clip never keeps playing after leaving the card.
- * The shared sound.playClip channel is intentionally NOT used because it
- * swallows ended/error events and play() rejections — the local element
- * exposes those events so state can be revealed without trapping the user.
- *
- * The button is marked print:hidden so it does NOT appear in the printed
- * recipe card (the card uses .recipe-print-card* print-faithful styling).
- * Styled as a small ghost pill in the brand body font (Barlow) so it stays
- * visually quiet and does not fight the printed-recipe look.
  */
 function RecapAudioButton({
   recapAudio,
@@ -257,9 +377,7 @@ function RecapAudioButtonInner({
   const audioElRef = useRef<HTMLAudioElement | null>(null);
 
   // Cleanup on unmount: stop + release the audio element so the clip never
-  // keeps playing after leaving the card (route change or unmount). The
-  // element is dereferenced so it can be garbage-collected. The stop logic
-  // is inlined here (it only touches refs) so the deps array stays empty.
+  // keeps playing after leaving the card (route change or unmount).
   useEffect(() => {
     return () => {
       const el = audioElRef.current;
@@ -277,11 +395,8 @@ function RecapAudioButtonInner({
     };
   }, []);
 
-  // Wire 'ended' and 'error' events to flip playing back to false. These
-  // fire on the local element (not the shared playClip channel) so the
+  // Wire 'ended' and 'error' events to flip playing back to false so the
   // toggle state never gets stuck on "Stop" after the clip ends or fails.
-  // The stop logic is inlined in the handlers (only touches refs) so the
-  // deps array stays empty.
   useEffect(() => {
     const el = audioElRef.current;
     if (!el) return;
@@ -347,8 +462,8 @@ function RecapAudioButtonInner({
       }
     }
     const audioEl = el;
-    // Stop + reset before setting src (mirrors playClip's discipline so a
-    // re-trigger never overlaps a previous clip).
+    // Stop + reset before setting src so a re-trigger never overlaps a
+    // previous clip.
     try {
       audioEl.pause();
       audioEl.currentTime = 0;
@@ -387,7 +502,7 @@ function RecapAudioButtonInner({
       aria-label={ariaLabel}
       aria-pressed={playing}
       data-ocid="library.item.print_recap_button"
-      className={`inline-flex items-center gap-1.5 rounded-full border border-[#1477BE]/40 bg-[#1477BE]/5 px-3 py-1 font-body text-xs font-medium leading-none text-[#1477BE] transition-smooth hover:bg-[#1477BE]/10 hover:border-[#1477BE]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1477BE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-white print:hidden ${className ?? ""}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-patriotic-blue/40 bg-patriotic-blue/5 px-3 py-1 font-body text-xs font-medium leading-none text-patriotic-blue transition-smooth hover:bg-patriotic-blue/10 hover:border-patriotic-blue/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-patriotic-blue/50 focus-visible:ring-offset-1 focus-visible:ring-offset-background print:hidden ${className ?? ""}`}
     >
       {label}
     </button>
@@ -437,8 +552,8 @@ function hasSubstantialRecipeText(recipe: Recipe): boolean {
  * always has a glass; a bulk mix never does. So the discriminator requires
  * the ABSENCE of glassware together with bulk-mix metadata (a non-empty
  * `yield` OR a non-empty `equipment` array). A drink that happens to carry
- * an equipment note still renders as a drink card (glassware/garnish/variants
- * visible). Kept in sync with BulkImportDialog's validator.
+ * an equipment note still renders as a drink card. Kept in sync with
+ * BulkImportDialog's validator.
  */
 function isBulkMix(recipe: Recipe): boolean {
   const hasGlassware = recipe.glassware.trim().length > 0;
@@ -449,172 +564,149 @@ function isBulkMix(recipe: Recipe): boolean {
 }
 
 /**
- * Bulk Mix recipe card — reuses the existing .recipe-print-card* utilities and
- * --rpc-* tokens so it shares the white panel, slab small-caps title + 2px
- * black rule, #1477BE blue headings, square bullets, right-aligned specs rows,
- * and the Bubba's 33 footer lockup with the drink card.
- *
- * Layout differs from the drink card: NO photo, NO glassware, NO garnish, NO
- * variants. Instead: title block → two-column top row (Equipment | Bulk Mix +
- * Shelf Life stacked) → full-width Specs, Assembly, optional Quality Identifier
- * → footer lockup with "BULK MIX" as the left category marker.
+ * Bulk Mix recipe card — patriotic roadhouse treatment. Renders the bulk-mix
+ * payload inside a tone top-stripe card (.orientation-detail-item-card
+ * .is-*), mirroring the drink card's chrome. Layout differs from the drink
+ * card: NO photo, NO glassware, NO garnish, NO variants. Instead: two-column
+ * top row (Equipment | Bulk Mix + Shelf Life stacked) → full-width Specs,
+ * Assembly, optional Quality Identifier.
  */
 function BulkMixRecipeCard({
   item,
+  tone,
 }: {
   item: NonNullable<ReturnType<typeof useItem>["data"]>;
+  tone: PriorityTone;
 }): ReactElement {
   const recipe = item.recipe as Recipe;
-  const isLTO =
-    item.seasonal || item.tags.some((t) => t.toUpperCase() === "LTO");
 
   return (
     <article
-      className="recipe-print-card mx-auto mt-4 w-full max-w-3xl rounded-md p-6 shadow-lg sm:p-10"
+      className={`orientation-detail-item-card mt-4 flex-col ${
+        tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold"
+      }`}
       data-ocid="library.item.bulk_mix_card"
     >
-      {/* Title block — slab small-caps + 2px black rule, no subtitle */}
-      <h1
-        className="recipe-print-card-title text-3xl sm:text-4xl"
-        data-ocid="library.item.bulk_mix_title"
-      >
-        {item.title}
-      </h1>
-
-      {/* Top row: two columns on desktop (Equipment | Bulk Mix + Shelf Life),
-          stacks to one column on mobile in order: Equipment, Bulk Mix, Shelf
-          Life. */}
       <div
-        className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10"
-        data-ocid="library.item.bulk_mix_top_row"
+        className="flex w-full flex-col px-5 py-6 sm:px-7 sm:py-8"
+        style={{ paddingTop: "calc(1.5rem + 6px)" }}
+        data-ocid="library.item.bulk_mix_body"
       >
-        {/* Left column — Equipment */}
-        {recipe.equipment.length > 0 ? (
-          <section data-ocid="library.item.bulk_mix_equipment">
-            <h2 className="recipe-print-card-heading">Equipment</h2>
-            <ul className="recipe-print-card-square-bullet mt-1 pl-5">
-              {recipe.equipment.map((tool, i) => (
-                <li
-                  key={`eq-${tool}`}
-                  className="leading-relaxed"
-                  data-ocid={`library.item.bulk_mix_equipment_item.${i + 1}`}
-                >
-                  {tool}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {/* Right column — Bulk Mix + Shelf Life stacked */}
+        {/* Top row: two columns on desktop (Equipment | Bulk Mix + Shelf
+            Life), stacks to one column on mobile in order: Equipment, Bulk
+            Mix, Shelf Life. */}
         <div
-          className="flex flex-col gap-6"
-          data-ocid="library.item.bulk_mix_meta"
+          className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10"
+          data-ocid="library.item.bulk_mix_top_row"
         >
-          {recipe.yield != null && recipe.yield.trim().length > 0 ? (
-            <section data-ocid="library.item.bulk_mix_yield">
-              <h2 className="recipe-print-card-heading">Bulk Mix</h2>
-              <ul className="recipe-print-card-square-bullet mt-1 pl-5">
-                <li
-                  className="leading-relaxed"
-                  data-ocid="library.item.bulk_mix_yield_item.1"
-                >
-                  {recipe.yield}
-                </li>
+          {/* Left column — Equipment */}
+          {recipe.equipment.length > 0 ? (
+            <section data-ocid="library.item.bulk_mix_equipment">
+              <h2 className="recipe-section-heading">Equipment</h2>
+              <ul className="recipe-square-bullet mt-2 pl-5">
+                {recipe.equipment.map((tool, i) => (
+                  <li
+                    key={`eq-${tool}`}
+                    className="leading-relaxed"
+                    data-ocid={`library.item.bulk_mix_equipment_item.${i + 1}`}
+                  >
+                    {tool}
+                  </li>
+                ))}
               </ul>
             </section>
           ) : null}
 
-          {recipe.shelfLife != null && recipe.shelfLife.trim().length > 0 ? (
-            <section data-ocid="library.item.bulk_mix_shelf_life">
-              <h2 className="recipe-print-card-heading">Shelf Life</h2>
-              <ul className="recipe-print-card-square-bullet mt-1 pl-5">
-                <li
-                  className="leading-relaxed"
-                  data-ocid="library.item.bulk_mix_shelf_life_item.1"
-                >
-                  {recipe.shelfLife}
-                </li>
+          {/* Right column — Bulk Mix + Shelf Life stacked */}
+          <div
+            className="flex flex-col gap-6"
+            data-ocid="library.item.bulk_mix_meta"
+          >
+            {recipe.yield != null && recipe.yield.trim().length > 0 ? (
+              <section data-ocid="library.item.bulk_mix_yield">
+                <h2 className="recipe-section-heading">Bulk Mix</h2>
+                <ul className="recipe-square-bullet mt-2 pl-5">
+                  <li
+                    className="leading-relaxed"
+                    data-ocid="library.item.bulk_mix_yield_item.1"
+                  >
+                    {recipe.yield}
+                  </li>
+                </ul>
+              </section>
+            ) : null}
+
+            {recipe.shelfLife != null && recipe.shelfLife.trim().length > 0 ? (
+              <section data-ocid="library.item.bulk_mix_shelf_life">
+                <h2 className="recipe-section-heading">Shelf Life</h2>
+                <ul className="recipe-square-bullet mt-2 pl-5">
+                  <li
+                    className="leading-relaxed"
+                    data-ocid="library.item.bulk_mix_shelf_life_item.1"
+                  >
+                    {recipe.shelfLife}
+                  </li>
+                </ul>
+              </section>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Full-width sections below the top row */}
+        <div
+          className="mt-8 flex flex-col gap-6"
+          data-ocid="library.item.bulk_mix_sections"
+        >
+          {/* Specs */}
+          {recipe.specs.length > 0 ? (
+            <section data-ocid="library.item.bulk_mix_specs">
+              <h2 className="recipe-section-heading">Specs</h2>
+              <ul className="recipe-square-bullet mt-2 pl-5">
+                {recipe.specs.map((spec, i) => (
+                  <SpecsRow
+                    key={`bmspec-${spec.amount}-${spec.ingredient}`}
+                    spec={spec}
+                    index={i}
+                  />
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {/* Assembly — bulleted steps, with bold-prefix nicety */}
+          {recipe.assembly.length > 0 ? (
+            <section data-ocid="library.item.bulk_mix_assembly">
+              <h2 className="recipe-section-heading">Assembly</h2>
+              <ul className="recipe-square-bullet mt-2 pl-5">
+                {recipe.assembly.map((step, i) => (
+                  <BulkMixAssemblyStep
+                    key={`bmasm-${step}`}
+                    step={step}
+                    index={i}
+                  />
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {/* Quality Identifier — only if non-empty */}
+          {recipe.qualityIdentifier.length > 0 ? (
+            <section data-ocid="library.item.bulk_mix_quality">
+              <h2 className="recipe-section-heading">Quality Identifier</h2>
+              <ul className="recipe-square-bullet mt-2 pl-5">
+                {recipe.qualityIdentifier.map((qi, i) => (
+                  <li
+                    key={`qi-${qi}`}
+                    className="leading-relaxed"
+                    data-ocid={`library.item.bulk_mix_quality_item.${i + 1}`}
+                  >
+                    {qi}
+                  </li>
+                ))}
               </ul>
             </section>
           ) : null}
         </div>
-      </div>
-
-      {/* Full-width sections below the top row */}
-      <div
-        className="mt-8 flex flex-col gap-6"
-        data-ocid="library.item.bulk_mix_body"
-      >
-        {/* Specs — same styling as the drink card's specs rows */}
-        {recipe.specs.length > 0 ? (
-          <section data-ocid="library.item.bulk_mix_specs">
-            <h2 className="recipe-print-card-heading">Specs</h2>
-            <ul className="recipe-print-card-square-bullet mt-1 pl-5">
-              {recipe.specs.map((spec, i) => (
-                <SpecsRow
-                  key={`bmspec-${spec.amount}-${spec.ingredient}`}
-                  spec={spec}
-                  index={i}
-                />
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {/* Assembly — bulleted steps, with bold-prefix nicety */}
-        {recipe.assembly.length > 0 ? (
-          <section data-ocid="library.item.bulk_mix_assembly">
-            <h2 className="recipe-print-card-heading">Assembly</h2>
-            <ul className="recipe-print-card-square-bullet mt-1 pl-5">
-              {recipe.assembly.map((step, i) => (
-                <BulkMixAssemblyStep
-                  key={`bmasm-${step}`}
-                  step={step}
-                  index={i}
-                />
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {/* Quality Identifier — only if non-empty */}
-        {recipe.qualityIdentifier.length > 0 ? (
-          <section data-ocid="library.item.bulk_mix_quality">
-            <h2 className="recipe-print-card-heading">Quality Identifier</h2>
-            <ul className="recipe-print-card-square-bullet mt-1 pl-5">
-              {recipe.qualityIdentifier.map((qi, i) => (
-                <li
-                  key={`qi-${qi}`}
-                  className="leading-relaxed"
-                  data-ocid={`library.item.bulk_mix_quality_item.${i + 1}`}
-                >
-                  {qi}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-      </div>
-
-      {/* Footer brand lockup */}
-      <p
-        className="mt-8 text-center text-sm font-semibold"
-        data-ocid="library.item.bulk_mix_brand"
-      >
-        Bubba&rsquo;s 33 &middot; Be Legendary / Serve Responsibly
-      </p>
-
-      {/* Legal row — "BULK MIX" replaces the category name in the left column */}
-      <div
-        className="recipe-print-card-footer-legal mt-4 text-xs"
-        data-ocid="library.item.bulk_mix_legal"
-      >
-        <span className="left">BULK MIX</span>
-        <span className="center">
-          CONFIDENTIAL AND PROPRIETARY &copy; Bubba&rsquo;s 33
-        </span>
-        <span className="right">{isLTO ? "LTO" : ""}</span>
       </div>
     </article>
   );
@@ -623,7 +715,8 @@ function BulkMixRecipeCard({
 /**
  * A single bulk-mix assembly step. Steps that begin with a storage/labeling
  * directive ("Cover, label", "Label, date", "Store at") render that prefix in
- * bold, matching the print sheets. The remainder of the step renders normally.
+ * bold, matching the print sheets. The remainder of the step renders
+ * normally.
  */
 function BulkMixAssemblyStep({
   step,
@@ -652,25 +745,27 @@ function BulkMixAssemblyStep({
   );
 }
 
-/** Renders the recipe content sections (Glassware, Specs, Assembly, Garnish,
- *  then each variant). Shared between the base recipe and per-variant blocks
- *  so the styling stays consistent. */
+/** Renders the recipe content sections (Glassware, Specs, Assembly,
+ *  Garnish, then each variant). Shared between the base recipe and
+ *  per-variant blocks so the styling stays consistent. */
 function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
   return (
     <div className="flex flex-col gap-6">
       {/* Glassware */}
       {recipe.glassware.trim().length > 0 ? (
         <section data-ocid="library.item.print_glassware">
-          <h2 className="recipe-print-card-heading">Glassware</h2>
-          <p className="mt-1">{recipe.glassware}</p>
+          <h2 className="recipe-section-heading">Glassware</h2>
+          <p className="mt-2 font-body leading-relaxed text-foreground">
+            {recipe.glassware}
+          </p>
         </section>
       ) : null}
 
       {/* Specs */}
       {recipe.specs.length > 0 ? (
         <section data-ocid="library.item.print_specs">
-          <h2 className="recipe-print-card-heading">Specs</h2>
-          <ul className="recipe-print-card-square-bullet mt-1 pl-5">
+          <h2 className="recipe-section-heading">Specs</h2>
+          <ul className="recipe-square-bullet mt-2 pl-5">
             {recipe.specs.map((spec, i) => (
               <SpecsRow
                 key={`spec-${i}-${spec.amount}-${spec.ingredient}`}
@@ -685,8 +780,8 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
       {/* Assembly */}
       {recipe.assembly.length > 0 ? (
         <section data-ocid="library.item.print_assembly">
-          <h2 className="recipe-print-card-heading">Assembly</h2>
-          <ul className="recipe-print-card-square-bullet mt-1 pl-5">
+          <h2 className="recipe-section-heading">Assembly</h2>
+          <ul className="recipe-square-bullet mt-2 pl-5">
             {recipe.assembly.map((step, i) => (
               <li
                 key={`asm-${i}-${step}`}
@@ -703,8 +798,8 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
       {/* Garnish — only if non-empty */}
       {recipe.garnish.length > 0 ? (
         <section data-ocid="library.item.print_garnish">
-          <h2 className="recipe-print-card-heading">Garnish</h2>
-          <ul className="recipe-print-card-square-bullet mt-1 pl-5">
+          <h2 className="recipe-section-heading">Garnish</h2>
+          <ul className="recipe-square-bullet mt-2 pl-5">
             {recipe.garnish.map((g, i) => (
               <li
                 key={`gar-${i}-${g}`}
@@ -718,9 +813,9 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
         </section>
       ) : null}
 
-      {/* Variants — each gets its own slab small-caps divider + Specs/Assembly.
-          Blank/empty variantLabel variants are skipped so an empty heading is
-          never rendered. */}
+      {/* Variants — each gets its own divider + Specs/Assembly. Blank/empty
+          variantLabel variants are skipped so an empty heading is never
+          rendered. */}
       {recipe.variants.map((variant, i) =>
         variant.variantLabel.trim().length > 0 ? (
           <VariantBlock
@@ -735,25 +830,27 @@ function RecipeContent({ recipe }: { recipe: Recipe }): ReactElement {
 }
 
 /** A single specs row: amount on the left (nowrap, one line), ingredient
- *  right-aligned to the column's right edge. Long ingredients wrap under the
- *  amount without breaking the two-column alignment (flex + margin-left:auto). */
+ *  right-aligned to the column's right edge. Long ingredients wrap under
+ *  the amount without breaking the two-column alignment. */
 function SpecsRow({
   spec,
   index,
 }: { spec: RecipeSpec; index: number }): ReactElement {
   return (
     <li
-      className="recipe-print-card-specs-row"
+      className="recipe-specs-row"
       data-ocid={`library.item.print_spec.${index + 1}`}
     >
-      <span className="amount whitespace-nowrap pr-3">{spec.amount}</span>
-      <span className="ingredient">{spec.ingredient}</span>
+      <span className="amount whitespace-nowrap pr-3 font-body">
+        {spec.amount}
+      </span>
+      <span className="ingredient font-body">{spec.ingredient}</span>
     </li>
   );
 }
 
-/** A variant block: slab small-caps divider (label uppercased + 2px black rule)
- *  followed by that variant's Specs and Assembly sections. */
+/** A variant block: divider (label uppercased) followed by that variant's
+ *  Specs and Assembly sections. */
 function VariantBlock({
   variant,
   index,
@@ -764,7 +861,7 @@ function VariantBlock({
   return (
     <section data-ocid={`library.item.print_variant.${index + 1}`}>
       <h3
-        className="recipe-print-card-variant-divider text-xl"
+        className="recipe-variant-divider text-xl"
         data-ocid={`library.item.print_variant_label.${index + 1}`}
       >
         {variant.variantLabel.toUpperCase()}
@@ -776,8 +873,8 @@ function VariantBlock({
           className="mt-3"
           data-ocid={`library.item.print_variant_specs.${index + 1}`}
         >
-          <h4 className="recipe-print-card-heading">Specs</h4>
-          <ul className="recipe-print-card-square-bullet mt-1 pl-5">
+          <h4 className="recipe-section-heading">Specs</h4>
+          <ul className="recipe-square-bullet mt-2 pl-5">
             {variant.specs.map((spec, i) => (
               <SpecsRow
                 key={`vspec-${variant.variantLabel}-${spec.amount}-${spec.ingredient}`}
@@ -795,8 +892,8 @@ function VariantBlock({
           className="mt-3"
           data-ocid={`library.item.print_variant_assembly.${index + 1}`}
         >
-          <h4 className="recipe-print-card-heading">Assembly</h4>
-          <ul className="recipe-print-card-square-bullet mt-1 pl-5">
+          <h4 className="recipe-section-heading">Assembly</h4>
+          <ul className="recipe-square-bullet mt-2 pl-5">
             {variant.assembly.map((step, i) => (
               <li
                 key={`vasm-${variant.variantLabel}-${step}`}
@@ -815,140 +912,128 @@ function VariantBlock({
 
 /* ------------------------------ Recipe card ------------------------------ */
 
+/**
+ * Plain (non-recipe) item card — patriotic roadhouse treatment. Renders the
+ * item's labeled detail fields, notes, and tags inside a tone top-stripe
+ * card (.orientation-detail-item-card .is-*). Photo placement mirrors the
+ * previous implementation: hero when the item is photo-dominant, otherwise
+ * a two-column text/photo layout.
+ */
 function RecipeCard({
   item,
+  tone,
 }: {
   item: NonNullable<ReturnType<typeof useItem>["data"]>;
+  tone: PriorityTone;
 }): ReactElement {
   return (
     <article
-      className="mt-4 bg-library-card border border-border p-5 sm:p-8"
+      className={`orientation-detail-item-card mt-4 flex-col ${
+        tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold"
+      }`}
       data-ocid="library.item.card"
     >
-      {/* Title + seasonal badge — spans full width above the columns */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h1
-          className="font-display text-3xl uppercase leading-none tracking-wide text-library-card sm:text-4xl"
-          data-ocid="library.item.title"
-        >
-          {item.title}
-        </h1>
-        {item.seasonal ? (
-          <SeasonalBadge
-            className="shrink-0"
-            // keep a card-scoped marker for deterministic coverage
-          />
-        ) : null}
-      </div>
-
-      {/* Subtitle — optional, rendered below the title and visually subordinate */}
-      {item.subtitle && item.subtitle.trim().length > 0 ? (
-        <p
-          className="mt-2 font-heading text-base sm:text-lg text-muted-foreground"
-          data-ocid="library.item.subtitle"
-        >
-          {item.subtitle}
-        </p>
-      ) : null}
-
-      {/* Photo placement: when the item has a photo AND little or no text
-          content (few/no detail fields, no notes), the photo dominates as a
-          large centered hero. When there is substantial text, keep the
-          existing two-column layout (text left, framed photo right). */}
-      {item.photo && !hasSubstantialItemText(item) ? (
-        <div className="mt-6" data-ocid="library.item.photo_hero">
-          <div className="overflow-hidden rounded-md border border-border bg-card p-2">
-            <PhotoButton photo={item.photo} title={item.title} />
-          </div>
-        </div>
-      ) : (
-        <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
-          {/* LEFT — recipe text (detail fields, notes, tags) */}
-          <div className="flex-1 min-w-0 order-2 lg:order-1">
-            {/* Labeled detail fields */}
-            {item.details.length > 0 ? (
-              <dl
-                className="flex flex-col gap-7"
-                data-ocid="library.item.fields"
-              >
-                {item.details.map((field, index) => (
-                  <div
-                    key={`${field.fieldLabel}-${index}`}
-                    className="flex flex-col gap-1.5"
-                    data-ocid={`library.item.field.${index + 1}`}
-                  >
-                    <dt
-                      className="font-heading text-sm uppercase tracking-wider text-secondary"
-                      data-ocid={`library.item.field_label.${index + 1}`}
-                    >
-                      {field.fieldLabel}
-                    </dt>
-                    <dd
-                      className="font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0"
-                      data-ocid={`library.item.field_value.${index + 1}`}
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: value is sanitized at render time via sanitizeHtml, which strips every tag outside the minimal safe set (b, i, u, strong, em, ul, ol, li, p, br) and every on* handler / javascript: URL / style attribute. Defense in depth — the bulk importer also sanitizes at write time.
-                      dangerouslySetInnerHTML={{
-                        __html: sanitizeHtml(field.value),
-                      }}
-                    />
-                  </div>
-                ))}
-              </dl>
-            ) : null}
-
-            {/* Notes */}
-            {item.notes ? (
-              <section
-                className={item.details.length > 0 ? "mt-8" : "mt-0"}
-                data-ocid="library.item.notes"
-              >
-                <h2 className="font-heading text-sm uppercase tracking-wider text-secondary">
-                  Notes
-                </h2>
-                <p className="mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground">
-                  {item.notes}
-                </p>
-              </section>
-            ) : null}
-
-            {/* Tags as outlined chips */}
-            {item.tags.length > 0 ? (
-              <section
-                className={
-                  item.details.length > 0 || item.notes ? "mt-8" : "mt-0"
-                }
-                data-ocid="library.item.tags"
-              >
-                <ul className="flex flex-wrap gap-2">
-                  {item.tags.map((tag, index) => (
-                    <li
-                      key={tag}
-                      className="rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground"
-                      data-ocid={`library.item.tag.${index + 1}`}
-                    >
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-          </div>
-
-          {/* RIGHT — full drink photo in a thin bordered frame, sticky on
-              desktop so it stays visible while reading the text. Tap to open
-              full-size. On mobile it stacks above the text (order-1). */}
-          {item.photo ? (
-            <div
-              className="order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0"
-              data-ocid="library.item.photo"
-            >
-              <div className="overflow-hidden rounded-md border border-border bg-card p-2">
-                <PhotoButton photo={item.photo} title={item.title} />
-              </div>
+      <div
+        className="flex w-full flex-col px-5 py-6 sm:px-7 sm:py-8"
+        style={{ paddingTop: "calc(1.5rem + 6px)" }}
+        data-ocid="library.item.card_body"
+      >
+        {/* Photo placement: when the item has a photo AND little or no
+            text content, the photo dominates as a large centered hero.
+            When there is substantial text, keep the two-column layout. */}
+        {item.photo && !hasSubstantialItemText(item) ? (
+          <div data-ocid="library.item.photo_hero">
+            <div className="overflow-hidden rounded-md border border-border bg-card p-2">
+              <PhotoButton photo={item.photo} title={item.title} />
             </div>
-          ) : null}
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
+            {/* LEFT — item text (detail fields, notes, tags) */}
+            <div className="order-2 min-w-0 flex-1 lg:order-1">
+              {/* Labeled detail fields */}
+              {item.details.length > 0 ? (
+                <dl
+                  className="flex flex-col gap-7"
+                  data-ocid="library.item.fields"
+                >
+                  {item.details.map((field, index) => (
+                    <div
+                      key={`${field.fieldLabel}-${index}`}
+                      className="flex flex-col gap-1.5"
+                      data-ocid={`library.item.field.${index + 1}`}
+                    >
+                      <dt
+                        className="recipe-section-heading"
+                        data-ocid={`library.item.field_label.${index + 1}`}
+                      >
+                        {field.fieldLabel}
+                      </dt>
+                      <dd
+                        className="font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0"
+                        data-ocid={`library.item.field_value.${index + 1}`}
+                        // biome-ignore lint/security/noDangerouslySetInnerHtml: value is sanitized at render time via sanitizeHtml, which strips every tag outside the minimal safe set (b, i, u, strong, em, ul, ol, li, p, br) and every on* handler / javascript: URL / style attribute. Defense in depth — the bulk importer also sanitizes at write time.
+                        dangerouslySetInnerHTML={{
+                          __html: sanitizeHtml(field.value),
+                        }}
+                      />
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+
+              {/* Notes */}
+              {item.notes ? (
+                <section
+                  className={item.details.length > 0 ? "mt-8" : "mt-0"}
+                  data-ocid="library.item.notes"
+                >
+                  <h2 className="recipe-section-heading">Notes</h2>
+                  <p className="mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground">
+                    {item.notes}
+                  </p>
+                </section>
+              ) : null}
+
+              {/* Tags as outlined chips */}
+              {item.tags.length > 0 ? (
+                <section
+                  className={
+                    item.details.length > 0 || item.notes ? "mt-8" : "mt-0"
+                  }
+                  data-ocid="library.item.tags"
+                >
+                  <ul className="flex flex-wrap gap-2">
+                    {item.tags.map((tag, index) => (
+                      <li
+                        key={tag}
+                        className="rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground"
+                        data-ocid={`library.item.tag.${index + 1}`}
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+            </div>
+
+            {/* RIGHT — full item photo in a thin bordered frame, sticky on
+                desktop so it stays visible while reading the text. Tap to
+                open full-size. On mobile it stacks above the text. */}
+            {item.photo ? (
+              <div
+                className="order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0"
+                data-ocid="library.item.photo"
+              >
+                <div className="overflow-hidden rounded-md border border-border bg-card p-2">
+                  <PhotoButton photo={item.photo} title={item.title} />
+                </div>
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
     </article>
   );
 }
@@ -967,7 +1052,7 @@ function PhotoButton({
     <button
       type="button"
       onClick={() => window.open(photo, "_blank", "noopener,noreferrer")}
-      className="block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+      className="block w-full rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Open full-size photo"
       title="Tap to view full size"
       data-ocid="library.item.photo_button"
@@ -1010,14 +1095,14 @@ function ItemNotFound({
   const to = `/position/${positionId}/library/${categoryId}`;
   return (
     <div
-      className="flex flex-col items-start gap-4"
+      className="orientation-detail-not-found mt-4"
       data-ocid="library.item.not_found"
     >
       <div>
-        <h1 className="font-heading text-2xl uppercase tracking-wide text-foreground">
+        <h1 className="orientation-detail-not-found-title text-2xl">
           Item not found
         </h1>
-        <p className="mt-2 font-body text-base text-muted-foreground">
+        <p className="orientation-detail-not-found-body mt-2 text-base">
           This item doesn&rsquo;t exist or may have been removed.
         </p>
       </div>
@@ -1030,14 +1115,25 @@ function ItemNotFound({
 
 function RecipeCardSkeleton(): ReactElement {
   return (
-    <article
-      className="mt-4 bg-library-card border border-border p-5 sm:p-8"
-      data-ocid="library.item.loading_state"
-      aria-hidden
-    >
-      <Skeleton className="h-9 w-2/3" />
-      <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
-        <div className="flex-1 order-2 lg:order-1">
+    <div className="mt-4" data-ocid="library.item.loading_state" aria-hidden>
+      {/* Header skeleton — tri-stripe + flourish + headline + flag-bar */}
+      <div className="orientation-detail-header-skeleton">
+        <div className="orientation-detail-tri-stripe">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="px-5 py-6 sm:px-7 sm:py-8">
+          <Skeleton className="h-7 w-24" />
+          <Skeleton className="mt-2 h-10 w-2/3" />
+          <Skeleton className="mt-4 h-1 w-40" />
+        </div>
+      </div>
+
+      {/* Body skeleton — tone-stripe card filling in */}
+      <div className="orientation-detail-item-skeleton mt-4 flex-col">
+        <div className="orientation-detail-item-skeleton-num" />
+        <div className="flex-1 p-5">
           <div className="flex flex-col gap-7">
             {["s1", "s2", "s3"].map((k) => (
               <div key={k} className="flex flex-col gap-2">
@@ -1047,10 +1143,7 @@ function RecipeCardSkeleton(): ReactElement {
             ))}
           </div>
         </div>
-        <div className="order-1 lg:order-2 lg:w-[340px] lg:shrink-0">
-          <Skeleton className="h-[360px] w-full rounded-md" />
-        </div>
       </div>
-    </article>
+    </div>
   );
 }

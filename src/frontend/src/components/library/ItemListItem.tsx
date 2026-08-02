@@ -2,79 +2,104 @@ import { SeasonalBadge } from "@/components/library/SeasonalBadge";
 import { cn } from "@/lib/utils";
 import type { LibraryItem } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
+import { Star } from "lucide-react";
 import type { ReactElement } from "react";
 
 /**
- * A row in a category's item list. Shows an optional thumbnail (item.photo or
- * a muted placeholder initial), the title in Oswald, and the SeasonalBadge
- * when item.seasonal is true. Clicking navigates to the recipe card route.
+ * A numbered priority row in a category's item list.
  *
- * Follows the PositionTile / SearchResultRow styling cues: dark surface, hard
- * edges, navy thumbnail backdrop, transition-smooth hover.
+ * Patriotic roadhouse treatment — mirrors the Orientation priority
+ * card pattern: a tone-colored top stripe (red / blue / gold), a big
+ * Anton index numeral on a navy backdrop, a gold star accent, an
+ * Oswald uppercase title, a Barlow tag preview, and the SeasonalBadge
+ * when the item is seasonal. The thumbnail (item.photo) renders in a
+ * navy frame; falls back to an Anton initial in the tone color.
+ *
+ * Clicking navigates to the recipe card / item detail route unchanged.
  */
+type PriorityTone = "red" | "blue" | "gold";
+
 export function ItemListItem({
   item,
   positionId,
   categoryId,
   index,
+  tone,
 }: {
   item: LibraryItem;
   positionId: string;
   categoryId: string;
   index: number;
+  tone: PriorityTone;
 }): ReactElement {
   const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
   const initial = item.title.trim().charAt(0).toUpperCase() || "?";
+  // 1-based Anton numeral — matches the Orientation priority card's
+  // big-number treatment.
+  const numeral = String(index + 1);
 
   return (
-    <li>
+    <li className="orientation-detail-item-row">
       <Link
         to={to}
         className={cn(
-          "flex items-center gap-3 rounded-md border border-border bg-card p-3",
-          "transition-smooth hover:border-primary/60",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "orientation-detail-item-card group",
+          tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         )}
         data-ocid={`library.item.row.${index + 1}`}
         aria-label={`Open ${item.title}`}
       >
-        {/* Thumbnail or fallback initial on a navy backdrop */}
-        <div
-          className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md bg-nav"
-          aria-hidden
-        >
-          {item.photo ? (
-            <img
-              src={item.photo}
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
+        {/* Numeral column — gold star + big Anton index numeral on navy */}
+        <div className="orientation-detail-item-number-col" aria-hidden>
+          <div className="flex flex-col items-center gap-1">
+            <Star
+              className="orientation-detail-item-star size-3"
+              fill="currentColor"
             />
-          ) : (
-            <span className="font-display text-xl uppercase text-foreground">
-              {initial}
+            <span className="orientation-detail-item-number text-4xl sm:text-5xl">
+              {numeral}
             </span>
-          )}
+          </div>
         </div>
 
-        {/* Title + tag preview */}
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-heading text-base uppercase leading-tight tracking-wide text-foreground">
-            {item.title}
-          </span>
-          {item.tags.length > 0 ? (
-            <span className="mt-0.5 truncate font-body text-xs text-muted-foreground">
-              {item.tags.join(" · ")}
+        {/* Body column — thumbnail + title + tag preview + seasonal */}
+        <div className="orientation-detail-item-body">
+          {/* Thumbnail or fallback initial on a navy backdrop */}
+          <div className="orientation-detail-item-thumb" aria-hidden>
+            {item.photo ? (
+              <img
+                src={item.photo}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <span className="orientation-detail-item-thumb-initial text-xl">
+                {initial}
+              </span>
+            )}
+          </div>
+
+          {/* Title + tag preview */}
+          <div className="orientation-detail-item-text">
+            <span className="orientation-detail-item-title truncate text-base sm:text-lg">
+              {item.title}
             </span>
+            {item.tags.length > 0 ? (
+              <span className="orientation-detail-item-meta mt-0.5 truncate text-xs">
+                {item.tags.join(" · ")}
+              </span>
+            ) : null}
+          </div>
+
+          {item.seasonal ? (
+            <SeasonalBadge
+              className="shrink-0"
+              // keep a row-scoped marker for deterministic coverage
+            />
           ) : null}
         </div>
-
-        {item.seasonal ? (
-          <SeasonalBadge
-            className="shrink-0"
-            // keep a row-scoped marker for deterministic coverage
-          />
-        ) : null}
       </Link>
     </li>
   );

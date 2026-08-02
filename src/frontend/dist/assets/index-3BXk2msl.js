@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-B4myexec.js"(exports, module) {
+  "assets/index-3BXk2msl.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -77373,9 +77373,9 @@ Defaulting to \`null\`.`;
     const CORE_VALUES_NAME = "Core Values";
     const OUR_STORY_NAME = "Our Story";
     const OPERATIONAL_GOALS_NAME = "Operational Goals";
-    const SERVICE_PRIORITIES_NAME = "Service Priorities";
-    const FOOD_PRIORITIES_NAME = "Food Priorities";
-    const MARKETING_PRIORITIES_NAME = "Marketing / Community Priorities";
+    const SERVICE_PRIORITIES_NAME$2 = "Service Priorities";
+    const FOOD_PRIORITIES_NAME$2 = "Food Priorities";
+    const MARKETING_PRIORITIES_NAME$2 = "Marketing / Community Priorities";
     function findField(item, needle) {
       const lower = needle.toLowerCase();
       const hit = item.details.find(
@@ -77418,7 +77418,7 @@ Defaulting to \`null\`.`;
       }, [categories]);
       const findCategory = (name) => nameIndex.get(name.trim().toLowerCase()) ?? null;
       const findCommunityCategory = () => {
-        const exact = nameIndex.get(MARKETING_PRIORITIES_NAME.trim().toLowerCase());
+        const exact = nameIndex.get(MARKETING_PRIORITIES_NAME$2.trim().toLowerCase());
         if (exact) return exact;
         for (const c2 of categories) {
           const key = c2.name.trim().toLowerCase();
@@ -77430,8 +77430,8 @@ Defaulting to \`null\`.`;
       const coreValuesCategory = findCategory(CORE_VALUES_NAME);
       const ourStoryCategory = findCategory(OUR_STORY_NAME);
       const operationalGoalsCategory = findCategory(OPERATIONAL_GOALS_NAME);
-      const servicePrioritiesCategory = findCategory(SERVICE_PRIORITIES_NAME);
-      const foodPrioritiesCategory = findCategory(FOOD_PRIORITIES_NAME);
+      const servicePrioritiesCategory = findCategory(SERVICE_PRIORITIES_NAME$2);
+      const foodPrioritiesCategory = findCategory(FOOD_PRIORITIES_NAME$2);
       const marketingPrioritiesCategory = findCommunityCategory();
       const heroCategoryIds = new Set(
         [
@@ -77565,7 +77565,7 @@ Defaulting to \`null\`.`;
       );
     }
     function MissionBand({
-      positionId,
+      positionId: _positionId,
       category
     }) {
       const itemsQuery = useItemsByCategory(category.id);
@@ -77574,7 +77574,6 @@ Defaulting to \`null\`.`;
       const missionText = missionItem ? findField(missionItem, "Mission") : null;
       const missionSubtitle = (missionItem == null ? void 0 : missionItem.notes) ?? null;
       if (!missionText) return null;
-      const itemTo = missionItem ? `/position/${positionId}/library/${category.id}/item/${missionItem.id}` : `/position/${positionId}/library/${category.id}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "section",
         {
@@ -77594,23 +77593,14 @@ Defaulting to \`null\`.`;
                 children: "★ Our Mission ★"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Link$1,
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h2",
               {
-                to: itemTo,
-                className: "mt-4 block rounded-md transition-smooth hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                "data-ocid": "orientation.mission.headline_link",
-                "aria-label": "Open mission item",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "h2",
-                  {
-                    className: "orientation-mission-headline text-4xl sm:text-5xl md:text-6xl",
-                    "data-ocid": "orientation.mission.headline",
-                    children: missionText
-                  }
-                )
+                className: "orientation-mission-headline text-4xl sm:text-5xl md:text-6xl",
+                "data-ocid": "orientation.mission.headline",
+                children: missionText
               }
-            ),
+            ) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "div",
               {
@@ -77689,23 +77679,16 @@ Defaulting to \`null\`.`;
     }
     function ValueCard({
       item,
-      positionId,
-      categoryId,
+      positionId: _positionId,
+      categoryId: _categoryId,
       index: index2
     }) {
       const meaning = findField(item, "Meaning") ?? item.notes ?? "";
-      const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        Link$1,
+        "div",
         {
-          to,
-          className: cn(
-            "orientation-value-card group block py-4 pr-4 transition-smooth",
-            "hover:border-patriotic-blue/60",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          ),
+          className: cn("orientation-value-card group block py-4 pr-4"),
           "data-ocid": `orientation.core_values.card.${index2 + 1}`,
-          "aria-label": `Open ${item.title}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -77725,17 +77708,14 @@ Defaulting to \`null\`.`;
     }
     function CapstoneBar({
       item,
-      positionId,
-      categoryId
+      positionId: _positionId,
+      categoryId: _categoryId
     }) {
-      const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Link$1,
+        "div",
         {
-          to,
-          className: "orientation-capstone mt-4 block px-5 py-4 text-center transition-smooth hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          className: "orientation-capstone mt-4 block px-5 py-4 text-center",
           "data-ocid": "orientation.core_values.capstone",
-          "aria-label": `Open ${item.title}`,
           children: item.title
         }
       );
@@ -77903,14 +77883,13 @@ Defaulting to \`null\`.`;
       );
     }
     function OperationalGoalsSection({
-      positionId,
+      positionId: _positionId,
       category
     }) {
       const itemsQuery = useItemsByCategory(category.id);
       const items = itemsQuery.data ?? [];
       const item = items[0] ?? null;
       if (!item || item.details.length === 0) return null;
-      const to = `/position/${positionId}/library/${category.id}/item/${item.id}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "orientation.operational_goals.section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDivider, { number: "03", heading: "Operational Goals" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -77923,7 +77902,6 @@ Defaulting to \`null\`.`;
               {
                 label: field.fieldLabel,
                 value: field.value,
-                to,
                 index: index2
               },
               field.id
@@ -77935,20 +77913,14 @@ Defaulting to \`null\`.`;
     function GoalCard({
       label,
       value,
-      to,
       index: index2
     }) {
       const abbr = abbreviate(label);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        Link$1,
+        "div",
         {
-          to,
-          className: cn(
-            "orientation-goal-card group block p-4 transition-smooth hover:brightness-110",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          ),
+          className: cn("orientation-goal-card group block p-4"),
           "data-ocid": `orientation.operational_goals.card.${index2 + 1}`,
-          "aria-label": `Open ${label} goal`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Star,
@@ -77997,8 +77969,7 @@ Defaulting to \`null\`.`;
                 {
                   category: serviceCategory,
                   positionId,
-                  tone: "red",
-                  label: "10 Steps to Service"
+                  tone: "red"
                 }
               ) : null,
               foodCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -78006,8 +77977,7 @@ Defaulting to \`null\`.`;
                 {
                   category: foodCategory,
                   positionId,
-                  tone: "blue",
-                  label: "10 Daily Essentials"
+                  tone: "blue"
                 }
               ) : null,
               marketingCategory ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -78015,8 +77985,7 @@ Defaulting to \`null\`.`;
                 {
                   category: marketingCategory,
                   positionId,
-                  tone: "gold",
-                  label: "10 Community Priorities"
+                  tone: "gold"
                 }
               ) : null
             ]
@@ -78027,8 +77996,7 @@ Defaulting to \`null\`.`;
     function PriorityCard({
       category,
       positionId,
-      tone,
-      label
+      tone
     }) {
       const to = `/position/${positionId}/library/${category.id}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -78054,12 +78022,11 @@ Defaulting to \`null\`.`;
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "h3",
               {
-                className: "mt-2 font-heading text-lg uppercase tracking-wide text-patriotic-cream",
+                className: "mt-2 font-heading text-xl font-semibold uppercase tracking-wide text-patriotic-cream sm:text-2xl",
                 "data-ocid": `orientation.priorities.label.${tone}`,
-                children: label
+                children: category.name
               }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 font-body text-sm text-patriotic-cream/70", children: category.name })
+            )
           ] })
         }
       );
@@ -85400,51 +85367,69 @@ Defaulting to \`null\`.`;
       item,
       positionId,
       categoryId,
-      index: index2
+      index: index2,
+      tone
     }) {
       const to = `/position/${positionId}/library/${categoryId}/item/${item.id}`;
       const initial = item.title.trim().charAt(0).toUpperCase() || "?";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      const numeral = String(index2 + 1);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "orientation-detail-item-row", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Link$1,
         {
           to,
           className: cn(
-            "flex items-center gap-3 rounded-md border border-border bg-card p-3",
-            "transition-smooth hover:border-primary/60",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            "orientation-detail-item-card group",
+            tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           ),
           "data-ocid": `library.item.row.${index2 + 1}`,
           "aria-label": `Open ${item.title}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md bg-nav",
-                "aria-hidden": true,
-                children: item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "img",
-                  {
-                    src: item.photo,
-                    alt: "",
-                    className: "h-full w-full object-cover",
-                    loading: "lazy"
-                  }
-                ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-xl uppercase text-foreground", children: initial })
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 flex-1 flex-col", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-heading text-base uppercase leading-tight tracking-wide text-foreground", children: item.title }),
-              item.tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-0.5 truncate font-body text-xs text-muted-foreground", children: item.tags.join(" · ") }) : null
-            ] }),
-            item.seasonal ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              SeasonalBadge,
-              {
-                className: "shrink-0"
-              }
-            ) : null
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "orientation-detail-item-number-col", "aria-hidden": true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Star,
+                {
+                  className: "orientation-detail-item-star size-3",
+                  fill: "currentColor"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "orientation-detail-item-number text-4xl sm:text-5xl", children: numeral })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-item-body", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "orientation-detail-item-thumb", "aria-hidden": true, children: item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: item.photo,
+                  alt: "",
+                  className: "h-full w-full object-cover",
+                  loading: "lazy"
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "orientation-detail-item-thumb-initial text-xl", children: initial }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-item-text", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "orientation-detail-item-title truncate text-base sm:text-lg", children: item.title }),
+                item.tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "orientation-detail-item-meta mt-0.5 truncate text-xs", children: item.tags.join(" · ") }) : null
+              ] }),
+              item.seasonal ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SeasonalBadge,
+                {
+                  className: "shrink-0"
+                }
+              ) : null
+            ] })
           ]
         }
       ) });
+    }
+    const SERVICE_PRIORITIES_NAME$1 = "Service Priorities";
+    const FOOD_PRIORITIES_NAME$1 = "Food Priorities";
+    const MARKETING_PRIORITIES_NAME$1 = "Marketing / Community Priorities";
+    function toneForCategoryName$1(name) {
+      const key = name.trim().toLowerCase();
+      if (key === SERVICE_PRIORITIES_NAME$1.trim().toLowerCase()) return "red";
+      if (key === FOOD_PRIORITIES_NAME$1.trim().toLowerCase()) return "blue";
+      if (key === MARKETING_PRIORITIES_NAME$1.trim().toLowerCase()) return "gold";
+      if (key.includes("community")) return "gold";
+      return "red";
     }
     function CategoryDetailPage({
       positionId,
@@ -85460,54 +85445,123 @@ Defaulting to \`null\`.`;
       const categoryLoading = categoryQuery.isLoading;
       const itemsLoading = itemsQuery.isLoading;
       const notFound = !categoryLoading && !category;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition, { positionId }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "mt-4", children: categoryLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryHeaderSkeleton, {}) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryNotFound, { positionId }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          (category == null ? void 0 : category.coverPhoto) ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const tone = category ? toneForCategoryName$1(category.name) : "red";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "orientation-detail-page mx-auto w-full max-w-3xl px-4 py-6",
+          "data-ocid": "library.category.detail.page",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(BackToPosition, { positionId }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "mt-4", "data-ocid": "library.category.header", children: categoryLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryHeaderSkeleton, {}) : notFound || !category ? /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryNotFound, { positionId }) : /* @__PURE__ */ jsxRuntimeExports.jsx(PatrioticHeader, { category, tone }) }),
+            categoryLoading || notFound ? null : itemsLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemListSkeleton, {}) : items.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyItems, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "ul",
+              {
+                className: "orientation-detail-item-list mt-5 flex flex-col gap-3",
+                "data-ocid": "library.item.list",
+                children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  ItemListItem,
+                  {
+                    item,
+                    positionId,
+                    categoryId,
+                    index: index2,
+                    tone
+                  },
+                  item.id
+                ))
+              }
+            )
+          ]
+        }
+      );
+    }
+    function PatrioticHeader({
+      category,
+      tone
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        category.coverPhoto ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "orientation-detail-cover mb-4 max-h-60 sm:max-h-80",
+            "data-ocid": "library.category.cover_photo",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: category.coverPhoto,
+                alt: category.name,
+                className: "h-60 w-full object-cover sm:h-80",
+                loading: "lazy"
+              }
+            )
+          }
+        ) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-header", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "w-full overflow-hidden rounded-md border border-border bg-card max-h-60 sm:max-h-80",
-              "data-ocid": "library.category.cover_photo",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "img",
-                {
-                  src: category.coverPhoto,
-                  alt: category.name,
-                  className: "h-60 w-full object-cover sm:h-80",
-                  loading: "lazy"
-                }
-              )
+              className: "orientation-detail-tri-stripe",
+              "aria-hidden": true,
+              "data-ocid": "library.category.tri_stripe",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+              ]
             }
-          ) : null,
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "h1",
-            {
-              className: "mt-4 font-heading text-3xl uppercase tracking-wide text-foreground sm:text-4xl",
-              "data-ocid": "library.category.name",
-              children: category == null ? void 0 : category.name
-            }
-          )
-        ] }) }),
-        categoryLoading || notFound ? null : itemsLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemListSkeleton, {}) : items.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(EmptyItems, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "mt-5 flex flex-col gap-2", "data-ocid": "library.item.list", children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ItemListItem,
-          {
-            item,
-            positionId,
-            categoryId,
-            index: index2
-          },
-          item.id
-        )) })
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-5 py-6 sm:px-7 sm:py-8", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "orientation-detail-flourish text-xl sm:text-2xl",
+                "data-ocid": "library.category.flourish",
+                children: tone === "red" ? "Service" : tone === "blue" ? "Food" : tone === "gold" ? "Community" : "Priorities"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "orientation-detail-headline mt-1 text-4xl sm:text-5xl",
+                "data-ocid": "library.category.name",
+                children: category.name
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "orientation-detail-flag-bar mt-4",
+                "aria-hidden": true,
+                "data-ocid": "library.category.flag_bar",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+                ]
+              }
+            )
+          ] })
+        ] })
       ] });
     }
     function BackToPosition({
       positionId
     }) {
       const to = `/position/${positionId}`;
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", asChild: true, "data-ocid": "library.category.back", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
-        "Back to position"
-      ] }) });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Link$1,
+        {
+          to,
+          className: "orientation-detail-back focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "data-ocid": "library.category.back",
+          "aria-label": "Back to position",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4", "aria-hidden": true }),
+            "Back to position"
+          ]
+        }
+      );
     }
     function CategoryNotFound({
       positionId
@@ -85516,20 +85570,20 @@ Defaulting to \`null\`.`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "flex flex-col items-start gap-4",
+          className: "orientation-detail-not-found",
           "data-ocid": "library.category.not_found",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-2xl uppercase tracking-wide text-foreground", children: "Category not found" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body text-base text-muted-foreground", children: "This category doesn’t exist or may have been removed." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "orientation-detail-not-found-title text-2xl", children: "Category not found" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "orientation-detail-not-found-body mt-2 text-base", children: "This category doesn’t exist or may have been removed." })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Button,
+              Link$1,
               {
-                asChild: true,
-                variant: "default",
+                to,
+                className: "orientation-detail-back focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 "data-ocid": "library.category.go_back_button",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to, children: "Back to position" })
+                children: "Back to position"
               }
             )
           ]
@@ -85540,32 +85594,51 @@ Defaulting to \`null\`.`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "mt-5 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          className: "orientation-detail-empty mt-5",
           "data-ocid": "library.item.empty_state",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(PackageOpen, { className: "size-8 text-muted-foreground", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PackageOpen, { className: "size-8 text-patriotic-gold", "aria-hidden": true }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-base uppercase tracking-wide text-foreground", children: "No items yet" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-xs font-body text-sm text-muted-foreground", children: "An admin can add items to this category. Once they exist, you’ll see them here." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "orientation-detail-empty-title text-base", children: "No items yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "orientation-detail-empty-body mt-1 text-sm", children: "An admin can add items to this category. Once they exist, you’ll see them here." })
             ] })
           ]
         }
       );
     }
     function CategoryHeaderSkeleton() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { "aria-hidden": true, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "aspect-[16/9] w-full rounded-md" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-4 h-9 w-1/2" })
-      ] });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "orientation-detail-header-skeleton",
+          "aria-hidden": true,
+          "data-ocid": "library.category.header_skeleton",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-tri-stripe", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-5 py-6 sm:px-7 sm:py-8", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-24" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-2 h-10 w-2/3" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-4 h-1 w-40" })
+            ] })
+          ]
+        }
+      );
     }
     function ItemListSkeleton() {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "ul",
         {
-          className: "mt-5 flex flex-col gap-2",
+          className: "mt-5 flex flex-col gap-3",
           "data-ocid": "library.item.loading_state",
           "aria-hidden": true,
-          children: ["s1", "s2", "s3", "s4"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-[4.5rem] w-full rounded-md" }, k2))
+          children: ["s1", "s2", "s3", "s4"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "orientation-detail-item-skeleton h-[5.5rem]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "orientation-detail-item-skeleton-num" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "m-4 flex-1" })
+          ] }, k2))
         }
       );
     }
@@ -85579,122 +85652,219 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    const SERVICE_PRIORITIES_NAME = "Service Priorities";
+    const FOOD_PRIORITIES_NAME = "Food Priorities";
+    const MARKETING_PRIORITIES_NAME = "Marketing / Community Priorities";
+    function toneForCategoryName(name) {
+      const key = name.trim().toLowerCase();
+      if (key === SERVICE_PRIORITIES_NAME.trim().toLowerCase()) return "red";
+      if (key === FOOD_PRIORITIES_NAME.trim().toLowerCase()) return "blue";
+      if (key === MARKETING_PRIORITIES_NAME.trim().toLowerCase()) return "gold";
+      if (key.includes("community")) return "gold";
+      return "red";
+    }
     function RecipeCardPage({
       positionId,
       categoryId,
       itemId
     }) {
+      var _a2;
       const itemQuery = useItem(itemId);
+      const categoryQuery = useCategory(categoryId);
       const item = itemQuery.data ?? null;
+      const categoryName = ((_a2 = categoryQuery.data) == null ? void 0 : _a2.name) ?? "";
       const isLoading = itemQuery.isLoading;
       const isError = itemQuery.isError;
       const notFound = !isLoading && !isError && !item;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-5xl px-4 py-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(BackToCategory, { positionId, categoryId }),
-        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardSkeleton, {}) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-          QueryErrorState,
-          {
-            title: "Couldn't load this item",
-            description: "We couldn't load this recipe right now. Please try again.",
-            error: itemQuery.error,
-            onRetry: () => itemQuery.refetch()
-          }
-        ) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : item.recipe ? isBulkMix(item.recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx(BulkMixRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(PrintRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCard, { item })
-      ] });
-    }
-    function PrintRecipeCard({
-      item
-    }) {
-      var _a2;
-      const recipe = item.recipe;
-      const categoryQuery = useCategory(item.categoryId);
-      const categoryName = ((_a2 = categoryQuery.data) == null ? void 0 : _a2.name) ?? "";
-      const isLTO = item.seasonal || item.tags.some((t) => t.toUpperCase() === "LTO");
+      const tone = categoryName ? toneForCategoryName(categoryName) : "red";
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "article",
+        "div",
         {
-          className: "recipe-print-card mx-auto mt-4 w-full max-w-3xl rounded-md p-6 shadow-lg sm:p-10",
-          "data-ocid": "library.item.print_card",
+          className: "orientation-detail-page mx-auto w-full max-w-3xl px-4 py-6",
+          "data-ocid": "library.item.detail.page",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "h1",
+            /* @__PURE__ */ jsxRuntimeExports.jsx(BackToCategory, { positionId, categoryId }),
+            isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardSkeleton, {}) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              QueryErrorState,
               {
-                className: "recipe-print-card-title text-3xl sm:text-4xl",
-                "data-ocid": "library.item.print_title",
-                children: item.title
+                title: "Couldn't load this item",
+                description: "We couldn't load this recipe right now. Please try again.",
+                error: itemQuery.error,
+                onRetry: () => itemQuery.refetch()
               }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              RecapAudioButton,
+            ) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4", "data-ocid": "library.item.detail.body", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                PatrioticItemHeader,
+                {
+                  title: item.title,
+                  subtitle: item.subtitle,
+                  tone,
+                  seasonal: item.seasonal,
+                  photo: item.photo
+                }
+              ),
+              item.recipe ? isBulkMix(item.recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx(BulkMixRecipeCard, { item, tone }) : /* @__PURE__ */ jsxRuntimeExports.jsx(PrintRecipeCard, { item, tone }) : /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCard, { item, tone })
+            ] })
+          ]
+        }
+      );
+    }
+    function PatrioticItemHeader({
+      title,
+      subtitle,
+      tone,
+      seasonal,
+      photo
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "header",
+        {
+          className: "orientation-detail-header",
+          "data-ocid": "library.item.header",
+          children: [
+            photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
               {
-                recapAudio: recipe.recapAudio,
-                className: "recipe-print-card-recap-button mt-3"
-              }
-            ),
-            item.subtitle && item.subtitle.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "p",
-              {
-                className: "recipe-print-card-subtitle mt-3 text-base sm:text-lg",
-                "data-ocid": "library.item.print_subtitle",
-                children: item.subtitle
+                className: "orientation-detail-cover",
+                style: { maxHeight: "16rem" },
+                "data-ocid": "library.item.header_photo",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "img",
+                  {
+                    src: photo,
+                    alt: title,
+                    className: "h-48 w-full object-cover sm:h-64",
+                    loading: "lazy"
+                  }
+                )
               }
             ) : null,
-            item.photo && !hasSubstantialRecipeText(recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6", "data-ocid": "library.item.print_photo_hero", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "img",
-              {
-                src: item.photo,
-                alt: item.title,
-                className: "recipe-print-card-photo mx-auto block h-auto w-full object-contain",
-                style: { maxWidth: "640px" },
-                loading: "lazy"
-              }
-            ) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10", children: [
-              item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  className: "order-1 sm:order-2 sm:w-[320px] sm:shrink-0",
-                  "data-ocid": "library.item.print_photo",
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "img",
-                    {
-                      src: item.photo,
-                      alt: item.title,
-                      className: "recipe-print-card-photo block h-auto w-full object-contain",
-                      loading: "lazy"
-                    }
-                  )
-                }
-              ) : null,
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  className: "order-2 min-w-0 sm:order-1 sm:flex-1",
-                  "data-ocid": "library.item.print_content",
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeContent, { recipe })
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "p",
-              {
-                className: "mt-8 text-center text-sm font-semibold",
-                "data-ocid": "library.item.print_brand",
-                children: "Bubba’s 33 · Be Legendary / Serve Responsibly"
-              }
-            ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "div",
               {
-                className: "recipe-print-card-footer-legal mt-4 text-xs",
-                "data-ocid": "library.item.print_legal",
+                className: "orientation-detail-tri-stripe",
+                "aria-hidden": true,
+                "data-ocid": "library.item.tri_stripe",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "left", children: categoryName }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "center", children: "CONFIDENTIAL AND PROPRIETARY © Bubba’s 33" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "right", children: isLTO ? "LTO" : "" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
                 ]
               }
-            )
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-5 py-6 sm:px-7 sm:py-8", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "orientation-detail-flourish text-xl sm:text-2xl",
+                  "data-ocid": "library.item.flourish",
+                  children: tone === "red" ? "Service" : tone === "blue" ? "Food" : tone === "gold" ? "Community" : "Priority"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1 flex flex-wrap items-end justify-between gap-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "h1",
+                  {
+                    className: "orientation-detail-headline text-3xl sm:text-5xl",
+                    "data-ocid": "library.item.title",
+                    children: title
+                  }
+                ),
+                seasonal ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SeasonalBadge,
+                  {
+                    className: "shrink-0"
+                  }
+                ) : null
+              ] }),
+              subtitle && subtitle.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "mt-3 font-body text-base sm:text-lg text-muted-foreground",
+                  "data-ocid": "library.item.subtitle",
+                  children: subtitle
+                }
+              ) : null,
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "orientation-detail-flag-bar mt-4",
+                  "aria-hidden": true,
+                  "data-ocid": "library.item.flag_bar",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+                  ]
+                }
+              )
+            ] })
           ]
+        }
+      );
+    }
+    function PrintRecipeCard({
+      item,
+      tone
+    }) {
+      const recipe = item.recipe;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "article",
+        {
+          className: `orientation-detail-item-card mt-4 flex-col ${tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold"}`,
+          "data-ocid": "library.item.print_card",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex w-full flex-col gap-6 px-5 py-6 sm:px-7 sm:py-8",
+              style: { paddingTop: "calc(1.5rem + 6px)" },
+              "data-ocid": "library.item.print_body",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  RecapAudioButton,
+                  {
+                    recapAudio: recipe.recapAudio,
+                    className: "self-start"
+                  }
+                ),
+                item.photo && !hasSubstantialRecipeText(recipe) ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "library.item.print_photo_hero", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "img",
+                  {
+                    src: item.photo,
+                    alt: item.title,
+                    className: "mx-auto block h-auto w-full rounded-md border border-border object-contain",
+                    style: { maxWidth: "640px" },
+                    loading: "lazy"
+                  }
+                ) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10", children: [
+                  item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "order-1 sm:order-2 sm:w-[320px] sm:shrink-0",
+                      "data-ocid": "library.item.print_photo",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "img",
+                        {
+                          src: item.photo,
+                          alt: item.title,
+                          className: "block h-auto w-full rounded-md border border-border object-contain",
+                          loading: "lazy"
+                        }
+                      )
+                    }
+                  ) : null,
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "order-2 min-w-0 sm:order-1 sm:flex-1",
+                      "data-ocid": "library.item.print_content",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeContent, { recipe })
+                    }
+                  )
+                ] })
+              ]
+            }
+          )
         }
       );
     }
@@ -85815,7 +85985,7 @@ Defaulting to \`null\`.`;
           "aria-label": ariaLabel,
           "aria-pressed": playing,
           "data-ocid": "library.item.print_recap_button",
-          className: `inline-flex items-center gap-1.5 rounded-full border border-[#1477BE]/40 bg-[#1477BE]/5 px-3 py-1 font-body text-xs font-medium leading-none text-[#1477BE] transition-smooth hover:bg-[#1477BE]/10 hover:border-[#1477BE]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1477BE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-white print:hidden ${className ?? ""}`,
+          className: `inline-flex items-center gap-1.5 rounded-full border border-patriotic-blue/40 bg-patriotic-blue/5 px-3 py-1 font-body text-xs font-medium leading-none text-patriotic-blue transition-smooth hover:bg-patriotic-blue/10 hover:border-patriotic-blue/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-patriotic-blue/50 focus-visible:ring-offset-1 focus-visible:ring-offset-background print:hidden ${className ?? ""}`,
           children: label
         }
       );
@@ -85846,140 +86016,120 @@ Defaulting to \`null\`.`;
       return hasYield || hasEquipment;
     }
     function BulkMixRecipeCard({
-      item
+      item,
+      tone
     }) {
       const recipe = item.recipe;
-      const isLTO = item.seasonal || item.tags.some((t) => t.toUpperCase() === "LTO");
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "article",
         {
-          className: "recipe-print-card mx-auto mt-4 w-full max-w-3xl rounded-md p-6 shadow-lg sm:p-10",
+          className: `orientation-detail-item-card mt-4 flex-col ${tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold"}`,
           "data-ocid": "library.item.bulk_mix_card",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "h1",
-              {
-                className: "recipe-print-card-title text-3xl sm:text-4xl",
-                "data-ocid": "library.item.bulk_mix_title",
-                children: item.title
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10",
-                "data-ocid": "library.item.bulk_mix_top_row",
-                children: [
-                  recipe.equipment.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_equipment", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Equipment" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.equipment.map((tool, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "li",
-                      {
-                        className: "leading-relaxed",
-                        "data-ocid": `library.item.bulk_mix_equipment_item.${i + 1}`,
-                        children: tool
-                      },
-                      `eq-${tool}`
-                    )) })
-                  ] }) : null,
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "div",
-                    {
-                      className: "flex flex-col gap-6",
-                      "data-ocid": "library.item.bulk_mix_meta",
-                      children: [
-                        recipe.yield != null && recipe.yield.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_yield", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Bulk Mix" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            "li",
-                            {
-                              className: "leading-relaxed",
-                              "data-ocid": "library.item.bulk_mix_yield_item.1",
-                              children: recipe.yield
-                            }
-                          ) })
-                        ] }) : null,
-                        recipe.shelfLife != null && recipe.shelfLife.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_shelf_life", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Shelf Life" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            "li",
-                            {
-                              className: "leading-relaxed",
-                              "data-ocid": "library.item.bulk_mix_shelf_life_item.1",
-                              children: recipe.shelfLife
-                            }
-                          ) })
-                        ] }) : null
-                      ]
-                    }
-                  )
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "mt-8 flex flex-col gap-6",
-                "data-ocid": "library.item.bulk_mix_body",
-                children: [
-                  recipe.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_specs", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Specs" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      SpecsRow,
-                      {
-                        spec,
-                        index: i
-                      },
-                      `bmspec-${spec.amount}-${spec.ingredient}`
-                    )) })
-                  ] }) : null,
-                  recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_assembly", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Assembly" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      BulkMixAssemblyStep,
-                      {
-                        step,
-                        index: i
-                      },
-                      `bmasm-${step}`
-                    )) })
-                  ] }) : null,
-                  recipe.qualityIdentifier.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_quality", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Quality Identifier" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.qualityIdentifier.map((qi, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "li",
-                      {
-                        className: "leading-relaxed",
-                        "data-ocid": `library.item.bulk_mix_quality_item.${i + 1}`,
-                        children: qi
-                      },
-                      `qi-${qi}`
-                    )) })
-                  ] }) : null
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "p",
-              {
-                className: "mt-8 text-center text-sm font-semibold",
-                "data-ocid": "library.item.bulk_mix_brand",
-                children: "Bubba’s 33 · Be Legendary / Serve Responsibly"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "recipe-print-card-footer-legal mt-4 text-xs",
-                "data-ocid": "library.item.bulk_mix_legal",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "left", children: "BULK MIX" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "center", children: "CONFIDENTIAL AND PROPRIETARY © Bubba’s 33" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "right", children: isLTO ? "LTO" : "" })
-                ]
-              }
-            )
-          ]
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex w-full flex-col px-5 py-6 sm:px-7 sm:py-8",
+              style: { paddingTop: "calc(1.5rem + 6px)" },
+              "data-ocid": "library.item.bulk_mix_body",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10",
+                    "data-ocid": "library.item.bulk_mix_top_row",
+                    children: [
+                      recipe.equipment.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_equipment", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Equipment" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.equipment.map((tool, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "li",
+                          {
+                            className: "leading-relaxed",
+                            "data-ocid": `library.item.bulk_mix_equipment_item.${i + 1}`,
+                            children: tool
+                          },
+                          `eq-${tool}`
+                        )) })
+                      ] }) : null,
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "flex flex-col gap-6",
+                          "data-ocid": "library.item.bulk_mix_meta",
+                          children: [
+                            recipe.yield != null && recipe.yield.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_yield", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Bulk Mix" }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "li",
+                                {
+                                  className: "leading-relaxed",
+                                  "data-ocid": "library.item.bulk_mix_yield_item.1",
+                                  children: recipe.yield
+                                }
+                              ) })
+                            ] }) : null,
+                            recipe.shelfLife != null && recipe.shelfLife.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_shelf_life", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Shelf Life" }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "li",
+                                {
+                                  className: "leading-relaxed",
+                                  "data-ocid": "library.item.bulk_mix_shelf_life_item.1",
+                                  children: recipe.shelfLife
+                                }
+                              ) })
+                            ] }) : null
+                          ]
+                        }
+                      )
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "mt-8 flex flex-col gap-6",
+                    "data-ocid": "library.item.bulk_mix_sections",
+                    children: [
+                      recipe.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_specs", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Specs" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          SpecsRow,
+                          {
+                            spec,
+                            index: i
+                          },
+                          `bmspec-${spec.amount}-${spec.ingredient}`
+                        )) })
+                      ] }) : null,
+                      recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_assembly", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Assembly" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          BulkMixAssemblyStep,
+                          {
+                            step,
+                            index: i
+                          },
+                          `bmasm-${step}`
+                        )) })
+                      ] }) : null,
+                      recipe.qualityIdentifier.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.bulk_mix_quality", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Quality Identifier" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.qualityIdentifier.map((qi, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "li",
+                          {
+                            className: "leading-relaxed",
+                            "data-ocid": `library.item.bulk_mix_quality_item.${i + 1}`,
+                            children: qi
+                          },
+                          `qi-${qi}`
+                        )) })
+                      ] }) : null
+                    ]
+                  }
+                )
+              ]
+            }
+          )
         }
       );
     }
@@ -86004,12 +86154,12 @@ Defaulting to \`null\`.`;
     function RecipeContent({ recipe }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-6", children: [
         recipe.glassware.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_glassware", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Glassware" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1", children: recipe.glassware })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Glassware" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body leading-relaxed text-foreground", children: recipe.glassware })
         ] }) : null,
         recipe.specs.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_specs", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Specs" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Specs" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             SpecsRow,
             {
               spec,
@@ -86019,8 +86169,8 @@ Defaulting to \`null\`.`;
           )) })
         ] }) : null,
         recipe.assembly.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_assembly", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Assembly" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Assembly" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "li",
             {
               className: "leading-relaxed",
@@ -86031,8 +86181,8 @@ Defaulting to \`null\`.`;
           )) })
         ] }) : null,
         recipe.garnish.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { "data-ocid": "library.item.print_garnish", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-print-card-heading", children: "Garnish" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: recipe.garnish.map((g2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Garnish" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: recipe.garnish.map((g2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "li",
             {
               className: "leading-relaxed",
@@ -86061,11 +86211,11 @@ Defaulting to \`null\`.`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "li",
         {
-          className: "recipe-print-card-specs-row",
+          className: "recipe-specs-row",
           "data-ocid": `library.item.print_spec.${index2 + 1}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount whitespace-nowrap pr-3", children: spec.amount }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ingredient", children: spec.ingredient })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount whitespace-nowrap pr-3 font-body", children: spec.amount }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ingredient font-body", children: spec.ingredient })
           ]
         }
       );
@@ -86078,7 +86228,7 @@ Defaulting to \`null\`.`;
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "h3",
           {
-            className: "recipe-print-card-variant-divider text-xl",
+            className: "recipe-variant-divider text-xl",
             "data-ocid": `library.item.print_variant_label.${index2 + 1}`,
             children: variant.variantLabel.toUpperCase()
           }
@@ -86089,8 +86239,8 @@ Defaulting to \`null\`.`;
             className: "mt-3",
             "data-ocid": `library.item.print_variant_specs.${index2 + 1}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "recipe-print-card-heading", children: "Specs" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: variant.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "recipe-section-heading", children: "Specs" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: variant.specs.map((spec, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                 SpecsRow,
                 {
                   spec,
@@ -86107,8 +86257,8 @@ Defaulting to \`null\`.`;
             className: "mt-3",
             "data-ocid": `library.item.print_variant_assembly.${index2 + 1}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "recipe-print-card-heading", children: "Assembly" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-print-card-square-bullet mt-1 pl-5", children: variant.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "recipe-section-heading", children: "Assembly" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "recipe-square-bullet mt-2 pl-5", children: variant.assembly.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "li",
                 {
                   className: "leading-relaxed",
@@ -86123,113 +86273,96 @@ Defaulting to \`null\`.`;
       ] });
     }
     function RecipeCard({
-      item
+      item,
+      tone
     }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "article",
         {
-          className: "mt-4 bg-library-card border border-border p-5 sm:p-8",
+          className: `orientation-detail-item-card mt-4 flex-col ${tone === "red" ? "is-red" : tone === "blue" ? "is-blue" : "is-gold"}`,
           "data-ocid": "library.item.card",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-start justify-between gap-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "h1",
-                {
-                  className: "font-display text-3xl uppercase leading-none tracking-wide text-library-card sm:text-4xl",
-                  "data-ocid": "library.item.title",
-                  children: item.title
-                }
-              ),
-              item.seasonal ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                SeasonalBadge,
-                {
-                  className: "shrink-0"
-                }
-              ) : null
-            ] }),
-            item.subtitle && item.subtitle.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "p",
-              {
-                className: "mt-2 font-heading text-base sm:text-lg text-muted-foreground",
-                "data-ocid": "library.item.subtitle",
-                children: item.subtitle
-              }
-            ) : null,
-            item.photo && !hasSubstantialItemText(item) ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6", "data-ocid": "library.item.photo_hero", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border border-border bg-card p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title }) }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0 order-2 lg:order-1", children: [
-                item.details.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "dl",
-                  {
-                    className: "flex flex-col gap-7",
-                    "data-ocid": "library.item.fields",
-                    children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                      "div",
-                      {
-                        className: "flex flex-col gap-1.5",
-                        "data-ocid": `library.item.field.${index2 + 1}`,
-                        children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            "dt",
-                            {
-                              className: "font-heading text-sm uppercase tracking-wider text-secondary",
-                              "data-ocid": `library.item.field_label.${index2 + 1}`,
-                              children: field.fieldLabel
-                            }
-                          ),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            "dd",
-                            {
-                              className: "font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
-                              "data-ocid": `library.item.field_value.${index2 + 1}`,
-                              dangerouslySetInnerHTML: {
-                                __html: sanitizeHtml(field.value)
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "flex w-full flex-col px-5 py-6 sm:px-7 sm:py-8",
+              style: { paddingTop: "calc(1.5rem + 6px)" },
+              "data-ocid": "library.item.card_body",
+              children: item.photo && !hasSubstantialItemText(item) ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "library.item.photo_hero", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border border-border bg-card p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title }) }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "order-2 min-w-0 flex-1 lg:order-1", children: [
+                  item.details.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "dl",
+                    {
+                      className: "flex flex-col gap-7",
+                      "data-ocid": "library.item.fields",
+                      children: item.details.map((field, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "div",
+                        {
+                          className: "flex flex-col gap-1.5",
+                          "data-ocid": `library.item.field.${index2 + 1}`,
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              "dt",
+                              {
+                                className: "recipe-section-heading",
+                                "data-ocid": `library.item.field_label.${index2 + 1}`,
+                                children: field.fieldLabel
                               }
-                            }
-                          )
-                        ]
-                      },
-                      `${field.fieldLabel}-${index2}`
-                    ))
-                  }
-                ) : null,
-                item.notes ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "section",
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              "dd",
+                              {
+                                className: "font-body text-base leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-headings:font-heading prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-u:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-foreground prose-ol:text-foreground prose-strong:font-semibold prose-headings:font-semibold prose-p:leading-relaxed prose-li:leading-relaxed prose-headings:mt-0 prose-headings:mb-1 prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0",
+                                "data-ocid": `library.item.field_value.${index2 + 1}`,
+                                dangerouslySetInnerHTML: {
+                                  __html: sanitizeHtml(field.value)
+                                }
+                              }
+                            )
+                          ]
+                        },
+                        `${field.fieldLabel}-${index2}`
+                      ))
+                    }
+                  ) : null,
+                  item.notes ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "section",
+                    {
+                      className: item.details.length > 0 ? "mt-8" : "mt-0",
+                      "data-ocid": "library.item.notes",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "recipe-section-heading", children: "Notes" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground", children: item.notes })
+                      ]
+                    }
+                  ) : null,
+                  item.tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "section",
+                    {
+                      className: item.details.length > 0 || item.notes ? "mt-8" : "mt-0",
+                      "data-ocid": "library.item.tags",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-wrap gap-2", children: item.tags.map((tag, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "li",
+                        {
+                          className: "rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground",
+                          "data-ocid": `library.item.tag.${index2 + 1}`,
+                          children: tag
+                        },
+                        tag
+                      )) })
+                    }
+                  ) : null
+                ] }),
+                item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
                   {
-                    className: item.details.length > 0 ? "mt-8" : "mt-0",
-                    "data-ocid": "library.item.notes",
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-sm uppercase tracking-wider text-secondary", children: "Notes" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 whitespace-pre-line font-body text-base leading-relaxed text-foreground", children: item.notes })
-                    ]
-                  }
-                ) : null,
-                item.tags.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "section",
-                  {
-                    className: item.details.length > 0 || item.notes ? "mt-8" : "mt-0",
-                    "data-ocid": "library.item.tags",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-wrap gap-2", children: item.tags.map((tag, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "li",
-                      {
-                        className: "rounded-full border border-border px-3 py-1 font-body text-xs uppercase tracking-wide text-muted-foreground",
-                        "data-ocid": `library.item.tag.${index2 + 1}`,
-                        children: tag
-                      },
-                      tag
-                    )) })
+                    className: "order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0",
+                    "data-ocid": "library.item.photo",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border border-border bg-card p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title }) })
                   }
                 ) : null
-              ] }),
-              item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  className: "order-1 lg:order-2 lg:sticky lg:top-6 lg:w-[340px] lg:shrink-0",
-                  "data-ocid": "library.item.photo",
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border border-border bg-card p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PhotoButton, { photo: item.photo, title: item.title }) })
-                }
-              ) : null
-            ] })
-          ]
+              ] })
+            }
+          )
         }
       );
     }
@@ -86242,7 +86375,7 @@ Defaulting to \`null\`.`;
         {
           type: "button",
           onClick: () => window.open(photo, "_blank", "noopener,noreferrer"),
-          className: "block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
+          className: "block w-full rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "aria-label": "Open full-size photo",
           title: "Tap to view full size",
           "data-ocid": "library.item.photo_button",
@@ -86276,12 +86409,12 @@ Defaulting to \`null\`.`;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "flex flex-col items-start gap-4",
+          className: "orientation-detail-not-found mt-4",
           "data-ocid": "library.item.not_found",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-2xl uppercase tracking-wide text-foreground", children: "Item not found" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 font-body text-base text-muted-foreground", children: "This item doesn’t exist or may have been removed." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "orientation-detail-not-found-title text-2xl", children: "Item not found" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "orientation-detail-not-found-body mt-2 text-base", children: "This item doesn’t exist or may have been removed." })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, variant: "default", "data-ocid": "library.item.go_back_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to, children: "Back to category" }) })
           ]
@@ -86289,24 +86422,27 @@ Defaulting to \`null\`.`;
       );
     }
     function RecipeCardSkeleton() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "article",
-        {
-          className: "mt-4 bg-library-card border border-border p-5 sm:p-8",
-          "data-ocid": "library.item.loading_state",
-          "aria-hidden": true,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-9 w-2/3" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 order-2 lg:order-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-7", children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-4 w-28" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-16 w-full" })
-              ] }, k2)) }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "order-1 lg:order-2 lg:w-[340px] lg:shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-[360px] w-full rounded-md" }) })
-            ] })
-          ]
-        }
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4", "data-ocid": "library.item.loading_state", "aria-hidden": true, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-header-skeleton", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-tri-stripe", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", {})
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-5 py-6 sm:px-7 sm:py-8", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-24" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-2 h-10 w-2/3" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mt-4 h-1 w-40" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "orientation-detail-item-skeleton mt-4 flex-col", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "orientation-detail-item-skeleton-num" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-7", children: ["s1", "s2", "s3"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-4 w-28" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-16 w-full" })
+          ] }, k2)) }) })
+        ] })
+      ] });
     }
     function ItemDetailRoute() {
       const { id, categoryId, itemId } = useParams({ strict: false });
