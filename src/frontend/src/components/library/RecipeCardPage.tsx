@@ -1,4 +1,5 @@
 import { QueryErrorState } from "@/components/QueryErrorState";
+import { FoodRecipeCard } from "@/components/library/FoodRecipeCard";
 import { SeasonalBadge } from "@/components/library/SeasonalBadge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -105,6 +106,8 @@ export function RecipeCardPage({
         />
       ) : notFound ? (
         <ItemNotFound positionId={positionId} categoryId={categoryId} />
+      ) : item!.foodRecipe ? (
+        <FoodRecipeCard item={item!} />
       ) : (
         <div className="mt-4" data-ocid="library.item.detail.body">
           <PatrioticItemHeader

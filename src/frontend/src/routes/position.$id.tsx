@@ -2,6 +2,7 @@ import { LayoutStyle as BackendLayoutStyle } from "@/backend";
 import { QueryErrorState } from "@/components/QueryErrorState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { BeLegendaryBanner } from "@/components/legendary/BeLegendaryBanner";
+import { KitchenBrowser } from "@/components/library/KitchenBrowser";
 import { OrientationLayout } from "@/components/orientation/OrientationLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,7 +72,9 @@ function toPosition(p: {
     layoutStyle:
       p.layoutStyle === BackendLayoutStyle.orientation
         ? "orientation"
-        : "library",
+        : p.layoutStyle === BackendLayoutStyle.kitchen
+          ? "kitchen"
+          : "library",
   };
 }
 
@@ -141,6 +144,48 @@ export function PositionDetailPage({
           positionDescription={position.description || undefined}
         />
         <StatusBadge tone={tone} className="mt-8" />
+      </div>
+    );
+  }
+
+  // Kitchen layout — industrial KDS-style browser for food positions. Reads
+  // the same categories/items as the Library layout but renders a station-
+  // grouped tile browser instead of a category grid. The KitchenBrowser
+  // component (built in the page task) owns the body; the route just wires
+  // the switch and passes the position + items. All navigation (item detail,
+  // Be Legendary, status) continues to work from this layout.
+  if (position?.layoutStyle === "kitchen") {
+    return (
+      <div className="mx-auto w-full max-w-5xl px-4 py-6">
+        <BackLink />
+
+        <article className="mt-4">
+          <header className="flex flex-col gap-3">
+            <h1
+              className="font-heading text-3xl uppercase tracking-wide text-foreground sm:text-4xl"
+              data-ocid="position.name"
+            >
+              {position.name}
+            </h1>
+            <StatusBadge tone={tone} />
+          </header>
+
+          {position.description ? (
+            <p
+              className="mt-4 font-body text-base leading-relaxed text-muted-foreground"
+              data-ocid="position.description"
+            >
+              {position.description}
+            </p>
+          ) : null}
+
+          <BeLegendaryBanner positionId={positionId} />
+
+          <KitchenBrowser
+            positionId={positionId}
+            positionName={position.name}
+          />
+        </article>
       </div>
     );
   }

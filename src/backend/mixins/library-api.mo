@@ -111,10 +111,13 @@ mixin (
   };
 
   // --- Item management (admin only) ---
-  // `recipe` is the optional structured recipe payload. Pass null to keep the
-  // item in the generic detail shape; pass a Recipe to mark the item as a
-  // recipe. Recipe writes are admin-only, mirroring the existing Library
-  // authorization (AccessControl.isAdmin guard).
+  // `recipe` is the optional structured beverage recipe payload. Pass null to
+  // keep the item in the generic detail shape; pass a Recipe to mark the item
+  // as a beverage recipe. `foodRecipe` is the optional structured food recipe
+  // payload, parallel to `recipe` — pass null to keep the item out of the
+  // food-recipe shape; pass a FoodRecipe to mark the item as a food recipe.
+  // Both are admin-only writes, mirroring the existing Library authorization
+  // (AccessControl.isAdmin guard).
 
   public shared ({ caller }) func createItem(
     categoryId : Nat,
@@ -126,6 +129,7 @@ mixin (
     tags : [Text],
     seasonal : Bool,
     recipe : ?Types.Recipe,
+    foodRecipe : ?Types.FoodRecipe,
   ) : async Library.LibraryItem {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
@@ -135,7 +139,7 @@ mixin (
     if (Library.getCategory(categories, categoryId) == null) {
       Runtime.trap("createItem: category not found");
     };
-    Library.createItem(items, nextItemId, categoryId, title, subtitle, photo, details, notes, tags, seasonal, recipe);
+    Library.createItem(items, nextItemId, categoryId, title, subtitle, photo, details, notes, tags, seasonal, recipe, foodRecipe);
   };
 
   public shared ({ caller }) func updateItem(
@@ -148,11 +152,12 @@ mixin (
     tags : [Text],
     seasonal : Bool,
     recipe : ?Types.Recipe,
+    foodRecipe : ?Types.FoodRecipe,
   ) : async Library.LibraryItem {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
-    switch (Library.updateItem(items, itemId, title, subtitle, photo, details, notes, tags, seasonal, recipe)) {
+    switch (Library.updateItem(items, itemId, title, subtitle, photo, details, notes, tags, seasonal, recipe, foodRecipe)) {
       case (?updated) { updated };
       case null { Runtime.trap("Item not found") };
     };

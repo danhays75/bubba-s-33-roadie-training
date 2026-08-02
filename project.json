@@ -1,17 +1,18 @@
 {
-  "overview": "A roadie training app that teaches drink recipes with a builder game, now with a full per-drink recap on the finish screen.",
+  "overview": "A roadie training app with a food recipe library, station-based kitchen browser, and plating photo management.",
   "features": [
-    "Per-drink recap voice clip on recipes",
-    "Recap clip upload in the recipe editor",
-    "Full recipe recap card on the finish screen",
-    "Spoken recap with gated Next and Skip"
+    "Food recipes with plating photos, station badges, and build steps",
+    "Menu build and prep recipe layouts",
+    "Station-filtered searchable kitchen browser",
+    "Photo-aware bulk import for food recipes",
+    "Admin bulk photo attach by filename"
   ],
   "category": "productivity",
   "tags": [
     "training",
-    "drinks",
     "recipes",
-    "recap"
+    "library",
+    "food-service"
   ],
-  "last_updated": "2026-07-26T22:48:28.067Z"
+  "last_updated": "2026-08-02T17:39:15.209Z"
 }

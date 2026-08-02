@@ -296,3 +296,55 @@ Faithful Bubba's 33 'Food For All' poster restyle — weathered blue wood-grain 
 - Reuses Anton (display), Oswald (headings), Barlow (body) + Pacifico via `--font-script` (`.font-script` utility); no new fonts.
 - Data binding intact: useItemsByCategory + findField 'Known for' / 'This means we have' + decodeHtmlEntities.
 - Back-to-category link stays inside the card footer (`.bubba-poster-footer`), routes to /position/${positionId}/library/${category.id}/item/${item.id}.
+
+## Food Recipe (additive — Library food-recipe surfaces)
+
+> ADDITIVE only — no existing token altered. Mirrors the beverage-recipe Library patterns (recipe sub-object, recipe card, photo viewer, layoutStyle) instead of inventing new ones. Sits on the dark roadhouse base (#141412 bg, #1E1E1B card). All tokens/classes prefixed `food-`. Flat fills only — no gradients, no glow. Gold stays exclusive to in-training; EXPO uses purple-red.
+
+### Station Accent Palette (additive)
+| Token | OKLCH (L C H) | Use |
+|---|---|---|
+| food-station-grill | 0.595 0.232 27 | grill station (reuses primary red) |
+| food-station-fry | 0.72 0.15 75 | fry station (amber, NOT in-training gold) |
+| food-station-saute | 0.62 0.14 145 | sauté station (green) |
+| food-station-expo | 0.50 0.22 12 | EXPO station (purple-red, distinct from primary) |
+| food-station-prep | 0.285 0.094 254 | prep station (reuses navy) |
+
+### EXPO / Allergen Callout Tokens (additive)
+| Token | Use |
+|---|---|
+| food-expo-fill / food-expo-edge | purple-red callout fill + 4px left edge stripe |
+| food-allergen-fill / food-allergen-edge | red allergen callout fill + left edge stripe |
+| food-plating-divider | dashed Plating divider rule |
+| food-quality-check | quality-check tick accent |
+| food-tile-placeholder | station-colored placeholder fill for tiles without photos |
+
+### Structural Zones
+| Zone | Surface | Treatment |
+|---|---|---|
+| menuBuild card | #1E1E1B (card) | photo hero top, Anton title, station badge + navy menu-section badge, Components→Amount two-column table, dashed Plating divider, numbered Build Steps (red Oswald numerals), purple-red EXPO finishing callout (left edge), red allergen callout at bottom |
+| prep card | #1E1E1B (card) | same recipe sub-object, condensed for prep view (Menu/Prep toggle swaps layout) |
+| kitchen browser | #141412 (background) | station filter chips across top (flat station-colored fills, 6px top stripe on active), Menu/Prep toggle, search input (border-only, red focus ring), responsive tile grid |
+| admin dropzone | #1E1E1B (card) | Recipe Photos bulk-attach dialog — dropzone, attach summary, unmatched-files retryable row; confirm-before-overwrite preserved |
+
+### Component Patterns
+- Station chips: flat station-colored fills, cream Oswald uppercase labels, 6px station-accent top stripe on active; derive from `foodRecipe.station`, fall back to position category names.
+- Tiles: #1E1E1B card, 1px border, sharp 4px radius, `shadow-food-tile`, 6px station-accent top stripe; photo tiles show plating photo + Oswald title; placeholder tiles show large Anton initials on station-colored fill.
+- EXPO callout: purple-red fill + 4px left edge stripe, "EXPO" Oswald label + one-line finishing instruction; `animate-food-expo-pop` one-shot on mount.
+- Allergen callout: red-tinted border + red left edge stripe, "ALLERGENS" Oswald label + Barlow allergen list.
+- Build Steps: red Oswald numerals in left gutter, Barlow step copy right.
+- Menu/Prep toggle: two pill buttons, Menu active in red; swaps card layout without leaving the recipe.
+
+### Motion
+- None beyond the one-shot `food-expo-pop` (0.35s, no infinite loop). Everything else uses `.transition-smooth` for hover/press. Flat — no shimmer, no pulse, no glow.
+
+### Constraints
+- Additive only — never alter existing tokens, keyframes, or the flat roadhouse rules.
+- No gradients, no glow, no neon shadows anywhere in food-recipe surfaces.
+- Gold stays forbidden outside the In-training state; station accents are flat fills, not gradients.
+- EXPO uses purple-red (food-station-expo), distinct from primary red and from in-training gold.
+- Mirror existing beverage-recipe patterns (recipe sub-object, recipe card, photo viewer, layoutStyle, object-storage upload, bulk import) — do not invent new ones.
+- Recipe Photos is a new button inside the existing Library admin next to Import, not a separate page.
+- Unmatched files shown as a downloadable/retryable list; confirm-before-overwrite preserved.
+- Station chips derive from `foodRecipe.station`, falling back to position category names when no food recipes exist yet.
+- No inline card editing, no print/PDF export, no per-station printable prep sheets, no allergen filtering across the browser (doNotBuild).

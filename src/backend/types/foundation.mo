@@ -54,11 +54,13 @@ module {
 
   // Per-position presentation hint for the "Legendary Starts Here" area.
   // #library (default) renders the generic library-tile list; #orientation
-  // renders the patriotic Orientation layout. Additive and position-scoped —
-  // no other data model change.
+  // renders the patriotic Orientation layout; #kitchen renders the
+  // station-filtered, searchable food-recipe browser. Additive and
+  // position-scoped — no other data model change.
   public type LayoutStyle = {
     #library;
     #orientation;
+    #kitchen;
   };
 
   // A job position that users can be trained and certified for.

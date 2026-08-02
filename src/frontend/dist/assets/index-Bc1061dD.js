@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-3BXk2msl.js"(exports, module) {
+  "assets/index-Bc1061dD.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33197,6 +33197,37 @@ variant ${k2} -> ${e.message}`, {
       "positionId": Nat,
       "coverPhoto": Opt(Text$2)
     });
+    const FoodServiceware = Record({
+      "item": Text$2,
+      "amount": Text$2
+    });
+    const FoodRecipeKind$1 = Variant({
+      "prep": Null,
+      "menuBuild": Null
+    });
+    const FoodComponent = Record({
+      "item": Text$2,
+      "note": Opt(Text$2),
+      "group": Opt(Text$2),
+      "amount": Text$2
+    });
+    const FoodRecipe = Record({
+      "lineUtensil": Opt(Text$2),
+      "serviceware": Vec(FoodServiceware),
+      "station": Text$2,
+      "equipment": Opt(Text$2),
+      "holdTemp": Opt(Text$2),
+      "kind": FoodRecipeKind$1,
+      "qualityIdentifiers": Vec(Text$2),
+      "components": Vec(FoodComponent),
+      "shelfLife": Opt(Text$2),
+      "steps": Vec(Text$2),
+      "yieldText": Opt(Text$2),
+      "storeTemp": Opt(Text$2),
+      "menuSection": Opt(Text$2),
+      "expoSteps": Vec(Text$2),
+      "allergenNote": Opt(Text$2)
+    });
     const DetailField = Record({
       "value": Text$2,
       "fieldLabel": Text$2
@@ -33229,6 +33260,7 @@ variant ${k2} -> ${e.message}`, {
       "title": Text$2,
       "sortOrder": Nat,
       "tags": Vec(Text$2),
+      "foodRecipe": Opt(FoodRecipe),
       "seasonal": Bool,
       "notes": Opt(Text$2),
       "details": Vec(DetailField),
@@ -33342,6 +33374,7 @@ variant ${k2} -> ${e.message}`, {
     });
     const LayoutStyle$1 = Variant({
       "library": Null,
+      "kitchen": Null,
       "orientation": Null
     });
     const Position = Record({
@@ -33564,7 +33597,8 @@ variant ${k2} -> ${e.message}`, {
           Opt(Text$2),
           Vec(Text$2),
           Bool,
-          Opt(Recipe)
+          Opt(Recipe),
+          Opt(FoodRecipe)
         ],
         [LibraryItem],
         []
@@ -33705,7 +33739,8 @@ variant ${k2} -> ${e.message}`, {
           Opt(Text$2),
           Vec(Text$2),
           Bool,
-          Opt(Recipe)
+          Opt(Recipe),
+          Opt(FoodRecipe)
         ],
         [LibraryItem],
         []
@@ -33754,6 +33789,37 @@ variant ${k2} -> ${e.message}`, {
         "positionId": IDL2.Nat,
         "coverPhoto": IDL2.Opt(IDL2.Text)
       });
+      const FoodServiceware2 = IDL2.Record({
+        "item": IDL2.Text,
+        "amount": IDL2.Text
+      });
+      const FoodRecipeKind2 = IDL2.Variant({
+        "prep": IDL2.Null,
+        "menuBuild": IDL2.Null
+      });
+      const FoodComponent2 = IDL2.Record({
+        "item": IDL2.Text,
+        "note": IDL2.Opt(IDL2.Text),
+        "group": IDL2.Opt(IDL2.Text),
+        "amount": IDL2.Text
+      });
+      const FoodRecipe2 = IDL2.Record({
+        "lineUtensil": IDL2.Opt(IDL2.Text),
+        "serviceware": IDL2.Vec(FoodServiceware2),
+        "station": IDL2.Text,
+        "equipment": IDL2.Opt(IDL2.Text),
+        "holdTemp": IDL2.Opt(IDL2.Text),
+        "kind": FoodRecipeKind2,
+        "qualityIdentifiers": IDL2.Vec(IDL2.Text),
+        "components": IDL2.Vec(FoodComponent2),
+        "shelfLife": IDL2.Opt(IDL2.Text),
+        "steps": IDL2.Vec(IDL2.Text),
+        "yieldText": IDL2.Opt(IDL2.Text),
+        "storeTemp": IDL2.Opt(IDL2.Text),
+        "menuSection": IDL2.Opt(IDL2.Text),
+        "expoSteps": IDL2.Vec(IDL2.Text),
+        "allergenNote": IDL2.Opt(IDL2.Text)
+      });
       const DetailField2 = IDL2.Record({
         "value": IDL2.Text,
         "fieldLabel": IDL2.Text
@@ -33786,6 +33852,7 @@ variant ${k2} -> ${e.message}`, {
         "title": IDL2.Text,
         "sortOrder": IDL2.Nat,
         "tags": IDL2.Vec(IDL2.Text),
+        "foodRecipe": IDL2.Opt(FoodRecipe2),
         "seasonal": IDL2.Bool,
         "notes": IDL2.Opt(IDL2.Text),
         "details": IDL2.Vec(DetailField2),
@@ -33899,6 +33966,7 @@ variant ${k2} -> ${e.message}`, {
       });
       const LayoutStyle2 = IDL2.Variant({
         "library": IDL2.Null,
+        "kitchen": IDL2.Null,
         "orientation": IDL2.Null
       });
       const Position2 = IDL2.Record({
@@ -34121,7 +34189,8 @@ variant ${k2} -> ${e.message}`, {
             IDL2.Opt(IDL2.Text),
             IDL2.Vec(IDL2.Text),
             IDL2.Bool,
-            IDL2.Opt(Recipe2)
+            IDL2.Opt(Recipe2),
+            IDL2.Opt(FoodRecipe2)
           ],
           [LibraryItem2],
           []
@@ -34274,7 +34343,8 @@ variant ${k2} -> ${e.message}`, {
             IDL2.Opt(IDL2.Text),
             IDL2.Vec(IDL2.Text),
             IDL2.Bool,
-            IDL2.Opt(Recipe2)
+            IDL2.Opt(Recipe2),
+            IDL2.Opt(FoodRecipe2)
           ],
           [LibraryItem2],
           []
@@ -34324,8 +34394,14 @@ variant ${k2} -> ${e.message}`, {
       ActivityType2["flashcards"] = "flashcards";
       return ActivityType2;
     })(ActivityType || {});
+    var FoodRecipeKind = /* @__PURE__ */ ((FoodRecipeKind2) => {
+      FoodRecipeKind2["prep"] = "prep";
+      FoodRecipeKind2["menuBuild"] = "menuBuild";
+      return FoodRecipeKind2;
+    })(FoodRecipeKind || {});
     var LayoutStyle = /* @__PURE__ */ ((LayoutStyle2) => {
       LayoutStyle2["library"] = "library";
+      LayoutStyle2["kitchen"] = "kitchen";
       LayoutStyle2["orientation"] = "orientation";
       return LayoutStyle2;
     })(LayoutStyle || {});
@@ -34401,14 +34477,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
         }
       }
       async __nextCategoryId() {
@@ -34513,42 +34589,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
         }
       }
       async __positions(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async __profiles(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n50(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.__profiles(to_candid_opt_n58(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n59(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n50(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.__profiles(to_candid_opt_n58(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n59(this._uploadFile, this._downloadFile, result);
         }
       }
       async __verifiedEmails() {
@@ -34638,15 +34714,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n59(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n62(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n67(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n70(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n59(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n62(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n67(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n70(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34681,14 +34757,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n66(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n74(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n66(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n74(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34709,27 +34785,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.approveUser(arg0);
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.approveUser(arg0);
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n70(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n78(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n70(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n78(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34750,42 +34826,42 @@ variant ${k2} -> ${e.message}`, {
       async buildLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n72(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n80(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n26(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n72(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n80(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n26(this._uploadFile, this._downloadFile, result);
         }
       }
       async createCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
-      async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
+      async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n102(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg9));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n102(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg9));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34793,14 +34869,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async createNsoPhase(arg0) {
@@ -34820,29 +34896,29 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n50(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Task_n42(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n58(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Task_n50(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n50(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Task_n42(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n58(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Task_n50(this._uploadFile, this._downloadFile, result);
         }
       }
       async createPosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n113(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Position_n54(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n113(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Position_n54(this._uploadFile, this._downloadFile, result);
         }
       }
       async deleteCategory(arg0) {
@@ -34933,56 +35009,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n99(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n115(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n99(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n115(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllPositions();
-            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllPositions();
-          return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n123(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n123(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n108(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n124(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n108(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n124(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -35003,14 +35079,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n110(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n126(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n110(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n126(this._uploadFile, this._downloadFile, result);
         }
       }
       async getDrinksBuilderDecoyPool(arg0) {
@@ -35045,14 +35121,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n111(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n127(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n111(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n127(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -35073,28 +35149,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
-            return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
-          return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
         }
       }
       async getLegendaryActivity(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivity(arg0);
-            return from_candid_opt_n112(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n128(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivity(arg0);
-          return from_candid_opt_n112(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n128(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -35115,28 +35191,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n113(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n129(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n113(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n129(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n123(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n107(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n123(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -35157,14 +35233,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n114(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n130(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n114(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n130(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -35199,42 +35275,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n115(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n131(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n115(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n131(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTasksByPhase(arg0);
-            return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTasksByPhase(arg0);
-          return from_candid_vec_n41(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
         }
       }
       async getPosition(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n116(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n132(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n116(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n132(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -35255,27 +35331,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n117(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n133(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n117(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n133(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n118(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n134(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n118(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n134(this._uploadFile, this._downloadFile, arg0));
           return result;
         }
       }
@@ -35283,14 +35359,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.initiateEmailVerification(arg0);
-            return from_candid_SendResult_n126(this._uploadFile, this._downloadFile, result);
+            return from_candid_SendResult_n142(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.initiateEmailVerification(arg0);
-          return from_candid_SendResult_n126(this._uploadFile, this._downloadFile, result);
+          return from_candid_SendResult_n142(this._uploadFile, this._downloadFile, result);
         }
       }
       async isCallerAdmin() {
@@ -35311,28 +35387,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.rebuildLegendaryActivity(arg0);
-            return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+            return from_candid_Activity_n26(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.rebuildLegendaryActivity(arg0);
-          return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+          return from_candid_Activity_n26(this._uploadFile, this._downloadFile, result);
         }
       }
       async rejectUser(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.rejectUser(arg0);
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.rejectUser(arg0);
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async reorderCategories(arg0, arg1) {
@@ -35366,28 +35442,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n144(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n144(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n144(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n128(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n144(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35395,14 +35471,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.reorderPositions(arg0);
-            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.reorderPositions(arg0);
-          return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
         }
       }
       async resendApprovalEmail(arg0) {
@@ -35450,14 +35526,14 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n129(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n145(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n129(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n145(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35465,55 +35541,55 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.setEmailForUser(arg0);
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.setEmailForUser(arg0);
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async setMyPhoto(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.setMyPhoto(to_candid_opt_n93(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setMyPhoto(to_candid_opt_n101(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setMyPhoto(to_candid_opt_n93(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setMyPhoto(to_candid_opt_n101(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n58(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n58(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35521,55 +35597,55 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.setUserEmail(arg0, arg1);
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.setUserEmail(arg0, arg1);
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async setUserPhoto(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async setUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n131(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n147(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n131(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n147(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35590,71 +35666,71 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
-      async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
+      async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n102(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg9));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n94(this._uploadFile, this._downloadFile, arg8));
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n102(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg9));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n133(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n149(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n26(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n133(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_Activity_n18(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n149(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n26(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfile(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfileWithPhoto(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
-            return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2));
-          return from_candid_UserProfile_n53(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2));
+          return from_candid_UserProfile_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateNsoPhase(arg0, arg1) {
@@ -35674,43 +35750,43 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n58(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n50(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n58(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
       async updatePosition(arg0, arg1, arg2, arg3, arg4) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg4));
-            return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n113(this._uploadFile, this._downloadFile, arg4));
+            return from_candid_Position_n54(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n93(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n93(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n97(this._uploadFile, this._downloadFile, arg4));
-          return from_candid_Position_n46(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n101(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n101(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n113(this._uploadFile, this._downloadFile, arg4));
+          return from_candid_Position_n54(this._uploadFile, this._downloadFile, result);
         }
       }
     }
-    function from_candid_ActivityContent_n22(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n23(_uploadFile, _downloadFile, value);
+    function from_candid_ActivityContent_n30(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n31(_uploadFile, _downloadFile, value);
     }
-    function from_candid_ActivityType_n20(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n21(_uploadFile, _downloadFile, value);
+    function from_candid_ActivityType_n28(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n29(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Activity_n18(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n19(_uploadFile, _downloadFile, value);
+    function from_candid_Activity_n26(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n27(_uploadFile, _downloadFile, value);
     }
-    function from_candid_ApprovalStatus_n57(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n58(_uploadFile, _downloadFile, value);
+    function from_candid_ApprovalStatus_n65(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n66(_uploadFile, _downloadFile, value);
     }
     function from_candid_AssignmentStatus_n5(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n6(_uploadFile, _downloadFile, value);
@@ -35718,29 +35794,38 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n103(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n104(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n119(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n120(_uploadFile, _downloadFile, value);
     }
-    function from_candid_DrinksBuilderContent_n24(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n25(_uploadFile, _downloadFile, value);
+    function from_candid_DrinksBuilderContent_n32(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n33(_uploadFile, _downloadFile, value);
     }
-    function from_candid_DrinksBuilderPrompt_n29(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n30(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_DrinksBuilderSettings_n26(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n27(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_Error_n68(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n69(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_FlashcardContent_n35(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n36(_uploadFile, _downloadFile, value);
-    }
-    function from_candid_Flashcard_n37(_uploadFile, _downloadFile, value) {
+    function from_candid_DrinksBuilderPrompt_n37(_uploadFile, _downloadFile, value) {
       return from_candid_record_n38(_uploadFile, _downloadFile, value);
     }
-    function from_candid_LayoutStyle_n48(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n49(_uploadFile, _downloadFile, value);
+    function from_candid_DrinksBuilderSettings_n34(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n35(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Error_n76(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n77(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_FlashcardContent_n43(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n44(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_Flashcard_n45(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n46(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_FoodComponent_n20(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n21(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_FoodRecipeKind_n17(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n18(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_FoodRecipe_n15(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n16(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_LayoutStyle_n56(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n57(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -35748,99 +35833,102 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, value) {
       return from_candid_record_n4(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Position_n46(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n47(_uploadFile, _downloadFile, value);
+    function from_candid_Position_n54(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n55(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Question_n33(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n34(_uploadFile, _downloadFile, value);
+    function from_candid_Question_n41(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n42(_uploadFile, _downloadFile, value);
     }
-    function from_candid_QuizContent_n31(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n32(_uploadFile, _downloadFile, value);
+    function from_candid_QuizContent_n39(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n40(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Recipe_n15(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n16(_uploadFile, _downloadFile, value);
+    function from_candid_Recipe_n23(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n24(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n66(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n67(_uploadFile, _downloadFile, value);
+    function from_candid_Result__1_n74(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n75(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n99(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n100(_uploadFile, _downloadFile, value);
+    function from_candid_Result_n115(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n116(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Role_n55(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n56(_uploadFile, _downloadFile, value);
+    function from_candid_Role_n63(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n64(_uploadFile, _downloadFile, value);
     }
-    function from_candid_SendResult_n126(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n127(_uploadFile, _downloadFile, value);
+    function from_candid_SendResult_n142(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n143(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Task_n42(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n43(_uploadFile, _downloadFile, value);
+    function from_candid_Task_n50(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n51(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserProfile_n53(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n54(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n61(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n62(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserRole_n108(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n109(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n124(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n125(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Value_n105(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n106(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n121(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n122(_uploadFile, _downloadFile, value);
     }
-    function from_candid__ImmutableObjectStorageRefillResult_n62(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n63(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n70(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n71(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n110(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n126(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n111(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n127(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n112(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Activity_n18(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n128(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Activity_n26(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n113(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n53(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n129(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_UserProfile_n61(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n114(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n130(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n115(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n42(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n131(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n50(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n116(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n46(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n132(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n54(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n117(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n55(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n133(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n63(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n14(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Recipe_n15(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_FoodRecipe_n15(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n22(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Recipe_n23(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n47(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n40(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n48(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n44(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n52(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n64(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n72(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n65(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n73(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_record_n100(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n116(_uploadFile, _downloadFile, value) {
       return {
         hasMore: value.hasMore,
-        rows: from_candid_vec_n101(_uploadFile, _downloadFile, value.rows)
+        rows: from_candid_vec_n117(_uploadFile, _downloadFile, value.rows)
       };
     }
-    function from_candid_record_n104(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n120(_uploadFile, _downloadFile, value) {
       return {
-        value: from_candid_Value_n105(_uploadFile, _downloadFile, value.value),
+        value: from_candid_Value_n121(_uploadFile, _downloadFile, value.value),
         name: value.name
       };
     }
@@ -35851,15 +35939,43 @@ variant ${k2} -> ${e.message}`, {
         title: value.title,
         sortOrder: value.sortOrder,
         tags: value.tags,
+        foodRecipe: record_opt_to_undefined(from_candid_opt_n14(_uploadFile, _downloadFile, value.foodRecipe)),
         seasonal: value.seasonal,
         notes: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.notes)),
         details: value.details,
         photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo)),
         subtitle: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.subtitle)),
-        recipe: record_opt_to_undefined(from_candid_opt_n14(_uploadFile, _downloadFile, value.recipe))
+        recipe: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.recipe))
       };
     }
     function from_candid_record_n16(_uploadFile, _downloadFile, value) {
+      return {
+        lineUtensil: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.lineUtensil)),
+        serviceware: value.serviceware,
+        station: value.station,
+        equipment: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.equipment)),
+        holdTemp: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.holdTemp)),
+        kind: from_candid_FoodRecipeKind_n17(_uploadFile, _downloadFile, value.kind),
+        qualityIdentifiers: value.qualityIdentifiers,
+        components: from_candid_vec_n19(_uploadFile, _downloadFile, value.components),
+        shelfLife: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.shelfLife)),
+        steps: value.steps,
+        yieldText: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.yieldText)),
+        storeTemp: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.storeTemp)),
+        menuSection: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.menuSection)),
+        expoSteps: value.expoSteps,
+        allergenNote: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.allergenNote))
+      };
+    }
+    function from_candid_record_n21(_uploadFile, _downloadFile, value) {
+      return {
+        item: value.item,
+        note: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.note)),
+        group: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.group)),
+        amount: value.amount
+      };
+    }
+    function from_candid_record_n24(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         recapAudio: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.recapAudio)),
@@ -35873,57 +35989,49 @@ variant ${k2} -> ${e.message}`, {
         yield: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.yield))
       };
     }
-    function from_candid_record_n19(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n27(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        activityType: from_candid_ActivityType_n20(_uploadFile, _downloadFile, value.activityType),
-        content: from_candid_ActivityContent_n22(_uploadFile, _downloadFile, value.content),
+        activityType: from_candid_ActivityType_n28(_uploadFile, _downloadFile, value.activityType),
+        content: from_candid_ActivityContent_n30(_uploadFile, _downloadFile, value.content),
         name: value.name,
         createdAt: value.createdAt,
         createdBy: value.createdBy,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds,
-        quizSettings: record_opt_to_undefined(from_candid_opt_n40(_uploadFile, _downloadFile, value.quizSettings))
+        quizSettings: record_opt_to_undefined(from_candid_opt_n48(_uploadFile, _downloadFile, value.quizSettings))
       };
     }
-    function from_candid_record_n25(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n33(_uploadFile, _downloadFile, value) {
       return {
-        settings: from_candid_DrinksBuilderSettings_n26(_uploadFile, _downloadFile, value.settings)
+        settings: from_candid_DrinksBuilderSettings_n34(_uploadFile, _downloadFile, value.settings)
       };
     }
-    function from_candid_record_n27(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n35(_uploadFile, _downloadFile, value) {
       return {
-        garnishPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.garnishPrompts),
+        garnishPrompts: from_candid_vec_n36(_uploadFile, _downloadFile, value.garnishPrompts),
         includedCategories: value.includedCategories,
         enforceAssemblyOrder: value.enforceAssemblyOrder,
         pointsPerCorrect: value.pointsPerCorrect,
         excludedDrinkTitles: value.excludedDrinkTitles,
         showScoring: value.showScoring,
-        assemblyPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.assemblyPrompts),
+        assemblyPrompts: from_candid_vec_n36(_uploadFile, _downloadFile, value.assemblyPrompts),
         requireExactAmounts: value.requireExactAmounts,
         answerClips: value.answerClips,
-        glasswarePrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.glasswarePrompts),
+        glasswarePrompts: from_candid_vec_n36(_uploadFile, _downloadFile, value.glasswarePrompts),
         soundDefault: value.soundDefault,
         decoyCount: value.decoyCount,
         celebrationClips: value.celebrationClips,
         correctAffirmations: value.correctAffirmations,
-        specsPrompts: from_candid_vec_n28(_uploadFile, _downloadFile, value.specsPrompts),
+        specsPrompts: from_candid_vec_n36(_uploadFile, _downloadFile, value.specsPrompts),
         streakMultiplier: value.streakMultiplier,
         roundsPerSession: value.roundsPerSession
       };
     }
-    function from_candid_record_n30(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n38(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         audioUrl: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.audioUrl))
-      };
-    }
-    function from_candid_record_n38(_uploadFile, _downloadFile, value) {
-      return {
-        itemTitle: value.itemTitle,
-        detailFields: value.detailFields,
-        itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto)),
-        recipe: record_opt_to_undefined(from_candid_opt_n39(_uploadFile, _downloadFile, value.recipe))
       };
     }
     function from_candid_record_n4(_uploadFile, _downloadFile, value) {
@@ -35933,11 +36041,19 @@ variant ${k2} -> ${e.message}`, {
         positionId: value.positionId
       };
     }
-    function from_candid_record_n43(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n46(_uploadFile, _downloadFile, value) {
+      return {
+        itemTitle: value.itemTitle,
+        detailFields: value.detailFields,
+        itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto)),
+        recipe: record_opt_to_undefined(from_candid_opt_n47(_uploadFile, _downloadFile, value.recipe))
+      };
+    }
+    function from_candid_record_n51(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
-        assignedTo: record_opt_to_undefined(from_candid_opt_n44(_uploadFile, _downloadFile, value.assignedTo)),
+        assignedTo: record_opt_to_undefined(from_candid_opt_n52(_uploadFile, _downloadFile, value.assignedTo)),
         sortOrder: value.sortOrder,
         done: value.done,
         text: value.text,
@@ -35946,31 +36062,31 @@ variant ${k2} -> ${e.message}`, {
         phaseId: value.phaseId
       };
     }
-    function from_candid_record_n47(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n55(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        layoutStyle: from_candid_LayoutStyle_n48(_uploadFile, _downloadFile, value.layoutStyle),
+        layoutStyle: from_candid_LayoutStyle_n56(_uploadFile, _downloadFile, value.layoutStyle),
         sortOrder: value.sortOrder,
         name: value.name,
         description: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.description)),
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_record_n54(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n62(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         name: value.name,
-        role: from_candid_Role_n55(_uploadFile, _downloadFile, value.role),
+        role: from_candid_Role_n63(_uploadFile, _downloadFile, value.role),
         email: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.email)),
-        approvalStatus: from_candid_ApprovalStatus_n57(_uploadFile, _downloadFile, value.approvalStatus),
+        approvalStatus: from_candid_ApprovalStatus_n65(_uploadFile, _downloadFile, value.approvalStatus),
         storeLocation: value.storeLocation,
         photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo))
       };
     }
-    function from_candid_record_n63(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n71(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n64(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n65(_uploadFile, _downloadFile, value.topped_up_amount))
+        success: record_opt_to_undefined(from_candid_opt_n72(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n73(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
     function from_candid_record_n9(_uploadFile, _downloadFile, value) {
@@ -35982,13 +36098,13 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_tuple_n52(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n60(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n53(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n61(_uploadFile, _downloadFile, value[1])
       ];
     }
-    function from_candid_variant_n106(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n122(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -36009,10 +36125,10 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n109(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n125(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
     }
-    function from_candid_variant_n127(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n143(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
@@ -36021,22 +36137,25 @@ variant ${k2} -> ${e.message}`, {
         err: value.err
       } : value;
     }
-    function from_candid_variant_n21(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n18(_uploadFile, _downloadFile, value) {
+      return "prep" in value ? "prep" : "menuBuild" in value ? "menuBuild" : value;
+    }
+    function from_candid_variant_n29(_uploadFile, _downloadFile, value) {
       return "drinksBuilder" in value ? "drinksBuilder" : "quiz" in value ? "quiz" : "flashcards" in value ? "flashcards" : value;
     }
-    function from_candid_variant_n23(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n31(_uploadFile, _downloadFile, value) {
       return "drinksBuilderContent" in value ? {
         __kind__: "drinksBuilderContent",
-        drinksBuilderContent: from_candid_DrinksBuilderContent_n24(_uploadFile, _downloadFile, value.drinksBuilderContent)
+        drinksBuilderContent: from_candid_DrinksBuilderContent_n32(_uploadFile, _downloadFile, value.drinksBuilderContent)
       } : "quizContent" in value ? {
         __kind__: "quizContent",
-        quizContent: from_candid_QuizContent_n31(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: from_candid_QuizContent_n39(_uploadFile, _downloadFile, value.quizContent)
       } : "flashcardContent" in value ? {
         __kind__: "flashcardContent",
-        flashcardContent: from_candid_FlashcardContent_n35(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: from_candid_FlashcardContent_n43(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function from_candid_variant_n34(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n42(_uploadFile, _downloadFile, value) {
       return "multipleChoice" in value ? {
         __kind__: "multipleChoice",
         multipleChoice: value.multipleChoice
@@ -36048,28 +36167,28 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function from_candid_variant_n49(_uploadFile, _downloadFile, value) {
-      return "library" in value ? "library" : "orientation" in value ? "orientation" : value;
-    }
-    function from_candid_variant_n56(_uploadFile, _downloadFile, value) {
-      return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
-    }
-    function from_candid_variant_n58(_uploadFile, _downloadFile, value) {
-      return "pending" in value ? "pending" : "approved" in value ? "approved" : "rejected" in value ? "rejected" : value;
+    function from_candid_variant_n57(_uploadFile, _downloadFile, value) {
+      return "library" in value ? "library" : "kitchen" in value ? "kitchen" : "orientation" in value ? "orientation" : value;
     }
     function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
       return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
     }
-    function from_candid_variant_n67(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n64(_uploadFile, _downloadFile, value) {
+      return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
+    }
+    function from_candid_variant_n66(_uploadFile, _downloadFile, value) {
+      return "pending" in value ? "pending" : "approved" in value ? "approved" : "rejected" in value ? "rejected" : value;
+    }
+    function from_candid_variant_n75(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n68(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n76(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n69(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n77(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -36102,204 +36221,142 @@ variant ${k2} -> ${e.message}`, {
         FrontendOriginMismatch: value.FrontendOriginMismatch
       } : value;
     }
-    function from_candid_vec_n101(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n102(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n102(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n103(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n107(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n53(_uploadFile, _downloadFile, x2));
-    }
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_LibraryItem_n12(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n17(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Activity_n18(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n117(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_vec_n118(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n118(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n119(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n123(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n61(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n19(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_FoodComponent_n20(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n2(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n28(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_DrinksBuilderPrompt_n29(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n32(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Question_n33(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n25(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Activity_n26(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n36(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Flashcard_n37(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_DrinksBuilderPrompt_n37(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n41(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Task_n42(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n40(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Question_n41(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Position_n46(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n44(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Flashcard_n45(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n51(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n52(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n49(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Task_n50(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n53(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Position_n54(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n59(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n60(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_ActivityContent_n76(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n77(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_ActivityType_n74(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n75(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_AssignmentStatus_n129(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n130(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_BuildActivityInput_n72(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n73(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_DrinksBuilderContent_n86(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n87(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_DrinksBuilderPrompt_n91(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n92(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_DrinksBuilderSettings_n88(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n89(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_FlashcardContent_n78(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n79(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_Flashcard_n80(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n81(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_LayoutStyle_n97(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n98(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportInput_n118(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n119(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportPhase_n121(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n122(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportTask_n124(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n125(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_Question_n84(_uploadFile, _downloadFile, value) {
+    function to_candid_ActivityContent_n84(_uploadFile, _downloadFile, value) {
       return to_candid_variant_n85(_uploadFile, _downloadFile, value);
     }
-    function to_candid_QuizContent_n82(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n83(_uploadFile, _downloadFile, value);
+    function to_candid_ActivityType_n82(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n83(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Recipe_n95(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n96(_uploadFile, _downloadFile, value);
+    function to_candid_AssignmentStatus_n145(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n146(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n131(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n132(_uploadFile, _downloadFile, value);
+    function to_candid_BuildActivityInput_n80(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n81(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UpdateActivityInput_n133(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n134(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderContent_n94(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n95(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n70(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n71(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderPrompt_n99(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n100(_uploadFile, _downloadFile, value);
     }
-    function to_candid__ImmutableObjectStorageRefillInformation_n60(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n61(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderSettings_n96(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n97(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_FlashcardContent_n86(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n87(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Flashcard_n88(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n89(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_FoodComponent_n111(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n112(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_FoodRecipeKind_n108(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n109(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_FoodRecipe_n106(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n107(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_LayoutStyle_n113(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n114(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_NsoImportInput_n134(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n135(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_NsoImportPhase_n137(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n138(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_NsoImportTask_n140(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n141(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Question_n92(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n93(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_QuizContent_n90(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n91(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Recipe_n103(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n104(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_Role_n147(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n148(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UpdateActivityInput_n149(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n150(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UserRole_n78(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n79(_uploadFile, _downloadFile, value);
+    }
+    function to_candid__ImmutableObjectStorageRefillInformation_n68(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n69(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n50(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n101(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n59(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n60(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n102(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_Recipe_n103(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n93(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n105(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_FoodRecipe_n106(_uploadFile, _downloadFile, value));
+    }
+    function to_candid_opt_n58(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n94(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid_Recipe_n95(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n67(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n68(_uploadFile, _downloadFile, value));
     }
-    function to_candid_record_n119(_uploadFile, _downloadFile, value) {
-      return {
-        moduleName: value.moduleName,
-        phases: to_candid_vec_n120(_uploadFile, _downloadFile, value.phases)
-      };
-    }
-    function to_candid_record_n122(_uploadFile, _downloadFile, value) {
-      return {
-        tasks: to_candid_vec_n123(_uploadFile, _downloadFile, value.tasks),
-        name: value.name
-      };
-    }
-    function to_candid_record_n125(_uploadFile, _downloadFile, value) {
-      return {
-        text: value.text,
-        section: value.section ? candid_some(value.section) : candid_none(),
-        notes: value.notes ? candid_some(value.notes) : candid_none()
-      };
-    }
-    function to_candid_record_n134(_uploadFile, _downloadFile, value) {
-      return {
-        id: value.id,
-        content: value.content ? candid_some(to_candid_ActivityContent_n76(_uploadFile, _downloadFile, value.content)) : candid_none(),
-        name: value.name,
-        sourceCategoryIds: value.sourceCategoryIds,
-        quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
-      };
-    }
-    function to_candid_record_n61(_uploadFile, _downloadFile, value) {
-      return {
-        proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
-      };
-    }
-    function to_candid_record_n73(_uploadFile, _downloadFile, value) {
-      return {
-        activityType: to_candid_ActivityType_n74(_uploadFile, _downloadFile, value.activityType),
-        content: value.content ? candid_some(to_candid_ActivityContent_n76(_uploadFile, _downloadFile, value.content)) : candid_none(),
-        name: value.name,
-        positionId: value.positionId,
-        sourceCategoryIds: value.sourceCategoryIds,
-        quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
-      };
-    }
-    function to_candid_record_n81(_uploadFile, _downloadFile, value) {
-      return {
-        itemTitle: value.itemTitle,
-        detailFields: value.detailFields,
-        itemPhoto: value.itemPhoto ? candid_some(value.itemPhoto) : candid_none(),
-        recipe: value.recipe ? candid_some(value.recipe) : candid_none()
-      };
-    }
-    function to_candid_record_n87(_uploadFile, _downloadFile, value) {
-      return {
-        settings: to_candid_DrinksBuilderSettings_n88(_uploadFile, _downloadFile, value.settings)
-      };
-    }
-    function to_candid_record_n89(_uploadFile, _downloadFile, value) {
-      return {
-        garnishPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.garnishPrompts),
-        includedCategories: value.includedCategories,
-        enforceAssemblyOrder: value.enforceAssemblyOrder,
-        pointsPerCorrect: value.pointsPerCorrect,
-        excludedDrinkTitles: value.excludedDrinkTitles,
-        showScoring: value.showScoring,
-        assemblyPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.assemblyPrompts),
-        requireExactAmounts: value.requireExactAmounts,
-        answerClips: value.answerClips,
-        glasswarePrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.glasswarePrompts),
-        soundDefault: value.soundDefault,
-        decoyCount: value.decoyCount,
-        celebrationClips: value.celebrationClips,
-        correctAffirmations: value.correctAffirmations,
-        specsPrompts: to_candid_vec_n90(_uploadFile, _downloadFile, value.specsPrompts),
-        streakMultiplier: value.streakMultiplier,
-        roundsPerSession: value.roundsPerSession
-      };
-    }
-    function to_candid_record_n92(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n100(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         audioUrl: value.audioUrl ? candid_some(value.audioUrl) : candid_none()
       };
     }
-    function to_candid_record_n96(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n104(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         recapAudio: value.recapAudio ? candid_some(value.recapAudio) : candid_none(),
@@ -36313,21 +36370,141 @@ variant ${k2} -> ${e.message}`, {
         yield: value.yield ? candid_some(value.yield) : candid_none()
       };
     }
-    function to_candid_variant_n128(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n107(_uploadFile, _downloadFile, value) {
+      return {
+        lineUtensil: value.lineUtensil ? candid_some(value.lineUtensil) : candid_none(),
+        serviceware: value.serviceware,
+        station: value.station,
+        equipment: value.equipment ? candid_some(value.equipment) : candid_none(),
+        holdTemp: value.holdTemp ? candid_some(value.holdTemp) : candid_none(),
+        kind: to_candid_FoodRecipeKind_n108(_uploadFile, _downloadFile, value.kind),
+        qualityIdentifiers: value.qualityIdentifiers,
+        components: to_candid_vec_n110(_uploadFile, _downloadFile, value.components),
+        shelfLife: value.shelfLife ? candid_some(value.shelfLife) : candid_none(),
+        steps: value.steps,
+        yieldText: value.yieldText ? candid_some(value.yieldText) : candid_none(),
+        storeTemp: value.storeTemp ? candid_some(value.storeTemp) : candid_none(),
+        menuSection: value.menuSection ? candid_some(value.menuSection) : candid_none(),
+        expoSteps: value.expoSteps,
+        allergenNote: value.allergenNote ? candid_some(value.allergenNote) : candid_none()
+      };
+    }
+    function to_candid_record_n112(_uploadFile, _downloadFile, value) {
+      return {
+        item: value.item,
+        note: value.note ? candid_some(value.note) : candid_none(),
+        group: value.group ? candid_some(value.group) : candid_none(),
+        amount: value.amount
+      };
+    }
+    function to_candid_record_n135(_uploadFile, _downloadFile, value) {
+      return {
+        moduleName: value.moduleName,
+        phases: to_candid_vec_n136(_uploadFile, _downloadFile, value.phases)
+      };
+    }
+    function to_candid_record_n138(_uploadFile, _downloadFile, value) {
+      return {
+        tasks: to_candid_vec_n139(_uploadFile, _downloadFile, value.tasks),
+        name: value.name
+      };
+    }
+    function to_candid_record_n141(_uploadFile, _downloadFile, value) {
+      return {
+        text: value.text,
+        section: value.section ? candid_some(value.section) : candid_none(),
+        notes: value.notes ? candid_some(value.notes) : candid_none()
+      };
+    }
+    function to_candid_record_n150(_uploadFile, _downloadFile, value) {
+      return {
+        id: value.id,
+        content: value.content ? candid_some(to_candid_ActivityContent_n84(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        name: value.name,
+        sourceCategoryIds: value.sourceCategoryIds,
+        quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
+      };
+    }
+    function to_candid_record_n69(_uploadFile, _downloadFile, value) {
+      return {
+        proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
+      };
+    }
+    function to_candid_record_n81(_uploadFile, _downloadFile, value) {
+      return {
+        activityType: to_candid_ActivityType_n82(_uploadFile, _downloadFile, value.activityType),
+        content: value.content ? candid_some(to_candid_ActivityContent_n84(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        name: value.name,
+        positionId: value.positionId,
+        sourceCategoryIds: value.sourceCategoryIds,
+        quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
+      };
+    }
+    function to_candid_record_n89(_uploadFile, _downloadFile, value) {
+      return {
+        itemTitle: value.itemTitle,
+        detailFields: value.detailFields,
+        itemPhoto: value.itemPhoto ? candid_some(value.itemPhoto) : candid_none(),
+        recipe: value.recipe ? candid_some(value.recipe) : candid_none()
+      };
+    }
+    function to_candid_record_n95(_uploadFile, _downloadFile, value) {
+      return {
+        settings: to_candid_DrinksBuilderSettings_n96(_uploadFile, _downloadFile, value.settings)
+      };
+    }
+    function to_candid_record_n97(_uploadFile, _downloadFile, value) {
+      return {
+        garnishPrompts: to_candid_vec_n98(_uploadFile, _downloadFile, value.garnishPrompts),
+        includedCategories: value.includedCategories,
+        enforceAssemblyOrder: value.enforceAssemblyOrder,
+        pointsPerCorrect: value.pointsPerCorrect,
+        excludedDrinkTitles: value.excludedDrinkTitles,
+        showScoring: value.showScoring,
+        assemblyPrompts: to_candid_vec_n98(_uploadFile, _downloadFile, value.assemblyPrompts),
+        requireExactAmounts: value.requireExactAmounts,
+        answerClips: value.answerClips,
+        glasswarePrompts: to_candid_vec_n98(_uploadFile, _downloadFile, value.glasswarePrompts),
+        soundDefault: value.soundDefault,
+        decoyCount: value.decoyCount,
+        celebrationClips: value.celebrationClips,
+        correctAffirmations: value.correctAffirmations,
+        specsPrompts: to_candid_vec_n98(_uploadFile, _downloadFile, value.specsPrompts),
+        streakMultiplier: value.streakMultiplier,
+        roundsPerSession: value.roundsPerSession
+      };
+    }
+    function to_candid_variant_n109(_uploadFile, _downloadFile, value) {
+      return value == "prep" ? {
+        prep: null
+      } : value == "menuBuild" ? {
+        menuBuild: null
+      } : value;
+    }
+    function to_candid_variant_n114(_uploadFile, _downloadFile, value) {
+      return value == "library" ? {
+        library: null
+      } : value == "kitchen" ? {
+        kitchen: null
+      } : value == "orientation" ? {
+        orientation: null
+      } : value;
+    }
+    function to_candid_variant_n144(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n130(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n146(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n132(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n148(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -36338,7 +36515,7 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_variant_n71(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n79(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -36347,7 +36524,7 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n75(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n83(_uploadFile, _downloadFile, value) {
       return value == "drinksBuilder" ? {
         drinksBuilder: null
       } : value == "quiz" ? {
@@ -36356,16 +36533,16 @@ variant ${k2} -> ${e.message}`, {
         flashcards: null
       } : value;
     }
-    function to_candid_variant_n77(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n85(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "drinksBuilderContent" ? {
-        drinksBuilderContent: to_candid_DrinksBuilderContent_n86(_uploadFile, _downloadFile, value.drinksBuilderContent)
+        drinksBuilderContent: to_candid_DrinksBuilderContent_n94(_uploadFile, _downloadFile, value.drinksBuilderContent)
       } : value.__kind__ === "quizContent" ? {
-        quizContent: to_candid_QuizContent_n82(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: to_candid_QuizContent_n90(_uploadFile, _downloadFile, value.quizContent)
       } : value.__kind__ === "flashcardContent" ? {
-        flashcardContent: to_candid_FlashcardContent_n78(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: to_candid_FlashcardContent_n86(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function to_candid_variant_n85(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n93(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "multipleChoice" ? {
         multipleChoice: value.multipleChoice
       } : value.__kind__ === "matching" ? {
@@ -36374,27 +36551,23 @@ variant ${k2} -> ${e.message}`, {
         trueFalse: value.trueFalse
       } : value;
     }
-    function to_candid_variant_n98(_uploadFile, _downloadFile, value) {
-      return value == "library" ? {
-        library: null
-      } : value == "orientation" ? {
-        orientation: null
-      } : value;
+    function to_candid_vec_n110(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_FoodComponent_n111(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n120(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n121(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n136(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n137(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n123(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n124(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n139(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n140(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n79(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Flashcard_n80(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n87(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Flashcard_n88(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n83(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Question_n84(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n91(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Question_n92(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n90(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_DrinksBuilderPrompt_n91(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n98(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_DrinksBuilderPrompt_n99(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -39422,40 +39595,40 @@ variant ${k2} -> ${e.message}`, {
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$V = [
+    const __iconNode$$ = [
       ["path", { d: "M12 5v14", key: "s699le" }],
       ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
     ];
-    const ArrowDown = createLucideIcon("arrow-down", __iconNode$V);
+    const ArrowDown = createLucideIcon("arrow-down", __iconNode$$);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$U = [
+    const __iconNode$_ = [
       ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
       ["path", { d: "M19 12H5", key: "x3x0zl" }]
     ];
-    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$U);
+    const ArrowLeft = createLucideIcon("arrow-left", __iconNode$_);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$T = [
+    const __iconNode$Z = [
       ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
       ["path", { d: "M12 19V5", key: "x0mq9r" }]
     ];
-    const ArrowUp = createLucideIcon("arrow-up", __iconNode$T);
+    const ArrowUp = createLucideIcon("arrow-up", __iconNode$Z);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$S = [
+    const __iconNode$Y = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -39465,14 +39638,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$S);
+    const BookOpen = createLucideIcon("book-open", __iconNode$Y);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$R = [
+    const __iconNode$X = [
       [
         "path",
         {
@@ -39495,14 +39668,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M6 18a4 4 0 0 1-1.967-.516", key: "2e4loj" }],
       ["path", { d: "M19.967 17.484A4 4 0 0 1 18 18", key: "159ez6" }]
     ];
-    const Brain = createLucideIcon("brain", __iconNode$R);
+    const Brain = createLucideIcon("brain", __iconNode$X);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$Q = [
+    const __iconNode$W = [
       [
         "path",
         {
@@ -39512,96 +39685,113 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
     ];
-    const Camera = createLucideIcon("camera", __iconNode$Q);
+    const Camera = createLucideIcon("camera", __iconNode$W);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$P = [
+    const __iconNode$V = [
       ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
       ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
     ];
-    const CheckCheck = createLucideIcon("check-check", __iconNode$P);
+    const CheckCheck = createLucideIcon("check-check", __iconNode$V);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$O = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$O);
+    const __iconNode$U = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$U);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$N = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$N);
+    const __iconNode$T = [
+      [
+        "path",
+        {
+          d: "M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z",
+          key: "1qvrer"
+        }
+      ],
+      ["path", { d: "M6 17h12", key: "1jwigz" }]
+    ];
+    const ChefHat = createLucideIcon("chef-hat", __iconNode$T);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$M = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$M);
+    const __iconNode$S = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$S);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$L = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-    const ChevronRight = createLucideIcon("chevron-right", __iconNode$L);
+    const __iconNode$R = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+    const ChevronLeft = createLucideIcon("chevron-left", __iconNode$R);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$K = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$K);
+    const __iconNode$Q = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+    const ChevronRight = createLucideIcon("chevron-right", __iconNode$Q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$J = [
+    const __iconNode$P = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$P);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$O = [
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
       ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
     ];
-    const CircleCheck = createLucideIcon("circle-check", __iconNode$J);
+    const CircleCheck = createLucideIcon("circle-check", __iconNode$O);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$I = [
+    const __iconNode$N = [
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
       ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
       ["path", { d: "M12 17h.01", key: "p32p05" }]
     ];
-    const CircleHelp = createLucideIcon("circle-help", __iconNode$I);
+    const CircleHelp = createLucideIcon("circle-help", __iconNode$N);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$H = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-    const Circle = createLucideIcon("circle", __iconNode$H);
+    const __iconNode$M = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+    const Circle = createLucideIcon("circle", __iconNode$M);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$G = [
+    const __iconNode$L = [
       ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
       [
         "path",
@@ -39615,14 +39805,14 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M8 11h.01", key: "1dfujw" }],
       ["path", { d: "M8 16h.01", key: "18s6g9" }]
     ];
-    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$G);
+    const ClipboardList = createLucideIcon("clipboard-list", __iconNode$L);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$F = [
+    const __iconNode$K = [
       [
         "path",
         {
@@ -39632,14 +39822,26 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
     ];
-    const Compass = createLucideIcon("compass", __iconNode$F);
+    const Compass = createLucideIcon("compass", __iconNode$K);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$E = [
+    const __iconNode$J = [
+      ["path", { d: "M12 15V3", key: "m9g1x1" }],
+      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+      ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
+    ];
+    const Download = createLucideIcon("download", __iconNode$J);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$I = [
       [
         "path",
         {
@@ -39648,14 +39850,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Flame = createLucideIcon("flame", __iconNode$E);
+    const Flame = createLucideIcon("flame", __iconNode$I);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$D = [
+    const __iconNode$H = [
       ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
       ["path", { d: "m18 15 4-4", key: "16gjal" }],
       [
@@ -39666,14 +39868,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Hammer = createLucideIcon("hammer", __iconNode$D);
+    const Hammer = createLucideIcon("hammer", __iconNode$H);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$C = [
+    const __iconNode$G = [
       [
         "path",
         {
@@ -39683,14 +39885,14 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m12 13-1-1 2-2-3-3 2-2", key: "xjdxli" }]
     ];
-    const HeartCrack = createLucideIcon("heart-crack", __iconNode$C);
+    const HeartCrack = createLucideIcon("heart-crack", __iconNode$G);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$B = [
+    const __iconNode$F = [
       [
         "path",
         {
@@ -39699,14 +39901,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Heart = createLucideIcon("heart", __iconNode$B);
+    const Heart = createLucideIcon("heart", __iconNode$F);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$A = [
+    const __iconNode$E = [
       ["line", { x1: "2", x2: "22", y1: "2", y2: "22", key: "a6p6uj" }],
       ["path", { d: "M10.41 10.41a2 2 0 1 1-2.83-2.83", key: "1bzlo9" }],
       ["line", { x1: "13.5", x2: "6", y1: "13.5", y2: "21", key: "1q0aeu" }],
@@ -39720,14 +39922,28 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "M21 15V5a2 2 0 0 0-2-2H9", key: "43el77" }]
     ];
-    const ImageOff = createLucideIcon("image-off", __iconNode$A);
+    const ImageOff = createLucideIcon("image-off", __iconNode$E);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$z = [
+    const __iconNode$D = [
+      ["path", { d: "M16 5h6", key: "1vod17" }],
+      ["path", { d: "M19 2v6", key: "4bpg5p" }],
+      ["path", { d: "M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5", key: "1ue2ih" }],
+      ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }],
+      ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }]
+    ];
+    const ImagePlus = createLucideIcon("image-plus", __iconNode$D);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$C = [
       [
         "path",
         {
@@ -39750,40 +39966,40 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$z);
+    const Layers = createLucideIcon("layers", __iconNode$C);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$y = [
+    const __iconNode$B = [
       ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
       ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
       ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
       ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
     ];
-    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$y);
+    const LayoutGrid = createLucideIcon("layout-grid", __iconNode$B);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$x = [
+    const __iconNode$A = [
       ["path", { d: "m16 6 4 14", key: "ji33uf" }],
       ["path", { d: "M12 6v14", key: "1n7gus" }],
       ["path", { d: "M8 8v12", key: "1gg7y9" }],
       ["path", { d: "M4 4v16", key: "6qkkli" }]
     ];
-    const Library = createLucideIcon("library", __iconNode$x);
+    const Library = createLucideIcon("library", __iconNode$A);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$w = [
+    const __iconNode$z = [
       [
         "path",
         {
@@ -39794,7 +40010,37 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M9 18h6", key: "x1upvd" }],
       ["path", { d: "M10 22h4", key: "ceow96" }]
     ];
-    const Lightbulb = createLucideIcon("lightbulb", __iconNode$w);
+    const Lightbulb = createLucideIcon("lightbulb", __iconNode$z);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$y = [
+      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
+      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
+    ];
+    const Link$2 = createLucideIcon("link", __iconNode$y);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$x = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$x);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$w = [
+      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+    ];
+    const Lock = createLucideIcon("lock", __iconNode$w);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39802,18 +40048,23 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$v = [
-      ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
-      ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
     ];
-    const Link$2 = createLucideIcon("link", __iconNode$v);
+    const LogOut = createLucideIcon("log-out", __iconNode$v);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$u = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-    const LoaderCircle = createLucideIcon("loader-circle", __iconNode$u);
+    const __iconNode$u = [
+      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
+      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
+      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
+    ];
+    const MailCheck = createLucideIcon("mail-check", __iconNode$u);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39821,10 +40072,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$t = [
-      ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-      ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
     ];
-    const Lock = createLucideIcon("lock", __iconNode$t);
+    const Mail = createLucideIcon("mail", __iconNode$t);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39832,41 +40083,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$s = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-    ];
-    const LogOut = createLucideIcon("log-out", __iconNode$s);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$r = [
-      ["path", { d: "M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8", key: "12jkf8" }],
-      ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7", key: "1ocrg3" }],
-      ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
-    ];
-    const MailCheck = createLucideIcon("mail-check", __iconNode$r);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$q = [
-      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
-      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
-    ];
-    const Mail = createLucideIcon("mail", __iconNode$q);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$p = [
       ["path", { d: "M12 22v-9", key: "x3hkom" }],
       [
         "path",
@@ -39890,14 +40106,14 @@ variant ${k2} -> ${e.message}`, {
         }
       ]
     ];
-    const PackageOpen = createLucideIcon("package-open", __iconNode$p);
+    const PackageOpen = createLucideIcon("package-open", __iconNode$s);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$o = [
+    const __iconNode$r = [
       [
         "path",
         {
@@ -39909,14 +40125,14 @@ variant ${k2} -> ${e.message}`, {
       ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
       ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
     ];
-    const Package = createLucideIcon("package", __iconNode$o);
+    const Package = createLucideIcon("package", __iconNode$r);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$n = [
+    const __iconNode$q = [
       [
         "path",
         {
@@ -39926,15 +40142,50 @@ variant ${k2} -> ${e.message}`, {
       ],
       ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
     ];
-    const Pencil = createLucideIcon("pencil", __iconNode$n);
+    const Pencil = createLucideIcon("pencil", __iconNode$q);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$m = [["polygon", { points: "6 3 20 12 6 21 6 3", key: "1oa8hb" }]];
-    const Play = createLucideIcon("play", __iconNode$m);
+    const __iconNode$p = [["polygon", { points: "6 3 20 12 6 21 6 3", key: "1oa8hb" }]];
+    const Play = createLucideIcon("play", __iconNode$p);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$o = [
+      ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ["path", { d: "M12 5v14", key: "s699le" }]
+    ];
+    const Plus = createLucideIcon("plus", __iconNode$o);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$n = [
+      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+      ["path", { d: "M8 16H3v5", key: "1cv678" }]
+    ];
+    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$n);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$m = [
+      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+    ];
+    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$m);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39942,41 +40193,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$l = [
-      ["path", { d: "M5 12h14", key: "1ays0h" }],
-      ["path", { d: "M12 5v14", key: "s699le" }]
-    ];
-    const Plus = createLucideIcon("plus", __iconNode$l);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$k = [
-      ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-      ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-      ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-      ["path", { d: "M8 16H3v5", key: "1cv678" }]
-    ];
-    const RefreshCw = createLucideIcon("refresh-cw", __iconNode$k);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$j = [
-      ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-      ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
-    ];
-    const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$j);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$i = [
       [
         "path",
         {
@@ -39987,7 +40203,49 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
       ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
     ];
-    const Save = createLucideIcon("save", __iconNode$i);
+    const Save = createLucideIcon("save", __iconNode$l);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$k = [
+      ["path", { d: "m13.5 8.5-5 5", key: "1cs55j" }],
+      ["path", { d: "m8.5 8.5 5 5", key: "a8mexj" }],
+      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+      ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }]
+    ];
+    const SearchX = createLucideIcon("search-x", __iconNode$k);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$j = [
+      ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
+      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+    ];
+    const Search = createLucideIcon("search", __iconNode$j);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$i = [
+      [
+        "path",
+        {
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
+        }
+      ],
+      ["path", { d: "M12 8v4", key: "1got3b" }],
+      ["path", { d: "M12 16h.01", key: "1drbdi" }]
+    ];
+    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$i);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -39995,10 +40253,16 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$h = [
-      ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
-      ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+      [
+        "path",
+        {
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
+        }
+      ],
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
     ];
-    const Search = createLucideIcon("search", __iconNode$h);
+    const ShieldCheck = createLucideIcon("shield-check", __iconNode$h);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40013,10 +40277,10 @@ variant ${k2} -> ${e.message}`, {
           key: "oel41y"
         }
       ],
-      ["path", { d: "M12 8v4", key: "1got3b" }],
-      ["path", { d: "M12 16h.01", key: "1drbdi" }]
+      ["path", { d: "m14.5 9.5-5 5", key: "17q4r4" }],
+      ["path", { d: "m9.5 9.5 5 5", key: "18nt4w" }]
     ];
-    const ShieldAlert = createLucideIcon("shield-alert", __iconNode$g);
+    const ShieldX = createLucideIcon("shield-x", __iconNode$g);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40024,16 +40288,10 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$f = [
-      [
-        "path",
-        {
-          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-          key: "oel41y"
-        }
-      ],
-      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+      ["polygon", { points: "5 4 15 12 5 20 5 4", key: "16p6eg" }],
+      ["line", { x1: "19", x2: "19", y1: "5", y2: "19", key: "futhcm" }]
     ];
-    const ShieldCheck = createLucideIcon("shield-check", __iconNode$f);
+    const SkipForward = createLucideIcon("skip-forward", __iconNode$f);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40041,35 +40299,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$e = [
-      [
-        "path",
-        {
-          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-          key: "oel41y"
-        }
-      ],
-      ["path", { d: "m14.5 9.5-5 5", key: "17q4r4" }],
-      ["path", { d: "m9.5 9.5 5 5", key: "18nt4w" }]
-    ];
-    const ShieldX = createLucideIcon("shield-x", __iconNode$e);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$d = [
-      ["polygon", { points: "5 4 15 12 5 20 5 4", key: "16p6eg" }],
-      ["line", { x1: "19", x2: "19", y1: "5", y2: "19", key: "futhcm" }]
-    ];
-    const SkipForward = createLucideIcon("skip-forward", __iconNode$d);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$c = [
       [
         "path",
         {
@@ -40082,7 +40311,37 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M4 17v2", key: "vumght" }],
       ["path", { d: "M5 18H3", key: "zchphs" }]
     ];
-    const Sparkles = createLucideIcon("sparkles", __iconNode$c);
+    const Sparkles = createLucideIcon("sparkles", __iconNode$e);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$d = [
+      [
+        "path",
+        {
+          d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
+          key: "r04s7s"
+        }
+      ]
+    ];
+    const Star = createLucideIcon("star", __iconNode$d);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$c = [
+      ["path", { d: "M3 6h18", key: "d0wm0j" }],
+      ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
+      ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
+      ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
+      ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+    ];
+    const Trash2 = createLucideIcon("trash-2", __iconNode$c);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40093,12 +40352,14 @@ variant ${k2} -> ${e.message}`, {
       [
         "path",
         {
-          d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
-          key: "r04s7s"
+          d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+          key: "wmoenq"
         }
-      ]
+      ],
+      ["path", { d: "M12 9v4", key: "juzpu7" }],
+      ["path", { d: "M12 17h.01", key: "p32p05" }]
     ];
-    const Star = createLucideIcon("star", __iconNode$b);
+    const TriangleAlert = createLucideIcon("triangle-alert", __iconNode$b);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40106,20 +40367,6 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$a = [
-      ["path", { d: "M3 6h18", key: "d0wm0j" }],
-      ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
-      ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
-      ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
-      ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
-    ];
-    const Trash2 = createLucideIcon("trash-2", __iconNode$a);
-    /**
-     * @license lucide-react v0.511.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$9 = [
       ["path", { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6", key: "17hqa7" }],
       ["path", { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18", key: "lmptdp" }],
       ["path", { d: "M4 22h16", key: "57wxv0" }],
@@ -40127,7 +40374,19 @@ variant ${k2} -> ${e.message}`, {
       ["path", { d: "M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22", key: "1np0yb" }],
       ["path", { d: "M18 2H6v7a6 6 0 0 0 12 0V2Z", key: "u46fv3" }]
     ];
-    const Trophy = createLucideIcon("trophy", __iconNode$9);
+    const Trophy = createLucideIcon("trophy", __iconNode$a);
+    /**
+     * @license lucide-react v0.511.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$9 = [
+      ["path", { d: "M12 3v12", key: "1x0j5s" }],
+      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
+      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+    ];
+    const Upload = createLucideIcon("upload", __iconNode$9);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40135,11 +40394,11 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$8 = [
-      ["path", { d: "M12 3v12", key: "1x0j5s" }],
-      ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
-      ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+      ["path", { d: "m16 11 2 2 4-4", key: "9rsbq5" }],
+      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
     ];
-    const Upload = createLucideIcon("upload", __iconNode$8);
+    const UserCheck = createLucideIcon("user-check", __iconNode$8);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40147,11 +40406,12 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$7 = [
-      ["path", { d: "m16 11 2 2 4-4", key: "9rsbq5" }],
       ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
+      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
       ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
     ];
-    const UserCheck = createLucideIcon("user-check", __iconNode$7);
+    const Users = createLucideIcon("users", __iconNode$7);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -40159,12 +40419,15 @@ variant ${k2} -> ${e.message}`, {
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$6 = [
-      ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-      ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
-      ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
-      ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+      ["path", { d: "m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8", key: "n7qcjb" }],
+      [
+        "path",
+        { d: "M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7", key: "d0u48b" }
+      ],
+      ["path", { d: "m2.1 21.8 6.4-6.3", key: "yn04lh" }],
+      ["path", { d: "m19 5-7 7", key: "194lzd" }]
     ];
-    const Users = createLucideIcon("users", __iconNode$6);
+    const UtensilsCrossed = createLucideIcon("utensils-crossed", __iconNode$6);
     /**
      * @license lucide-react v0.511.0 - ISC
      *
@@ -51141,6 +51404,61 @@ variant ${k2} -> ${e.message}`, {
         recapAudio: r2.recapAudio && r2.recapAudio.length > 0 ? r2.recapAudio : void 0
       };
     }
+    function toFoodRecipe(r2) {
+      if (!r2) return null;
+      return {
+        station: r2.station,
+        kind: r2.kind === "menuBuild" ? "menuBuild" : "prep",
+        menuSection: r2.menuSection && r2.menuSection.length > 0 ? r2.menuSection : null,
+        serviceware: r2.serviceware.map((s) => ({ item: s.item, amount: s.amount })),
+        components: r2.components.map((c2) => ({
+          item: c2.item,
+          amount: c2.amount,
+          group: c2.group && c2.group.length > 0 ? c2.group : null,
+          note: c2.note && c2.note.length > 0 ? c2.note : null
+        })),
+        steps: r2.steps,
+        expoSteps: r2.expoSteps,
+        allergenNote: r2.allergenNote && r2.allergenNote.length > 0 ? r2.allergenNote : null,
+        yieldText: r2.yieldText && r2.yieldText.length > 0 ? r2.yieldText : null,
+        shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : null,
+        holdTemp: r2.holdTemp && r2.holdTemp.length > 0 ? r2.holdTemp : null,
+        storeTemp: r2.storeTemp && r2.storeTemp.length > 0 ? r2.storeTemp : null,
+        lineUtensil: r2.lineUtensil && r2.lineUtensil.length > 0 ? r2.lineUtensil : null,
+        equipment: r2.equipment && r2.equipment.length > 0 ? r2.equipment : null,
+        qualityIdentifiers: r2.qualityIdentifiers ?? []
+      };
+    }
+    function fromFoodRecipe(r2) {
+      if (!r2) return null;
+      return {
+        station: r2.station,
+        kind: r2.kind === "menuBuild" ? FoodRecipeKind.menuBuild : FoodRecipeKind.prep,
+        // Frontend stores null; the Candid ?Text boundary expects undefined for
+        // absent optionals. Translate null/empty -> undefined here.
+        menuSection: r2.menuSection && r2.menuSection.length > 0 ? r2.menuSection : void 0,
+        serviceware: r2.serviceware.map((s) => ({
+          item: s.item,
+          amount: s.amount
+        })),
+        components: r2.components.map((c2) => ({
+          item: c2.item,
+          amount: c2.amount,
+          group: c2.group && c2.group.length > 0 ? c2.group : void 0,
+          note: c2.note && c2.note.length > 0 ? c2.note : void 0
+        })),
+        steps: r2.steps,
+        expoSteps: r2.expoSteps,
+        allergenNote: r2.allergenNote && r2.allergenNote.length > 0 ? r2.allergenNote : void 0,
+        yieldText: r2.yieldText && r2.yieldText.length > 0 ? r2.yieldText : void 0,
+        shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : void 0,
+        holdTemp: r2.holdTemp && r2.holdTemp.length > 0 ? r2.holdTemp : void 0,
+        storeTemp: r2.storeTemp && r2.storeTemp.length > 0 ? r2.storeTemp : void 0,
+        lineUtensil: r2.lineUtensil && r2.lineUtensil.length > 0 ? r2.lineUtensil : void 0,
+        equipment: r2.equipment && r2.equipment.length > 0 ? r2.equipment : void 0,
+        qualityIdentifiers: r2.qualityIdentifiers ?? []
+      };
+    }
     function toItem$1(i) {
       const details = (i.details ?? []).map((d2) => ({
         // id is frontend-only (not in the backend record). Generated here so each
@@ -51161,7 +51479,8 @@ variant ${k2} -> ${e.message}`, {
         tags: i.tags ?? [],
         seasonal: i.seasonal,
         sortOrder: Number(i.sortOrder),
-        recipe: toRecipe(i.recipe)
+        recipe: toRecipe(i.recipe),
+        foodRecipe: toFoodRecipe(i.foodRecipe)
       };
     }
     function useCategoriesByPosition(positionId) {
@@ -51326,7 +51645,8 @@ variant ${k2} -> ${e.message}`, {
             input.notes && input.notes.length > 0 ? input.notes : null,
             input.tags,
             input.seasonal,
-            fromRecipe(input.recipe)
+            fromRecipe(input.recipe),
+            fromFoodRecipe(input.foodRecipe)
           );
           return toItem$1(result);
         },
@@ -51358,7 +51678,8 @@ variant ${k2} -> ${e.message}`, {
             input.notes && input.notes.length > 0 ? input.notes : null,
             input.tags,
             input.seasonal,
-            fromRecipe(input.recipe)
+            fromRecipe(input.recipe),
+            fromFoodRecipe(input.foodRecipe)
           );
           return toItem$1(result);
         },
@@ -51532,6 +51853,13 @@ variant ${k2} -> ${e.message}`, {
           await runCategoriesImport(detection.categories, detection.warnings ?? []);
           return;
         }
+        if (detection.shape === "foodRecipes") {
+          await runFoodRecipesImport(
+            detection.foodRecipes,
+            detection.warnings ?? []
+          );
+          return;
+        }
         await runRecipesImport(detection.recipes, detection.warnings ?? []);
       }
       async function runCategoriesImport(categories, warnings) {
@@ -51586,16 +51914,20 @@ variant ${k2} -> ${e.message}`, {
                   // that forgets to sanitize is still safe.
                   value: sanitizeHtml(f2.value)
                 }));
+                const foodRecipePayload2 = buildFoodRecipePayload(item.foodRecipe);
+                const photo2 = item.photo && item.photo.length > 0 ? item.photo : existing.photo;
+                const foodRecipe2 = foodRecipePayload2 !== void 0 ? foodRecipePayload2 : existing.foodRecipe;
                 await updateItem.mutateAsync({
                   itemId: existing.id,
                   categoryId,
                   title: existing.title,
                   subtitle: existing.subtitle,
-                  photo: existing.photo,
+                  photo: photo2,
                   details: details2,
                   notes: item.notes,
                   tags: item.tags,
-                  seasonal: item.seasonal
+                  seasonal: item.seasonal,
+                  foodRecipe: foodRecipe2
                 });
                 updatedItems += 1;
                 continue;
@@ -51610,28 +51942,33 @@ variant ${k2} -> ${e.message}`, {
                 // that forgets to sanitize is still safe.
                 value: sanitizeHtml(f2.value)
               }));
+              const foodRecipePayload = buildFoodRecipePayload(item.foodRecipe);
+              const photo = item.photo && item.photo.length > 0 ? item.photo : null;
+              const foodRecipe = foodRecipePayload ?? null;
               const created = await createItem.mutateAsync({
                 categoryId,
                 title: item.title,
                 subtitle: null,
-                photo: null,
+                photo,
                 details,
                 notes: item.notes,
                 tags: item.tags,
-                seasonal: item.seasonal
+                seasonal: item.seasonal,
+                foodRecipe
               });
               existingByTitle.set(item.title, {
                 id: (created == null ? void 0 : created.id) ?? "",
                 categoryId,
                 title: item.title,
                 subtitle: (created == null ? void 0 : created.subtitle) ?? null,
-                photo: (created == null ? void 0 : created.photo) ?? null,
+                photo: (created == null ? void 0 : created.photo) ?? photo,
                 details: (created == null ? void 0 : created.details) ?? details,
                 notes: item.notes,
                 tags: item.tags,
                 seasonal: item.seasonal,
                 sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0,
-                recipe: (created == null ? void 0 : created.recipe) ?? null
+                recipe: (created == null ? void 0 : created.recipe) ?? null,
+                foodRecipe: (created == null ? void 0 : created.foodRecipe) ?? foodRecipe ?? null
               });
               createdItems += 1;
             }
@@ -51729,6 +52066,8 @@ variant ${k2} -> ${e.message}`, {
                 const photo2 = recipe.photoUrl && recipe.photoUrl.length > 0 ? recipe.photoUrl : existing.photo;
                 const notes = recipe.notes === null || recipe.notes === void 0 ? existing.notes : recipe.notes;
                 const tags2 = importedTags.length === 0 ? existing.tags : importedTags;
+                const foodRecipePayload2 = buildFoodRecipePayload(recipe.foodRecipe);
+                const foodRecipe2 = foodRecipePayload2 !== void 0 ? foodRecipePayload2 : existing.foodRecipe;
                 await updateItem.mutateAsync({
                   itemId: existing.id,
                   categoryId,
@@ -51739,7 +52078,8 @@ variant ${k2} -> ${e.message}`, {
                   notes,
                   tags: tags2,
                   seasonal: recipe.lto === true,
-                  recipe: payload2
+                  recipe: payload2,
+                  foodRecipe: foodRecipe2
                 });
                 updatedRecipes += 1;
                 continue;
@@ -51749,6 +52089,8 @@ variant ${k2} -> ${e.message}`, {
               const tags = buildRecipeTags(recipe);
               const subtitle = recipe.subtitle && recipe.subtitle.length > 0 ? recipe.subtitle : null;
               const photo = recipe.photoUrl && recipe.photoUrl.length > 0 ? recipe.photoUrl : null;
+              const foodRecipePayload = buildFoodRecipePayload(recipe.foodRecipe);
+              const foodRecipe = foodRecipePayload ?? null;
               const created = await createItem.mutateAsync({
                 categoryId,
                 title: recipe.title,
@@ -51758,7 +52100,8 @@ variant ${k2} -> ${e.message}`, {
                 notes: null,
                 tags,
                 seasonal: recipe.lto === true,
-                recipe: payload
+                recipe: payload,
+                foodRecipe
               });
               existingByTitle.set(recipe.title, {
                 id: (created == null ? void 0 : created.id) ?? "",
@@ -51771,7 +52114,8 @@ variant ${k2} -> ${e.message}`, {
                 tags: (created == null ? void 0 : created.tags) ?? tags,
                 seasonal: (created == null ? void 0 : created.seasonal) ?? recipe.lto === true,
                 sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0,
-                recipe: (created == null ? void 0 : created.recipe) ?? payload
+                recipe: (created == null ? void 0 : created.recipe) ?? payload,
+                foodRecipe: (created == null ? void 0 : created.foodRecipe) ?? foodRecipe ?? null
               });
               createdRecipes += 1;
             }
@@ -51802,6 +52146,150 @@ variant ${k2} -> ${e.message}`, {
           const description = err instanceof Error ? err.message : void 0;
           setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
           ue.error("Recipe import stopped", { description: `${partial}` });
+          await queryClient2.invalidateQueries({
+            queryKey: ["library-categories", positionId]
+          });
+          for (const cid of touchedCategoryIds) {
+            await queryClient2.invalidateQueries({
+              queryKey: ["library-items", cid]
+            });
+          }
+        } finally {
+          setProgress(null);
+        }
+      }
+      async function runFoodRecipesImport(foodRecipes, warnings) {
+        setValidationWarnings(warnings);
+        let createdCategories = 0;
+        let createdFoodRecipes = 0;
+        let updatedFoodRecipes = 0;
+        let skippedFoodRecipes = 0;
+        let skippedDuplicates = 0;
+        const rowErrorCount = warnings.filter((w2) => w2.includes("Skipped.")).length;
+        const categoryIdByName = /* @__PURE__ */ new Map();
+        for (const c2 of existingCategories) {
+          categoryIdByName.set(c2.name, c2.id);
+        }
+        const touchedCategoryIds = /* @__PURE__ */ new Set();
+        const byCategory = /* @__PURE__ */ new Map();
+        for (const fr of foodRecipes) {
+          const list = byCategory.get(fr.category) ?? [];
+          list.push(fr);
+          byCategory.set(fr.category, list);
+        }
+        try {
+          for (const [categoryName, group] of byCategory) {
+            setProgress(`Importing category: ${categoryName}`);
+            let categoryId = categoryIdByName.get(categoryName);
+            if (!categoryId) {
+              const created = await createCategory.mutateAsync({
+                positionId,
+                name: categoryName,
+                coverPhoto: null
+              });
+              categoryId = created.id;
+              categoryIdByName.set(categoryName, categoryId);
+              createdCategories += 1;
+            }
+            touchedCategoryIds.add(categoryId);
+            const existingItems = await loadItemsForCategory(categoryId);
+            const existingByTitle = new Map(
+              existingItems.map((i) => [i.title, i])
+            );
+            for (const fr of group) {
+              const existing = existingByTitle.get(fr.title);
+              if (existing) {
+                if (importMode === "skip") {
+                  skippedFoodRecipes += 1;
+                  continue;
+                }
+                if (existing.id === "") {
+                  skippedDuplicates += 1;
+                  continue;
+                }
+                setProgress(`Updating food recipe: ${fr.title} (${categoryName})`);
+                const foodRecipe2 = buildFoodRecipePayload(fr);
+                const subtitle2 = fr.subtitle && fr.subtitle.length > 0 ? fr.subtitle : existing.subtitle;
+                const photo2 = fr.photo && fr.photo.length > 0 ? fr.photo : existing.photo;
+                const notes2 = fr.notes === null || fr.notes === void 0 ? existing.notes : fr.notes;
+                const tags2 = Array.isArray(fr.tags) && fr.tags.length > 0 ? fr.tags.filter((t) => typeof t === "string") : existing.tags;
+                await updateItem.mutateAsync({
+                  itemId: existing.id,
+                  categoryId,
+                  title: existing.title,
+                  subtitle: subtitle2,
+                  photo: photo2,
+                  details: [],
+                  notes: notes2,
+                  tags: tags2,
+                  seasonal: false,
+                  recipe: null,
+                  foodRecipe: foodRecipe2
+                });
+                updatedFoodRecipes += 1;
+                continue;
+              }
+              setProgress(`Importing food recipe: ${fr.title} (${categoryName})`);
+              const foodRecipe = buildFoodRecipePayload(fr);
+              const subtitle = fr.subtitle && fr.subtitle.length > 0 ? fr.subtitle : null;
+              const photo = fr.photo && fr.photo.length > 0 ? fr.photo : null;
+              const notes = fr.notes === null || fr.notes === void 0 ? null : fr.notes;
+              const tags = Array.isArray(fr.tags) ? fr.tags.filter((t) => typeof t === "string") : [];
+              const created = await createItem.mutateAsync({
+                categoryId,
+                title: fr.title,
+                subtitle,
+                photo,
+                details: [],
+                notes,
+                tags,
+                seasonal: false,
+                recipe: null,
+                foodRecipe
+              });
+              existingByTitle.set(fr.title, {
+                id: (created == null ? void 0 : created.id) ?? "",
+                categoryId,
+                title: fr.title,
+                subtitle: (created == null ? void 0 : created.subtitle) ?? subtitle,
+                photo: (created == null ? void 0 : created.photo) ?? photo,
+                details: (created == null ? void 0 : created.details) ?? [],
+                notes: (created == null ? void 0 : created.notes) ?? notes,
+                tags: (created == null ? void 0 : created.tags) ?? tags,
+                seasonal: (created == null ? void 0 : created.seasonal) ?? false,
+                sortOrder: (created == null ? void 0 : created.sortOrder) ?? 0,
+                recipe: (created == null ? void 0 : created.recipe) ?? null,
+                foodRecipe: (created == null ? void 0 : created.foodRecipe) ?? foodRecipe ?? null
+              });
+              createdFoodRecipes += 1;
+            }
+          }
+          await queryClient2.invalidateQueries({
+            queryKey: ["library-categories", positionId]
+          });
+          for (const cid of touchedCategoryIds) {
+            await queryClient2.invalidateQueries({
+              queryKey: ["library-items", cid]
+            });
+          }
+          const message = formatFoodRecipeSummary(
+            createdCategories,
+            updatedFoodRecipes,
+            createdFoodRecipes,
+            skippedFoodRecipes,
+            skippedDuplicates,
+            rowErrorCount
+          );
+          setSummary(message);
+          ue.success("Food recipe import complete", { description: message });
+          setTimeout(() => {
+            onOpenChange(false);
+          }, 900);
+        } catch (err) {
+          const partial = `Created ${createdCategories} ${createdCategories === 1 ? "category" : "categories"}, updated ${updatedFoodRecipes} ${updatedFoodRecipes === 1 ? "food recipe" : "food recipes"}, created ${createdFoodRecipes} ${createdFoodRecipes === 1 ? "food recipe" : "food recipes"} before the failure.`;
+          const description = err instanceof Error ? err.message : void 0;
+          setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
+          ue.error("Food recipe import stopped", { description: `${partial}` });
           await queryClient2.invalidateQueries({
             queryKey: ["library-categories", positionId]
           });
@@ -51902,11 +52390,14 @@ variant ${k2} -> ${e.message}`, {
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogDescription, { children: [
-                "Paste a JSON blob of categories and items, or recipes. The top-level key (",
+                "Paste a JSON blob of categories and items, recipes, or food recipes. The top-level key (",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "categories" }),
+                ",",
                 " ",
-                "or ",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "recipes" }),
+                ", or",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "foodRecipes" }),
                 ") is auto-detected. The JSON",
                 " ",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "position" }),
@@ -52005,6 +52496,10 @@ variant ${k2} -> ${e.message}`, {
                   "or",
                   " ",
                   /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, recipes: [{ title, category, glassware, specs: [{ amount, ingredient }], assembly: [string], garnish?: [string], variants?: [{ label, specs: [{ amount, ingredient }], assembly: [string] }], equipment?: [string], yield?: string, shelfLife?: string, qualityIdentifier?: [string] }] }" }),
+                  " ",
+                  "or",
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "{ position, foodRecipes: [{ title, category, station, kind: 'prep' | 'menuBuild', components: [{ item, amount, group?, note? }], steps: [string], expoSteps?: [string], serviceware?: [{ item, amount }], menuSection?, allergenNote?, yieldText?, shelfLife?, holdTemp?, storeTemp?, lineUtensil?, equipment?, qualityIdentifiers?: [string], photo?, subtitle?, tags?: [string], notes? }] }" }),
                   ". A recipe is a bulk mix when glassware is empty and either yield or equipment is set; bulk mixes omit glassware (or send an empty string) and the drink-only glassware requirement is waived."
                 ] })
               ] }),
@@ -52119,7 +52614,33 @@ variant ${k2} -> ${e.message}`, {
             })),
             assembly: v2.assembly
           }))
-        } : null
+        } : null,
+        foodRecipe: toFoodRecipeLocal(i.foodRecipe)
+      };
+    }
+    function toFoodRecipeLocal(r2) {
+      if (!r2) return null;
+      return {
+        station: r2.station,
+        kind: r2.kind === "menuBuild" ? "menuBuild" : "prep",
+        menuSection: r2.menuSection && r2.menuSection.length > 0 ? r2.menuSection : null,
+        serviceware: r2.serviceware.map((s) => ({ item: s.item, amount: s.amount })),
+        components: r2.components.map((c2) => ({
+          item: c2.item,
+          amount: c2.amount,
+          group: c2.group && c2.group.length > 0 ? c2.group : null,
+          note: c2.note && c2.note.length > 0 ? c2.note : null
+        })),
+        steps: r2.steps,
+        expoSteps: r2.expoSteps,
+        allergenNote: r2.allergenNote && r2.allergenNote.length > 0 ? r2.allergenNote : null,
+        yieldText: r2.yieldText && r2.yieldText.length > 0 ? r2.yieldText : null,
+        shelfLife: r2.shelfLife && r2.shelfLife.length > 0 ? r2.shelfLife : null,
+        holdTemp: r2.holdTemp && r2.holdTemp.length > 0 ? r2.holdTemp : null,
+        storeTemp: r2.storeTemp && r2.storeTemp.length > 0 ? r2.storeTemp : null,
+        lineUtensil: r2.lineUtensil && r2.lineUtensil.length > 0 ? r2.lineUtensil : null,
+        equipment: r2.equipment && r2.equipment.length > 0 ? r2.equipment : null,
+        qualityIdentifiers: r2.qualityIdentifiers ?? []
       };
     }
     function formatSummary$1(createdCategories, updatedItems, createdItems, skippedItems, skippedDuplicates) {
@@ -52214,11 +52735,120 @@ variant ${k2} -> ${e.message}`, {
           const tags = Array.isArray(item.tags) ? item.tags.filter((t) => typeof t === "string") : [];
           const seasonal = item.seasonal === true;
           const notes = typeof item.notes === "string" ? item.notes : "";
-          items.push({ title: item.title, fields, tags, seasonal, notes });
+          const photo = typeof item.photo === "string" && item.photo.trim().length > 0 ? item.photo : void 0;
+          const foodRecipe = readImportFoodRecipe(item.foodRecipe);
+          items.push({
+            title: item.title,
+            fields,
+            tags,
+            seasonal,
+            notes,
+            photo,
+            foodRecipe
+          });
         }
         categories.push({ name: cat.name, items });
       }
       return { ok: true, categories, warnings };
+    }
+    function readImportFoodRecipe(raw) {
+      if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+        return void 0;
+      }
+      const r2 = raw;
+      const station = typeof r2.station === "string" ? r2.station.trim() : "";
+      if (station.length === 0) return void 0;
+      const kind = r2.kind === "menuBuild" ? "menuBuild" : r2.kind === "prep" ? "prep" : void 0;
+      if (kind === void 0) return void 0;
+      if (!Array.isArray(r2.components) || r2.components.length === 0) {
+        return void 0;
+      }
+      const components = [];
+      for (const c2 of r2.components) {
+        if (typeof c2 !== "object" || c2 === null || Array.isArray(c2))
+          return void 0;
+        const cr = c2;
+        const item = typeof cr.item === "string" ? cr.item.trim() : "";
+        const amount = typeof cr.amount === "string" ? cr.amount.trim() : "";
+        if (item.length === 0 || amount.length === 0) return void 0;
+        const group = typeof cr.group === "string" ? cr.group : void 0;
+        const note = typeof cr.note === "string" ? cr.note : void 0;
+        components.push({ item, amount, group, note });
+      }
+      if (!Array.isArray(r2.steps) || r2.steps.length === 0) return void 0;
+      const steps = r2.steps.filter((s) => typeof s === "string");
+      if (steps.length === 0) return void 0;
+      const title = typeof r2.title === "string" ? r2.title.trim() : "";
+      const category = typeof r2.category === "string" ? r2.category.trim() : "";
+      const menuSection = typeof r2.menuSection === "string" ? r2.menuSection : void 0;
+      const serviceware = Array.isArray(r2.serviceware) ? r2.serviceware.map((s) => {
+        if (typeof s !== "object" || s === null || Array.isArray(s))
+          return null;
+        const sr = s;
+        const item = typeof sr.item === "string" ? sr.item : "";
+        const amount = typeof sr.amount === "string" ? sr.amount : "";
+        if (item.length === 0 || amount.length === 0) return null;
+        return { item, amount };
+      }).filter((s) => s !== null) : void 0;
+      const expoSteps = Array.isArray(r2.expoSteps) ? r2.expoSteps.filter((s) => typeof s === "string") : void 0;
+      const str = (v2) => typeof v2 === "string" ? v2 : void 0;
+      const qualityIdentifiers = Array.isArray(r2.qualityIdentifiers) ? r2.qualityIdentifiers.filter((q2) => typeof q2 === "string") : void 0;
+      const photo = typeof r2.photo === "string" && r2.photo.length > 0 ? r2.photo : void 0;
+      const subtitle = typeof r2.subtitle === "string" && r2.subtitle.length > 0 ? r2.subtitle : void 0;
+      const tags = Array.isArray(r2.tags) ? r2.tags.filter((t) => typeof t === "string") : void 0;
+      const notes = typeof r2.notes === "string" ? r2.notes : void 0;
+      return {
+        title,
+        category,
+        station,
+        kind,
+        menuSection,
+        serviceware,
+        components,
+        steps,
+        expoSteps,
+        allergenNote: str(r2.allergenNote),
+        yieldText: str(r2.yieldText),
+        shelfLife: str(r2.shelfLife),
+        holdTemp: str(r2.holdTemp),
+        storeTemp: str(r2.storeTemp),
+        lineUtensil: str(r2.lineUtensil),
+        equipment: str(r2.equipment),
+        qualityIdentifiers,
+        photo,
+        subtitle,
+        tags,
+        notes
+      };
+    }
+    function buildFoodRecipePayload(raw) {
+      if (!raw) return void 0;
+      const strOrNull = (v2) => v2 && v2.length > 0 ? v2 : null;
+      return {
+        station: raw.station,
+        kind: raw.kind,
+        menuSection: strOrNull(raw.menuSection),
+        serviceware: (raw.serviceware ?? []).map((s) => ({
+          item: s.item,
+          amount: s.amount
+        })),
+        components: raw.components.map((c2) => ({
+          item: c2.item,
+          amount: c2.amount,
+          group: strOrNull(c2.group),
+          note: strOrNull(c2.note)
+        })),
+        steps: raw.steps,
+        expoSteps: raw.expoSteps ?? [],
+        allergenNote: strOrNull(raw.allergenNote),
+        yieldText: strOrNull(raw.yieldText),
+        shelfLife: strOrNull(raw.shelfLife),
+        holdTemp: strOrNull(raw.holdTemp),
+        storeTemp: strOrNull(raw.storeTemp),
+        lineUtensil: strOrNull(raw.lineUtensil),
+        equipment: strOrNull(raw.equipment),
+        qualityIdentifiers: raw.qualityIdentifiers ?? []
+      };
     }
     function detectImportShape(parsed) {
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -52227,10 +52857,28 @@ variant ${k2} -> ${e.message}`, {
       const root2 = parsed;
       const hasCategories = Array.isArray(root2.categories);
       const hasRecipes = Array.isArray(root2.recipes);
-      if (hasCategories && hasRecipes) {
+      const hasFoodRecipes = Array.isArray(root2.foodRecipes);
+      const detectedCount = (hasCategories ? 1 : 0) + (hasRecipes ? 1 : 0) + (hasFoodRecipes ? 1 : 0);
+      if (detectedCount > 1) {
+        const present = [];
+        if (hasCategories) present.push("'categories'");
+        if (hasRecipes) present.push("'recipes'");
+        if (hasFoodRecipes) present.push("'foodRecipes'");
         return {
           ok: false,
-          error: "Ambiguous JSON: provide either 'categories' or 'recipes', not both."
+          error: `Ambiguous JSON: provide exactly one of 'categories', 'recipes', or 'foodRecipes' (found ${present.join(" and ")}).`
+        };
+      }
+      if (hasFoodRecipes) {
+        const foodRecipesArray = root2.foodRecipes;
+        const result = validateFoodRecipesBlob(foodRecipesArray);
+        if (!result.ok)
+          return { ok: false, error: result.error ?? "Invalid foodRecipes JSON." };
+        return {
+          ok: true,
+          shape: "foodRecipes",
+          foodRecipes: result.foodRecipes ?? [],
+          warnings: result.warnings ?? []
         };
       }
       if (hasRecipes) {
@@ -52259,7 +52907,7 @@ variant ${k2} -> ${e.message}`, {
       }
       return {
         ok: false,
-        error: "JSON must have a top-level 'categories' or 'recipes' array."
+        error: "JSON must have a top-level 'categories', 'recipes', or 'foodRecipes' array."
       };
     }
     function validateRecipesBlob(rawRecipes) {
@@ -52415,10 +53063,51 @@ variant ${k2} -> ${e.message}`, {
           equipment: Array.isArray(r2.equipment) ? r2.equipment.filter((e) => typeof e === "string") : void 0,
           yield: typeof r2.yield === "string" && r2.yield.length > 0 ? r2.yield : void 0,
           shelfLife: typeof r2.shelfLife === "string" && r2.shelfLife.length > 0 ? r2.shelfLife : void 0,
-          qualityIdentifier: Array.isArray(r2.qualityIdentifier) ? r2.qualityIdentifier.filter((q2) => typeof q2 === "string") : void 0
+          qualityIdentifier: Array.isArray(r2.qualityIdentifier) ? r2.qualityIdentifier.filter((q2) => typeof q2 === "string") : void 0,
+          // Optional food-recipe payload (parallel to the categories-path
+          // foodRecipe field). Validated structurally; an invalid shape is dropped
+          // to undefined so the recipe imports as a beverage-only item.
+          foodRecipe: readImportFoodRecipe(r2.foodRecipe)
         });
       }
       return { ok: true, recipes, warnings };
+    }
+    function validateFoodRecipesBlob(rawFoodRecipes) {
+      const foodRecipes = [];
+      const warnings = [];
+      const seenPairs = /* @__PURE__ */ new Set();
+      for (let i = 0; i < rawFoodRecipes.length; i += 1) {
+        const raw = rawFoodRecipes[i];
+        if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+          return { ok: false, error: `foodRecipes[${i}] must be an object.` };
+        }
+        const r2 = raw;
+        const parsed = readImportFoodRecipe(r2);
+        if (parsed === void 0) {
+          warnings.push(
+            `foodRecipes[${i}]: missing or invalid food recipe (station, kind, components, steps required). Skipped.`
+          );
+          continue;
+        }
+        const rowErrors = [];
+        if (parsed.title.length === 0) rowErrors.push("title is required");
+        if (parsed.category.length === 0) rowErrors.push("category is required");
+        if (rowErrors.length > 0) {
+          const label = parsed.title.length > 0 ? `"${parsed.title}"` : `foodRecipes[${i}]`;
+          warnings.push(`${label}: ${rowErrors.join("; ")}. Skipped.`);
+          continue;
+        }
+        const pairKey = `${parsed.category}\0${parsed.title}`;
+        if (seenPairs.has(pairKey)) {
+          warnings.push(
+            `Duplicate food recipe "${parsed.title}" in category "${parsed.category}" at foodRecipes[${i}] — the later occurrence will be skipped.`
+          );
+          continue;
+        }
+        seenPairs.add(pairKey);
+        foodRecipes.push(parsed);
+      }
+      return { ok: true, foodRecipes, warnings };
     }
     function formatRecipeSummary(createdCategories, updatedRecipes, createdRecipes, skippedRecipes, skippedDuplicates, rowErrorCount) {
       const catWord = createdCategories === 1 ? "category" : "categories";
@@ -52432,6 +53121,21 @@ variant ${k2} -> ${e.message}`, {
       }
       if (rowErrorCount > 0) {
         base += ` ${rowErrorCount} ${rowErrorCount === 1 ? "recipe was" : "recipes were"} skipped due to validation errors.`;
+      }
+      return base;
+    }
+    function formatFoodRecipeSummary(createdCategories, updatedFoodRecipes, createdFoodRecipes, skippedFoodRecipes, skippedDuplicates, rowErrorCount) {
+      const catWord = createdCategories === 1 ? "category" : "categories";
+      const updatedWord = updatedFoodRecipes === 1 ? "food recipe" : "food recipes";
+      const createdWord = createdFoodRecipes === 1 ? "food recipe" : "food recipes";
+      const skippedWord = skippedFoodRecipes === 1 ? "food recipe" : "food recipes";
+      const dupWord = skippedDuplicates === 1 ? "food recipe" : "food recipes";
+      let base = `Created ${createdCategories} ${catWord}, updated ${updatedFoodRecipes} ${updatedWord}, created ${createdFoodRecipes} ${createdWord}, skipped ${skippedFoodRecipes} ${skippedWord}.`;
+      if (skippedDuplicates > 0) {
+        base += ` Skipped ${skippedDuplicates} within-blob duplicate ${dupWord} (same title earlier in this import).`;
+      }
+      if (rowErrorCount > 0) {
+        base += ` ${rowErrorCount} ${rowErrorCount === 1 ? "food recipe was" : "food recipes were"} skipped due to validation errors.`;
       }
       return base;
     }
@@ -52504,6 +53208,37 @@ variant ${k2} -> ${e.message}`, {
       "yield": "1.875 L",
       "shelfLife": "48 hours refrigerated",
       "qualityIdentifier": ["batch-number"]
+    }
+  ]
+}
+
+// Or import food recipes directly (auto-detected by the "foodRecipes" key):
+{
+  "position": "Line Cook",
+  "foodRecipes": [
+    {
+      "title": "House Marinara",
+      "category": "Sauces",
+      "station": "Prep",
+      "kind": "prep",
+      "components": [
+        { "item": "Crushed Tomatoes", "amount": "2 cans" },
+        { "item": "Garlic", "amount": "6 cloves", "group": "Aromatics" }
+      ],
+      "steps": [
+        "Sweat garlic in olive oil.",
+        "Add tomatoes and simmer 45 minutes."
+      ],
+      "expoSteps": ["Heat to order in a sautoir."],
+      "serviceware": [{ "item": "Cambro", "amount": "1 qt" }],
+      "yieldText": "2 qt",
+      "shelfLife": "5 days refrigerated",
+      "holdTemp": "165F",
+      "storeTemp": "33-38F",
+      "qualityIdentifiers": ["taste", "color"],
+      "subtitle": "Prep batch",
+      "tags": ["prep", "sauce"],
+      "notes": "Scale per service."
     }
   ]
 }`;
@@ -53195,6 +53930,637 @@ variant ${k2} -> ${e.message}`, {
         isPending: reorderMutation.isPending
       };
     }
+    function normalizeForMatch(s) {
+      const noExt = s.replace(/\.[^.]+$/, "");
+      return noExt.toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+    let fileEntryCounter = 0;
+    function makeFileEntryId() {
+      fileEntryCounter += 1;
+      return `photo-${Date.now().toString(36)}-${fileEntryCounter}`;
+    }
+    function RecipePhotosDialog({
+      positionId,
+      onClose
+    }) {
+      const [entries, setEntries] = reactExports.useState([]);
+      const [isDragOver, setIsDragOver] = reactExports.useState(false);
+      const [isProcessing, setIsProcessing] = reactExports.useState(false);
+      const [_pendingOverwrites, setPendingOverwrites] = reactExports.useState(
+        []
+      );
+      const [attachedCount, setAttachedCount] = reactExports.useState(0);
+      const [matchedCount, setMatchedCount] = reactExports.useState(0);
+      const fileInputRef = reactExports.useRef(null);
+      const objectUrlsRef = reactExports.useRef([]);
+      const { actor } = useBackend();
+      const { data: categories } = useCategoriesByPosition(positionId);
+      const updateItem = useUpdateItem();
+      const { uploadPhoto } = usePhotoUpload();
+      const queryClient2 = useQueryClient();
+      reactExports.useEffect(() => {
+        return () => {
+          for (const url of objectUrlsRef.current) {
+            URL.revokeObjectURL(url);
+          }
+          objectUrlsRef.current = [];
+        };
+      }, []);
+      const orderedCategories = reactExports.useMemo(
+        () => [...categories ?? []].sort(
+          (a2, b2) => (a2.sortOrder ?? 0) - (b2.sortOrder ?? 0)
+        ),
+        [categories]
+      );
+      const loadAllItems = reactExports.useCallback(async () => {
+        if (orderedCategories.length === 0) return [];
+        const all = [];
+        for (const cat of orderedCategories) {
+          const queryKey = ["library-items", cat.id];
+          const cached = queryClient2.getQueryData(queryKey);
+          if (cached) {
+            all.push(...cached);
+            continue;
+          }
+          if (!actor) continue;
+          try {
+            const result = await actor.getItemsByCategory(BigInt(cat.id));
+            const mapped = result.map((i) => ({
+              id: i.id.toString(),
+              categoryId: i.categoryId.toString(),
+              title: i.title,
+              subtitle: i.subtitle ?? null,
+              photo: i.photo ?? null,
+              details: (i.details ?? []).map((d2) => ({
+                id: `${i.id}-${d2.fieldLabel}`,
+                fieldLabel: d2.fieldLabel,
+                value: d2.value
+              })),
+              notes: i.notes ?? null,
+              tags: i.tags ?? [],
+              seasonal: i.seasonal,
+              sortOrder: Number(i.sortOrder),
+              recipe: null,
+              foodRecipe: null
+            }));
+            queryClient2.setQueryData(queryKey, mapped);
+            all.push(...mapped);
+          } catch {
+          }
+        }
+        return all;
+      }, [orderedCategories, actor, queryClient2]);
+      const addFiles = reactExports.useCallback((fileList) => {
+        const incoming = [];
+        for (const file of Array.from(fileList)) {
+          const isImage2 = file.type.startsWith("image/");
+          const objectUrl = URL.createObjectURL(file);
+          objectUrlsRef.current.push(objectUrl);
+          incoming.push({
+            id: makeFileEntryId(),
+            file,
+            objectUrl,
+            status: isImage2 ? "pending" : "error",
+            uploadedUrl: null,
+            item: null,
+            message: isImage2 ? null : "Not an image file."
+          });
+        }
+        setEntries((prev) => [...prev, ...incoming]);
+      }, []);
+      const handleFileInputChange = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          addFiles(e.target.files);
+        }
+        e.target.value = "";
+      };
+      const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          addFiles(e.dataTransfer.files);
+        }
+      };
+      const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragOver(true);
+      };
+      const handleDragLeave = (e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+      };
+      const removeEntry = (id) => {
+        setEntries((prev) => {
+          const removed = prev.find((e) => e.id === id);
+          if (removed) {
+            URL.revokeObjectURL(removed.objectUrl);
+            objectUrlsRef.current = objectUrlsRef.current.filter(
+              (u2) => u2 !== removed.objectUrl
+            );
+          }
+          return prev.filter((e) => e.id !== id);
+        });
+      };
+      const clearAll = () => {
+        for (const url of objectUrlsRef.current) {
+          URL.revokeObjectURL(url);
+        }
+        objectUrlsRef.current = [];
+        setEntries([]);
+        setPendingOverwrites([]);
+        setAttachedCount(0);
+        setMatchedCount(0);
+      };
+      const processFiles = async () => {
+        const pending = entries.filter((e) => e.status === "pending");
+        if (pending.length === 0) return;
+        setIsProcessing(true);
+        let attached = attachedCount;
+        let matchedTotal = matchedCount;
+        const touchedCategoryIds = /* @__PURE__ */ new Set();
+        const stagedOverwrites = [];
+        try {
+          const allItems = await loadAllItems();
+          const byNormTitle = /* @__PURE__ */ new Map();
+          for (const it2 of allItems) {
+            byNormTitle.set(normalizeForMatch(it2.title), it2);
+          }
+          for (const entry of pending) {
+            setEntries(
+              (prev) => prev.map(
+                (e) => e.id === entry.id ? { ...e, status: "uploading" } : e
+              )
+            );
+            let url;
+            try {
+              url = await uploadPhoto(entry.file);
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : "Upload failed.";
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? { ...e, status: "error", message: msg } : e
+                )
+              );
+              continue;
+            }
+            const norm = normalizeForMatch(entry.file.name);
+            const matchedItem = byNormTitle.get(norm) ?? null;
+            if (!matchedItem) {
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? {
+                    ...e,
+                    status: "unmatched",
+                    uploadedUrl: url,
+                    message: "No library item matches this filename. Rename the file to match an item title and re-drop it."
+                  } : e
+                )
+              );
+              continue;
+            }
+            matchedTotal += 1;
+            if (matchedItem.photo) {
+              stagedOverwrites.push(matchedItem);
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? {
+                    ...e,
+                    status: "needs-confirm",
+                    uploadedUrl: url,
+                    item: matchedItem,
+                    message: `Matches "${matchedItem.title}" — already has a photo. Confirm to overwrite.`
+                  } : e
+                )
+              );
+              continue;
+            }
+            try {
+              await updateItem.mutateAsync({
+                itemId: matchedItem.id,
+                categoryId: matchedItem.categoryId,
+                title: matchedItem.title,
+                subtitle: matchedItem.subtitle,
+                photo: url,
+                details: matchedItem.details,
+                notes: matchedItem.notes,
+                tags: matchedItem.tags,
+                seasonal: matchedItem.seasonal,
+                recipe: matchedItem.recipe,
+                foodRecipe: matchedItem.foodRecipe
+              });
+              touchedCategoryIds.add(matchedItem.categoryId);
+              attached += 1;
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? {
+                    ...e,
+                    status: "attached",
+                    uploadedUrl: url,
+                    item: matchedItem,
+                    message: `Attached to "${matchedItem.title}".`
+                  } : e
+                )
+              );
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : "Failed to attach photo.";
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? { ...e, status: "error", uploadedUrl: url, message: msg } : e
+                )
+              );
+            }
+          }
+          for (const cid of touchedCategoryIds) {
+            await queryClient2.invalidateQueries({
+              queryKey: ["library-items", cid]
+            });
+          }
+          setAttachedCount(attached);
+          setMatchedCount(matchedTotal);
+          setPendingOverwrites((prev) => [...prev, ...stagedOverwrites]);
+          if (stagedOverwrites.length > 0) {
+            ue(
+              `${stagedOverwrites.length} photo${stagedOverwrites.length === 1 ? "" : "s"} waiting for confirmation`,
+              {
+                description: "Some items already have photos. Review and confirm to overwrite."
+              }
+            );
+          }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Processing failed.";
+          ue.error("Recipe photos processing stopped", { description: msg });
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+      const confirmOverwrites = async () => {
+        const staged = entries.filter((e) => e.status === "needs-confirm");
+        if (staged.length === 0) return;
+        setIsProcessing(true);
+        let attached = attachedCount;
+        const touchedCategoryIds = /* @__PURE__ */ new Set();
+        try {
+          for (const entry of staged) {
+            if (!entry.uploadedUrl || !entry.item) continue;
+            const item = entry.item;
+            try {
+              await updateItem.mutateAsync({
+                itemId: item.id,
+                categoryId: item.categoryId,
+                title: item.title,
+                subtitle: item.subtitle,
+                photo: entry.uploadedUrl,
+                details: item.details,
+                notes: item.notes,
+                tags: item.tags,
+                seasonal: item.seasonal,
+                recipe: item.recipe,
+                foodRecipe: item.foodRecipe
+              });
+              touchedCategoryIds.add(item.categoryId);
+              attached += 1;
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? {
+                    ...e,
+                    status: "attached",
+                    message: `Overwrote photo on "${item.title}".`
+                  } : e
+                )
+              );
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : "Failed to overwrite photo.";
+              setEntries(
+                (prev) => prev.map(
+                  (e) => e.id === entry.id ? { ...e, status: "error", message: msg } : e
+                )
+              );
+            }
+          }
+          for (const cid of touchedCategoryIds) {
+            await queryClient2.invalidateQueries({
+              queryKey: ["library-items", cid]
+            });
+          }
+          setAttachedCount(attached);
+          setPendingOverwrites([]);
+          ue.success("Overwrites applied");
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+      const pendingCount = entries.filter((e) => e.status === "pending").length;
+      const unmatchedCount = entries.filter((e) => e.status === "unmatched").length;
+      const needsConfirmCount = entries.filter(
+        (e) => e.status === "needs-confirm"
+      ).length;
+      const hasPending = pendingCount > 0;
+      const hasEntries = entries.length > 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Dialog,
+        {
+          open: true,
+          onOpenChange: (next) => {
+            if (!next) onClose();
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DialogContent,
+            {
+              className: "bg-card border-border sm:max-w-2xl",
+              "data-ocid": "library.admin.recipe_photos.dialog",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    DialogTitle,
+                    {
+                      className: "font-heading uppercase tracking-wide text-foreground",
+                      "data-ocid": "library.admin.recipe_photos.dialog.title",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { className: "inline size-5 align-text-bottom text-primary" }),
+                        " ",
+                        "Recipe Photos"
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogDescription, { children: [
+                    "Drop or select image files. Each photo is matched to a library item by filename (e.g.",
+                    " ",
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-foreground", children: "bubba_s_nachos.jpeg" }),
+                    " ",
+                    "matches “Bubba’s Nachos”). Existing photos are never overwritten without confirmation."
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: `flex flex-col items-center justify-center gap-2 rounded-md border border-dashed px-6 py-8 text-center transition-colors ${isDragOver ? "border-primary bg-primary/10" : "border-border bg-background"}`,
+                      onDrop: handleDrop,
+                      onDragOver: handleDragOver,
+                      onDragLeave: handleDragLeave,
+                      "data-ocid": "library.admin.recipe_photos.dropzone",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ImagePlus, { className: "size-8 text-muted-foreground", "aria-hidden": true }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-sm text-foreground", children: "Drag image files here, or" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          Button,
+                          {
+                            type: "button",
+                            variant: "outline",
+                            size: "sm",
+                            onClick: () => {
+                              var _a2;
+                              return (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
+                            },
+                            "data-ocid": "library.admin.recipe_photos.select_button",
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(ImagePlus, {}),
+                              "Select files"
+                            ]
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "input",
+                          {
+                            ref: fileInputRef,
+                            type: "file",
+                            accept: "image/*",
+                            multiple: true,
+                            onChange: handleFileInputChange,
+                            className: "sr-only",
+                            "data-ocid": "library.admin.recipe_photos.file_input",
+                            "aria-label": "Select image files"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "PNG, JPG, WEBP — multiple files allowed." })
+                      ]
+                    }
+                  ),
+                  hasEntries && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-border bg-library-card px-3 py-2 font-body text-xs text-muted-foreground",
+                      "data-ocid": "library.admin.recipe_photos.summary",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground font-semibold", children: entries.length }),
+                          " ",
+                          "file",
+                          entries.length === 1 ? "" : "s"
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                          "Matched:",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground font-semibold", children: matchedCount })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                          "Attached:",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground font-semibold", children: attachedCount })
+                        ] }),
+                        needsConfirmCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-primary font-semibold", children: [
+                          needsConfirmCount,
+                          " waiting for confirmation"
+                        ] }),
+                        unmatchedCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                          "Unmatched:",
+                          " ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-foreground font-semibold", children: unmatchedCount })
+                        ] })
+                      ]
+                    }
+                  ),
+                  hasEntries && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "ul",
+                    {
+                      className: "grid gap-2 max-h-72 overflow-y-auto pr-1",
+                      "data-ocid": "library.admin.recipe_photos.list",
+                      children: entries.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "li",
+                        {
+                          className: "flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2",
+                          "data-ocid": `library.admin.recipe_photos.row.${idx + 1}`,
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              "img",
+                              {
+                                src: entry.objectUrl,
+                                alt: entry.file.name,
+                                className: "size-10 shrink-0 rounded object-cover border border-border"
+                              }
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "truncate font-body text-sm text-foreground", children: entry.file.name }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(StatusLine, { entry })
+                            ] }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 items-center gap-1", children: [
+                              entry.status === "unmatched" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "a",
+                                {
+                                  href: entry.objectUrl,
+                                  download: entry.file.name,
+                                  className: "inline-flex size-8 items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors",
+                                  "aria-label": `Download ${entry.file.name}`,
+                                  "data-ocid": `library.admin.recipe_photos.download_button.${idx + 1}`,
+                                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Download, { className: "size-4" })
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "button",
+                                {
+                                  type: "button",
+                                  onClick: () => removeEntry(entry.id),
+                                  disabled: isProcessing,
+                                  className: "inline-flex size-8 items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors disabled:opacity-50",
+                                  "aria-label": `Remove ${entry.file.name}`,
+                                  "data-ocid": `library.admin.recipe_photos.remove_button.${idx + 1}`,
+                                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "size-4" })
+                                }
+                              )
+                            ] })
+                          ]
+                        },
+                        entry.id
+                      ))
+                    }
+                  ),
+                  unmatchedCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "p",
+                    {
+                      className: "font-body text-xs text-muted-foreground",
+                      "data-ocid": "library.admin.recipe_photos.unmatched_hint",
+                      children: [
+                        "Unmatched files are downloadable above. Rename a file to match an item title (e.g.",
+                        " ",
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono", children: "bubbas_nachos.jpeg" }),
+                        " for “Bubba’s Nachos”) and re-drop it."
+                      ]
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "pt-2 flex-wrap sm:flex-nowrap gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "ghost",
+                      size: "sm",
+                      onClick: clearAll,
+                      disabled: isProcessing || !hasEntries,
+                      "data-ocid": "library.admin.recipe_photos.clear_button",
+                      children: "Clear"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "outline",
+                      size: "sm",
+                      onClick: onClose,
+                      disabled: isProcessing,
+                      "data-ocid": "library.admin.recipe_photos.close_button",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(X, {}),
+                        "Close"
+                      ]
+                    }
+                  ),
+                  needsConfirmCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "destructive",
+                      size: "sm",
+                      onClick: confirmOverwrites,
+                      disabled: isProcessing,
+                      "data-ocid": "library.admin.recipe_photos.confirm_overwrite_button",
+                      children: [
+                        isProcessing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(TriangleAlert, {}),
+                        "Confirm ",
+                        needsConfirmCount,
+                        " overwrite",
+                        needsConfirmCount === 1 ? "" : "s"
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    Button,
+                    {
+                      type: "button",
+                      size: "sm",
+                      onClick: processFiles,
+                      disabled: !hasPending || isProcessing,
+                      "data-ocid": "library.admin.recipe_photos.upload_button",
+                      children: [
+                        isProcessing && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "animate-spin" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, {}),
+                        "Upload ",
+                        pendingCount > 0 ? `(${pendingCount})` : ""
+                      ]
+                    }
+                  )
+                ] })
+              ]
+            }
+          )
+        }
+      );
+    }
+    function StatusLine({ entry }) {
+      switch (entry.status) {
+        case "pending":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Waiting to upload." });
+        case "uploading":
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "p",
+            {
+              className: "font-body text-xs text-muted-foreground flex items-center gap-1",
+              "aria-live": "polite",
+              "data-ocid": "library.admin.recipe_photos.row.loading_state",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-3 animate-spin" }),
+                "Uploading…"
+              ]
+            }
+          );
+        case "matched":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: "Matched — ready to attach." });
+        case "needs-confirm":
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-body text-xs text-primary flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TriangleAlert, { className: "size-3" }),
+            entry.message
+          ] });
+        case "attached":
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "p",
+            {
+              className: "font-body text-xs text-foreground flex items-center gap-1",
+              "data-ocid": "library.admin.recipe_photos.row.success_state",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3 text-foreground" }),
+                entry.message
+              ]
+            }
+          );
+        case "unmatched":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground", children: entry.message });
+        case "error":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "p",
+            {
+              className: "font-body text-xs text-primary",
+              role: "alert",
+              "data-ocid": "library.admin.recipe_photos.row.error_state",
+              children: entry.message
+            }
+          );
+        default:
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-body text-xs text-muted-foreground" });
+      }
+    }
     function Skeleton({ className, ...props }) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
@@ -53221,6 +54587,7 @@ variant ${k2} -> ${e.message}`, {
         null
       );
       const [importOpen, setImportOpen] = reactExports.useState(false);
+      const [recipePhotosOpen, setRecipePhotosOpen] = reactExports.useState(false);
       const isAdmin = (profile == null ? void 0 : profile.role) === "admin";
       const position = reactExports.useMemo(
         () => (positions ?? []).find((p2) => p2.id === positionId) ?? null,
@@ -53281,12 +54648,24 @@ variant ${k2} -> ${e.message}`, {
                 {
                   variant: "outline",
                   size: "sm",
-                  className: "ml-auto",
                   onClick: () => setImportOpen(true),
                   "data-ocid": "library.admin.manager.import_button",
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, {}),
                     "Import"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Button,
+                {
+                  variant: "outline",
+                  size: "sm",
+                  onClick: () => setRecipePhotosOpen(true),
+                  "data-ocid": "library.admin.manager.recipe_photos_button",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, {}),
+                    "Recipe Photos"
                   ]
                 }
               )
@@ -53318,7 +54697,14 @@ variant ${k2} -> ${e.message}`, {
             positionId,
             existingCategories: orderedCategories
           }
-        )
+        ),
+        recipePhotosOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          RecipePhotosDialog,
+          {
+            positionId,
+            onClose: () => setRecipePhotosOpen(false)
+          }
+        ) : null
       ] });
     }
     function ItemsPane({
@@ -77369,6 +78755,580 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    function KitchenBrowser({
+      positionId,
+      positionName
+    }) {
+      const categoriesQuery = useCategoriesByPosition(positionId);
+      const categories = reactExports.useMemo(
+        () => [...categoriesQuery.data ?? []].sort(
+          (a2, b2) => a2.sortOrder - b2.sortOrder
+        ),
+        [categoriesQuery.data]
+      );
+      const [itemsByCategory, setItemsByCategory] = reactExports.useState({});
+      const [loadingByCategory, setLoadingByCategory] = reactExports.useState({});
+      const [errorByCategory, setErrorByCategory] = reactExports.useState({});
+      const allItems = reactExports.useMemo(() => {
+        const out = [];
+        for (const c2 of categories) {
+          const arr = itemsByCategory[c2.id];
+          if (arr) for (const item of arr) out.push(item);
+        }
+        return out;
+      }, [categories, itemsByCategory]);
+      const foodItems = reactExports.useMemo(
+        () => allItems.filter((i) => i.foodRecipe !== null),
+        [allItems]
+      );
+      const anyLoading = reactExports.useMemo(
+        () => categories.length === 0 ? false : categories.some((c2) => loadingByCategory[c2.id] !== false),
+        [categories, loadingByCategory]
+      );
+      const firstError = reactExports.useMemo(() => {
+        for (const c2 of categories) {
+          const e = errorByCategory[c2.id];
+          if (e) return e;
+        }
+        return null;
+      }, [categories, errorByCategory]);
+      const [stationFilter, setStationFilter] = reactExports.useState("all");
+      const [kindFilter, setKindFilter] = reactExports.useState(
+        "all"
+      );
+      const [searchText, setSearchText] = reactExports.useState("");
+      const stationChips = reactExports.useMemo(() => {
+        var _a2;
+        if (foodItems.length > 0) {
+          const seen = /* @__PURE__ */ new Set();
+          const out = [];
+          for (const item of foodItems) {
+            const station = (_a2 = item.foodRecipe) == null ? void 0 : _a2.station;
+            if (station && !seen.has(station)) {
+              seen.add(station);
+              out.push(station);
+            }
+          }
+          return out;
+        }
+        return categories.map((c2) => c2.name);
+      }, [foodItems, categories]);
+      const filteredItems = reactExports.useMemo(() => {
+        const q2 = searchText.trim().toLowerCase();
+        return foodItems.filter((item) => {
+          const fr = item.foodRecipe;
+          if (!fr) return false;
+          if (stationFilter !== "all" && fr.station !== stationFilter) return false;
+          if (kindFilter !== "all" && fr.kind !== kindFilter) return false;
+          if (q2.length > 0) {
+            const inTitle = item.title.toLowerCase().includes(q2);
+            const inComponents = fr.components.some(
+              (c2) => c2.item.toLowerCase().includes(q2)
+            );
+            if (!inTitle && !inComponents) return false;
+          }
+          return true;
+        });
+      }, [foodItems, stationFilter, kindFilter, searchText]);
+      const hasFoodRecipes = foodItems.length > 0;
+      const hasFiltersActive = stationFilter !== "all" || kindFilter !== "all" || searchText.trim().length > 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "mt-8", "data-ocid": "kitchen.browser.section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-5 text-primary", "aria-hidden": true }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "h2",
+            {
+              className: "font-heading text-xl uppercase tracking-wide text-foreground",
+              "data-ocid": "kitchen.browser.title",
+              children: positionName ? `${positionName} Kitchen` : "Kitchen"
+            }
+          )
+        ] }),
+        categories.map((c2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CategoryItemsFetcher,
+          {
+            categoryId: c2.id,
+            onItems: (items, loading, error) => {
+              setItemsByCategory(
+                (prev) => prev[c2.id] === items ? prev : { ...prev, [c2.id]: items }
+              );
+              setLoadingByCategory(
+                (prev) => prev[c2.id] === loading ? prev : { ...prev, [c2.id]: loading }
+              );
+              setErrorByCategory(
+                (prev) => prev[c2.id] === error ? prev : { ...prev, [c2.id]: error }
+              );
+            }
+          },
+          c2.id
+        )),
+        categoriesQuery.isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(KitchenBrowserSkeleton, {}) : categoriesQuery.isError ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4", "data-ocid": "kitchen.browser.error_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load the kitchen",
+            description: "We couldn't load this position's kitchen right now. Please try again.",
+            error: categoriesQuery.error,
+            onRetry: () => void categoriesQuery.refetch()
+          }
+        ) }) : anyLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(KitchenBrowserSkeleton, {}) : firstError ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4", "data-ocid": "kitchen.browser.items.error_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QueryErrorState,
+          {
+            title: "Couldn't load items",
+            description: "We couldn't load some kitchen items right now. Please try again.",
+            error: firstError,
+            onRetry: () => void categoriesQuery.refetch()
+          }
+        ) }) : !hasFoodRecipes ? /* @__PURE__ */ jsxRuntimeExports.jsx(KitchenBrowserEmpty, {}) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            KitchenFilters,
+            {
+              stationChips,
+              stationFilter,
+              onStationChange: setStationFilter,
+              kindFilter,
+              onKindChange: setKindFilter,
+              searchText,
+              onSearchChange: setSearchText
+            }
+          ),
+          filteredItems.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            KitchenBrowserNoResults,
+            {
+              hasFiltersActive,
+              onClear: () => {
+                setStationFilter("all");
+                setKindFilter("all");
+                setSearchText("");
+              }
+            }
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsx(KitchenTileGrid, { items: filteredItems, positionId })
+        ] })
+      ] });
+    }
+    function KitchenFilters({
+      stationChips,
+      stationFilter,
+      onStationChange,
+      kindFilter,
+      onKindChange,
+      searchText,
+      onSearchChange
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mt-4 flex flex-col gap-3",
+          "data-ocid": "kitchen.browser.filters",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "flex gap-2 overflow-x-auto pb-1",
+                role: "group",
+                "aria-label": "Filter by station",
+                "data-ocid": "kitchen.browser.station_chips",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    StationChip,
+                    {
+                      label: "All",
+                      isActive: stationFilter === "all",
+                      accentClass: "bg-food-station-default",
+                      onClick: () => onStationChange("all")
+                    }
+                  ),
+                  stationChips.map((station) => {
+                    const isActive = stationFilter === station;
+                    const accent = stationAccentClass(station);
+                    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      StationChip,
+                      {
+                        label: station,
+                        isActive,
+                        accentClass: accent.bg,
+                        onClick: () => onStationChange(station)
+                      },
+                      station
+                    );
+                  })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "food-layout-toggle",
+                  role: "group",
+                  "aria-label": "Filter by recipe kind",
+                  "data-ocid": "kitchen.browser.kind_toggle",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      KindToggleSegment,
+                      {
+                        label: "All",
+                        isActive: kindFilter === "all",
+                        onClick: () => onKindChange("all")
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      KindToggleSegment,
+                      {
+                        label: "Menu",
+                        isActive: kindFilter === "menuBuild",
+                        onClick: () => onKindChange("menuBuild")
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      KindToggleSegment,
+                      {
+                        label: "Prep",
+                        isActive: kindFilter === "prep",
+                        onClick: () => onKindChange("prep")
+                      }
+                    )
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(KitchenSearchBox, { value: searchText, onChange: onSearchChange })
+            ] })
+          ]
+        }
+      );
+    }
+    function StationChip({
+      label,
+      isActive,
+      accentClass,
+      onClick
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick,
+          "aria-pressed": isActive,
+          className: cn(
+            "food-station-chip shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            isActive && accentClass,
+            isActive && "border-transparent text-primary-foreground"
+          ),
+          "data-ocid": `kitchen.browser.station_chip.${label.toLowerCase().replace(/\s+/g, "_")}`,
+          children: label
+        }
+      );
+    }
+    function KindToggleSegment({
+      label,
+      isActive,
+      onClick
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick,
+          "aria-pressed": isActive,
+          className: cn(
+            "food-layout-toggle-segment focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            isActive && "is-active"
+          ),
+          "data-ocid": `kitchen.browser.kind_toggle.${label.toLowerCase()}`,
+          children: label
+        }
+      );
+    }
+    function KitchenSearchBox({
+      value,
+      onChange
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full sm:w-72", "data-ocid": "kitchen.browser.search", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Search,
+          {
+            className: "pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground",
+            "aria-hidden": true
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "text",
+            value,
+            onChange: (e) => onChange(e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") e.preventDefault();
+            },
+            placeholder: "Search recipes or ingredients…",
+            "aria-label": "Search kitchen recipes by title or ingredient",
+            "data-ocid": "kitchen.browser.search_input",
+            className: cn(
+              "w-full rounded-md border border-border bg-card py-2.5 pl-10 pr-3",
+              "font-body text-sm text-foreground placeholder:text-muted-foreground",
+              "transition-colors duration-200",
+              "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+            )
+          }
+        )
+      ] });
+    }
+    function KitchenTileGrid({
+      items,
+      positionId
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "ul",
+        {
+          className: "mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+          "data-ocid": "kitchen.browser.tile_grid",
+          children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            KitchenTile,
+            {
+              item,
+              positionId,
+              index: index2
+            },
+            item.id
+          ))
+        }
+      );
+    }
+    function KitchenTile({
+      item,
+      positionId,
+      index: index2
+    }) {
+      const fr = item.foodRecipe;
+      if (!fr) return /* @__PURE__ */ jsxRuntimeExports.jsx("li", {});
+      const accent = stationAccentClass(fr.station);
+      const initial = item.title.trim().charAt(0).toUpperCase() || "?";
+      const isPrep = fr.kind === "prep";
+      const to = `/position/${positionId}/library/${item.categoryId}/item/${item.id}`;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Link$1,
+        {
+          to,
+          className: cn(
+            "food-tile group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          ),
+          "data-ocid": `kitchen.browser.tile.${index2 + 1}`,
+          "aria-label": `Open ${item.title} recipe card`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cn("food-tile-stripe", accent.bg), "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "food-tile-thumb", "aria-hidden": true, children: item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: item.photo,
+                alt: "",
+                className: "h-full w-full object-cover",
+                loading: "lazy"
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: cn("food-tile-placeholder", accent.wash), children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "food-tile-placeholder-initial text-5xl sm:text-6xl", children: initial }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: cn("food-tile-placeholder-station", accent.text),
+                  children: fr.station
+                }
+              )
+            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5 p-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "food-tile-title text-sm sm:text-base line-clamp-2", children: item.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: cn(
+                      "food-station-badge",
+                      accent.bg,
+                      accent.textOnAccent
+                    ),
+                    "data-ocid": `kitchen.browser.tile.station.${index2 + 1}`,
+                    children: fr.station
+                  }
+                ),
+                isPrep ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "food-section-badge",
+                    "data-ocid": `kitchen.browser.tile.prep_tag.${index2 + 1}`,
+                    children: "Prep"
+                  }
+                ) : fr.menuSection ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "food-section-badge",
+                    "data-ocid": `kitchen.browser.tile.section_tag.${index2 + 1}`,
+                    children: fr.menuSection
+                  }
+                ) : null
+              ] })
+            ] })
+          ]
+        }
+      ) });
+    }
+    function KitchenBrowserEmpty() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mt-4 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          "data-ocid": "kitchen.browser.empty_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PackageOpen, { className: "size-8 text-muted-foreground", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "font-heading text-base uppercase tracking-wide text-foreground",
+                  "data-ocid": "kitchen.browser.empty_state.title",
+                  children: "No food recipes yet"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-sm font-body text-sm text-muted-foreground", children: "This kitchen’s recipe browser is empty. Once an admin adds food recipes to this position’s library, they’ll appear here grouped by station." })
+            ] })
+          ]
+        }
+      );
+    }
+    function KitchenBrowserNoResults({
+      hasFiltersActive,
+      onClear
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "mt-4 flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-12 text-center",
+          "data-ocid": "kitchen.browser.no_results_state",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(SearchX, { className: "size-8 text-muted-foreground", "aria-hidden": true }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "font-heading text-base uppercase tracking-wide text-foreground",
+                  "data-ocid": "kitchen.browser.no_results_state.title",
+                  children: "No matching recipes"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-sm font-body text-sm text-muted-foreground", children: "No recipes match the current station, Menu/Prep, or search filters. Try adjusting your filters or clearing the search." })
+            ] }),
+            hasFiltersActive ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: onClear,
+                className: cn(
+                  "mt-1 inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5",
+                  "font-heading text-xs uppercase tracking-wide text-foreground",
+                  "transition-smooth hover:border-primary/60",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                ),
+                "data-ocid": "kitchen.browser.no_results_state.clear_button",
+                children: "Clear filters"
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function KitchenBrowserSkeleton() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+          "data-ocid": "kitchen.browser.loading_state",
+          "aria-hidden": true,
+          children: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"].map((k2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "food-tile", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "food-tile-stripe rounded-none" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "food-tile-thumb rounded-none" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 p-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-4 w-3/4" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-5 w-20 rounded-full" })
+            ] })
+          ] }, k2))
+        }
+      );
+    }
+    function CategoryItemsFetcher({
+      categoryId,
+      onItems
+    }) {
+      const q2 = useItemsByCategory(categoryId);
+      const items = q2.data ?? [];
+      const loading = q2.isLoading;
+      const error = q2.isError ? q2.error : null;
+      reactExports.useEffect(() => {
+        onItems(items, loading, error);
+      }, [items, loading, error, onItems]);
+      return null;
+    }
+    function stationAccentClass(station) {
+      const s = station.trim().toLowerCase();
+      if (s === "expo") {
+        return {
+          bg: "bg-food-station-expo",
+          wash: "bg-food-station-expo-wash",
+          text: "text-food-station-expo",
+          textOnAccent: "text-food-station-expo-fg"
+        };
+      }
+      if (s === "grill") {
+        return {
+          bg: "bg-food-station-grill",
+          wash: "bg-food-station-grill-wash",
+          text: "text-food-station-grill",
+          textOnAccent: "text-food-station-grill-fg"
+        };
+      }
+      if (s === "fry" || s === "fryer") {
+        return {
+          bg: "bg-food-station-fry",
+          wash: "bg-food-station-fry-wash",
+          text: "text-food-station-fry",
+          textOnAccent: "text-food-station-fry-fg"
+        };
+      }
+      if (s === "pizza") {
+        return {
+          bg: "bg-food-station-pizza",
+          wash: "bg-food-station-pizza-wash",
+          text: "text-food-station-pizza",
+          textOnAccent: "text-food-station-pizza-fg"
+        };
+      }
+      if (s === "saute" || s === "sauté" || s === "sauté") {
+        return {
+          bg: "bg-food-station-saute",
+          wash: "bg-food-station-saute-wash",
+          text: "text-food-station-saute",
+          textOnAccent: "text-food-station-saute-fg"
+        };
+      }
+      if (s === "hotprep" || s === "hot prep" || s === "hot-prep") {
+        return {
+          bg: "bg-food-station-hotprep",
+          wash: "bg-food-station-hotprep-wash",
+          text: "text-food-station-hotprep",
+          textOnAccent: "text-food-station-hotprep-fg"
+        };
+      }
+      if (s === "coldprep" || s === "cold prep" || s === "cold-prep") {
+        return {
+          bg: "bg-food-station-coldprep",
+          wash: "bg-food-station-coldprep-wash",
+          text: "text-food-station-coldprep",
+          textOnAccent: "text-food-station-coldprep-fg"
+        };
+      }
+      return {
+        bg: "bg-food-station-default",
+        wash: "bg-food-station-default-wash",
+        text: "text-food-station-default",
+        textOnAccent: "text-food-station-default-fg"
+      };
+    }
     const MISSION_NAME = "Mission Statement";
     const CORE_VALUES_NAME = "Core Values";
     const OUR_STORY_NAME = "Our Story";
@@ -78172,7 +80132,7 @@ Defaulting to \`null\`.`;
         description: p2.description ?? "",
         coverPhoto: p2.coverPhoto,
         sortOrder: Number(p2.sortOrder),
-        layoutStyle: p2.layoutStyle === LayoutStyle.orientation ? "orientation" : "library"
+        layoutStyle: p2.layoutStyle === LayoutStyle.orientation ? "orientation" : p2.layoutStyle === LayoutStyle.kitchen ? "kitchen" : "library"
       };
     }
     function PositionDetailPage({
@@ -78233,6 +80193,40 @@ Defaulting to \`null\`.`;
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBadge, { tone, className: "mt-8" })
+        ] });
+      }
+      if ((position == null ? void 0 : position.layoutStyle) === "kitchen") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-5xl px-4 py-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(BackLink, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "mt-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-col gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h1",
+                {
+                  className: "font-heading text-3xl uppercase tracking-wide text-foreground sm:text-4xl",
+                  "data-ocid": "position.name",
+                  children: position.name
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBadge, { tone })
+            ] }),
+            position.description ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "mt-4 font-body text-base leading-relaxed text-muted-foreground",
+                "data-ocid": "position.description",
+                children: position.description
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx(BeLegendaryBanner, { positionId }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              KitchenBrowser,
+              {
+                positionId,
+                positionName: position.name
+              }
+            )
+          ] })
         ] });
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl px-4 py-6", children: [
@@ -81845,7 +83839,8 @@ Defaulting to \`null\`.`;
           shelfLife: i.recipe.shelfLife && i.recipe.shelfLife.length > 0 ? i.recipe.shelfLife : null,
           qualityIdentifier: i.recipe.qualityIdentifier ?? [],
           recapAudio: i.recipe.recapAudio && i.recipe.recapAudio.length > 0 ? i.recipe.recapAudio : null
-        } : null
+        } : null,
+        foodRecipe: null
       };
     }
     function isBulkMix$1(item) {
@@ -85652,6 +87647,590 @@ Defaulting to \`null\`.`;
         }
       );
     }
+    function FoodRecipeCard({ item }) {
+      const food = item.foodRecipe;
+      if (!food) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "article",
+          {
+            className: "mt-4 flex flex-col rounded-md border border-border bg-card px-5 py-6 sm:px-7 sm:py-8",
+            "data-ocid": "library.item.food_recipe_card",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "font-display text-2xl uppercase tracking-wide text-foreground sm:text-3xl",
+                "data-ocid": "library.item.food_recipe.title",
+                children: item.title
+              }
+            )
+          }
+        );
+      }
+      return food.kind === "prep" ? /* @__PURE__ */ jsxRuntimeExports.jsx(PrepFoodRecipeCard, { item, food }) : /* @__PURE__ */ jsxRuntimeExports.jsx(MenuBuildFoodRecipeCard, { item, food });
+    }
+    function stationAccentClasses(station) {
+      const key = station.trim().toLowerCase();
+      if (key.includes("expo")) {
+        return {
+          bg: "bg-food-station-expo",
+          text: "text-food-station-expo",
+          border: "border-food-station-expo"
+        };
+      }
+      if (key.includes("grill")) {
+        return {
+          bg: "bg-food-station-grill",
+          text: "text-food-station-grill",
+          border: "border-food-station-grill"
+        };
+      }
+      if (key.includes("fry")) {
+        return {
+          bg: "bg-food-station-fry",
+          text: "text-food-station-fry",
+          border: "border-food-station-fry"
+        };
+      }
+      if (key.includes("pizza")) {
+        return {
+          bg: "bg-food-station-pizza",
+          text: "text-food-station-pizza",
+          border: "border-food-station-pizza"
+        };
+      }
+      if (key.includes("saute") || key.includes("sauté")) {
+        return {
+          bg: "bg-food-station-saute",
+          text: "text-food-station-saute",
+          border: "border-food-station-saute"
+        };
+      }
+      if (key.includes("hot") && key.includes("prep")) {
+        return {
+          bg: "bg-food-station-hotprep",
+          text: "text-food-station-hotprep",
+          border: "border-food-station-hotprep"
+        };
+      }
+      if (key.includes("cold") && key.includes("prep")) {
+        return {
+          bg: "bg-food-station-coldprep",
+          text: "text-food-station-coldprep",
+          border: "border-food-station-coldprep"
+        };
+      }
+      return {
+        bg: "bg-food-station-default",
+        text: "text-food-station-default",
+        border: "border-food-station-default"
+      };
+    }
+    function FoodPhotoHero({
+      photo,
+      title
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "overflow-hidden rounded-md border border-border bg-card p-2",
+          "data-ocid": "library.item.food_recipe.photo_hero",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => window.open(photo, "_blank", "noopener,noreferrer"),
+              className: "block w-full rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "aria-label": "Open full-size photo",
+              title: "Tap to view full size",
+              "data-ocid": "library.item.food_recipe.photo_button",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: photo,
+                  alt: title,
+                  className: "block h-auto w-full object-contain",
+                  loading: "lazy"
+                }
+              )
+            }
+          )
+        }
+      );
+    }
+    function FoodCardHeader({
+      title,
+      station,
+      accent,
+      sectionBadge,
+      sectionBadgeLabel
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "header",
+        {
+          className: "flex flex-wrap items-center gap-3",
+          "data-ocid": "library.item.food_recipe.header",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "h1",
+              {
+                className: "font-display text-2xl uppercase tracking-wide text-foreground sm:text-3xl",
+                "data-ocid": "library.item.food_recipe.title",
+                children: title
+              }
+            ),
+            station.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "span",
+              {
+                className: `food-station-badge ${accent.bg} ${// fry + coldprep have dark foregrounds per their -fg tokens; the
+                // remaining stations use cream. We approximate by using the
+                // station's own text utility for the badge text color so the
+                // badge stays readable on its accent fill.
+                accent.text}`,
+                "data-ocid": "library.item.food_recipe.station_badge",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3.5", "aria-hidden": true }),
+                  station
+                ]
+              }
+            ) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "food-section-badge",
+                "data-ocid": sectionBadge === "prep" ? "library.item.food_recipe.prep_badge" : "library.item.food_recipe.section_badge",
+                children: sectionBadgeLabel
+              }
+            )
+          ]
+        }
+      );
+    }
+    function MenuBuildFoodRecipeCard({
+      item,
+      food
+    }) {
+      const accent = stationAccentClasses(food.station);
+      const hasServiceware = food.serviceware.length > 0;
+      const hasComponents = food.components.length > 0;
+      const hasSteps = food.steps.length > 0;
+      const hasExpo = food.expoSteps.length > 0;
+      const hasAllergen = food.allergenNote != null && food.allergenNote.trim().length > 0;
+      const sectionLabel = food.menuSection != null && food.menuSection.trim().length > 0 ? food.menuSection : "Menu";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "article",
+        {
+          className: "mt-4 flex flex-col rounded-md border border-border bg-library-card px-5 py-6 sm:px-7 sm:py-8",
+          "data-ocid": "library.item.food_recipe_card.menu_build",
+          children: [
+            item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(FoodPhotoHero, { photo: item.photo, title: item.title }) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "mt-4",
+                "data-ocid": "library.item.food_recipe.menu_build_header",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FoodCardHeader,
+                  {
+                    title: item.title,
+                    station: food.station,
+                    accent,
+                    sectionBadge: "menuSection",
+                    sectionBadgeLabel: sectionLabel
+                  }
+                )
+              }
+            ),
+            hasServiceware || hasComponents ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "mt-6",
+                "data-ocid": "library.item.food_recipe.components",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "h2",
+                    {
+                      className: "font-heading text-sm uppercase tracking-wider text-muted-foreground",
+                      "data-ocid": "library.item.food_recipe.components.heading",
+                      children: "Components"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "mt-2",
+                      "data-ocid": "library.item.food_recipe.components.table",
+                      children: [
+                        hasServiceware ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { "data-ocid": "library.item.food_recipe.plating_group", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "p",
+                            {
+                              className: "food-plating-label pt-2",
+                              "data-ocid": "library.item.food_recipe.plating.label",
+                              children: "Plating"
+                            }
+                          ),
+                          food.serviceware.map((sw, i) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(ServicewareRow, { sw, index: i }, `sw-${i}`)
+                          ))
+                        ] }) : null,
+                        hasServiceware && hasComponents ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: "food-plating-rule my-2",
+                            "aria-hidden": true,
+                            "data-ocid": "library.item.food_recipe.plating_divider"
+                          }
+                        ) : null,
+                        hasComponents ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "library.item.food_recipe.components_group", children: food.components.map((c2, i) => (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(ComponentRow, { component: c2, index: i }, `c-${i}`)
+                        )) }) : null
+                      ]
+                    }
+                  )
+                ]
+              }
+            ) : null,
+            hasSteps ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "mt-6",
+                "data-ocid": "library.item.food_recipe.build_steps",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "h2",
+                    {
+                      className: "font-heading text-sm uppercase tracking-wider text-muted-foreground",
+                      "data-ocid": "library.item.food_recipe.build_steps.heading",
+                      children: "Build Steps"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "ol",
+                    {
+                      className: "food-build-steps mt-2",
+                      "data-ocid": "library.item.food_recipe.build_steps.list",
+                      children: food.steps.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "li",
+                        {
+                          "data-ocid": `library.item.food_recipe.build_steps.step.${i + 1}`,
+                          children: step
+                        },
+                        `step-${i}`
+                      ))
+                    }
+                  )
+                ]
+              }
+            ) : null,
+            hasExpo ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "food-expo-callout animate-food-expo-pop mt-6",
+                "data-ocid": "library.item.food_recipe.expo",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: "food-expo-callout-label",
+                      "data-ocid": "library.item.food_recipe.expo.label",
+                      children: "EXPO Finishing"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "ol",
+                    {
+                      className: "food-build-steps mt-2",
+                      "data-ocid": "library.item.food_recipe.expo.list",
+                      children: food.expoSteps.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "li",
+                        {
+                          "data-ocid": `library.item.food_recipe.expo.step.${i + 1}`,
+                          children: step
+                        },
+                        `expo-${i}`
+                      ))
+                    }
+                  )
+                ]
+              }
+            ) : null,
+            hasAllergen ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "food-allergen-callout mt-6",
+                "data-ocid": "library.item.food_recipe.allergen",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: "food-allergen-callout-label",
+                      "data-ocid": "library.item.food_recipe.allergen.label",
+                      children: "Allergen Note"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: "mt-1 font-body text-sm leading-relaxed",
+                      "data-ocid": "library.item.food_recipe.allergen.text",
+                      children: food.allergenNote
+                    }
+                  )
+                ]
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function PrepFoodRecipeCard({
+      item,
+      food
+    }) {
+      const accent = stationAccentClasses(food.station);
+      const metaBadges = [];
+      if (food.yieldText != null && food.yieldText.trim().length > 0) {
+        metaBadges.push({ label: "Yield", value: food.yieldText });
+      }
+      if (food.shelfLife != null && food.shelfLife.trim().length > 0) {
+        metaBadges.push({ label: "Shelf Life", value: food.shelfLife });
+      }
+      if (food.lineUtensil != null && food.lineUtensil.trim().length > 0) {
+        metaBadges.push({ label: "Line Utensil", value: food.lineUtensil });
+      }
+      if (food.holdTemp != null && food.holdTemp.trim().length > 0) {
+        metaBadges.push({ label: "Hold Temp", value: food.holdTemp });
+      }
+      if (food.storeTemp != null && food.storeTemp.trim().length > 0) {
+        metaBadges.push({ label: "Store Temp", value: food.storeTemp });
+      }
+      const { ungrouped, grouped } = groupComponents(food.components);
+      const hasIngredients = ungrouped.length > 0 || grouped.length > 0;
+      const hasSteps = food.steps.length > 0;
+      const hasQuality = food.qualityIdentifiers.length > 0;
+      const hasEquipment = food.equipment != null && food.equipment.trim().length > 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "article",
+        {
+          className: "mt-4 flex flex-col rounded-md border border-border bg-library-card px-5 py-6 sm:px-7 sm:py-8",
+          "data-ocid": "library.item.food_recipe_card.prep",
+          children: [
+            item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(FoodPhotoHero, { photo: item.photo, title: item.title }) : null,
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4", "data-ocid": "library.item.food_recipe.prep_header", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FoodCardHeader,
+              {
+                title: item.title,
+                station: food.station,
+                accent,
+                sectionBadge: "prep",
+                sectionBadgeLabel: "Prep"
+              }
+            ) }),
+            metaBadges.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "mt-4 flex flex-wrap gap-2",
+                "data-ocid": "library.item.food_recipe.prep_meta",
+                children: metaBadges.map((badge, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "span",
+                  {
+                    className: "food-meta-badge",
+                    "data-ocid": `library.item.food_recipe.prep_meta.badge.${i + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "label", children: badge.label }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "value", children: badge.value })
+                    ]
+                  },
+                  `meta-${badge.label}-${i}`
+                ))
+              }
+            ) : null,
+            hasIngredients ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "mt-6",
+                "data-ocid": "library.item.food_recipe.ingredients",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "h2",
+                    {
+                      className: "font-heading text-sm uppercase tracking-wider text-muted-foreground",
+                      "data-ocid": "library.item.food_recipe.ingredients.heading",
+                      children: "Ingredients"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "mt-2",
+                      "data-ocid": "library.item.food_recipe.ingredients.table",
+                      children: [
+                        ungrouped.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "library.item.food_recipe.ingredients.ungrouped", children: ungrouped.map((c2, i) => (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(ComponentRow, { component: c2, index: i }, `u-${i}`)
+                        )) }) : null,
+                        grouped.map((group, gi) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "div",
+                          {
+                            "data-ocid": `library.item.food_recipe.ingredients.group.${gi + 1}`,
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "p",
+                                {
+                                  className: "food-prep-group-label",
+                                  "data-ocid": `library.item.food_recipe.ingredients.group_label.${gi + 1}`,
+                                  children: group.label
+                                }
+                              ),
+                              group.components.map((c2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                ComponentRow,
+                                {
+                                  component: c2,
+                                  index: i
+                                },
+                                `g-${gi}-c-${i}`
+                              ))
+                            ]
+                          },
+                          `g-${gi}`
+                        ))
+                      ]
+                    }
+                  )
+                ]
+              }
+            ) : null,
+            hasSteps ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "section",
+              {
+                className: "mt-6",
+                "data-ocid": "library.item.food_recipe.procedure",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "h2",
+                    {
+                      className: "font-heading text-sm uppercase tracking-wider text-muted-foreground",
+                      "data-ocid": "library.item.food_recipe.procedure.heading",
+                      children: "Procedure"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "ol",
+                    {
+                      className: "food-build-steps mt-2",
+                      "data-ocid": "library.item.food_recipe.procedure.list",
+                      children: food.steps.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "li",
+                        {
+                          "data-ocid": `library.item.food_recipe.procedure.step.${i + 1}`,
+                          children: step
+                        },
+                        `proc-${i}`
+                      ))
+                    }
+                  )
+                ]
+              }
+            ) : null,
+            hasQuality ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "mt-6", "data-ocid": "library.item.food_recipe.quality", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h2",
+                {
+                  className: "font-heading text-sm uppercase tracking-wider text-muted-foreground",
+                  "data-ocid": "library.item.food_recipe.quality.heading",
+                  children: "Quality Identifiers"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "ul",
+                {
+                  className: "food-quality-list mt-2",
+                  "data-ocid": "library.item.food_recipe.quality.list",
+                  children: food.qualityIdentifiers.map((qi, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "li",
+                    {
+                      "data-ocid": `library.item.food_recipe.quality.item.${i + 1}`,
+                      children: qi
+                    },
+                    `qi-${i}`
+                  ))
+                }
+              )
+            ] }) : null,
+            hasEquipment ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "p",
+              {
+                className: "food-equipment-line mt-6",
+                "data-ocid": "library.item.food_recipe.equipment",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "label", children: "Equipment: " }),
+                  food.equipment
+                ]
+              }
+            ) : null
+          ]
+        }
+      );
+    }
+    function ServicewareRow({
+      sw,
+      index: index2
+    }) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "food-components-row",
+          "data-ocid": `library.item.food_recipe.plating.row.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "component", children: sw.item }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount", children: sw.amount })
+          ]
+        }
+      );
+    }
+    function ComponentRow({
+      component,
+      index: index2
+    }) {
+      const hasNote = component.note != null && component.note.trim().length > 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "food-components-row",
+          "data-ocid": `library.item.food_recipe.component.row.${index2 + 1}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "component flex flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: component.item }),
+              hasNote ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-body text-xs text-muted-foreground", children: component.note }) : null
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount", children: component.amount })
+          ]
+        }
+      );
+    }
+    function groupComponents(components) {
+      const ungrouped = [];
+      const grouped = [];
+      const groupIndex = /* @__PURE__ */ new Map();
+      for (const c2 of components) {
+        const rawGroup = c2.group;
+        if (rawGroup == null || rawGroup.trim().length === 0) {
+          ungrouped.push(c2);
+          continue;
+        }
+        const label = rawGroup.trim();
+        let idx = groupIndex.get(label);
+        if (idx === void 0) {
+          idx = grouped.length;
+          groupIndex.set(label, idx);
+          grouped.push({ label, components: [] });
+        }
+        grouped[idx].components.push(c2);
+      }
+      return { ungrouped, grouped };
+    }
     const SERVICE_PRIORITIES_NAME = "Service Priorities";
     const FOOD_PRIORITIES_NAME = "Food Priorities";
     const MARKETING_PRIORITIES_NAME = "Marketing / Community Priorities";
@@ -85692,7 +88271,7 @@ Defaulting to \`null\`.`;
                 error: itemQuery.error,
                 onRetry: () => itemQuery.refetch()
               }
-            ) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4", "data-ocid": "library.item.detail.body", children: [
+            ) : notFound ? /* @__PURE__ */ jsxRuntimeExports.jsx(ItemNotFound, { positionId, categoryId }) : item.foodRecipe ? /* @__PURE__ */ jsxRuntimeExports.jsx(FoodRecipeCard, { item }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4", "data-ocid": "library.item.detail.body", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 PatrioticItemHeader,
                 {

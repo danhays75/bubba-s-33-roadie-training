@@ -5,6 +5,7 @@ import {
   ItemListItem,
   useItemReorder,
 } from "@/components/admin/library/ItemListItem";
+import { RecipePhotosDialog } from "@/components/admin/library/RecipePhotosDialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllPositions } from "@/hooks/useAllPositions";
@@ -16,7 +17,15 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { cn } from "@/lib/utils";
 import type { LibraryItem } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Lock, Package, Plus, Upload } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Camera,
+  Lock,
+  Package,
+  Plus,
+  Upload,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { ReactElement } from "react";
 
@@ -60,6 +69,7 @@ export function AdminLibraryManager({
     null,
   );
   const [importOpen, setImportOpen] = useState(false);
+  const [recipePhotosOpen, setRecipePhotosOpen] = useState(false);
 
   const isAdmin = profile?.role === "admin";
 
@@ -146,12 +156,20 @@ export function AdminLibraryManager({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto"
           onClick={() => setImportOpen(true)}
           data-ocid="library.admin.manager.import_button"
         >
           <Upload />
           Import
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setRecipePhotosOpen(true)}
+          data-ocid="library.admin.manager.recipe_photos_button"
+        >
+          <Camera />
+          Recipe Photos
         </Button>
       </header>
       <p className="mt-1.5 font-body text-sm text-muted-foreground">
@@ -181,6 +199,13 @@ export function AdminLibraryManager({
         positionId={positionId}
         existingCategories={orderedCategories}
       />
+
+      {recipePhotosOpen ? (
+        <RecipePhotosDialog
+          positionId={positionId}
+          onClose={() => setRecipePhotosOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

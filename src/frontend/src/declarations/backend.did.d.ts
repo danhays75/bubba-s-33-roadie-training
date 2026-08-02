@@ -107,7 +107,34 @@ export interface FlashcardRecipe {
   'specs' : Array<{ 'ingredient' : string, 'amount' : string }>,
   'assembly' : Array<string>,
 }
+export interface FoodComponent {
+  'item' : string,
+  'note' : [] | [string],
+  'group' : [] | [string],
+  'amount' : string,
+}
+export interface FoodRecipe {
+  'lineUtensil' : [] | [string],
+  'serviceware' : Array<FoodServiceware>,
+  'station' : string,
+  'equipment' : [] | [string],
+  'holdTemp' : [] | [string],
+  'kind' : FoodRecipeKind,
+  'qualityIdentifiers' : Array<string>,
+  'components' : Array<FoodComponent>,
+  'shelfLife' : [] | [string],
+  'steps' : Array<string>,
+  'yieldText' : [] | [string],
+  'storeTemp' : [] | [string],
+  'menuSection' : [] | [string],
+  'expoSteps' : Array<string>,
+  'allergenNote' : [] | [string],
+}
+export type FoodRecipeKind = { 'prep' : null } |
+  { 'menuBuild' : null };
+export interface FoodServiceware { 'item' : string, 'amount' : string }
 export type LayoutStyle = { 'library' : null } |
+  { 'kitchen' : null } |
   { 'orientation' : null };
 export interface LibraryItem {
   'id' : bigint,
@@ -115,6 +142,7 @@ export interface LibraryItem {
   'title' : string,
   'sortOrder' : bigint,
   'tags' : Array<string>,
+  'foodRecipe' : [] | [FoodRecipe],
   'seasonal' : boolean,
   'notes' : [] | [string],
   'details' : Array<DetailField>,
@@ -321,6 +349,7 @@ export interface _SERVICE {
       Array<string>,
       boolean,
       [] | [Recipe],
+      [] | [FoodRecipe],
     ],
     LibraryItem
   >,
@@ -411,6 +440,7 @@ export interface _SERVICE {
       Array<string>,
       boolean,
       [] | [Recipe],
+      [] | [FoodRecipe],
     ],
     LibraryItem
   >,

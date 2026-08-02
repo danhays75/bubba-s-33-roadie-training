@@ -24,6 +24,37 @@ export const Category = IDL.Record({
   'positionId' : IDL.Nat,
   'coverPhoto' : IDL.Opt(IDL.Text),
 });
+export const FoodServiceware = IDL.Record({
+  'item' : IDL.Text,
+  'amount' : IDL.Text,
+});
+export const FoodRecipeKind = IDL.Variant({
+  'prep' : IDL.Null,
+  'menuBuild' : IDL.Null,
+});
+export const FoodComponent = IDL.Record({
+  'item' : IDL.Text,
+  'note' : IDL.Opt(IDL.Text),
+  'group' : IDL.Opt(IDL.Text),
+  'amount' : IDL.Text,
+});
+export const FoodRecipe = IDL.Record({
+  'lineUtensil' : IDL.Opt(IDL.Text),
+  'serviceware' : IDL.Vec(FoodServiceware),
+  'station' : IDL.Text,
+  'equipment' : IDL.Opt(IDL.Text),
+  'holdTemp' : IDL.Opt(IDL.Text),
+  'kind' : FoodRecipeKind,
+  'qualityIdentifiers' : IDL.Vec(IDL.Text),
+  'components' : IDL.Vec(FoodComponent),
+  'shelfLife' : IDL.Opt(IDL.Text),
+  'steps' : IDL.Vec(IDL.Text),
+  'yieldText' : IDL.Opt(IDL.Text),
+  'storeTemp' : IDL.Opt(IDL.Text),
+  'menuSection' : IDL.Opt(IDL.Text),
+  'expoSteps' : IDL.Vec(IDL.Text),
+  'allergenNote' : IDL.Opt(IDL.Text),
+});
 export const DetailField = IDL.Record({
   'value' : IDL.Text,
   'fieldLabel' : IDL.Text,
@@ -56,6 +87,7 @@ export const LibraryItem = IDL.Record({
   'title' : IDL.Text,
   'sortOrder' : IDL.Nat,
   'tags' : IDL.Vec(IDL.Text),
+  'foodRecipe' : IDL.Opt(FoodRecipe),
   'seasonal' : IDL.Bool,
   'notes' : IDL.Opt(IDL.Text),
   'details' : IDL.Vec(DetailField),
@@ -169,6 +201,7 @@ export const Task = IDL.Record({
 });
 export const LayoutStyle = IDL.Variant({
   'library' : IDL.Null,
+  'kitchen' : IDL.Null,
   'orientation' : IDL.Null,
 });
 export const Position = IDL.Record({
@@ -393,6 +426,7 @@ export const idlService = IDL.Service({
         IDL.Vec(IDL.Text),
         IDL.Bool,
         IDL.Opt(Recipe),
+        IDL.Opt(FoodRecipe),
       ],
       [LibraryItem],
       [],
@@ -534,6 +568,7 @@ export const idlService = IDL.Service({
         IDL.Vec(IDL.Text),
         IDL.Bool,
         IDL.Opt(Recipe),
+        IDL.Opt(FoodRecipe),
       ],
       [LibraryItem],
       [],
@@ -585,6 +620,37 @@ export const idlFactory = ({ IDL }) => {
     'positionId' : IDL.Nat,
     'coverPhoto' : IDL.Opt(IDL.Text),
   });
+  const FoodServiceware = IDL.Record({
+    'item' : IDL.Text,
+    'amount' : IDL.Text,
+  });
+  const FoodRecipeKind = IDL.Variant({
+    'prep' : IDL.Null,
+    'menuBuild' : IDL.Null,
+  });
+  const FoodComponent = IDL.Record({
+    'item' : IDL.Text,
+    'note' : IDL.Opt(IDL.Text),
+    'group' : IDL.Opt(IDL.Text),
+    'amount' : IDL.Text,
+  });
+  const FoodRecipe = IDL.Record({
+    'lineUtensil' : IDL.Opt(IDL.Text),
+    'serviceware' : IDL.Vec(FoodServiceware),
+    'station' : IDL.Text,
+    'equipment' : IDL.Opt(IDL.Text),
+    'holdTemp' : IDL.Opt(IDL.Text),
+    'kind' : FoodRecipeKind,
+    'qualityIdentifiers' : IDL.Vec(IDL.Text),
+    'components' : IDL.Vec(FoodComponent),
+    'shelfLife' : IDL.Opt(IDL.Text),
+    'steps' : IDL.Vec(IDL.Text),
+    'yieldText' : IDL.Opt(IDL.Text),
+    'storeTemp' : IDL.Opt(IDL.Text),
+    'menuSection' : IDL.Opt(IDL.Text),
+    'expoSteps' : IDL.Vec(IDL.Text),
+    'allergenNote' : IDL.Opt(IDL.Text),
+  });
   const DetailField = IDL.Record({
     'value' : IDL.Text,
     'fieldLabel' : IDL.Text,
@@ -617,6 +683,7 @@ export const idlFactory = ({ IDL }) => {
     'title' : IDL.Text,
     'sortOrder' : IDL.Nat,
     'tags' : IDL.Vec(IDL.Text),
+    'foodRecipe' : IDL.Opt(FoodRecipe),
     'seasonal' : IDL.Bool,
     'notes' : IDL.Opt(IDL.Text),
     'details' : IDL.Vec(DetailField),
@@ -730,6 +797,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const LayoutStyle = IDL.Variant({
     'library' : IDL.Null,
+    'kitchen' : IDL.Null,
     'orientation' : IDL.Null,
   });
   const Position = IDL.Record({
@@ -954,6 +1022,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Vec(IDL.Text),
           IDL.Bool,
           IDL.Opt(Recipe),
+          IDL.Opt(FoodRecipe),
         ],
         [LibraryItem],
         [],
@@ -1107,6 +1176,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Vec(IDL.Text),
           IDL.Bool,
           IDL.Opt(Recipe),
+          IDL.Opt(FoodRecipe),
         ],
         [LibraryItem],
         [],

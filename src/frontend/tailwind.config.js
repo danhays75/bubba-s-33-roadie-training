@@ -109,6 +109,10 @@ export default {
            alter existing shadows. */
         "orientation-goal": "0 0 0 1px oklch(0.42 0.16 264 / 0.15), 0 0 18px oklch(0.42 0.16 264 / 0.35)",
         "orientation-mission": "0 0 14px oklch(0.801 0.171 75 / 0.45), 0 0 28px oklch(0.801 0.171 75 / 0.27)",
+        /* ── Food Recipe — ADDITIVE shadow for kitchen/prep tiles.
+           Subtle flat drop — no glow, no neon. Tuned for the dark
+           roadhouse card surface. Does NOT alter existing shadows. */
+        "food-tile": "0 1px 2px 0 rgba(0,0,0,0.4)",
       },
       keyframes: {
         "accordion-down": {
@@ -249,6 +253,15 @@ export default {
             boxShadow: "0 0 0 0 oklch(var(--drinks-correct) / 0.55)",
           },
         },
+        /* ── Food Recipe — ADDITIVE keyframe for the EXPO finishing
+           callout. A single restrained pop on mount; no infinite
+           loop, no glow. Mirrors a one-shot emphasis so the EXPO
+           line reads as a finishing instruction, not decoration. */
+        "food-expo-pop": {
+          "0%": { transform: "scale(0.98)", opacity: "0" },
+          "60%": { transform: "scale(1.01)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -280,6 +293,10 @@ export default {
         "drinks-star-pop": "drinks-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
         /* drinks-green-throb — ADDITIVE gentle infinite green glow + scale */
         "drinks-green-throb": "drinks-green-throb 1.6s ease-in-out infinite",
+        /* ── Food Recipe — ADDITIVE one-shot EXPO callout emphasis.
+           No infinite loop; runs once on mount. Pauses under
+           prefers-reduced-motion (handled in index.css). */
+        "food-expo-pop": "food-expo-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
       },
     },
   },

@@ -278,6 +278,73 @@
     /* Email-verified check — reuses seasonal green family for "confirmed". */
     --profile-email-verified: 0.62 0.09 145;
     --profile-email-verified-fg: 0.16 0.02 145;
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Food Recipe — ADDITIVE tokens (Library food-recipe surfaces).
+       Sibling to the beverage RecipeCard: same dark roadhouse base, same
+       Anton/Oswald/Barlow type, flat fills, no gradients/glow. Adds station
+       accent colors (one per kitchen station) so prep tiles get a
+       station-colored placeholder when no plating photo exists, plus an
+       EXPO finishing-steps callout that uses brand purple/red. Does NOT
+       alter any existing token. Station accents are tuned for the dark
+       theme (L 0.50–0.78, chroma 0.12–0.22) and stay flat — no glow.
+       ═══════════════════════════════════════════════════════════════════ */
+    /* Station accents — used for station badges, tile top stripes, and
+       prep-tile placeholders. Each has a foreground (cream) and a 'wash'
+       variant (low-opacity tint) for the placeholder fill. */
+    --food-station-expo: 0.55 0.22 350; /* purple-red — EXPO callout + station */
+    --food-station-expo-fg: 0.948 0.012 90;
+    --food-station-expo-wash: 0.3 0.08 350;
+    --food-station-grill: 0.62 0.19 40; /* warm orange-red — grill */
+    --food-station-grill-fg: 0.16 0.02 40;
+    --food-station-grill-wash: 0.32 0.07 40;
+    --food-station-fry: 0.78 0.16 75; /* gold-amber — fryer */
+    --food-station-fry-fg: 0.16 0.02 75;
+    --food-station-fry-wash: 0.34 0.07 75;
+    --food-station-pizza: 0.58 0.2 50; /* warm red — pizza */
+    --food-station-pizza-fg: 0.948 0.012 90;
+    --food-station-pizza-wash: 0.31 0.07 50;
+    --food-station-saute: 0.5 0.16 250; /* blue — sauté */
+    --food-station-saute-fg: 0.948 0.012 90;
+    --food-station-saute-wash: 0.28 0.06 250;
+    --food-station-hotprep: 0.5 0.18 35; /* deep red-orange — hot prep */
+    --food-station-hotprep-fg: 0.948 0.012 90;
+    --food-station-hotprep-wash: 0.29 0.06 35;
+    --food-station-coldprep: 0.62 0.12 200; /* cool teal — cold prep */
+    --food-station-coldprep-fg: 0.12 0.02 200;
+    --food-station-coldprep-wash: 0.3 0.05 200;
+    --food-station-default: 0.595 0.232 27; /* fallback = brand primary red */
+    --food-station-default-fg: 0.948 0.012 90;
+    --food-station-default-wash: 0.31 0.06 27;
+
+    /* EXPO finishing-steps callout — purple-red surface. Distinct from
+       the brand-red primary and from the in-training gold. Flat fill, no
+       glow. Used for the highlighted EXPO finishing steps block on the
+       menuBuild food recipe card. */
+    --food-expo-callout: 0.32 0.1 350; /* dark purple-red surface */
+    --food-expo-callout-fg: 0.948 0.012 90;
+    --food-expo-callout-border: 0.55 0.22 350; /* expo accent edge */
+    --food-expo-callout-accent: 0.55 0.22 350; /* expo accent for the label */
+
+    /* Allergen callout — reuses destructive red family but muted, so it
+       reads as a warning without competing with the EXPO callout. */
+    --food-allergen: 0.273 0.018 27; /* dark red-tinted surface */
+    --food-allergen-fg: 0.948 0.012 90;
+    --food-allergen-border: 0.595 0.232 27; /* destructive red edge */
+
+    /* Plating group — subtle separator inside the Components table for
+       the serviceware ('Plating') rows. Muted, low-chroma. */
+    --food-plating-divider: 0.4 0.02 27;
+
+    /* Quality-identifier check bullet — reuses seasonal green family
+       for the ✓ bullets on the prep layout's Quality Identifiers list. */
+    --food-check: 0.62 0.09 145;
+    --food-check-fg: 0.16 0.02 145;
+
+    /* Kitchen browser tile — reuses library-card surface; this token is
+       for the prep-tile placeholder fill when no photo (station wash). */
+    --food-tile-placeholder: 0.31 0.006 95; /* library-card base */
+    --food-tile-placeholder-fg: 0.644 0.011 95;
   }
 
   .dark {
@@ -433,6 +500,49 @@
     --profile-email-pending-border: 0.72 0.11 65;
     --profile-email-verified: 0.62 0.09 145;
     --profile-email-verified-fg: 0.16 0.02 145;
+
+    /* Food Recipe — mirror :root additive tokens (dark is the only theme) */
+    --food-station-expo: 0.55 0.22 350;
+    --food-station-expo-fg: 0.948 0.012 90;
+    --food-station-expo-wash: 0.3 0.08 350;
+    --food-station-grill: 0.62 0.19 40;
+    --food-station-grill-fg: 0.16 0.02 40;
+    --food-station-grill-wash: 0.32 0.07 40;
+    --food-station-fry: 0.78 0.16 75;
+    --food-station-fry-fg: 0.16 0.02 75;
+    --food-station-fry-wash: 0.34 0.07 75;
+    --food-station-pizza: 0.58 0.2 50;
+    --food-station-pizza-fg: 0.948 0.012 90;
+    --food-station-pizza-wash: 0.31 0.07 50;
+    --food-station-saute: 0.5 0.16 250;
+    --food-station-saute-fg: 0.948 0.012 90;
+    --food-station-saute-wash: 0.28 0.06 250;
+    --food-station-hotprep: 0.5 0.18 35;
+    --food-station-hotprep-fg: 0.948 0.012 90;
+    --food-station-hotprep-wash: 0.29 0.06 35;
+    --food-station-coldprep: 0.62 0.12 200;
+    --food-station-coldprep-fg: 0.12 0.02 200;
+    --food-station-coldprep-wash: 0.3 0.05 200;
+    --food-station-default: 0.595 0.232 27;
+    --food-station-default-fg: 0.948 0.012 90;
+    --food-station-default-wash: 0.31 0.06 27;
+
+    --food-expo-callout: 0.32 0.1 350;
+    --food-expo-callout-fg: 0.948 0.012 90;
+    --food-expo-callout-border: 0.55 0.22 350;
+    --food-expo-callout-accent: 0.55 0.22 350;
+
+    --food-allergen: 0.273 0.018 27;
+    --food-allergen-fg: 0.948 0.012 90;
+    --food-allergen-border: 0.595 0.232 27;
+
+    --food-plating-divider: 0.4 0.02 27;
+
+    --food-check: 0.62 0.09 145;
+    --food-check-fg: 0.16 0.02 145;
+
+    --food-tile-placeholder: 0.31 0.006 95;
+    --food-tile-placeholder-fg: 0.644 0.011 95;
   }
 }
 
@@ -1439,6 +1549,528 @@
     .profile-avatar-upload {
       transition: none;
     }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     Food Recipe — ADDITIVE utilities (Library food-recipe surfaces).
+     Sibling to the beverage RecipeCard: reuses .bg-library-card surface,
+     Anton/Oswald/Barlow type, flat roadhouse rules. Station accents are
+     flat fills (no glow); EXPO callout is a flat purple-red surface.
+     Does NOT alter any existing utility. All classes prefixed food- /
+     food-station- / food-expo- / food-allergen- so they never collide.
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* Station accent color utilities — one per kitchen station. Used on
+     station badges, kitchen-browser tile top stripes, and prep-tile
+     placeholders. Each station exposes a -bg, -text, -border, and -wash
+     (low-opacity fill for placeholders). */
+  .bg-food-station-expo {
+    background-color: oklch(var(--food-station-expo));
+  }
+  .text-food-station-expo {
+    color: oklch(var(--food-station-expo));
+  }
+  .border-food-station-expo {
+    border-color: oklch(var(--food-station-expo));
+  }
+  .bg-food-station-expo-wash {
+    background-color: oklch(var(--food-station-expo-wash));
+  }
+  .bg-food-station-grill {
+    background-color: oklch(var(--food-station-grill));
+  }
+  .text-food-station-grill {
+    color: oklch(var(--food-station-grill));
+  }
+  .border-food-station-grill {
+    border-color: oklch(var(--food-station-grill));
+  }
+  .bg-food-station-grill-wash {
+    background-color: oklch(var(--food-station-grill-wash));
+  }
+  .bg-food-station-fry {
+    background-color: oklch(var(--food-station-fry));
+  }
+  .text-food-station-fry {
+    color: oklch(var(--food-station-fry));
+  }
+  .border-food-station-fry {
+    border-color: oklch(var(--food-station-fry));
+  }
+  .bg-food-station-fry-wash {
+    background-color: oklch(var(--food-station-fry-wash));
+  }
+  .bg-food-station-pizza {
+    background-color: oklch(var(--food-station-pizza));
+  }
+  .text-food-station-pizza {
+    color: oklch(var(--food-station-pizza));
+  }
+  .border-food-station-pizza {
+    border-color: oklch(var(--food-station-pizza));
+  }
+  .bg-food-station-pizza-wash {
+    background-color: oklch(var(--food-station-pizza-wash));
+  }
+  .bg-food-station-saute {
+    background-color: oklch(var(--food-station-saute));
+  }
+  .text-food-station-saute {
+    color: oklch(var(--food-station-saute));
+  }
+  .border-food-station-saute {
+    border-color: oklch(var(--food-station-saute));
+  }
+  .bg-food-station-saute-wash {
+    background-color: oklch(var(--food-station-saute-wash));
+  }
+  .bg-food-station-hotprep {
+    background-color: oklch(var(--food-station-hotprep));
+  }
+  .text-food-station-hotprep {
+    color: oklch(var(--food-station-hotprep));
+  }
+  .border-food-station-hotprep {
+    border-color: oklch(var(--food-station-hotprep));
+  }
+  .bg-food-station-hotprep-wash {
+    background-color: oklch(var(--food-station-hotprep-wash));
+  }
+  .bg-food-station-coldprep {
+    background-color: oklch(var(--food-station-coldprep));
+  }
+  .text-food-station-coldprep {
+    color: oklch(var(--food-station-coldprep));
+  }
+  .border-food-station-coldprep {
+    border-color: oklch(var(--food-station-coldprep));
+  }
+  .bg-food-station-coldprep-wash {
+    background-color: oklch(var(--food-station-coldprep-wash));
+  }
+  .bg-food-station-default {
+    background-color: oklch(var(--food-station-default));
+  }
+  .text-food-station-default {
+    color: oklch(var(--food-station-default));
+  }
+  .border-food-station-default {
+    border-color: oklch(var(--food-station-default));
+  }
+  .bg-food-station-default-wash {
+    background-color: oklch(var(--food-station-default-wash));
+  }
+
+  /* Station badge — small pill. Flat station-accent fill, cream (or dark
+     for fry/coldprep) text, Oswald uppercase, sharp 4px radius. Mirrors
+     the existing badge pattern but tinted per station. */
+  .food-station-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.28rem 0.55rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+  }
+
+  /* Menu-section badge — secondary (navy) fill, cream text. Distinct from
+     the station badge so the two badges read as different axes. */
+  .food-section-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.26rem 0.5rem;
+    border-radius: var(--radius);
+    background-color: oklch(var(--secondary));
+    color: oklch(var(--secondary-foreground));
+    border: 1px solid oklch(var(--secondary));
+  }
+
+  /* EXPO finishing-steps callout — flat purple-red surface, expo-accent
+     left edge + label. Used on the menuBuild card for the highlighted
+     EXPO finishing steps block. Flat fill, no glow, no gradient. */
+  .food-expo-callout {
+    position: relative;
+    background-color: oklch(var(--food-expo-callout));
+    color: oklch(var(--food-expo-callout-fg));
+    border: 1px solid oklch(var(--food-expo-callout-border));
+    border-left: 3px solid oklch(var(--food-expo-callout-accent));
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+  }
+  .food-expo-callout-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: oklch(var(--food-expo-callout-accent));
+  }
+
+  /* Allergen callout — muted red-tinted surface, destructive-red left
+     edge. Sits at the bottom of the menuBuild card. Flat, no glow. */
+  .food-allergen-callout {
+    position: relative;
+    background-color: oklch(var(--food-allergen));
+    color: oklch(var(--food-allergen-fg));
+    border: 1px solid oklch(var(--food-allergen-border) / 0.5);
+    border-left: 3px solid oklch(var(--food-allergen-border));
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+  }
+  .food-allergen-callout-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: oklch(var(--destructive));
+  }
+
+  /* Plating group divider — subtle separator inside the Components table
+     between the serviceware ('Plating') rows and the component rows.
+     Muted, low-chroma, 1px. */
+  .food-plating-rule {
+    border-top: 1px dashed oklch(var(--food-plating-divider));
+  }
+  .food-plating-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: oklch(var(--muted-foreground));
+  }
+
+  /* Components → Amount table — two columns. Component left, amount
+     right-aligned. Mirrors the beverage recipe specs-row pattern but on
+     the library-card surface. Numbered build steps use Oswald numerals. */
+  .food-components-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.28rem 0;
+  }
+  .food-components-row .component {
+    font-family: var(--font-body);
+    color: oklch(var(--foreground));
+  }
+  .food-components-row .amount {
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    color: oklch(var(--foreground));
+  }
+
+  /* Numbered build-steps list — Oswald numerals, Barlow body. */
+  .food-build-steps {
+    list-style: decimal;
+    padding-left: 1.4rem;
+  }
+  .food-build-steps > li {
+    font-family: var(--font-body);
+    color: oklch(var(--foreground));
+    padding: 0.18rem 0;
+  }
+  .food-build-steps > li::marker {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: oklch(var(--primary));
+  }
+
+  /* Prep meta badges — compact row of badges (Yield, Shelf life, Line
+     utensil, Hold temp, Store temp). Flat muted outline, Oswald label +
+     Barlow value. Distinct from the station badge (no station color). */
+  .food-meta-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    padding: 0.28rem 0.5rem;
+    border-radius: var(--radius);
+    border: 1px solid oklch(var(--border));
+    background-color: oklch(var(--card));
+  }
+  .food-meta-badge .label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: oklch(var(--muted-foreground));
+  }
+  .food-meta-badge .value {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: oklch(var(--foreground));
+  }
+
+  /* Prep ingredient table — grouped by 'Step 1', 'Step 2'… Group label
+     is an Oswald uppercase divider; rows reuse .food-components-row. */
+  .food-prep-group-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: oklch(var(--foreground));
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid oklch(var(--border));
+    margin-top: 0.6rem;
+  }
+  .food-prep-group-label:first-child {
+    margin-top: 0;
+  }
+
+  /* Quality identifiers checklist — ✓ bullets (seasonal green). */
+  .food-quality-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .food-quality-list > li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-family: var(--font-body);
+    color: oklch(var(--foreground));
+    padding: 0.18rem 0;
+  }
+  .food-quality-list > li::before {
+    content: "✓";
+    flex-shrink: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: oklch(var(--food-check));
+    line-height: 1.3;
+  }
+
+  /* Equipment line — single Barlow line, muted label + value. */
+  .food-equipment-line {
+    font-family: var(--font-body);
+    color: oklch(var(--foreground));
+  }
+  .food-equipment-line .label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: oklch(var(--muted-foreground));
+  }
+
+  /* Kitchen browser tile — reuses library-card surface. Top stripe is
+     the station accent color (6px). Photo thumbnail OR station-wash
+     placeholder when no photo. Title in Oswald, station in station
+     color, menu-section/PREP tag in secondary (navy) or muted. */
+  .food-tile {
+    position: relative;
+    background-color: oklch(var(--library-card));
+    border: 1px solid oklch(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s
+      cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .food-tile:hover {
+    border-color: oklch(var(--primary) / 0.5);
+    box-shadow: 0 0 0 1px oklch(var(--primary) / 0.2);
+  }
+  .food-tile-stripe {
+    height: 6px;
+    width: 100%;
+  }
+  .food-tile-thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: oklch(var(--food-tile-placeholder));
+  }
+  .food-tile-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* Prep-tile placeholder — station-wash fill, station-accent station
+     name in Oswald, large Anton initial of the recipe. No photo. */
+  .food-tile-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 0.3rem;
+    padding: 0.5rem;
+  }
+  .food-tile-placeholder-initial {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    line-height: 0.9;
+    color: oklch(var(--foreground));
+    opacity: 0.85;
+  }
+  .food-tile-placeholder-station {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .food-tile-title {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    color: oklch(var(--foreground));
+  }
+  .food-tile-meta {
+    font-family: var(--font-body);
+    color: oklch(var(--muted-foreground));
+  }
+
+  /* Kitchen browser station filter chip — flat outline, Oswald uppercase.
+     Selected state = station-accent fill (or primary red for 'All'). */
+  .food-station-chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.74rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.4rem 0.7rem;
+    border-radius: 9999px;
+    border: 1px solid oklch(var(--border));
+    background-color: oklch(var(--card));
+    color: oklch(var(--foreground));
+    cursor: pointer;
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color
+      0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .food-station-chip:hover {
+    border-color: oklch(var(--primary) / 0.5);
+  }
+
+  /* Menu/Prep toggle — segmented control. Two flat segments; active
+     segment = primary red fill, inactive = transparent. Oswald labels. */
+  .food-layout-toggle {
+    display: inline-flex;
+    border: 1px solid oklch(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .food-layout-toggle-segment {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.5rem 0.9rem;
+    background-color: transparent;
+    color: oklch(var(--muted-foreground));
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s
+      cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .food-layout-toggle-segment.is-active {
+    background-color: oklch(var(--primary));
+    color: oklch(var(--primary-foreground));
+  }
+
+  /* Admin Recipe Photos bulk-attach dialog — file drop zone. Dashed
+     border, muted icon, "Drop files here" helper. Reuses the
+     photo-field-empty pattern but larger. */
+  .food-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border: 2px dashed oklch(var(--border));
+    border-radius: var(--radius);
+    background-color: oklch(var(--card));
+    color: oklch(var(--muted-foreground));
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color
+      0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .food-dropzone.is-dragover {
+    border-color: oklch(var(--primary));
+    background-color: oklch(var(--primary) / 0.08);
+    color: oklch(var(--foreground));
+  }
+  .food-dropzone-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: oklch(var(--foreground));
+  }
+
+  /* Matched/attached summary — compact stat row. */
+  .food-attach-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .food-attach-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radius);
+    border: 1px solid oklch(var(--border));
+    background-color: oklch(var(--card));
+  }
+  .food-attach-stat .num {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: oklch(var(--primary));
+  }
+  .food-attach-stat .label {
+    font-family: var(--font-body);
+    color: oklch(var(--muted-foreground));
+  }
+
+  /* Unmatched files list — retryable/downloadable. Each row: filename +
+     retry + download. Red left edge for "needs attention". */
+  .food-unmatched-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid oklch(var(--border));
+    border-left: 3px solid oklch(var(--destructive));
+    border-radius: var(--radius);
+    background-color: oklch(var(--card));
+  }
+  .food-unmatched-row .filename {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: oklch(var(--foreground));
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

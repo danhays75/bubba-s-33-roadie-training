@@ -78,6 +78,12 @@ export interface Phase {
     sortOrder: bigint;
     name: string;
 }
+export interface FoodComponent {
+    item: string;
+    note?: string;
+    group?: string;
+    amount: string;
+}
 export interface DrinksBuilderPrompt {
     text: string;
     audioUrl?: string;
@@ -100,6 +106,7 @@ export interface LibraryItem {
     title: string;
     sortOrder: bigint;
     tags: Array<string>;
+    foodRecipe?: FoodRecipe;
     seasonal: boolean;
     notes?: string;
     details: Array<DetailField>;
@@ -144,6 +151,10 @@ export interface Category {
     coverPhoto?: string;
 }
 export type FlashcardContent = Array<Flashcard>;
+export interface FoodServiceware {
+    item: string;
+    amount: string;
+}
 export interface NsoImportInput {
     moduleName: string;
     phases: Array<NsoImportPhase>;
@@ -192,13 +203,30 @@ export type Error_ = {
         expected: Array<string>;
     };
 };
-export interface DrinksBuilderContent {
-    settings: DrinksBuilderSettings;
+export interface FoodRecipe {
+    lineUtensil?: string;
+    serviceware: Array<FoodServiceware>;
+    station: string;
+    equipment?: string;
+    holdTemp?: string;
+    kind: FoodRecipeKind;
+    qualityIdentifiers: Array<string>;
+    components: Array<FoodComponent>;
+    shelfLife?: string;
+    steps: Array<string>;
+    yieldText?: string;
+    storeTemp?: string;
+    menuSection?: string;
+    expoSteps: Array<string>;
+    allergenNote?: string;
 }
 export interface QuizSettings {
     includeTrueFalse: boolean;
     includeMatching: boolean;
     includeMultipleChoice: boolean;
+}
+export interface DrinksBuilderContent {
+    settings: DrinksBuilderSettings;
 }
 export interface BuildActivityInput {
     activityType: ActivityType;
@@ -327,8 +355,13 @@ export enum AssignmentStatus {
     inTraining = "inTraining",
     certified = "certified"
 }
+export enum FoodRecipeKind {
+    prep = "prep",
+    menuBuild = "menuBuild"
+}
 export enum LayoutStyle {
     library = "library",
+    kitchen = "kitchen",
     orientation = "orientation"
 }
 export enum Role {
@@ -352,7 +385,7 @@ export interface backendInterface {
     assignPosition(userId: Principal, positionId: bigint): Promise<PositionAssignment>;
     buildLegendaryActivity(input: BuildActivityInput): Promise<Activity>;
     createCategory(positionId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
-    createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null): Promise<LibraryItem>;
+    createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null, foodRecipe: FoodRecipe | null): Promise<LibraryItem>;
     createMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     createNsoPhase(name: string): Promise<Phase>;
     createNsoTask(phaseId: bigint, text: string, section: string | null, assignedTo: Principal | null): Promise<Task>;
@@ -414,7 +447,7 @@ export interface backendInterface {
     toggleNsoTask(id: bigint, done: boolean, completionDate: string | null): Promise<void>;
     unassignPosition(userId: Principal, positionId: bigint): Promise<void>;
     updateCategory(categoryId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
-    updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null): Promise<LibraryItem>;
+    updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null, foodRecipe: FoodRecipe | null): Promise<LibraryItem>;
     updateLegendaryActivity(input: UpdateActivityInput): Promise<Activity>;
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     updateMyProfileWithPhoto(name: string, storeLocation: string, photo: string | null): Promise<UserProfile>;

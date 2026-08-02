@@ -182,6 +182,7 @@ actor {
         .payload("layoutStyle", func (p) = switch (p.layoutStyle) {
           case (#library) "library";
           case (#orientation) "orientation";
+          case (#kitchen) "kitchen";
         })
         .sample({
           id = 0;
@@ -288,6 +289,7 @@ actor {
           seasonal = false;
           sortOrder = 0;
           recipe = null;
+          foodRecipe = null;
         })
         .build(),
       // NsoPhase: an ordered stage of a new store opening. Manager/admin-only

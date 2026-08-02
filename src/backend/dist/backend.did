@@ -183,6 +183,7 @@ type LibraryItem =
  record {
    categoryId: nat;
    details: vec DetailField;
+   foodRecipe: opt FoodRecipe;
    id: nat;
    notes: opt text;
    photo: opt text;
@@ -195,8 +196,44 @@ type LibraryItem =
  };
 type LayoutStyle = 
  variant {
+   kitchen;
    library;
    orientation;
+ };
+type FoodServiceware = 
+ record {
+   amount: text;
+   item: text;
+ };
+type FoodRecipeKind = 
+ variant {
+   menuBuild;
+   prep;
+ };
+type FoodRecipe = 
+ record {
+   allergenNote: opt text;
+   components: vec FoodComponent;
+   equipment: opt text;
+   expoSteps: vec text;
+   holdTemp: opt text;
+   kind: FoodRecipeKind;
+   lineUtensil: opt text;
+   menuSection: opt text;
+   qualityIdentifiers: vec text;
+   serviceware: vec FoodServiceware;
+   shelfLife: opt text;
+   station: text;
+   steps: vec text;
+   storeTemp: opt text;
+   yieldText: opt text;
+ };
+type FoodComponent = 
+ record {
+   amount: text;
+   group: opt text;
+   item: text;
+   note: opt text;
  };
 type FlashcardRecipe = 
  record {
@@ -379,7 +416,8 @@ service : {
    (Category);
   createItem: (categoryId: nat, title: text, subtitle: opt text, photo:
    opt text, details: vec DetailField, notes: opt text, tags: vec text,
-   seasonal: bool, recipe: opt Recipe) -> (LibraryItem);
+   seasonal: bool, recipe: opt Recipe, foodRecipe: opt FoodRecipe) ->
+   (LibraryItem);
   createMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   createNsoPhase: (name: text) -> (Phase);
   createNsoTask: (phaseId: nat, "text": text, section: opt text, assignedTo:
@@ -457,7 +495,7 @@ service : {
    (Category);
   updateItem: (itemId: nat, title: text, subtitle: opt text, photo: opt text,
    details: vec DetailField, notes: opt text, tags: vec text, seasonal: 
-   bool, recipe: opt Recipe) -> (LibraryItem);
+   bool, recipe: opt Recipe, foodRecipe: opt FoodRecipe) -> (LibraryItem);
   updateLegendaryActivity: (input: UpdateActivityInput) -> (Activity);
   updateMyProfile: (name: text, storeLocation: text) -> (UserProfile);
   updateMyProfileWithPhoto: (name: text, storeLocation: text, photo:

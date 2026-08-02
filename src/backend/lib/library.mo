@@ -19,6 +19,10 @@ module {
   public type Recipe = Types.Recipe;
   public type RecipeSpec = Types.RecipeSpec;
   public type RecipeVariant = Types.RecipeVariant;
+  public type FoodRecipe = Types.FoodRecipe;
+  public type FoodRecipeKind = Types.FoodRecipeKind;
+  public type FoodComponent = Types.FoodComponent;
+  public type FoodServiceware = Types.FoodServiceware;
 
   // Auto-tag upsell ingredients in the recipe import path. The admin supplies
   // the Recipe with `upsell` already on each RecipeSpec, so the field is
@@ -229,6 +233,7 @@ module {
     tags : [Text],
     seasonal : Bool,
     recipe : ?Recipe,
+    foodRecipe : ?FoodRecipe,
   ) : LibraryItem {
     let id = nextId.value;
     nextId.value := nextId.value + 1;
@@ -241,6 +246,8 @@ module {
     // Premium-liquor signals (top shelf, premium, reserve, single barrel,
     // anejo, añejo, vsop, x.o, luxury) flip upsell=false → upsell=true;
     // explicit upsell=true is never downgraded. null recipe passes through.
+    // foodRecipe is passed through unchanged — no auto-tagging applies to
+    // food recipe components (the upsell concept is beverage-only).
     let taggedRecipe = tagRecipeUpsells(recipe);
     let item : LibraryItem = {
       id;
@@ -254,6 +261,7 @@ module {
       seasonal;
       sortOrder;
       recipe = taggedRecipe;
+      foodRecipe;
     };
     items.add(item);
     item;
@@ -270,16 +278,19 @@ module {
     tags : [Text],
     seasonal : Bool,
     recipe : ?Recipe,
+    foodRecipe : ?FoodRecipe,
   ) : ?LibraryItem {
     let found = items.find(func(i) { i.id == id });
     switch (found) {
       case (?existing) {
         // Spread the existing record and override the editable fields. The
         // id / categoryId / sortOrder are preserved (not part of the update
-        // payload); recipe is carried through so the item can be promoted to
-        // or demoted from a recipe. Mirrors updatePosition in foundation.mo.
+        // payload); recipe and foodRecipe are carried through so the item can
+        // be promoted to or demoted from a beverage recipe and/or a food
+        // recipe. Mirrors updatePosition in foundation.mo.
         // Auto-tag upsell ingredients on the recipe import path before
         // persisting — same tagging as createItem so updates stay consistent.
+        // foodRecipe is passed through unchanged (no beverage upsell tagging).
         let taggedRecipe = tagRecipeUpsells(recipe);
         let updated : LibraryItem = {
           existing with
@@ -291,6 +302,7 @@ module {
           tags;
           seasonal;
           recipe = taggedRecipe;
+          foodRecipe;
         };
         items.mapInPlace(
           func(i) {

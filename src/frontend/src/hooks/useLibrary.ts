@@ -1,6 +1,13 @@
+import {
+  type FoodRecipe as BackendFoodRecipe,
+  FoodRecipeKind as BackendFoodRecipeKind,
+} from "@/backend";
 import type {
   Category,
   DetailField,
+  FoodComponent,
+  FoodRecipe,
+  FoodServiceware,
   LibraryItem,
   Recipe,
   RecipeSpec,
@@ -184,6 +191,119 @@ function fromRecipe(r: Recipe | null | undefined): {
   };
 }
 
+/**
+ * Translates a Candid FoodRecipe to the frontend FoodRecipe type. Mirrors
+ * the toRecipe pattern: food sub-records are value records with no ids, so
+ * there is no bigint translation. The only normalization is optional ?Text
+ * fields — the backend surfaces them as undefined or empty string when
+ * absent; both normalize to null so the frontend treats them uniformly.
+ *
+ * Returns null when the backend omits the optional ?FoodRecipe field (plain
+ * beverage/plain card, not a food recipe).
+ */
+function toFoodRecipe(
+  r:
+    | {
+        station: string;
+        kind: "prep" | "menuBuild";
+        menuSection?: string;
+        serviceware: Array<{ item: string; amount: string }>;
+        components: Array<{
+          item: string;
+          amount: string;
+          group?: string;
+          note?: string;
+        }>;
+        steps: Array<string>;
+        expoSteps: Array<string>;
+        allergenNote?: string;
+        yieldText?: string;
+        shelfLife?: string;
+        holdTemp?: string;
+        storeTemp?: string;
+        lineUtensil?: string;
+        equipment?: string;
+        qualityIdentifiers: Array<string>;
+      }
+    | undefined,
+): FoodRecipe | null {
+  if (!r) return null;
+  return {
+    station: r.station,
+    kind: r.kind === "menuBuild" ? "menuBuild" : "prep",
+    menuSection:
+      r.menuSection && r.menuSection.length > 0 ? r.menuSection : null,
+    serviceware: r.serviceware.map((s) => ({ item: s.item, amount: s.amount })),
+    components: r.components.map((c) => ({
+      item: c.item,
+      amount: c.amount,
+      group: c.group && c.group.length > 0 ? c.group : null,
+      note: c.note && c.note.length > 0 ? c.note : null,
+    })),
+    steps: r.steps,
+    expoSteps: r.expoSteps,
+    allergenNote:
+      r.allergenNote && r.allergenNote.length > 0 ? r.allergenNote : null,
+    yieldText: r.yieldText && r.yieldText.length > 0 ? r.yieldText : null,
+    shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : null,
+    holdTemp: r.holdTemp && r.holdTemp.length > 0 ? r.holdTemp : null,
+    storeTemp: r.storeTemp && r.storeTemp.length > 0 ? r.storeTemp : null,
+    lineUtensil:
+      r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : null,
+    equipment: r.equipment && r.equipment.length > 0 ? r.equipment : null,
+    qualityIdentifiers: r.qualityIdentifiers ?? [],
+  };
+}
+
+/**
+ * Maps a frontend FoodRecipe (or null) to the backend Candid FoodRecipe shape
+ * for createItem/updateItem. Mirrors fromRecipe: a 1:1 structural copy that
+ * exists mainly to satisfy the Candid type at the actor boundary and to
+ * normalize null/empty -> undefined so items without a food recipe pass
+ * through unchanged. The Candid ?Text boundary expects undefined for absent
+ * optionals. The backend actor expects the nominal FoodRecipeKind enum from
+ * @/backend (not the foundation string union), so r.kind is mapped to the
+ * backend enum here — mirroring the LayoutStyle mapping in useAllPositions.
+ */
+function fromFoodRecipe(
+  r: FoodRecipe | null | undefined,
+): BackendFoodRecipe | null {
+  if (!r) return null;
+  return {
+    station: r.station,
+    kind:
+      r.kind === "menuBuild"
+        ? BackendFoodRecipeKind.menuBuild
+        : BackendFoodRecipeKind.prep,
+    // Frontend stores null; the Candid ?Text boundary expects undefined for
+    // absent optionals. Translate null/empty -> undefined here.
+    menuSection:
+      r.menuSection && r.menuSection.length > 0 ? r.menuSection : undefined,
+    serviceware: r.serviceware.map((s) => ({
+      item: s.item,
+      amount: s.amount,
+    })),
+    components: r.components.map((c) => ({
+      item: c.item,
+      amount: c.amount,
+      group: c.group && c.group.length > 0 ? c.group : undefined,
+      note: c.note && c.note.length > 0 ? c.note : undefined,
+    })),
+    steps: r.steps,
+    expoSteps: r.expoSteps,
+    allergenNote:
+      r.allergenNote && r.allergenNote.length > 0 ? r.allergenNote : undefined,
+    yieldText: r.yieldText && r.yieldText.length > 0 ? r.yieldText : undefined,
+    shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : undefined,
+    holdTemp: r.holdTemp && r.holdTemp.length > 0 ? r.holdTemp : undefined,
+    storeTemp: r.storeTemp && r.storeTemp.length > 0 ? r.storeTemp : undefined,
+    lineUtensil:
+      r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : undefined,
+    equipment: r.equipment && r.equipment.length > 0 ? r.equipment : undefined,
+    qualityIdentifiers: r.qualityIdentifiers ?? [],
+  };
+}
+
 /** Translates a Candid LibraryItem (bigint ids) to the local string-id shape. */
 function toItem(i: {
   id: bigint;
@@ -220,6 +340,28 @@ function toItem(i: {
     qualityIdentifier?: Array<string>;
     recapAudio?: string;
   };
+  foodRecipe?: {
+    station: string;
+    kind: "prep" | "menuBuild";
+    menuSection?: string;
+    serviceware: Array<{ item: string; amount: string }>;
+    components: Array<{
+      item: string;
+      amount: string;
+      group?: string;
+      note?: string;
+    }>;
+    steps: Array<string>;
+    expoSteps: Array<string>;
+    allergenNote?: string;
+    yieldText?: string;
+    shelfLife?: string;
+    holdTemp?: string;
+    storeTemp?: string;
+    lineUtensil?: string;
+    equipment?: string;
+    qualityIdentifiers: Array<string>;
+  };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({
     // id is frontend-only (not in the backend record). Generated here so each
@@ -241,6 +383,7 @@ function toItem(i: {
     seasonal: i.seasonal,
     sortOrder: Number(i.sortOrder),
     recipe: toRecipe(i.recipe),
+    foodRecipe: toFoodRecipe(i.foodRecipe),
   };
 }
 
@@ -456,6 +599,7 @@ export interface CreateItemInput {
   tags: string[];
   seasonal: boolean;
   recipe?: Recipe | null;
+  foodRecipe?: FoodRecipe | null;
 }
 
 /** Creates a new item under a category (admin only). */
@@ -465,7 +609,7 @@ export function useCreateItem() {
   return useMutation({
     mutationFn: async (input: CreateItemInput) => {
       if (!actor) throw new Error("Backend not ready");
-      // Candid: createItem(categoryId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal, recipe: ?Recipe)
+      // Candid: createItem(categoryId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal, recipe: ?Recipe, foodRecipe: ?FoodRecipe)
       const result = await actor.createItem(
         BigInt(input.categoryId),
         input.title,
@@ -479,6 +623,7 @@ export function useCreateItem() {
         input.tags,
         input.seasonal,
         fromRecipe(input.recipe),
+        fromFoodRecipe(input.foodRecipe),
       );
       return toItem(result);
     },
@@ -501,6 +646,7 @@ export interface UpdateItemInput {
   tags: string[];
   seasonal: boolean;
   recipe?: Recipe | null;
+  foodRecipe?: FoodRecipe | null;
 }
 
 /** Updates an existing item (admin only). */
@@ -515,7 +661,7 @@ export function useUpdateItem() {
       if (input.itemId == null || input.itemId.trim() === "") {
         throw new Error("updateItem requires a non-empty item id");
       }
-      // Candid: updateItem(itemId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal, recipe: ?Recipe)
+      // Candid: updateItem(itemId, title, subtitle: ?Text, photo: ?Text, details, notes: ?Text, tags, seasonal, recipe: ?Recipe, foodRecipe: ?FoodRecipe)
       const result = await actor.updateItem(
         BigInt(input.itemId),
         input.title,
@@ -529,6 +675,7 @@ export function useUpdateItem() {
         input.tags,
         input.seasonal,
         fromRecipe(input.recipe),
+        fromFoodRecipe(input.foodRecipe),
       );
       return toItem(result);
     },

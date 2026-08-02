@@ -21,6 +21,9 @@ import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import type {
   Category,
   DetailField,
+  FoodComponent,
+  FoodRecipe,
+  FoodServiceware,
   LibraryItem,
   Recipe,
   RecipeSpec,
@@ -150,6 +153,14 @@ export function BulkImportDialog({
       return;
     }
 
+    if (detection.shape === "foodRecipes") {
+      await runFoodRecipesImport(
+        detection.foodRecipes,
+        detection.warnings ?? [],
+      );
+      return;
+    }
+
     await runRecipesImport(detection.recipes, detection.warnings ?? []);
   }
 
@@ -235,6 +246,17 @@ export function BulkImportDialog({
             // flag. Pass existing.photo and existing.subtitle through so the
             // backend (which overwrites both) preserves them unchanged.
             // sortOrder is preserved automatically by the backend.
+            //
+            // Photo: when the imported item carries a photo (durable
+            // object-storage URL) it overrides the existing photo; otherwise
+            // the existing photo is preserved (back-compat with the prior
+            // behavior of passing existing.photo through unchanged).
+            //
+            // foodRecipe: when the imported item carries a foodRecipe it
+            // overrides the existing foodRecipe; otherwise the existing
+            // foodRecipe is preserved (mirrors the photo preservation
+            // pattern). The backend overwrites foodRecipe, so existing must
+            // be supplied to preserve it.
             setProgress(`Updating item: ${item.title} (${cat.name})`);
 
             const details: DetailField[] = item.fields.map((f) => ({
@@ -247,22 +269,35 @@ export function BulkImportDialog({
               value: sanitizeHtml(f.value),
             }));
 
+            const foodRecipePayload = buildFoodRecipePayload(item.foodRecipe);
+            const photo =
+              item.photo && item.photo.length > 0 ? item.photo : existing.photo;
+            const foodRecipe =
+              foodRecipePayload !== undefined
+                ? foodRecipePayload
+                : existing.foodRecipe;
+
             await updateItem.mutateAsync({
               itemId: existing.id,
               categoryId,
               title: existing.title,
               subtitle: existing.subtitle,
-              photo: existing.photo,
+              photo,
               details,
               notes: item.notes,
               tags: item.tags,
               seasonal: item.seasonal,
+              foodRecipe,
             });
             updatedItems += 1;
             continue;
           }
 
-          // New item — create as usual with subtitle: null and photo: null.
+          // New item — create as usual with subtitle: null. Photo now uses
+          // the item's `photo` field when provided (durable object-storage
+          // URL); items without a photo import exactly as before (null).
+          // foodRecipe is passed through when present; items without one
+          // pass null (back-compat with existing categories blobs).
           setProgress(`Importing item: ${item.title} (${cat.name})`);
 
           const details: DetailField[] = item.fields.map((f) => ({
@@ -274,6 +309,10 @@ export function BulkImportDialog({
             // that forgets to sanitize is still safe.
             value: sanitizeHtml(f.value),
           }));
+
+          const foodRecipePayload = buildFoodRecipePayload(item.foodRecipe);
+          const photo = item.photo && item.photo.length > 0 ? item.photo : null;
+          const foodRecipe = foodRecipePayload ?? null;
 
           // useCreateItem returns toItem(result) — a LibraryItem with a real
           // string id assigned by the backend. Capture that id and push it
@@ -287,24 +326,26 @@ export function BulkImportDialog({
             categoryId,
             title: item.title,
             subtitle: null,
-            photo: null,
+            photo,
             details,
             notes: item.notes,
             tags: item.tags,
             seasonal: item.seasonal,
+            foodRecipe,
           });
           existingByTitle.set(item.title, {
             id: created?.id ?? "",
             categoryId,
             title: item.title,
             subtitle: created?.subtitle ?? null,
-            photo: created?.photo ?? null,
+            photo: created?.photo ?? photo,
             details: created?.details ?? details,
             notes: item.notes,
             tags: item.tags,
             seasonal: item.seasonal,
             sortOrder: created?.sortOrder ?? 0,
             recipe: created?.recipe ?? null,
+            foodRecipe: created?.foodRecipe ?? foodRecipe ?? null,
           });
           createdItems += 1;
         }
@@ -477,6 +518,16 @@ export function BulkImportDialog({
                 : recipe.notes;
             const tags =
               importedTags.length === 0 ? existing.tags : importedTags;
+            // foodRecipe: when the imported recipe carries a foodRecipe it
+            // overrides the existing foodRecipe; otherwise the existing
+            // foodRecipe is preserved (mirrors the photo preservation
+            // pattern). The backend overwrites foodRecipe, so existing must
+            // be supplied to preserve it.
+            const foodRecipePayload = buildFoodRecipePayload(recipe.foodRecipe);
+            const foodRecipe =
+              foodRecipePayload !== undefined
+                ? foodRecipePayload
+                : existing.foodRecipe;
 
             await updateItem.mutateAsync({
               itemId: existing.id,
@@ -489,6 +540,7 @@ export function BulkImportDialog({
               tags,
               seasonal: recipe.lto === true,
               recipe: payload,
+              foodRecipe,
             });
             updatedRecipes += 1;
             continue;
@@ -507,6 +559,10 @@ export function BulkImportDialog({
             recipe.photoUrl && recipe.photoUrl.length > 0
               ? recipe.photoUrl
               : null;
+          // foodRecipe is passed through when present; recipes without one
+          // pass null (back-compat with existing recipes blobs).
+          const foodRecipePayload = buildFoodRecipePayload(recipe.foodRecipe);
+          const foodRecipe = foodRecipePayload ?? null;
 
           const created = await createItem.mutateAsync({
             categoryId,
@@ -518,6 +574,7 @@ export function BulkImportDialog({
             tags,
             seasonal: recipe.lto === true,
             recipe: payload,
+            foodRecipe,
           });
           existingByTitle.set(recipe.title, {
             id: created?.id ?? "",
@@ -531,6 +588,7 @@ export function BulkImportDialog({
             seasonal: created?.seasonal ?? recipe.lto === true,
             sortOrder: created?.sortOrder ?? 0,
             recipe: created?.recipe ?? payload,
+            foodRecipe: created?.foodRecipe ?? foodRecipe ?? null,
           });
           createdRecipes += 1;
         }
@@ -573,6 +631,244 @@ export function BulkImportDialog({
       const description = err instanceof Error ? err.message : undefined;
       setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
       toast.error("Recipe import stopped", { description: `${partial}` });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["library-categories", positionId],
+      });
+      for (const cid of touchedCategoryIds) {
+        await queryClient.invalidateQueries({
+          queryKey: ["library-items", cid],
+        });
+      }
+    } finally {
+      setProgress(null);
+    }
+  }
+
+  /**
+   * Food-recipes-import code path. Auto-detected when the parsed JSON has a
+   * top-level `foodRecipes` array. Mirrors runRecipesImport exactly: group
+   * food recipes by category, look up existing categories by name (creating
+   * missing ones with coverPhoto: null), look up existing items by title
+   * within the category, and create / update / skip per the import mode.
+   *
+   * Per-food-recipe validation runs first (validateFoodRecipesBlob); food
+   * recipes that fail validation are recorded as row-level errors and
+   * skipped, but the rest of the blob is still processed. Within-blob
+   * duplicate titles in the same category are skipped deterministically
+   * (counted as skipped duplicates).
+   *
+   * Mapping rules (parallel to runRecipesImport's beverage mapping):
+   *   - foodRecipe payload → built via buildFoodRecipePayload(fr) and passed
+   *     to createItem/updateItem's foodRecipe argument
+   *   - photo / subtitle / tags / notes → derived from the food recipe's
+   *     import-only convenience fields (fr.photo / fr.subtitle / fr.tags /
+   *     fr.notes), with the same preservation pattern as the recipes path
+   *     (existing.subtitle / existing.notes / existing.tags preserved when
+   *     the blob omits them on update)
+   *   - recipe: null — a food-recipes-path item never carries a beverage
+   *     recipe. On update, existing.recipe is NOT preserved: the foodRecipes
+   *     path is a dedicated food-recipe import, so it overwrites recipe with
+   *     null (mirroring how the recipes path overwrites foodRecipe when the
+   *     blob provides one). This matches the user preference to mirror the
+   *     existing beverage-recipe patterns rather than inventing new ones.
+   *   - details: [] — a food recipe carries its structured spec on
+   *     .foodRecipe, not on .details (parallel to the recipes path's empty
+   *     details array).
+   *   - seasonal: false — the foodRecipes blob has no LTO flag; food recipes
+   *     are not seasonal menu items in the beverage-LTO sense.
+   */
+  async function runFoodRecipesImport(
+    foodRecipes: ImportFoodRecipe[],
+    warnings: string[],
+  ) {
+    setValidationWarnings(warnings);
+
+    let createdCategories = 0;
+    let createdFoodRecipes = 0;
+    let updatedFoodRecipes = 0;
+    let skippedFoodRecipes = 0;
+    let skippedDuplicates = 0;
+    // Row-level errors are surfaced via validationWarnings (set above from
+    // the warnings returned by validateFoodRecipesBlob). The summary appends
+    // a row-errors clause when any warnings were recorded.
+    const rowErrorCount = warnings.filter((w) => w.includes("Skipped.")).length;
+
+    // Seed the name → id map from the currently-loaded categories so we
+    // reuse existing categories instead of duplicating them.
+    const categoryIdByName = new Map<string, string>();
+    for (const c of existingCategories) {
+      categoryIdByName.set(c.name, c.id);
+    }
+    const touchedCategoryIds = new Set<string>();
+
+    // Group food recipes by category so each category is resolved/created
+    // once — mirrors runRecipesImport's grouping loop.
+    const byCategory = new Map<string, ImportFoodRecipe[]>();
+    for (const fr of foodRecipes) {
+      const list = byCategory.get(fr.category) ?? [];
+      list.push(fr);
+      byCategory.set(fr.category, list);
+    }
+
+    try {
+      for (const [categoryName, group] of byCategory) {
+        setProgress(`Importing category: ${categoryName}`);
+
+        // Resolve or create the category.
+        let categoryId = categoryIdByName.get(categoryName);
+        if (!categoryId) {
+          const created = await createCategory.mutateAsync({
+            positionId,
+            name: categoryName,
+            coverPhoto: null,
+          });
+          categoryId = created.id;
+          categoryIdByName.set(categoryName, categoryId);
+          createdCategories += 1;
+        }
+        touchedCategoryIds.add(categoryId);
+
+        // Load existing items for this category (from cache or fetch).
+        const existingItems = await loadItemsForCategory(categoryId);
+        const existingByTitle = new Map<string, LibraryItem>(
+          existingItems.map((i) => [i.title, i]),
+        );
+
+        for (const fr of group) {
+          const existing = existingByTitle.get(fr.title);
+
+          if (existing) {
+            if (importMode === "skip") {
+              skippedFoodRecipes += 1;
+              continue;
+            }
+
+            // Update mode guard: placeholder id from an earlier create in
+            // THIS blob — skip deterministically rather than mutating id 0.
+            if (existing.id === "") {
+              skippedDuplicates += 1;
+              continue;
+            }
+
+            setProgress(`Updating food recipe: ${fr.title} (${categoryName})`);
+
+            const foodRecipe = buildFoodRecipePayload(fr);
+            // Derive photo / subtitle / tags / notes from the food recipe's
+            // convenience fields, preserving existing values when the blob
+            // omits them — mirrors the recipes-path preservation pattern.
+            const subtitle =
+              fr.subtitle && fr.subtitle.length > 0
+                ? fr.subtitle
+                : existing.subtitle;
+            const photo =
+              fr.photo && fr.photo.length > 0 ? fr.photo : existing.photo;
+            const notes =
+              fr.notes === null || fr.notes === undefined
+                ? existing.notes
+                : fr.notes;
+            const tags =
+              Array.isArray(fr.tags) && fr.tags.length > 0
+                ? fr.tags.filter((t): t is string => typeof t === "string")
+                : existing.tags;
+
+            await updateItem.mutateAsync({
+              itemId: existing.id,
+              categoryId,
+              title: existing.title,
+              subtitle,
+              photo,
+              details: [],
+              notes,
+              tags,
+              seasonal: false,
+              recipe: null,
+              foodRecipe,
+            });
+            updatedFoodRecipes += 1;
+            continue;
+          }
+
+          // New food recipe — create with the foodRecipe payload attached.
+          setProgress(`Importing food recipe: ${fr.title} (${categoryName})`);
+
+          const foodRecipe = buildFoodRecipePayload(fr);
+          const subtitle =
+            fr.subtitle && fr.subtitle.length > 0 ? fr.subtitle : null;
+          const photo = fr.photo && fr.photo.length > 0 ? fr.photo : null;
+          const notes =
+            fr.notes === null || fr.notes === undefined ? null : fr.notes;
+          const tags = Array.isArray(fr.tags)
+            ? fr.tags.filter((t): t is string => typeof t === "string")
+            : [];
+
+          const created = await createItem.mutateAsync({
+            categoryId,
+            title: fr.title,
+            subtitle,
+            photo,
+            details: [],
+            notes,
+            tags,
+            seasonal: false,
+            recipe: null,
+            foodRecipe,
+          });
+          existingByTitle.set(fr.title, {
+            id: created?.id ?? "",
+            categoryId,
+            title: fr.title,
+            subtitle: created?.subtitle ?? subtitle,
+            photo: created?.photo ?? photo,
+            details: created?.details ?? [],
+            notes: created?.notes ?? notes,
+            tags: created?.tags ?? tags,
+            seasonal: created?.seasonal ?? false,
+            sortOrder: created?.sortOrder ?? 0,
+            recipe: created?.recipe ?? null,
+            foodRecipe: created?.foodRecipe ?? foodRecipe ?? null,
+          });
+          createdFoodRecipes += 1;
+        }
+      }
+
+      // --- Refresh --------------------------------------------------------
+      await queryClient.invalidateQueries({
+        queryKey: ["library-categories", positionId],
+      });
+      for (const cid of touchedCategoryIds) {
+        await queryClient.invalidateQueries({
+          queryKey: ["library-items", cid],
+        });
+      }
+
+      const message = formatFoodRecipeSummary(
+        createdCategories,
+        updatedFoodRecipes,
+        createdFoodRecipes,
+        skippedFoodRecipes,
+        skippedDuplicates,
+        rowErrorCount,
+      );
+
+      setSummary(message);
+      toast.success("Food recipe import complete", { description: message });
+
+      // Close the dialog after a brief beat so the inline summary is visible.
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 900);
+    } catch (err) {
+      const partial = `Created ${createdCategories} ${
+        createdCategories === 1 ? "category" : "categories"
+      }, updated ${updatedFoodRecipes} ${
+        updatedFoodRecipes === 1 ? "food recipe" : "food recipes"
+      }, created ${createdFoodRecipes} ${
+        createdFoodRecipes === 1 ? "food recipe" : "food recipes"
+      } before the failure.`;
+      const description = err instanceof Error ? err.message : undefined;
+      setError(`Import stopped: ${description ?? "a call failed"}. ${partial}`);
+      toast.error("Food recipe import stopped", { description: `${partial}` });
 
       await queryClient.invalidateQueries({
         queryKey: ["library-categories", positionId],
@@ -719,9 +1015,11 @@ export function BulkImportDialog({
             Import library
           </DialogTitle>
           <DialogDescription>
-            Paste a JSON blob of categories and items, or recipes. The top-level
-            key (<code className="font-mono text-foreground">categories</code>{" "}
-            or <code className="font-mono text-foreground">recipes</code>) is
+            Paste a JSON blob of categories and items, recipes, or food recipes.
+            The top-level key (
+            <code className="font-mono text-foreground">categories</code>,{" "}
+            <code className="font-mono text-foreground">recipes</code>, or{" "}
+            <code className="font-mono text-foreground">foodRecipes</code>) is
             auto-detected. The JSON{" "}
             <code className="font-mono text-foreground">position</code> field is
             ignored — import always targets this position&rsquo;s library.
@@ -819,6 +1117,12 @@ export function BulkImportDialog({
               <code className="font-mono">
                 {
                   "{ position, recipes: [{ title, category, glassware, specs: [{ amount, ingredient }], assembly: [string], garnish?: [string], variants?: [{ label, specs: [{ amount, ingredient }], assembly: [string] }], equipment?: [string], yield?: string, shelfLife?: string, qualityIdentifier?: [string] }] }"
+                }
+              </code>{" "}
+              or{" "}
+              <code className="font-mono">
+                {
+                  "{ position, foodRecipes: [{ title, category, station, kind: 'prep' | 'menuBuild', components: [{ item, amount, group?, note? }], steps: [string], expoSteps?: [string], serviceware?: [{ item, amount }], menuSection?, allergenNote?, yieldText?, shelfLife?, holdTemp?, storeTemp?, lineUtensil?, equipment?, qualityIdentifiers?: [string], photo?, subtitle?, tags?: [string], notes? }] }"
                 }
               </code>
               . A recipe is a bulk mix when glassware is empty and either yield
@@ -949,6 +1253,28 @@ function toItem(i: {
       assembly: Array<string>;
     }>;
   };
+  foodRecipe?: {
+    station: string;
+    kind: "prep" | "menuBuild";
+    menuSection?: string;
+    serviceware: Array<{ item: string; amount: string }>;
+    components: Array<{
+      item: string;
+      amount: string;
+      group?: string;
+      note?: string;
+    }>;
+    steps: Array<string>;
+    expoSteps: Array<string>;
+    allergenNote?: string;
+    yieldText?: string;
+    shelfLife?: string;
+    holdTemp?: string;
+    storeTemp?: string;
+    lineUtensil?: string;
+    equipment?: string;
+    qualityIdentifiers: Array<string>;
+  };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({
     id: makeDetailFieldId(),
@@ -992,6 +1318,75 @@ function toItem(i: {
           })),
         }
       : null,
+    foodRecipe: toFoodRecipeLocal(i.foodRecipe),
+  };
+}
+
+/**
+ * Maps a backend Candid FoodRecipe record to the foundation FoodRecipe shape.
+ * Inline mirror of useLibrary.toFoodRecipe — kept local because toFoodRecipe
+ * is not exported from useLibrary.ts. The mapping must stay in sync with that
+ * source of truth.
+ *
+ * Normalizes optional ?Text fields to null (the foundation contract uses
+ * `string | null`, while the Candid boundary surfaces them as `string |
+ * undefined`). Returns null when the backend omits the optional ?FoodRecipe
+ * field (plain beverage/plain card, not a food recipe). The kind is taken
+ * straight from the backend enum/string — the backend FoodRecipeKind enum
+ * values are the same strings as the foundation FoodRecipeKind union
+ * ("prep" | "menuBuild"), so a direct assignment satisfies the type.
+ */
+function toFoodRecipeLocal(
+  r:
+    | {
+        station: string;
+        kind: "prep" | "menuBuild";
+        menuSection?: string;
+        serviceware: Array<{ item: string; amount: string }>;
+        components: Array<{
+          item: string;
+          amount: string;
+          group?: string;
+          note?: string;
+        }>;
+        steps: Array<string>;
+        expoSteps: Array<string>;
+        allergenNote?: string;
+        yieldText?: string;
+        shelfLife?: string;
+        holdTemp?: string;
+        storeTemp?: string;
+        lineUtensil?: string;
+        equipment?: string;
+        qualityIdentifiers: Array<string>;
+      }
+    | undefined,
+): FoodRecipe | null {
+  if (!r) return null;
+  return {
+    station: r.station,
+    kind: r.kind === "menuBuild" ? "menuBuild" : "prep",
+    menuSection:
+      r.menuSection && r.menuSection.length > 0 ? r.menuSection : null,
+    serviceware: r.serviceware.map((s) => ({ item: s.item, amount: s.amount })),
+    components: r.components.map((c) => ({
+      item: c.item,
+      amount: c.amount,
+      group: c.group && c.group.length > 0 ? c.group : null,
+      note: c.note && c.note.length > 0 ? c.note : null,
+    })),
+    steps: r.steps,
+    expoSteps: r.expoSteps,
+    allergenNote:
+      r.allergenNote && r.allergenNote.length > 0 ? r.allergenNote : null,
+    yieldText: r.yieldText && r.yieldText.length > 0 ? r.yieldText : null,
+    shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : null,
+    holdTemp: r.holdTemp && r.holdTemp.length > 0 ? r.holdTemp : null,
+    storeTemp: r.storeTemp && r.storeTemp.length > 0 ? r.storeTemp : null,
+    lineUtensil:
+      r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : null,
+    equipment: r.equipment && r.equipment.length > 0 ? r.equipment : null,
+    qualityIdentifiers: r.qualityIdentifiers ?? [],
   };
 }
 
@@ -1032,12 +1427,79 @@ interface ImportField {
   value: string;
 }
 
+/**
+ * Import-blob shape for a food recipe. Mirrors the backend Candid FoodRecipe
+ * (see types/foundation.ts FoodRecipe) but with import-friendly optionality:
+ * every optional field is `?` and arrays default to [] / null inside
+ * buildFoodRecipePayload. A food recipe can be attached to either a
+ * categories-path item (ImportItem.foodRecipe) or a recipes-path recipe
+ * (ImportRecipe.foodRecipe) — a beverage recipe and a food recipe can coexist
+ * on the same Library item.
+ *
+ * Required: title, category, station, kind, components (non-empty), steps
+ * (non-empty). The title/category are kept on the food-recipe blob so the
+ * foodRecipes-path can group + match items by category the same way the
+ * recipes-path does (they are NOT re-derived from the parent item on the
+ * categories/recipes paths — those paths already carry title/category on the
+ * parent and ignore the food-recipe's own title/category).
+ *
+ * Optional fields mirror FoodRecipe: menuSection, serviceware, expoSteps,
+ * allergenNote, yieldText, shelfLife, holdTemp, storeTemp, lineUtensil,
+ * equipment, qualityIdentifiers. Plus import-only convenience fields
+ * (subtitle, tags, notes, photo) that the foodRecipes path forwards to the
+ * created Library item — parallel to the recipes-path fields of the same
+ * name. The categories/recipes paths ignore these convenience fields because
+ * the parent item already carries them.
+ */
+interface ImportFoodRecipe {
+  title: string;
+  category: string;
+  station: string;
+  kind: "prep" | "menuBuild";
+  menuSection?: string;
+  serviceware?: Array<{ item: string; amount: string }>;
+  components: Array<{
+    item: string;
+    amount: string;
+    group?: string;
+    note?: string;
+  }>;
+  steps: string[];
+  expoSteps?: string[];
+  allergenNote?: string;
+  yieldText?: string;
+  shelfLife?: string;
+  holdTemp?: string;
+  storeTemp?: string;
+  lineUtensil?: string;
+  equipment?: string;
+  qualityIdentifiers?: string[];
+  /** Import-only convenience fields (foodRecipes path → Library item). */
+  photo?: string;
+  subtitle?: string;
+  tags?: string[];
+  notes?: string;
+}
+
 interface ImportItem {
   title: string;
   fields: ImportField[];
   tags: string[];
   seasonal: boolean;
   notes: string;
+  /**
+   * Optional durable object-storage photo URL for the item. When present the
+   * categories-import path passes it through to createItem/updateItem instead
+   * of forcing null. Items without a photo import exactly as before (null).
+   */
+  photo?: string;
+  /**
+   * Optional food-recipe payload attached to a categories-path item. When
+   * present it is passed through to createItem/updateItem via the foodRecipe
+   * parameter (parallel to the recipes-path foodRecipe field). Items without
+   * a foodRecipe pass null/undefined.
+   */
+  foodRecipe?: ImportFoodRecipe;
 }
 
 interface ImportCategory {
@@ -1176,8 +1638,29 @@ function validateImportBlob(parsed: unknown): ValidationResult {
         : [];
       const seasonal = item.seasonal === true;
       const notes = typeof item.notes === "string" ? item.notes : "";
+      // Optional photo (durable object-storage URL). Items without a photo
+      // import exactly as before — the import loop passes null through to
+      // createItem. Only non-empty strings are kept; whitespace-only strings
+      // are dropped to undefined so the loop's `item.photo || null` fallback
+      // preserves the prior null behavior.
+      const photo =
+        typeof item.photo === "string" && item.photo.trim().length > 0
+          ? (item.photo as string)
+          : undefined;
+      // Optional food-recipe payload. Validated structurally; an invalid
+      // shape is dropped to undefined so the item imports as a plain card
+      // (back-compat with existing blobs that omit foodRecipe).
+      const foodRecipe = readImportFoodRecipe(item.foodRecipe);
 
-      items.push({ title: item.title, fields, tags, seasonal, notes });
+      items.push({
+        title: item.title,
+        fields,
+        tags,
+        seasonal,
+        notes,
+        photo,
+        foodRecipe,
+      });
     }
 
     categories.push({ name: cat.name, items });
@@ -1186,19 +1669,202 @@ function validateImportBlob(parsed: unknown): ValidationResult {
   return { ok: true, categories, warnings };
 }
 
+/* ----------------------- Food-recipe helpers ----------------------------- */
+
+/**
+ * Structural validator for an ImportFoodRecipe blob. Returns the validated
+ * shape, or undefined when the input is absent or invalid — graceful drop
+ * for back-compat with existing categories/recipes blobs that omit
+ * foodRecipe. Mirrors how the surrounding code validates recipe blobs: a
+ * missing or non-object input is silently dropped (the parent item imports
+ * as a plain / beverage-only card), while a present-but-malformed object is
+ * also dropped rather than aborting the whole blob.
+ *
+ * Required fields: station (non-empty string), kind ('prep' | 'menuBuild'),
+ * components (non-empty array of {item, amount}), steps (non-empty array of
+ * strings). title and category are required on the foodRecipes path (they
+ * drive grouping + matching) but optional when the food recipe is attached
+ * to a categories/recipes-path item — the parent item already carries
+ * title/category there, so an attached foodRecipe that omits them is still
+ * valid. To keep one validator simple, title/category are validated only
+ * when present; the foodRecipes-path validator (validateFoodRecipesBlob)
+ * re-checks them as required.
+ *
+ * Optional arrays are filtered to their expected element type; optional
+ * strings are kept as-is (buildFoodRecipePayload normalizes empty → null).
+ */
+function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return undefined;
+  }
+  const r = raw as Record<string, unknown>;
+
+  const station = typeof r.station === "string" ? r.station.trim() : "";
+  if (station.length === 0) return undefined;
+
+  const kind =
+    r.kind === "menuBuild"
+      ? "menuBuild"
+      : r.kind === "prep"
+        ? "prep"
+        : undefined;
+  if (kind === undefined) return undefined;
+
+  if (!Array.isArray(r.components) || r.components.length === 0) {
+    return undefined;
+  }
+  const components: ImportFoodRecipe["components"] = [];
+  for (const c of r.components) {
+    if (typeof c !== "object" || c === null || Array.isArray(c))
+      return undefined;
+    const cr = c as Record<string, unknown>;
+    const item = typeof cr.item === "string" ? cr.item.trim() : "";
+    const amount = typeof cr.amount === "string" ? cr.amount.trim() : "";
+    if (item.length === 0 || amount.length === 0) return undefined;
+    const group = typeof cr.group === "string" ? cr.group : undefined;
+    const note = typeof cr.note === "string" ? cr.note : undefined;
+    components.push({ item, amount, group, note });
+  }
+
+  if (!Array.isArray(r.steps) || r.steps.length === 0) return undefined;
+  const steps = r.steps.filter((s): s is string => typeof s === "string");
+  if (steps.length === 0) return undefined;
+
+  // title/category: required on the foodRecipes path, optional when attached
+  // to a categories/recipes item. Validated only when present here; the
+  // foodRecipes-path validator re-checks them as required.
+  const title = typeof r.title === "string" ? r.title.trim() : "";
+  const category = typeof r.category === "string" ? r.category.trim() : "";
+
+  const menuSection =
+    typeof r.menuSection === "string" ? r.menuSection : undefined;
+
+  const serviceware = Array.isArray(r.serviceware)
+    ? r.serviceware
+        .map((s) => {
+          if (typeof s !== "object" || s === null || Array.isArray(s))
+            return null;
+          const sr = s as Record<string, unknown>;
+          const item = typeof sr.item === "string" ? sr.item : "";
+          const amount = typeof sr.amount === "string" ? sr.amount : "";
+          if (item.length === 0 || amount.length === 0) return null;
+          return { item, amount };
+        })
+        .filter((s): s is { item: string; amount: string } => s !== null)
+    : undefined;
+
+  const expoSteps = Array.isArray(r.expoSteps)
+    ? r.expoSteps.filter((s): s is string => typeof s === "string")
+    : undefined;
+
+  const str = (v: unknown): string | undefined =>
+    typeof v === "string" ? v : undefined;
+
+  const qualityIdentifiers = Array.isArray(r.qualityIdentifiers)
+    ? r.qualityIdentifiers.filter((q): q is string => typeof q === "string")
+    : undefined;
+
+  // Import-only convenience fields (foodRecipes path → Library item).
+  const photo =
+    typeof r.photo === "string" && r.photo.length > 0 ? r.photo : undefined;
+  const subtitle =
+    typeof r.subtitle === "string" && r.subtitle.length > 0
+      ? r.subtitle
+      : undefined;
+  const tags = Array.isArray(r.tags)
+    ? r.tags.filter((t): t is string => typeof t === "string")
+    : undefined;
+  const notes = typeof r.notes === "string" ? r.notes : undefined;
+
+  return {
+    title,
+    category,
+    station,
+    kind,
+    menuSection,
+    serviceware,
+    components,
+    steps,
+    expoSteps,
+    allergenNote: str(r.allergenNote),
+    yieldText: str(r.yieldText),
+    shelfLife: str(r.shelfLife),
+    holdTemp: str(r.holdTemp),
+    storeTemp: str(r.storeTemp),
+    lineUtensil: str(r.lineUtensil),
+    equipment: str(r.equipment),
+    qualityIdentifiers,
+    photo,
+    subtitle,
+    tags,
+    notes,
+  };
+}
+
+/**
+ * Builds the frontend FoodRecipe payload from a validated ImportFoodRecipe.
+ * Parallel to buildRecipePayload(): returns undefined when the input is
+ * absent (so the caller can distinguish "no food recipe in the blob" from
+ * "food recipe present but null"), and maps to the foundation FoodRecipe
+ * shape, normalizing empty/absent arrays and strings gracefully.
+ *
+ * Empty arrays (serviceware, expoSteps, qualityIdentifiers) are preserved
+ * as [] — matching the foundation FoodRecipe contract where these are
+ * required arrays that default to []. Empty/absent optional strings
+ * (menuSection, allergenNote, yieldText, shelfLife, holdTemp, storeTemp,
+ * lineUtensil, equipment) normalize to null — matching the foundation
+ * FoodRecipe contract where these are `string | null`.
+ */
+function buildFoodRecipePayload(
+  raw: ImportFoodRecipe | undefined,
+): FoodRecipe | undefined {
+  if (!raw) return undefined;
+  const strOrNull = (v: string | undefined): string | null =>
+    v && v.length > 0 ? v : null;
+  return {
+    station: raw.station,
+    kind: raw.kind,
+    menuSection: strOrNull(raw.menuSection),
+    serviceware: (raw.serviceware ?? []).map((s) => ({
+      item: s.item,
+      amount: s.amount,
+    })),
+    components: raw.components.map((c) => ({
+      item: c.item,
+      amount: c.amount,
+      group: strOrNull(c.group),
+      note: strOrNull(c.note),
+    })),
+    steps: raw.steps,
+    expoSteps: raw.expoSteps ?? [],
+    allergenNote: strOrNull(raw.allergenNote),
+    yieldText: strOrNull(raw.yieldText),
+    shelfLife: strOrNull(raw.shelfLife),
+    holdTemp: strOrNull(raw.holdTemp),
+    storeTemp: strOrNull(raw.storeTemp),
+    lineUtensil: strOrNull(raw.lineUtensil),
+    equipment: strOrNull(raw.equipment),
+    qualityIdentifiers: raw.qualityIdentifiers ?? [],
+  };
+}
+
 /* --------------------------- Shape auto-detection ------------------------ */
 
 /**
  * Discriminated result of shape auto-detection. The parsed JSON must have
- * either a top-level `categories` array (existing categories-import path) or
- * a top-level `recipes` array (new recipes-import path). If neither key is
- * present (or the value is not an array), the blob is rejected with a shape
- * error before any per-row validation runs.
+ * exactly one of three top-level array keys:
+ *   - `categories` → existing categories-import path
+ *   - `recipes`     → beverage-recipes-import path
+ *   - `foodRecipes` → food-recipes-import path
+ *
+ * If none is present (or the value is not an array), the blob is rejected
+ * with a shape error before any per-row validation runs. If two or more of
+ * the three keys are present, the blob is rejected as ambiguous so the admin
+ * fixes the JSON rather than silently picking one path.
  *
  * `categories` is set when the categories path is detected; `recipes` is set
- * when the recipes path is detected. The two are mutually exclusive — a blob
- * with both keys is rejected as ambiguous so the admin fixes the JSON
- * rather than silently picking one path.
+ * when the recipes path is detected; `foodRecipes` is set when the foodRecipes
+ * path is detected. The three are mutually exclusive.
  */
 type DetectionResult =
   | { ok: false; error: string }
@@ -1213,25 +1879,32 @@ type DetectionResult =
       shape: "recipes";
       recipes: ImportRecipe[];
       warnings: string[];
+    }
+  | {
+      ok: true;
+      shape: "foodRecipes";
+      foodRecipes: ImportFoodRecipe[];
+      warnings: string[];
     };
 
 /**
  * Auto-detects the import shape from the parsed JSON's top-level keys and
  * dispatches to the matching validator. The existing categories path is
- * unchanged; the recipes path is new.
+ * unchanged; the recipes and foodRecipes paths are new.
  *
  * Detection rules:
- *   - has `recipes` array (and no `categories`) → recipes path
- *   - has `categories` array (and no `recipes`) → categories path
- *   - has both → ambiguous, rejected
- *   - has neither → shape error
+ *   - has `foodRecipes` array (and no `categories`/`recipes`) → foodRecipes path
+ *   - has `recipes` array (and no `categories`/`foodRecipes`) → recipes path
+ *   - has `categories` array (and no `recipes`/`foodRecipes`) → categories path
+ *   - has 2+ of the three keys → ambiguous, rejected
+ *   - has none → shape error
  *
  * Unknown top-level keys are intentionally ignored. In particular a
  * `note` key is treated as a human comment and skipped — a blob like
  * `{ "note": "...", "recipes": [...] }` is valid and dispatches to the
- * recipes path. Only `categories` and `recipes` participate in shape
- * detection; everything else (including `note` and the legacy `position`
- * field) is silently dropped.
+ * recipes path. Only `categories`, `recipes`, and `foodRecipes` participate
+ * in shape detection; everything else (including `note` and the legacy
+ * `position` field) is silently dropped.
  */
 function detectImportShape(parsed: unknown): DetectionResult {
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -1240,14 +1913,32 @@ function detectImportShape(parsed: unknown): DetectionResult {
   const root = parsed as Record<string, unknown>;
   const hasCategories = Array.isArray(root.categories);
   const hasRecipes = Array.isArray(root.recipes);
+  const hasFoodRecipes = Array.isArray(root.foodRecipes);
   // `note` and any other unknown top-level keys are intentionally ignored —
-  // only `categories` and `recipes` drive shape detection.
+  // only `categories`, `recipes`, and `foodRecipes` drive shape detection.
 
-  if (hasCategories && hasRecipes) {
+  const detectedCount =
+    (hasCategories ? 1 : 0) + (hasRecipes ? 1 : 0) + (hasFoodRecipes ? 1 : 0);
+  if (detectedCount > 1) {
+    const present: string[] = [];
+    if (hasCategories) present.push("'categories'");
+    if (hasRecipes) present.push("'recipes'");
+    if (hasFoodRecipes) present.push("'foodRecipes'");
     return {
       ok: false,
-      error:
-        "Ambiguous JSON: provide either 'categories' or 'recipes', not both.",
+      error: `Ambiguous JSON: provide exactly one of 'categories', 'recipes', or 'foodRecipes' (found ${present.join(" and ")}).`,
+    };
+  }
+  if (hasFoodRecipes) {
+    const foodRecipesArray = root.foodRecipes as unknown[];
+    const result = validateFoodRecipesBlob(foodRecipesArray);
+    if (!result.ok)
+      return { ok: false, error: result.error ?? "Invalid foodRecipes JSON." };
+    return {
+      ok: true,
+      shape: "foodRecipes",
+      foodRecipes: result.foodRecipes ?? [],
+      warnings: result.warnings ?? [],
     };
   }
   if (hasRecipes) {
@@ -1276,7 +1967,8 @@ function detectImportShape(parsed: unknown): DetectionResult {
   }
   return {
     ok: false,
-    error: "JSON must have a top-level 'categories' or 'recipes' array.",
+    error:
+      "JSON must have a top-level 'categories', 'recipes', or 'foodRecipes' array.",
   };
 }
 
@@ -1330,6 +2022,14 @@ interface ImportRecipe {
   yield?: string;
   shelfLife?: string;
   qualityIdentifier?: string[];
+  /**
+   * Optional food-recipe payload attached to a recipes-path item. When
+   * present it is passed through to createItem/updateItem via the foodRecipe
+   * parameter (parallel to the categories-path foodRecipe field). Items
+   * without a foodRecipe pass null/undefined. A beverage recipe and a food
+   * recipe can coexist on the same Library item.
+   */
+  foodRecipe?: ImportFoodRecipe;
 }
 
 interface RecipesValidationResult {
@@ -1564,10 +2264,106 @@ function validateRecipesBlob(rawRecipes: unknown[]): RecipesValidationResult {
       qualityIdentifier: Array.isArray(r.qualityIdentifier)
         ? r.qualityIdentifier.filter((q): q is string => typeof q === "string")
         : undefined,
+      // Optional food-recipe payload (parallel to the categories-path
+      // foodRecipe field). Validated structurally; an invalid shape is dropped
+      // to undefined so the recipe imports as a beverage-only item.
+      foodRecipe: readImportFoodRecipe(r.foodRecipe),
     });
   }
 
   return { ok: true, recipes, warnings };
+}
+
+/* ------------------------ Food-recipes validation ------------------------ */
+
+interface FoodRecipesValidationResult {
+  ok: boolean;
+  error?: string;
+  foodRecipes?: ImportFoodRecipe[];
+  warnings?: string[];
+}
+
+/**
+ * Validates the parsed `foodRecipes` array. Mirrors validateRecipesBlob:
+ * per-food-recipe validation collects row-level errors WITHOUT aborting the
+ * whole blob — invalid food recipes are dropped from the returned array but
+ * the rest are still imported. The caller (runFoodRecipesImport) processes
+ * only the valid food recipes.
+ *
+ * Required per food recipe: title, category, station, kind ('prep' |
+ * 'menuBuild'), components (non-empty array of {item, amount}), steps
+ * (non-empty array of strings). readImportFoodRecipe treats title/category
+ * as optional (because they're optional when a foodRecipe is attached to a
+ * categories/recipes-path item); this validator re-checks them as required
+ * because the foodRecipes path drives grouping + matching by category and
+ * title, exactly like the recipes path.
+ *
+ * Optional fields mirror ImportFoodRecipe: menuSection, serviceware,
+ * expoSteps, allergenNote, yieldText, shelfLife, holdTemp, storeTemp,
+ * lineUtensil, equipment, qualityIdentifiers, plus the import-only
+ * convenience fields (photo, subtitle, tags, notes) forwarded to the
+ * created Library item.
+ *
+ * Within-blob duplicate titles in the same category are reported as
+ * warnings (the import loop skips later duplicates deterministically) —
+ * mirrors validateRecipesBlob's within-blob duplicate detection.
+ */
+function validateFoodRecipesBlob(
+  rawFoodRecipes: unknown[],
+): FoodRecipesValidationResult {
+  const foodRecipes: ImportFoodRecipe[] = [];
+  const warnings: string[] = [];
+  // Track (category, title) pairs seen earlier in THIS blob so within-blob
+  // duplicates can be reported as warnings and skipped deterministically.
+  const seenPairs = new Set<string>();
+
+  for (let i = 0; i < rawFoodRecipes.length; i += 1) {
+    const raw = rawFoodRecipes[i];
+    if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+      return { ok: false, error: `foodRecipes[${i}] must be an object.` };
+    }
+    const r = raw as Record<string, unknown>;
+
+    // Structural validation via the shared reader. Returns undefined when
+    // the shape is absent or malformed (graceful drop). When it returns a
+    // shape, station/kind/components/steps are already validated; title and
+    // category are validated only when present (the foodRecipes path requires
+    // them, so we re-check below).
+    const parsed = readImportFoodRecipe(r);
+    if (parsed === undefined) {
+      warnings.push(
+        `foodRecipes[${i}]: missing or invalid food recipe (station, kind, components, steps required). Skipped.`,
+      );
+      continue;
+    }
+
+    // Re-check title and category as required on the foodRecipes path.
+    const rowErrors: string[] = [];
+    if (parsed.title.length === 0) rowErrors.push("title is required");
+    if (parsed.category.length === 0) rowErrors.push("category is required");
+
+    if (rowErrors.length > 0) {
+      const label =
+        parsed.title.length > 0 ? `"${parsed.title}"` : `foodRecipes[${i}]`;
+      warnings.push(`${label}: ${rowErrors.join("; ")}. Skipped.`);
+      continue;
+    }
+
+    // Within-blob duplicate detection (category + title) — mirrors
+    // validateRecipesBlob's pair-key check.
+    const pairKey = `${parsed.category}\u0000${parsed.title}`;
+    if (seenPairs.has(pairKey)) {
+      warnings.push(
+        `Duplicate food recipe "${parsed.title}" in category "${parsed.category}" at foodRecipes[${i}] — the later occurrence will be skipped.`,
+      );
+      continue;
+    }
+    seenPairs.add(pairKey);
+
+    foodRecipes.push(parsed);
+  }
+
+  return { ok: true, foodRecipes, warnings };
 }
 
 /* --------------------------- Recipe summary ------------------------------ */
@@ -1597,6 +2393,36 @@ function formatRecipeSummary(
   if (rowErrorCount > 0) {
     base += ` ${rowErrorCount} ${
       rowErrorCount === 1 ? "recipe was" : "recipes were"
+    } skipped due to validation errors.`;
+  }
+  return base;
+}
+
+/**
+ * Builds the post-food-recipe-import summary line. Mirrors formatRecipeSummary
+ * but counts food recipes (not recipes) and appends a row-level errors clause
+ * when any food recipes were dropped during validation.
+ */
+function formatFoodRecipeSummary(
+  createdCategories: number,
+  updatedFoodRecipes: number,
+  createdFoodRecipes: number,
+  skippedFoodRecipes: number,
+  skippedDuplicates: number,
+  rowErrorCount: number,
+): string {
+  const catWord = createdCategories === 1 ? "category" : "categories";
+  const updatedWord = updatedFoodRecipes === 1 ? "food recipe" : "food recipes";
+  const createdWord = createdFoodRecipes === 1 ? "food recipe" : "food recipes";
+  const skippedWord = skippedFoodRecipes === 1 ? "food recipe" : "food recipes";
+  const dupWord = skippedDuplicates === 1 ? "food recipe" : "food recipes";
+  let base = `Created ${createdCategories} ${catWord}, updated ${updatedFoodRecipes} ${updatedWord}, created ${createdFoodRecipes} ${createdWord}, skipped ${skippedFoodRecipes} ${skippedWord}.`;
+  if (skippedDuplicates > 0) {
+    base += ` Skipped ${skippedDuplicates} within-blob duplicate ${dupWord} (same title earlier in this import).`;
+  }
+  if (rowErrorCount > 0) {
+    base += ` ${rowErrorCount} ${
+      rowErrorCount === 1 ? "food recipe was" : "food recipes were"
     } skipped due to validation errors.`;
   }
   return base;
@@ -1671,6 +2497,37 @@ const PLACEHOLDER = `{
       "yield": "1.875 L",
       "shelfLife": "48 hours refrigerated",
       "qualityIdentifier": ["batch-number"]
+    }
+  ]
+}
+
+// Or import food recipes directly (auto-detected by the "foodRecipes" key):
+{
+  "position": "Line Cook",
+  "foodRecipes": [
+    {
+      "title": "House Marinara",
+      "category": "Sauces",
+      "station": "Prep",
+      "kind": "prep",
+      "components": [
+        { "item": "Crushed Tomatoes", "amount": "2 cans" },
+        { "item": "Garlic", "amount": "6 cloves", "group": "Aromatics" }
+      ],
+      "steps": [
+        "Sweat garlic in olive oil.",
+        "Add tomatoes and simmer 45 minutes."
+      ],
+      "expoSteps": ["Heat to order in a sautoir."],
+      "serviceware": [{ "item": "Cambro", "amount": "1 qt" }],
+      "yieldText": "2 qt",
+      "shelfLife": "5 days refrigerated",
+      "holdTemp": "165F",
+      "storeTemp": "33-38F",
+      "qualityIdentifiers": ["taste", "color"],
+      "subtitle": "Prep batch",
+      "tags": ["prep", "sauce"],
+      "notes": "Scale per service."
     }
   ]
 }`;

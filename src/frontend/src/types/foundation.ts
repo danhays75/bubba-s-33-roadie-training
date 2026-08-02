@@ -75,7 +75,7 @@ export interface UserProfile {
  * default (search box + category tile grid); `'orientation'` renders the
  * patriotic Orientation layout.
  */
-export type LayoutStyle = "library" | "orientation";
+export type LayoutStyle = "library" | "orientation" | "kitchen";
 
 export interface Position {
   id: string;
@@ -183,6 +183,103 @@ export interface Recipe {
 }
 
 /**
+ * The kind of a food recipe. Mirrors the backend Candid `FoodRecipeKind`
+ * variant surfaced in backend.d.ts (`{ #prep; #menuBuild }`). The hook layer
+ * translates the enum to this plain string union and back to the enum on the
+ * way in, so components stay in string-land.
+ *
+ * - `'prep'` — a prep recipe: a make-ahead component produced in bulk
+ *   (e.g. pizza sauce, marinated chicken). Renders as a prep tile in the
+ *   Kitchen browser and as a prep card on the item detail page.
+ * - `'menuBuild'` — a menu build recipe: an assembled-to-order menu item
+ *   built from prep components (e.g. a pizza, a sandwich). Renders as a
+ *   menu-build card with EXPO finishing steps on the item detail page.
+ */
+export type FoodRecipeKind = "prep" | "menuBuild";
+
+/**
+ * A single measured component in a food recipe (e.g. "2 cups" / "Pizza
+ * Sauce"). Mirrors the backend Candid FoodComponent shape exactly (item,
+ * amount, group, note). `group` and `note` are null when the backend omits
+ * the optional ?Text fields. No ids on food sub-records — they are value
+ * records, so React keys are derived positionally by the editor.
+ */
+export interface FoodComponent {
+  item: string;
+  amount: string;
+  group: string | null;
+  note: string | null;
+}
+
+/**
+ * A single piece of serviceware for a food recipe (e.g. "1" / "9" Pizza
+ * Box"). Mirrors the backend Candid FoodServiceware shape exactly (item,
+ * amount). Serviceware is the plating/packaging layer of a menu-build
+ * recipe — what the finished item is served in or on.
+ */
+export interface FoodServiceware {
+  item: string;
+  amount: string;
+}
+
+/**
+ * A food recipe attached to a Library item. Mirrors the backend Candid
+ * FoodRecipe shape: station, kind (prep/menuBuild), menu section,
+ * serviceware, components, steps, EXPO steps, allergen note, yield, shelf
+ * life, hold/store temps, line utensil, equipment, and quality identifiers.
+ *
+ * All fields are plain strings / arrays — no bigint ids to translate. The
+ * hook layer maps this 1:1 via toFoodRecipe/fromFoodRecipe, normalizing
+ * optional ?Text fields to null on the way in and to undefined on the way
+ * out (the Candid ?Text boundary expects undefined for absent optionals).
+ *
+ * - `station` — the kitchen station this recipe belongs to (e.g. "Grill",
+ *   "Pizza", "EXPO"). Drives the station chip color on the kitchen browser
+ *   and the food recipe card.
+ * - `kind` — `'prep'` or `'menuBuild'` (see FoodRecipeKind).
+ * - `menuSection` — the menu section the menu-build item is filed under
+ *   (e.g. "Specialty Pizzas"), null for prep recipes.
+ * - `serviceware` — plating/packaging for a menu-build recipe (empty array
+ *   for prep recipes).
+ * - `components` — the measured components that make up the recipe (prep
+ *   components for a menu-build, ingredients for a prep).
+ * - `steps` — the build/prep steps.
+ * - `expoSteps` — the EXPO finishing steps for a menu-build recipe
+ *   (empty array for prep recipes). Rendered in a purple-red callout.
+ * - `allergenNote` — optional allergen callout, null when absent.
+ * - `yieldText` — batch yield description for a prep recipe (e.g. "2 qt"),
+ *   null when absent.
+ * - `shelfLife` — shelf-life label for a prep recipe (e.g. "5 Days"),
+ *   null when absent.
+ * - `holdTemp` — hold-temperature label, null when absent.
+ * - `storeTemp` — storage-temperature label, null when absent.
+ * - `lineUtensil` — the line utensil used to portion/serve (e.g. "8 oz
+ *   ladle"), null when absent.
+ * - `equipment` — the equipment needed (e.g. "Flat-top grill"), null when
+ *   absent. NOTE: this is a single optional string (not an array) — distinct
+ *   from the beverage Recipe.equipment array.
+ * - `qualityIdentifiers` — quality checks to perform (required array,
+ *   defaults to []).
+ */
+export interface FoodRecipe {
+  station: string;
+  kind: FoodRecipeKind;
+  menuSection: string | null;
+  serviceware: FoodServiceware[];
+  components: FoodComponent[];
+  steps: string[];
+  expoSteps: string[];
+  allergenNote: string | null;
+  yieldText: string | null;
+  shelfLife: string | null;
+  holdTemp: string | null;
+  storeTemp: string | null;
+  lineUtensil: string | null;
+  equipment: string | null;
+  qualityIdentifiers: string[];
+}
+
+/**
  * A Library category scoped to a single position (e.g. "Cocktails" under
  * Bartender). Categories are ordered per-parent (within their position) using
  * sortOrder.
@@ -214,6 +311,15 @@ export interface Category {
  * the item is a plain Library card, not a cocktail spec). When present, the
  * hook layer maps the backend Recipe 1:1 (variantLabel, not label). Recipes
  * are an intentional LIGHT island in the UI — see AGENTS.md.
+ *
+ * `foodRecipe` is null when the backend omits the optional ?FoodRecipe field
+ * (i.e. the item is a beverage/plain card, not a food recipe). When present,
+ * the hook layer maps the backend FoodRecipe 1:1 via toFoodRecipe. A food
+ * recipe is the sibling of a beverage recipe: station, kind (prep/menuBuild),
+ * serviceware, components, steps, expo steps, allergen note, yield, shelf
+ * life, hold/store temps, line utensil, equipment, and quality identifiers.
+ * The RecipeCardPage dispatches on `foodRecipe` to render a FoodRecipeCard
+ * instead of the beverage/generic card.
  */
 export interface LibraryItem {
   id: string;
@@ -227,4 +333,5 @@ export interface LibraryItem {
   seasonal: boolean;
   sortOrder: number;
   recipe: Recipe | null;
+  foodRecipe: FoodRecipe | null;
 }

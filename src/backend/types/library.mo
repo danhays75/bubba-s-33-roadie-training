@@ -83,14 +83,101 @@ module {
     recapAudio : ?Text;
   };
 
+  // A food recipe kind. #menuBuild is a plated dish built to order (with
+  // serviceware, components, build steps, and EXPO finishing steps); #prep is
+  // a batch/prep recipe (with a yield, shelf life, and step-grouped
+  // ingredient tables). Mirrors the beverage `recipe` field's additive
+  // pattern: presence of `foodRecipe` on a LibraryItem marks the item as a
+  // food recipe; absence keeps the existing generic / beverage-recipe shape.
+  public type FoodRecipeKind = {
+    #menuBuild;
+    #prep;
+  };
+
+  // A single component line in a food recipe's component list. `item` is the
+  // component name (e.g. "Cheddar Cheese", "Burger Patty"). `amount` is the
+  // free-text measure (e.g. "2 oz", "1 each"). `group` is the optional
+  // grouping label — for prep recipes it names the ingredient table
+  // ("Step 1", "Step 2", …); for menuBuild recipes it is typically null
+  // (components render as a flat table). `note` is an optional per-component
+  // note (e.g. "to taste", "heated"). Both `group` and `note` default to
+  // null — most components carry neither.
+  public type FoodComponent = {
+    item : Text;
+    amount : Text;
+    group : ?Text;
+    note : ?Text;
+  };
+
+  // A plating vessel / serviceware line for a menuBuild food recipe (e.g.
+  // the plate, bowl, or board the dish is plated on). `item` is the
+  // serviceware name (e.g. "Cast Iron Skillet", "10" Bowl"). `amount` is the
+  // free-text quantity (e.g. "1 each"). Serviceware renders first, in a
+  // subtle "Plating" group, ahead of the components table. Only meaningful
+  // for #menuBuild recipes; #prep recipes carry an empty serviceware list.
+  public type FoodServiceware = {
+    item : Text;
+    amount : Text;
+  };
+
+  // A structured food recipe payload, parallel to the beverage `Recipe`.
+  // When present on a LibraryItem (as `foodRecipe`), the item is a food
+  // recipe and the Food Recipe card renders from this payload; when null,
+  // the item keeps the existing generic / beverage-recipe shape with no
+  // regression.
+  //
+  // `station` is the kitchen station the recipe belongs to ("Expo", "Grill",
+  // "Fry", "Pizza", "Sauté", "Hot Prep", "Cold Prep", …) — drives the
+  // station-filter chips in the kitchen browser. `kind` selects the layout:
+  // #menuBuild renders the plated-dish card (serviceware + components +
+  // build steps + EXPO callout); #prep renders the batch/prep card
+  // (yield/shelf-life meta + step-grouped ingredients + procedure +
+  // quality-ID checklist).
+  //
+  // `menuSection` is the menu section the dish belongs to ("Appetizers",
+  // "Burgers", …) — only meaningful for #menuBuild; null for #prep.
+  // `serviceware` is the ordered plating-vessel list (#menuBuild only;
+  // empty for #prep). `components` is the ordered component/ingredient
+  // list — for #prep it is grouped by `group` ("Step 1", "Step 2", …).
+  // `steps` is the ordered build/procedure steps. `expoSteps` is the
+  // highlighted EXPO finishing steps (#menuBuild only; empty for #prep).
+  // `allergenNote` is the optional allergen callout text.
+  //
+  // Prep-only meta (all optional, additive): `yieldText` is the batch yield
+  // string ("4 ¾ gallons"); `shelfLife` is the storage shelf life;
+  // `holdTemp` is the hold temperature; `storeTemp` is the storage
+  // temperature; `lineUtensil` is the line utensil; `equipment` is the
+  // equipment needed. `qualityIdentifiers` is the ordered quality-check
+  // checklist (✓ bullets) — defaults to an empty array (like components).
+  public type FoodRecipe = {
+    station : Text;
+    kind : FoodRecipeKind;
+    menuSection : ?Text;
+    serviceware : [FoodServiceware];
+    components : [FoodComponent];
+    steps : [Text];
+    expoSteps : [Text];
+    allergenNote : ?Text;
+    yieldText : ?Text;
+    shelfLife : ?Text;
+    holdTemp : ?Text;
+    storeTemp : ?Text;
+    lineUtensil : ?Text;
+    equipment : ?Text;
+    qualityIdentifiers : [Text];
+  };
+
   // A Library item (a recipe / reference entry). Belongs to a category.
   // sortOrder is PER CATEGORY (1-based, renumbered on delete/reorder) — NOT a
   // global running count. photo is optional — never required to save an item.
   // details is a variable-length array the admin can add/remove freely.
   // subtitle is optional — renders underneath the title, a little smaller.
-  // recipe is optional — when present, the item is a recipe and the recipe
-  // card renders from this structured payload; when null, the item keeps the
-  // existing generic detail shape. An item is treated as an LTO when
+  // recipe is optional — when present, the item is a beverage recipe and the
+  // recipe card renders from this structured payload; when null, the item
+  // keeps the existing generic detail shape. foodRecipe is optional — when
+  // present, the item is a food recipe and the Food Recipe card renders from
+  // this structured payload (parallel to the beverage `recipe` field); when
+  // null, the item is not a food recipe. An item is treated as an LTO when
   // `seasonal` is true and/or it carries an "LTO" tag.
   public type LibraryItem = {
     id : Nat;
@@ -104,5 +191,6 @@ module {
     seasonal : Bool;
     sortOrder : Nat;
     recipe : ?Recipe;
+    foodRecipe : ?FoodRecipe;
   };
 };
