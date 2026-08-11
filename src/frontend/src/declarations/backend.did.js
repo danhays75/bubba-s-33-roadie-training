@@ -33,10 +33,15 @@ export const FoodRecipeKind = IDL.Variant({
   'prep' : IDL.Null,
   'menuBuild' : IDL.Null,
 });
+export const FoodComponentSize = IDL.Record({
+  'value' : IDL.Text,
+  'size' : IDL.Text,
+});
 export const FoodComponent = IDL.Record({
   'anchorY' : IDL.Opt(IDL.Float64),
   'item' : IDL.Text,
   'note' : IDL.Opt(IDL.Text),
+  'amounts' : IDL.Vec(FoodComponentSize),
   'group' : IDL.Opt(IDL.Text),
   'amount' : IDL.Text,
 });
@@ -633,10 +638,15 @@ export const idlFactory = ({ IDL }) => {
     'prep' : IDL.Null,
     'menuBuild' : IDL.Null,
   });
+  const FoodComponentSize = IDL.Record({
+    'value' : IDL.Text,
+    'size' : IDL.Text,
+  });
   const FoodComponent = IDL.Record({
     'anchorY' : IDL.Opt(IDL.Float64),
     'item' : IDL.Text,
     'note' : IDL.Opt(IDL.Text),
+    'amounts' : IDL.Vec(FoodComponentSize),
     'group' : IDL.Opt(IDL.Text),
     'amount' : IDL.Text,
   });

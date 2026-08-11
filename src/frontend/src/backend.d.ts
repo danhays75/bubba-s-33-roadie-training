@@ -82,6 +82,7 @@ export interface FoodComponent {
     anchorY?: number;
     item: string;
     note?: string;
+    amounts: Array<FoodComponentSize>;
     group?: string;
     amount: string;
 }
@@ -156,6 +157,10 @@ export type FlashcardContent = Array<Flashcard>;
 export interface FoodServiceware {
     item: string;
     amount: string;
+}
+export interface FoodComponentSize {
+    value: string;
+    size: string;
 }
 export interface NsoImportInput {
     moduleName: string;

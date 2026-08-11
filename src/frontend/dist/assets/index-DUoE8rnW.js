@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-UJXyaiYn.js"(exports, module) {
+  "assets/index-DUoE8rnW.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33259,10 +33259,15 @@ variant ${k2} -> ${e.message}`, {
       "prep": Null,
       "menuBuild": Null
     });
+    const FoodComponentSize = Record({
+      "value": Text$2,
+      "size": Text$2
+    });
     const FoodComponent = Record({
       "anchorY": Opt(Float64),
       "item": Text$2,
       "note": Opt(Text$2),
+      "amounts": Vec(FoodComponentSize),
       "group": Opt(Text$2),
       "amount": Text$2
     });
@@ -33855,10 +33860,15 @@ variant ${k2} -> ${e.message}`, {
         "prep": IDL2.Null,
         "menuBuild": IDL2.Null
       });
+      const FoodComponentSize2 = IDL2.Record({
+        "value": IDL2.Text,
+        "size": IDL2.Text
+      });
       const FoodComponent2 = IDL2.Record({
         "anchorY": IDL2.Opt(IDL2.Float64),
         "item": IDL2.Text,
         "note": IDL2.Opt(IDL2.Text),
+        "amounts": IDL2.Vec(FoodComponentSize2),
         "group": IDL2.Opt(IDL2.Text),
         "amount": IDL2.Text
       });
@@ -36037,6 +36047,7 @@ variant ${k2} -> ${e.message}`, {
         anchorY: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.anchorY)),
         item: value.item,
         note: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.note)),
+        amounts: value.amounts,
         group: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.group)),
         amount: value.amount
       };
@@ -36464,6 +36475,7 @@ variant ${k2} -> ${e.message}`, {
         anchorY: value.anchorY ? candid_some(value.anchorY) : candid_none(),
         item: value.item,
         note: value.note ? candid_some(value.note) : candid_none(),
+        amounts: value.amounts,
         group: value.group ? candid_some(value.group) : candid_none(),
         amount: value.amount
       };
@@ -51544,7 +51556,14 @@ variant ${k2} -> ${e.message}`, {
           amount: c2.amount,
           group: c2.group && c2.group.length > 0 ? c2.group : null,
           note: c2.note && c2.note.length > 0 ? c2.note : null,
-          anchorY: typeof c2.anchorY === "number" && Number.isFinite(c2.anchorY) ? c2.anchorY : null
+          anchorY: typeof c2.anchorY === "number" && Number.isFinite(c2.anchorY) ? c2.anchorY : null,
+          // Backend amounts is a non-optional Array<FoodComponentSize>; default
+          // to [] when absent so the frontend treats components without per-size
+          // amounts uniformly (empty array = scalar `amount` fallback).
+          amounts: (c2.amounts ?? []).map((a2) => ({
+            size: a2.size,
+            value: a2.value
+          }))
         })),
         steps: r2.steps,
         expoSteps: r2.expoSteps,
@@ -51576,7 +51595,9 @@ variant ${k2} -> ${e.message}`, {
           amount: c2.amount,
           group: c2.group && c2.group.length > 0 ? c2.group : void 0,
           note: c2.note && c2.note.length > 0 ? c2.note : void 0,
-          anchorY: c2.anchorY !== null ? c2.anchorY : void 0
+          anchorY: c2.anchorY !== null ? c2.anchorY : void 0,
+          // amounts is a non-optional array on the backend; pass through as-is.
+          amounts: c2.amounts.map((a2) => ({ size: a2.size, value: a2.value }))
         })),
         steps: r2.steps,
         expoSteps: r2.expoSteps,
@@ -52772,7 +52793,11 @@ variant ${k2} -> ${e.message}`, {
           amount: c2.amount,
           group: c2.group && c2.group.length > 0 ? c2.group : null,
           note: c2.note && c2.note.length > 0 ? c2.note : null,
-          anchorY: typeof c2.anchorY === "number" && Number.isFinite(c2.anchorY) ? c2.anchorY : null
+          anchorY: typeof c2.anchorY === "number" && Number.isFinite(c2.anchorY) ? c2.anchorY : null,
+          // Per-size amounts: map c.amounts to the foundation FoodComponentSize[]
+          // shape. Default to [] when absent — the back-compat sentinel that
+          // means "use the scalar amount fallback".
+          amounts: (c2.amounts ?? []).map((a2) => ({ size: a2.size, value: a2.value }))
         })),
         steps: r2.steps,
         expoSteps: r2.expoSteps,
@@ -52918,7 +52943,18 @@ variant ${k2} -> ${e.message}`, {
         const group = typeof cr.group === "string" ? cr.group : void 0;
         const note = typeof cr.note === "string" ? cr.note : void 0;
         const anchorY = typeof cr.anchorY === "number" && Number.isFinite(cr.anchorY) ? Math.max(0, Math.min(1, cr.anchorY)) : void 0;
-        components.push({ item, amount, group, note, anchorY });
+        const amounts = [];
+        if (Array.isArray(cr.amounts)) {
+          for (const a2 of cr.amounts) {
+            if (typeof a2 !== "object" || a2 === null || Array.isArray(a2)) continue;
+            const ar = a2;
+            const size2 = typeof ar.size === "string" ? ar.size.trim() : "";
+            const value = typeof ar.value === "string" ? ar.value.trim() : "";
+            if (size2.length === 0 || value.length === 0) continue;
+            amounts.push({ size: size2, value });
+          }
+        }
+        components.push({ item, amount, group, note, anchorY, amounts });
       }
       if (!Array.isArray(r2.steps) || r2.steps.length === 0) return void 0;
       const steps = r2.steps.filter((s) => typeof s === "string");
@@ -52984,7 +53020,11 @@ variant ${k2} -> ${e.message}`, {
           amount: c2.amount,
           group: strOrNull(c2.group),
           note: strOrNull(c2.note),
-          anchorY: typeof c2.anchorY === "number" && Number.isFinite(c2.anchorY) ? c2.anchorY : null
+          anchorY: typeof c2.anchorY === "number" && Number.isFinite(c2.anchorY) ? c2.anchorY : null,
+          // Per-size amounts: map c.amounts (Array of { size, value }) to the
+          // foundation FoodComponentSize[] shape. Default to [] when absent — the
+          // back-compat sentinel that means "use the scalar amount fallback".
+          amounts: (c2.amounts ?? []).map((a2) => ({ size: a2.size, value: a2.value }))
         })),
         steps: raw.steps,
         expoSteps: raw.expoSteps ?? [],
@@ -55609,6 +55649,32 @@ variant ${k2} -> ${e.message}`, {
       const section = food.menuSection ?? "";
       return /burger/i.test(section) ? "Build Your Burger" : "Build Your Plate";
     }
+    function isMultiSizeRecipe(food) {
+      return food.components.some(
+        (c2) => Array.isArray(c2.amounts) && c2.amounts.length > 0
+      );
+    }
+    function getSizeLabels(food) {
+      const seen = /* @__PURE__ */ new Set();
+      const labels = [];
+      for (const c2 of food.components) {
+        if (!Array.isArray(c2.amounts)) continue;
+        for (const a2 of c2.amounts) {
+          const label = a2.size;
+          if (label.length === 0 || seen.has(label)) continue;
+          seen.add(label);
+          labels.push(label);
+        }
+      }
+      return labels;
+    }
+    function resolveAmountForSize(component, selectedSize) {
+      if (Array.isArray(component.amounts) && component.amounts.length > 0 && selectedSize != null && selectedSize.length > 0) {
+        const match2 = component.amounts.find((a2) => a2.size === selectedSize);
+        if (match2 != null) return match2.value;
+      }
+      return component.amount;
+    }
     function BuildCardFoodRecipeCard({
       item,
       food,
@@ -55622,6 +55688,12 @@ variant ${k2} -> ${e.message}`, {
       const photo = item.photo ?? "";
       const componentCount = food.components.length;
       const popoutComponent = popoutIndex != null ? food.components[popoutIndex] ?? null : null;
+      const multiSize = isMultiSizeRecipe(food);
+      const sizeLabels2 = multiSize ? getSizeLabels(food) : [];
+      const [selectedSize, setSelectedSize] = reactExports.useState(
+        multiSize && sizeLabels2.length > 0 ? sizeLabels2[0] : null
+      );
+      const isSingleDistinctSize = multiSize && sizeLabels2.length === 1;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "article",
         {
@@ -55643,21 +55715,68 @@ variant ${k2} -> ${e.message}`, {
                       children: kicker
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
                       className: "build-card-title-band",
                       "data-ocid": "library.item.food_recipe.build.title_band",
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "h2",
-                        {
-                          className: "build-card-title",
-                          "data-ocid": "library.item.food_recipe.build.title",
-                          children: item.title
-                        }
-                      )
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "h2",
+                          {
+                            className: "build-card-title",
+                            "data-ocid": "library.item.food_recipe.build.title",
+                            children: item.title
+                          }
+                        ),
+                        multiSize && sizeLabels2.length > 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: "build-card-size-picker",
+                            role: "tablist",
+                            "aria-label": "Select size",
+                            "data-ocid": "library.item.food_recipe.build.size_picker",
+                            children: sizeLabels2.map((label) => {
+                              const active = selectedSize === label;
+                              return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "button",
+                                {
+                                  type: "button",
+                                  role: "tab",
+                                  "aria-selected": active,
+                                  className: `build-card-size-btn${active ? " on" : ""}`,
+                                  onClick: () => setSelectedSize(label),
+                                  "data-ocid": `library.item.food_recipe.build.size_btn.${label}`,
+                                  children: label
+                                },
+                                label
+                              );
+                            })
+                          }
+                        ) : null,
+                        isSingleDistinctSize ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "span",
+                          {
+                            className: "build-card-size-static",
+                            "data-ocid": "library.item.food_recipe.build.size_static",
+                            children: sizeLabels2[0]
+                          }
+                        ) : null
+                      ]
                     }
                   ),
+                  multiSize && sizeLabels2.length > 1 && selectedSize != null ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "p",
+                    {
+                      className: "build-card-size-caption",
+                      "data-ocid": "library.item.food_recipe.build.size_caption",
+                      children: [
+                        "Showing ",
+                        selectedSize,
+                        " amounts"
+                      ]
+                    }
+                  ) : null,
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
@@ -55733,7 +55852,17 @@ variant ${k2} -> ${e.message}`, {
                                         className: "build-card-label-text",
                                         "data-ocid": `library.item.food_recipe.build.label_text.${i + 1}`,
                                         children: [
-                                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                                          multiSize ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "build-card-label-item", children: c2.item }),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              "span",
+                                              {
+                                                className: "build-card-amount-chip",
+                                                "data-ocid": `library.item.food_recipe.build.amount_chip.${i + 1}`,
+                                                children: resolveAmountForSize(c2, selectedSize)
+                                              }
+                                            )
+                                          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
                                             c2.item,
                                             " - ",
                                             c2.amount
@@ -55807,21 +55936,68 @@ variant ${k2} -> ${e.message}`, {
                       children: kicker
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
                       className: "build-card-title-band",
                       "data-ocid": "library.item.food_recipe.phone.build.title_band",
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "h2",
-                        {
-                          className: "build-card-title",
-                          "data-ocid": "library.item.food_recipe.phone.build.title",
-                          children: item.title
-                        }
-                      )
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "h2",
+                          {
+                            className: "build-card-title",
+                            "data-ocid": "library.item.food_recipe.phone.build.title",
+                            children: item.title
+                          }
+                        ),
+                        isSingleDistinctSize ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "span",
+                          {
+                            className: "build-card-size-static",
+                            "data-ocid": "library.item.food_recipe.phone.build.size_static",
+                            children: sizeLabels2[0]
+                          }
+                        ) : null
+                      ]
                     }
                   ),
+                  multiSize && sizeLabels2.length > 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "build-card-phone-size-picker",
+                      role: "tablist",
+                      "aria-label": "Select size",
+                      "data-ocid": "library.item.food_recipe.phone.build.size_picker",
+                      children: sizeLabels2.map((label) => {
+                        const active = selectedSize === label;
+                        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "button",
+                          {
+                            type: "button",
+                            role: "tab",
+                            "aria-selected": active,
+                            className: `build-card-size-btn${active ? " on" : ""}`,
+                            onClick: () => setSelectedSize(label),
+                            "data-ocid": `library.item.food_recipe.phone.build.size_btn.${label}`,
+                            children: label
+                          },
+                          label
+                        );
+                      })
+                    }
+                  ) : null,
+                  multiSize && sizeLabels2.length > 1 && selectedSize != null ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "p",
+                    {
+                      className: "build-card-size-caption is-phone",
+                      "data-ocid": "library.item.food_recipe.phone.build.size_caption",
+                      children: [
+                        "Showing ",
+                        selectedSize,
+                        " amounts"
+                      ]
+                    }
+                  ) : null,
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
@@ -55982,14 +56158,17 @@ variant ${k2} -> ${e.message}`, {
                                       children: popoutComponent.item
                                     }
                                   ),
-                                  popoutComponent.amount.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-                                    "span",
-                                    {
-                                      className: "build-card-phone-amount",
-                                      "data-ocid": "library.item.food_recipe.phone.build.popout.amount",
-                                      children: popoutComponent.amount
-                                    }
-                                  ) : null,
+                                  (() => {
+                                    const resolvedAmount = multiSize ? resolveAmountForSize(popoutComponent, selectedSize) : popoutComponent.amount;
+                                    return resolvedAmount.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      "span",
+                                      {
+                                        className: "build-card-phone-amount",
+                                        "data-ocid": "library.item.food_recipe.phone.build.popout.amount",
+                                        children: resolvedAmount
+                                      }
+                                    ) : null;
+                                  })(),
                                   popoutComponent.note != null && popoutComponent.note.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
                                     "p",
                                     {
@@ -71908,7 +72087,7 @@ ${escapeText(this.code(index2, length))}
         const cleanedDetails = details.filter(
           (d2) => d2.fieldLabel.trim().length > 0 || d2.value.trim().length > 0
         );
-        const finalDetails = cleanedDetails.length > 0 ? cleanedDetails : [{ id: makeDetailFieldId(), fieldLabel: "", value: "" }];
+        const finalDetails = cleanedDetails;
         const trimmedTitle = title.trim();
         const trimmedSubtitle = subtitle.trim();
         const trimmedPhoto = photo.trim();

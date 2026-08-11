@@ -22,6 +22,7 @@ import type {
   Category,
   DetailField,
   FoodComponent,
+  FoodComponentSize,
   FoodRecipe,
   FoodServiceware,
   LibraryItem,
@@ -1268,6 +1269,7 @@ function toItem(i: {
       amount: string;
       group?: string;
       note?: string;
+      amounts?: Array<{ size: string; value: string }>;
     }>;
     steps: Array<string>;
     expoSteps: Array<string>;
@@ -1356,6 +1358,7 @@ function toFoodRecipeLocal(
           group?: string;
           note?: string;
           anchorY?: number;
+          amounts?: Array<{ size: string; value: string }>;
         }>;
         steps: Array<string>;
         expoSteps: Array<string>;
@@ -1386,6 +1389,10 @@ function toFoodRecipeLocal(
         typeof c.anchorY === "number" && Number.isFinite(c.anchorY)
           ? c.anchorY
           : null,
+      // Per-size amounts: map c.amounts to the foundation FoodComponentSize[]
+      // shape. Default to [] when absent — the back-compat sentinel that
+      // means "use the scalar amount fallback".
+      amounts: (c.amounts ?? []).map((a) => ({ size: a.size, value: a.value })),
     })),
     steps: r.steps,
     expoSteps: r.expoSteps,
@@ -1479,6 +1486,7 @@ interface ImportFoodRecipe {
     group?: string;
     note?: string;
     anchorY?: number;
+    amounts?: Array<{ size: string; value: string }>;
   }>;
   steps: string[];
   expoSteps?: string[];
@@ -1743,7 +1751,24 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
       typeof cr.anchorY === "number" && Number.isFinite(cr.anchorY)
         ? Math.max(0, Math.min(1, cr.anchorY))
         : undefined;
-    components.push({ item, amount, group, note, anchorY });
+    // Per-component amounts: an array of { size, value } where both size and
+    // value must be non-empty strings. Malformed entries (missing size or
+    // value, or where either is not a non-empty string) are skipped. If the
+    // amounts array is absent or empty after filtering, set amounts to []
+    // (empty array) — the back-compat sentinel that means "use the scalar
+    // amount fallback". The scalar amount validation above is unchanged.
+    const amounts: Array<{ size: string; value: string }> = [];
+    if (Array.isArray(cr.amounts)) {
+      for (const a of cr.amounts) {
+        if (typeof a !== "object" || a === null || Array.isArray(a)) continue;
+        const ar = a as Record<string, unknown>;
+        const size = typeof ar.size === "string" ? ar.size.trim() : "";
+        const value = typeof ar.value === "string" ? ar.value.trim() : "";
+        if (size.length === 0 || value.length === 0) continue;
+        amounts.push({ size, value });
+      }
+    }
+    components.push({ item, amount, group, note, anchorY, amounts });
   }
 
   if (!Array.isArray(r.steps) || r.steps.length === 0) return undefined;
@@ -1862,6 +1887,10 @@ function buildFoodRecipePayload(
         typeof c.anchorY === "number" && Number.isFinite(c.anchorY)
           ? c.anchorY
           : null,
+      // Per-size amounts: map c.amounts (Array of { size, value }) to the
+      // foundation FoodComponentSize[] shape. Default to [] when absent — the
+      // back-compat sentinel that means "use the scalar amount fallback".
+      amounts: (c.amounts ?? []).map((a) => ({ size: a.size, value: a.value })),
     })),
     steps: raw.steps,
     expoSteps: raw.expoSteps ?? [],

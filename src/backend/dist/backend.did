@@ -230,9 +230,15 @@ type FoodRecipe =
    storeTemp: opt text;
    yieldText: opt text;
  };
+type FoodComponentSize = 
+ record {
+   size: text;
+   value: text;
+ };
 type FoodComponent = 
  record {
    amount: text;
+   amounts: vec FoodComponentSize;
    anchorY: opt float64;
    group: opt text;
    item: text;

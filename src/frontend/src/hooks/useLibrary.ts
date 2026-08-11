@@ -225,6 +225,7 @@ function toFoodRecipe(
           group?: string;
           note?: string;
           anchorY?: number;
+          amounts?: Array<{ size: string; value: string }>;
         }>;
         steps: Array<string>;
         expoSteps: Array<string>;
@@ -257,6 +258,13 @@ function toFoodRecipe(
         typeof c.anchorY === "number" && Number.isFinite(c.anchorY)
           ? c.anchorY
           : null,
+      // Backend amounts is a non-optional Array<FoodComponentSize>; default
+      // to [] when absent so the frontend treats components without per-size
+      // amounts uniformly (empty array = scalar `amount` fallback).
+      amounts: (c.amounts ?? []).map((a) => ({
+        size: a.size,
+        value: a.value,
+      })),
     })),
     steps: r.steps,
     expoSteps: r.expoSteps,
@@ -309,6 +317,8 @@ function fromFoodRecipe(
       group: c.group && c.group.length > 0 ? c.group : undefined,
       note: c.note && c.note.length > 0 ? c.note : undefined,
       anchorY: c.anchorY !== null ? c.anchorY : undefined,
+      // amounts is a non-optional array on the backend; pass through as-is.
+      amounts: c.amounts.map((a) => ({ size: a.size, value: a.value })),
     })),
     steps: r.steps,
     expoSteps: r.expoSteps,
@@ -373,6 +383,7 @@ function toItem(i: {
       group?: string;
       note?: string;
       anchorY?: number;
+      amounts?: Array<{ size: string; value: string }>;
     }>;
     steps: Array<string>;
     expoSteps: Array<string>;

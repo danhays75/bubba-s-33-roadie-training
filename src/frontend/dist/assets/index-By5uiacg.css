@@ -2321,6 +2321,9 @@ video {
 .shrink-0 {
   flex-shrink: 0;
 }
+.flex-grow {
+  flex-grow: 1;
+}
 .grow {
   flex-grow: 1;
 }
@@ -6364,8 +6367,15 @@ video {
 /* Title band — deep Bubba's blue with a subtle horizontal gradient
      (matches the Bubba's mock). Fixed hex (#1F3A8A -> #2A4AA6), not the
      per-category --category-accent, so the band is always Bubba's blue
-     regardless of the item's category. */
+     regardless of the item's category. Flex row so the title sits left
+     and the size picker (or static size label) sits right; the phone
+     @media block flips this to a column so the title stacks above the
+     full-width picker. */
 .build-card-title-band {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
     background: linear-gradient(90deg, #1f3a8a, #2a4aa6);
     color: #ffffff;
     padding: 0.9rem 1rem;
@@ -6380,6 +6390,75 @@ video {
     line-height: 1.05;
     color: #ffffff;
     margin: 0;
+  }
+/* Size picker — pill-shaped segmented control that sits on the right
+     side of the title band (desktop). Translucent white fill over the
+     Bubba's-blue band, rounded pill, tight gap. One .build-card-size-btn
+     per distinct size. Fixed hex (not --category-accent) so the picker
+     always reads as Bubba's brand. */
+.build-card-size-picker {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.18);
+  }
+/* Size button — translucent (inactive) segment inside the picker.
+     Light blue-white text, heavy weight, rounded corners, smooth
+     transition to the active state. Fixed hex per the Build Card family
+     convention. cursor: pointer; the button element handles clicks. */
+.build-card-size-btn {
+    border: none;
+    background: transparent;
+    color: #dfe6ff;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 17px;
+    line-height: 1;
+    padding: 7px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.18s cubic-bezier(0.4, 0, 0.2, 1), color 0.18s
+      cubic-bezier(0.4, 0, 0.2, 1);
+  }
+.build-card-size-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 1px;
+  }
+/* Active size button — solid white fill, brand-blue text. This is the
+     "selected size" state; clicking another button moves .on to it. */
+.build-card-size-btn.on {
+    background-color: #ffffff;
+    color: #16307a;
+  }
+/* Static size label — shown when there is exactly one distinct size
+     (no functional selector). Styled like an inactive size button so it
+     reads as part of the picker family without being clickable. Sits on
+     the right side of the title band. */
+.build-card-size-static {
+    display: inline-block;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 17px;
+    line-height: 1;
+    padding: 7px 20px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+/* Caption — "Showing <size> amounts" under the title band. Muted
+     light text on the cream paper surface, small size. Updates with the
+     selection. Rendered only for the multi-size case. The phone variant
+     (.is-phone) is styled inside the @media block below. */
+.build-card-size-caption {
+    margin: 4px 1rem 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.3;
+    color: oklch(var(--food-recipe-paper-fg) / 0.7);
   }
 /* Two-column stage — photo left ~48%, labels right ~52%. The labels
      layer stretches to the photo's height so anchorY percentages
@@ -6483,9 +6562,43 @@ video {
     line-height: 1.35;
     color: oklch(var(--food-recipe-paper-fg));
     min-width: 0;
+    /* Multi-size renders .build-card-label-item + .build-card-amount-chip
+       as flex children; single-amount renders a single <strong> so the
+       flex row is harmless there. align-items: baseline keeps the item
+       name and the amount chip on the same text line. */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.5rem;
   }
 .build-card-label-text strong {
     font-weight: 700;
+  }
+/* Item name — bold ingredient label inside .build-card-label-text
+     (multi-size case). Inline so it flows with the amount chip; bold so
+     the ingredient reads as the primary text. */
+.build-card-label-item {
+    font-weight: 700;
+    display: inline;
+  }
+/* Amount chip — pale blue pill with bold brand-blue text. Fixed hex
+     (#eef2fc bg, #1F3A8A fg) per the Build Card family convention so it
+     always reads as Bubba's brand. nowrap + min-width so short amounts
+     ("2 pinches") keep a tidy pill shape and long amounts never
+     truncate. text-align center so multi-word amounts sit centered. */
+.build-card-amount-chip {
+    display: inline-block;
+    background-color: #eef2fc;
+    color: #1f3a8a;
+    font-family: var(--font-body);
+    font-weight: 900;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    padding: 5px 14px;
+    border-radius: 9px;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: center;
   }
 /* Note — fixed Bubba's red (#c0201f), ~12px, weight 800, appended
      after the item+amount. */
@@ -6566,13 +6679,57 @@ video {
       flex-direction: column;
     }
 
-    /* Title band — slightly smaller title for phone reading. */
+    /* Title band — slightly smaller title for phone reading. Stacks
+       vertically (flex-direction: column) so the title sits on top and
+       the full-width size picker (rendered as a sibling block below
+       the band) spans the full card width. The desktop row layout
+       (display: flex; align-items: center; justify-content:
+       space-between) is overridden here so the title and any inline
+       static-size label stack rather than sit side by side. */
     .build-card-phone .build-card-title-band {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 0.5rem;
       padding: 0.85rem 1rem;
     }
     .build-card-phone .build-card-title {
       font-size: clamp(1.5rem, 6vw, 1.9rem);
       line-height: 1.08;
+    }
+
+    /* Phone size picker — full-width segmented control pinned UNDER the
+       title band (rendered as a sibling block in the JSX, not inside
+       the band). Each .build-card-size-btn stretches to share the row
+       evenly. margin-top: 8px separates it from the band. Reuses the
+       base .build-card-size-picker pill styling (translucent white fill,
+       rounded) and the base .build-card-size-btn / .on states; this rule
+       only widens it to full width. */
+    .build-card-phone-size-picker {
+      display: flex;
+      width: 100%;
+      margin-top: 8px;
+      padding: 4px;
+      gap: 4px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.18);
+    }
+    /* Each size button stretches to fill the picker so the segmented
+       control looks balanced on phone. Keeps the base inactive/active
+       colors; only flex-grow changes. */
+    .build-card-phone-size-picker .build-card-size-btn {
+      flex: 1 1 0;
+      text-align: center;
+    }
+    /* Phone caption — full-width, centered, under the size picker.
+       Overrides the desktop left-aligned caption (which uses a side
+       margin) so the phone caption reads as a centered helper line. */
+    .build-card-size-caption.is-phone {
+      width: 100%;
+      margin: 6px 0 0;
+      padding: 0 1rem;
+      text-align: center;
     }
 
     /* Photo — full width, edge to edge. The button opens the in-app

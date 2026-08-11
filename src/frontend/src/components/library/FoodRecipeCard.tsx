@@ -702,6 +702,84 @@ export function inferBuildKicker(food: FoodRecipe): string {
   return /burger/i.test(section) ? "Build Your Burger" : "Build Your Plate";
 }
 
+/**
+ * isMultiSizeRecipe — a Build Card is "multi-size" when at least one of
+ * its components carries a non-empty `amounts` array (per-size amounts).
+ *
+ * All components are assumed to share the same ordered size labels (e.g.
+ * 12", 16") — the importer guarantees this — so a single component with
+ * amounts is enough to flag the recipe as multi-size. Components without
+ * amounts fall back to their scalar `amount` regardless of the selection
+ * (see `resolveAmountForSize`).
+ *
+ * Exported so the admin AnchorEditorDialog can decide whether to render
+ * its size-picker preview.
+ */
+export function isMultiSizeRecipe(food: FoodRecipe): boolean {
+  return food.components.some(
+    (c) => Array.isArray(c.amounts) && c.amounts.length > 0,
+  );
+}
+
+/**
+ * getSizeLabels — collects the distinct ordered size labels from a
+ * recipe's components' `amounts` arrays, preserving first-seen order.
+ *
+ * Iterates components in array order and each component's amounts in
+ * array order, pushing a size label the first time it is seen. So a
+ * recipe whose first component has [{size:'12"'},{size:'16"'}] and
+ * whose second component has [{size:'12"'},{size:'16"'}] yields
+ * ['12"', '16"'] (the duplicates are dropped). Returns [] when no
+ * component carries amounts (single-size / burgers).
+ *
+ * Exported so the admin AnchorEditorDialog can render the same ordered
+ * size list the published Build Card shows.
+ */
+export function getSizeLabels(food: FoodRecipe): string[] {
+  const seen = new Set<string>();
+  const labels: string[] = [];
+  for (const c of food.components) {
+    if (!Array.isArray(c.amounts)) continue;
+    for (const a of c.amounts) {
+      const label = a.size;
+      if (label.length === 0 || seen.has(label)) continue;
+      seen.add(label);
+      labels.push(label);
+    }
+  }
+  return labels;
+}
+
+/**
+ * resolveAmountForSize — returns the amount string a component should
+ * display for a given selected size.
+ *
+ * When the component carries a non-empty `amounts` array, finds the
+ * entry whose `size` === `selectedSize` and returns its `value`. When
+ * the component has no amounts, or no entry matches the selected size,
+ * falls back to the scalar `c.amount` (the back-compat sentinel —
+ * empty amounts = [] means "use the scalar"). This keeps burgers and
+ * single-amount components rendering exactly as today.
+ *
+ * Exported so the admin AnchorEditorDialog can preview the same amount
+ * the published Build Card shows for a given size.
+ */
+export function resolveAmountForSize(
+  component: FoodComponent,
+  selectedSize: string | null | undefined,
+): string {
+  if (
+    Array.isArray(component.amounts) &&
+    component.amounts.length > 0 &&
+    selectedSize != null &&
+    selectedSize.length > 0
+  ) {
+    const match = component.amounts.find((a) => a.size === selectedSize);
+    if (match != null) return match.value;
+  }
+  return component.amount;
+}
+
 function BuildCardFoodRecipeCard({
   item,
   food,
@@ -740,6 +818,29 @@ function BuildCardFoodRecipeCard({
   const popoutComponent =
     popoutIndex != null ? (food.components[popoutIndex] ?? null) : null;
 
+  // Multi-size support — a Build Card is "multi-size" when at least one
+  // component carries a non-empty `amounts` array (per-size amounts).
+  // All components are assumed to share the same ordered size labels
+  // (e.g. 12", 16"). The size picker is rendered in the title band
+  // (desktop right side, phone full-width under the band) and drives
+  // every label's amount chip via React state. Single-size recipes
+  // (burgers, components without amounts) render unchanged — no picker,
+  // no caption, no chips; the existing `<strong>{c.item} - {c.amount}</strong>`
+  // label is preserved exactly.
+  const multiSize = isMultiSizeRecipe(food);
+  const sizeLabels = multiSize ? getSizeLabels(food) : [];
+  // selectedSize is initialized to the first size label when multi-size,
+  // or null when single-size. useState so changing it re-renders every
+  // label's amount chip at once.
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    multiSize && sizeLabels.length > 0 ? sizeLabels[0] : null,
+  );
+  // Single distinct size (e.g. Kids 10"): all components have amounts but
+  // there is only one size. The picker is non-functional in this case —
+  // we render the size as a static label, no buttons. The amount chips
+  // still render with that single size's value.
+  const isSingleDistinctSize = multiSize && sizeLabels.length === 1;
+
   return (
     <article
       className="food-recipe-card mt-4 flex flex-col"
@@ -768,7 +869,61 @@ function BuildCardFoodRecipeCard({
           >
             {item.title}
           </h2>
+          {/* Multi-size selector — pill-shaped segmented control on the
+              right side of the title band. One button per distinct size;
+              the active button (.on) has a white background with brand-blue
+              text, inactive buttons have a translucent blue background with
+              white text. Clicking a button sets selectedSize, which drives
+              every label's amount chip via React state. Rendered only when
+              multi-size with more than one distinct size. Single distinct
+              size renders a static label (.build-card-size-static) instead. */}
+          {multiSize && sizeLabels.length > 1 ? (
+            <div
+              className="build-card-size-picker"
+              role="tablist"
+              aria-label="Select size"
+              data-ocid="library.item.food_recipe.build.size_picker"
+            >
+              {sizeLabels.map((label) => {
+                const active = selectedSize === label;
+                return (
+                  <button
+                    type="button"
+                    key={label}
+                    role="tab"
+                    aria-selected={active}
+                    className={`build-card-size-btn${active ? " on" : ""}`}
+                    onClick={() => setSelectedSize(label)}
+                    data-ocid={`library.item.food_recipe.build.size_btn.${label}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+          {isSingleDistinctSize ? (
+            <span
+              className="build-card-size-static"
+              data-ocid="library.item.food_recipe.build.size_static"
+            >
+              {sizeLabels[0]}
+            </span>
+          ) : null}
         </div>
+
+        {/* Caption — "Showing <size> amounts" under the title band.
+            Updates with the selection. Rendered only when multi-size
+            with more than one distinct size (single distinct size has
+            no functional selector, so the caption is redundant). */}
+        {multiSize && sizeLabels.length > 1 && selectedSize != null ? (
+          <p
+            className="build-card-size-caption"
+            data-ocid="library.item.food_recipe.build.size_caption"
+          >
+            Showing {selectedSize} amounts
+          </p>
+        ) : null}
 
         <div
           className="build-card-stage"
@@ -842,9 +997,21 @@ function BuildCardFoodRecipeCard({
                     className="build-card-label-text"
                     data-ocid={`library.item.food_recipe.build.label_text.${i + 1}`}
                   >
-                    <strong>
-                      {c.item} - {c.amount}
-                    </strong>
+                    {multiSize ? (
+                      <>
+                        <span className="build-card-label-item">{c.item}</span>
+                        <span
+                          className="build-card-amount-chip"
+                          data-ocid={`library.item.food_recipe.build.amount_chip.${i + 1}`}
+                        >
+                          {resolveAmountForSize(c, selectedSize)}
+                        </span>
+                      </>
+                    ) : (
+                      <strong>
+                        {c.item} - {c.amount}
+                      </strong>
+                    )}
                     {c.note != null && c.note.trim().length > 0 ? (
                       <span
                         className="build-card-label-note"
@@ -906,7 +1073,66 @@ function BuildCardFoodRecipeCard({
           >
             {item.title}
           </h2>
+          {/* Multi-size selector — on phone this renders as a full-width
+              segmented control pinned UNDER the title band (see
+              .build-card-phone-size-picker below the band). The inline
+              slot here is left empty on phone; the picker is rendered
+              as a sibling block so it can span full width. Single
+              distinct size renders a static label inline. */}
+          {isSingleDistinctSize ? (
+            <span
+              className="build-card-size-static"
+              data-ocid="library.item.food_recipe.phone.build.size_static"
+            >
+              {sizeLabels[0]}
+            </span>
+          ) : null}
         </div>
+
+        {/* Phone size picker — full-width segmented control pinned under
+            the title band. Each button is a size label; the active
+            button (.on) has a white background with brand-blue text,
+            inactive buttons have a translucent blue background with
+            white text. Clicking a button sets selectedSize, which
+            drives every phone popout's amount chip via React state.
+            Rendered only when multi-size with more than one distinct
+            size. No horizontal scroll. */}
+        {multiSize && sizeLabels.length > 1 ? (
+          <div
+            className="build-card-phone-size-picker"
+            role="tablist"
+            aria-label="Select size"
+            data-ocid="library.item.food_recipe.phone.build.size_picker"
+          >
+            {sizeLabels.map((label) => {
+              const active = selectedSize === label;
+              return (
+                <button
+                  type="button"
+                  key={label}
+                  role="tab"
+                  aria-selected={active}
+                  className={`build-card-size-btn${active ? " on" : ""}`}
+                  onClick={() => setSelectedSize(label)}
+                  data-ocid={`library.item.food_recipe.phone.build.size_btn.${label}`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        {/* Phone caption — "Showing <size> amounts" under the size
+            picker. Updates with the selection. */}
+        {multiSize && sizeLabels.length > 1 && selectedSize != null ? (
+          <p
+            className="build-card-size-caption is-phone"
+            data-ocid="library.item.food_recipe.phone.build.size_caption"
+          >
+            Showing {selectedSize} amounts
+          </p>
+        ) : null}
 
         {/* Photo stage — the full-width photo remains the visual anchor.
             The photo button (tap-to-zoom lightbox) sits underneath an
@@ -1070,14 +1296,23 @@ function BuildCardFoodRecipeCard({
                 >
                   {popoutComponent.item}
                 </p>
-                {popoutComponent.amount.trim().length > 0 ? (
-                  <span
-                    className="build-card-phone-amount"
-                    data-ocid="library.item.food_recipe.phone.build.popout.amount"
-                  >
-                    {popoutComponent.amount}
-                  </span>
-                ) : null}
+                {(() => {
+                  // When multi-size, the displayed amount is the selected
+                  // size's value (which may be non-empty even when the
+                  // scalar `amount` is the empty back-compat sentinel).
+                  // When single-size, the scalar `amount` is used as-is.
+                  const resolvedAmount = multiSize
+                    ? resolveAmountForSize(popoutComponent, selectedSize)
+                    : popoutComponent.amount;
+                  return resolvedAmount.trim().length > 0 ? (
+                    <span
+                      className="build-card-phone-amount"
+                      data-ocid="library.item.food_recipe.phone.build.popout.amount"
+                    >
+                      {resolvedAmount}
+                    </span>
+                  ) : null;
+                })()}
                 {popoutComponent.note != null &&
                 popoutComponent.note.trim().length > 0 ? (
                   <p

@@ -112,9 +112,11 @@ export interface FoodComponent {
   'anchorY' : [] | [number],
   'item' : string,
   'note' : [] | [string],
+  'amounts' : Array<FoodComponentSize>,
   'group' : [] | [string],
   'amount' : string,
 }
+export interface FoodComponentSize { 'value' : string, 'size' : string }
 export interface FoodRecipe {
   'lineUtensil' : [] | [string],
   'serviceware' : Array<FoodServiceware>,

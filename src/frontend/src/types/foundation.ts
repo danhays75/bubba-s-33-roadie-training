@@ -202,11 +202,30 @@ export interface Recipe {
 export type FoodRecipeKind = "prep" | "menuBuild";
 
 /**
+ * A per-size amount entry on a food component (e.g. { size: "16\"", value:
+ * "5 oz" }). Mirrors the backend Candid FoodComponentSize shape exactly
+ * (size, value). Used by pizza-style components that vary their amount by
+ * menu size — a component without per-size amounts carries an empty array
+ * (the back-compat sentinel) and falls back to the scalar `amount`.
+ */
+export interface FoodComponentSize {
+  size: string;
+  value: string;
+}
+
+/**
  * A single measured component in a food recipe (e.g. "2 cups" / "Pizza
  * Sauce"). Mirrors the backend Candid FoodComponent shape exactly (item,
- * amount, group, note). `group` and `note` are null when the backend omits
- * the optional ?Text fields. No ids on food sub-records — they are value
- * records, so React keys are derived positionally by the editor.
+ * amount, group, note, anchorY, amounts). `group` and `note` are null when
+ * the backend omits the optional ?Text fields. `anchorY` is null when the
+ * backend omits the optional ?Float field.
+ *
+ * `amounts` is the per-size amount array (e.g. pizza toppings that vary by
+ * menu size). It is a non-optional array on the backend; the hook layer
+ * defaults it to [] when absent so the frontend treats components without
+ * per-size amounts uniformly (empty array = use the scalar `amount`
+ * fallback). No ids on food sub-records — they are value records, so React
+ * keys are derived positionally by the editor.
  */
 export interface FoodComponent {
   item: string;
@@ -214,6 +233,7 @@ export interface FoodComponent {
   group: string | null;
   note: string | null;
   anchorY: number | null;
+  amounts: FoodComponentSize[];
 }
 
 /**

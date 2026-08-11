@@ -132,6 +132,7 @@ export interface FoodComponent {
     anchorY?: number;
     item: string;
     note?: string;
+    amounts: Array<FoodComponentSize>;
     group?: string;
     amount: string;
 }
@@ -206,6 +207,10 @@ export type FlashcardContent = Array<Flashcard>;
 export interface FoodServiceware {
     item: string;
     amount: string;
+}
+export interface FoodComponentSize {
+    value: string;
+    size: string;
 }
 export interface _ImmutableObjectStorageRefillInformation {
     proposed_top_up_amount?: bigint;
@@ -542,7 +547,7 @@ export interface backendInterface {
     updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;
     updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null, layoutStyle: LayoutStyle): Promise<Position>;
 }
-import type { Activity as _Activity, ActivityContent as _ActivityContent, ActivityType as _ActivityType, ApprovalStatus as _ApprovalStatus, AssignmentStatus as _AssignmentStatus, BuildActivityInput as _BuildActivityInput, Category as _Category, Cell as _Cell, DetailField as _DetailField, DrinksBuilderAnswerClip as _DrinksBuilderAnswerClip, DrinksBuilderContent as _DrinksBuilderContent, DrinksBuilderPrompt as _DrinksBuilderPrompt, DrinksBuilderSettings as _DrinksBuilderSettings, Error as _Error, Flashcard as _Flashcard, FlashcardContent as _FlashcardContent, FlashcardRecipe as _FlashcardRecipe, FoodComponent as _FoodComponent, FoodRecipe as _FoodRecipe, FoodRecipeKind as _FoodRecipeKind, FoodServiceware as _FoodServiceware, LayoutStyle as _LayoutStyle, LibraryItem as _LibraryItem, NsoImportInput as _NsoImportInput, NsoImportPhase as _NsoImportPhase, NsoImportTask as _NsoImportTask, Phase as _Phase, Position as _Position, PositionAssignment as _PositionAssignment, Question as _Question, QuizContent as _QuizContent, QuizSettings as _QuizSettings, Recipe as _Recipe, RecipeSpec as _RecipeSpec, RecipeVariant as _RecipeVariant, Result as _Result, Result__1 as _Result__1, Role as _Role, SendResult as _SendResult, Task as _Task, UpdateActivityInput as _UpdateActivityInput, UserProfile as _UserProfile, UserRole as _UserRole, Value as _Value, _ImmutableObjectStorageRefillInformation as __ImmutableObjectStorageRefillInformation, _ImmutableObjectStorageRefillResult as __ImmutableObjectStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { Activity as _Activity, ActivityContent as _ActivityContent, ActivityType as _ActivityType, ApprovalStatus as _ApprovalStatus, AssignmentStatus as _AssignmentStatus, BuildActivityInput as _BuildActivityInput, Category as _Category, Cell as _Cell, DetailField as _DetailField, DrinksBuilderAnswerClip as _DrinksBuilderAnswerClip, DrinksBuilderContent as _DrinksBuilderContent, DrinksBuilderPrompt as _DrinksBuilderPrompt, DrinksBuilderSettings as _DrinksBuilderSettings, Error as _Error, Flashcard as _Flashcard, FlashcardContent as _FlashcardContent, FlashcardRecipe as _FlashcardRecipe, FoodComponent as _FoodComponent, FoodComponentSize as _FoodComponentSize, FoodRecipe as _FoodRecipe, FoodRecipeKind as _FoodRecipeKind, FoodServiceware as _FoodServiceware, LayoutStyle as _LayoutStyle, LibraryItem as _LibraryItem, NsoImportInput as _NsoImportInput, NsoImportPhase as _NsoImportPhase, NsoImportTask as _NsoImportTask, Phase as _Phase, Position as _Position, PositionAssignment as _PositionAssignment, Question as _Question, QuizContent as _QuizContent, QuizSettings as _QuizSettings, Recipe as _Recipe, RecipeSpec as _RecipeSpec, RecipeVariant as _RecipeVariant, Result as _Result, Result__1 as _Result__1, Role as _Role, SendResult as _SendResult, Task as _Task, UpdateActivityInput as _UpdateActivityInput, UserProfile as _UserProfile, UserRole as _UserRole, Value as _Value, _ImmutableObjectStorageRefillInformation as __ImmutableObjectStorageRefillInformation, _ImmutableObjectStorageRefillResult as __ImmutableObjectStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async __accessControlState(): Promise<any> {
@@ -2178,12 +2183,14 @@ function from_candid_record_n21(_uploadFile: (file: ExternalBlob) => Promise<Uin
     anchorY: [] | [number];
     item: string;
     note: [] | [string];
+    amounts: Array<_FoodComponentSize>;
     group: [] | [string];
     amount: string;
 }): {
     anchorY?: number;
     item: string;
     note?: string;
+    amounts: Array<FoodComponentSize>;
     group?: string;
     amount: string;
 } {
@@ -2191,6 +2198,7 @@ function from_candid_record_n21(_uploadFile: (file: ExternalBlob) => Promise<Uin
         anchorY: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.anchorY)),
         item: value.item,
         note: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.note)),
+        amounts: value.amounts,
         group: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.group)),
         amount: value.amount
     };
@@ -3087,12 +3095,14 @@ function to_candid_record_n113(_uploadFile: (file: ExternalBlob) => Promise<Uint
     anchorY?: number;
     item: string;
     note?: string;
+    amounts: Array<FoodComponentSize>;
     group?: string;
     amount: string;
 }): {
     anchorY: [] | [number];
     item: string;
     note: [] | [string];
+    amounts: Array<_FoodComponentSize>;
     group: [] | [string];
     amount: string;
 } {
@@ -3100,6 +3110,7 @@ function to_candid_record_n113(_uploadFile: (file: ExternalBlob) => Promise<Uint
         anchorY: value.anchorY ? candid_some(value.anchorY) : candid_none(),
         item: value.item,
         note: value.note ? candid_some(value.note) : candid_none(),
+        amounts: value.amounts,
         group: value.group ? candid_some(value.group) : candid_none(),
         amount: value.amount
     };

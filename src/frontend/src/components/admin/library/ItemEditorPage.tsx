@@ -637,15 +637,15 @@ export function ItemEditorPage({
     if (isRecipe && buildRecipe() === null) return;
 
     // Drop fully-blank detail rows before persisting so the backend never
-    // stores empty {fieldLabel:'', value:''} entries. Keep at least one row
-    // shape so the editor reopens with a target.
+    // stores empty {fieldLabel:'', value:''} entries. Persist the cleaned
+    // array directly — it may be empty, which is the correct representation
+    // of "no details". The empty placeholder row is kept only as editor UI
+    // state (see the details state initializer) so the form still shows one
+    // editable row on reopen; it is NOT saved.
     const cleanedDetails = details.filter(
       (d) => d.fieldLabel.trim().length > 0 || d.value.trim().length > 0,
     );
-    const finalDetails =
-      cleanedDetails.length > 0
-        ? cleanedDetails
-        : [{ id: makeDetailFieldId(), fieldLabel: "", value: "" }];
+    const finalDetails = cleanedDetails;
 
     const trimmedTitle = title.trim();
     const trimmedSubtitle = subtitle.trim();

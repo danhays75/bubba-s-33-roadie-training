@@ -1,17 +1,17 @@
 {
-  "overview": "A drag-to-adjust editor that lets admins fine-tune Build Card leader-line label positions on recipe photos and save the new anchorY values back to the recipe.",
+  "overview": "A restaurant recipe reference library with Build Cards showing exploded ingredient photos, step-by-step assembly labels, and pizza size selectors.",
   "features": [
-    "Drag-to-adjust leader-line label positions on Build Card photos",
-    "Live preview matching the public Build Card",
-    "Save anchorY values back to the recipe",
-    "Admin-only access from the item editor"
+    "Recipe library with Build Cards showing exploded photos and step-by-step assembly",
+    "Pizza size selector (12\"/16\") on Build Cards with per-size amount chips",
+    "Bulk recipe import with validation",
+    "Anchor-position editor for Build Card labels"
   ],
   "category": "productivity",
   "tags": [
-    "admin",
-    "build-card",
-    "editor",
-    "recipes"
+    "recipe",
+    "restaurant",
+    "reference",
+    "build-card"
   ],
-  "last_updated": "2026-08-10T21:35:55.814Z"
+  "last_updated": "2026-08-11T01:49:13.334Z"
 }

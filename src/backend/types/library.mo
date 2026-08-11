@@ -106,25 +106,46 @@ module {
     #prep;
   };
 
+  // A per-size amount entry on a food recipe component. `size` is the size
+  // label shared across a recipe's components (e.g. "12\"", "16\""); `value`
+  // is the free-text measure for that size (e.g. "16 each", "32 each"). A
+  // component carries an `amounts` array of these entries when the recipe
+  // is multi-size (pizzas: 12"/16"); single-size recipes (burgers, Kids 10")
+  // leave `amounts` empty and fall back to the scalar `amount` field.
+  public type FoodComponentSize = {
+    size : Text;
+    value : Text;
+  };
+
   // A single component line in a food recipe's component list. `item` is the
   // component name (e.g. "Cheddar Cheese", "Burger Patty"). `amount` is the
-  // free-text measure (e.g. "2 oz", "1 each"). `group` is the optional
-  // grouping label — for prep recipes it names the ingredient table
-  // ("Step 1", "Step 2", …); for menuBuild recipes it is typically null
-  // (components render as a flat table). `note` is an optional per-component
-  // note (e.g. "to taste", "heated"). Both `group` and `note` default to
-  // null — most components carry neither.
+  // free-text measure (e.g. "2 oz", "1 each") — kept as the scalar fallback
+  // for single-size recipes (burgers) and components without per-size
+  // amounts. `group` is the optional grouping label — for prep recipes it
+  // names the ingredient table ("Step 1", "Step 2", …); for menuBuild
+  // recipes it is typically null (components render as a flat table). `note`
+  // is an optional per-component note (e.g. "to taste", "heated"). Both
+  // `group` and `note` default to null — most components carry neither.
   //
   // `anchorY` is the optional vertical position (0.0–1.0) of this ingredient
   // on the build photo (0 = top of the image, 1 = bottom). Used by the Build
   // Card layout to place each label beside its layer. Defaults to null —
   // components without it render exactly as they do today.
+  //
+  // `amounts` is the optional per-size amount list. When non-empty, the
+  // Build Card renders a size selector and each STEP label shows the
+  // selected size's amount as a chip; when empty, the Build Card falls back
+  // to the scalar `amount` and renders exactly as today (burgers and other
+  // single-amount recipes are unchanged). Defaults to an empty list —
+  // existing components migrate to `amounts = []` and behave exactly as
+  // today.
   public type FoodComponent = {
     item : Text;
     amount : Text;
     group : ?Text;
     note : ?Text;
     anchorY : ?Float;
+    amounts : [FoodComponentSize];
   };
 
   // A plating vessel / serviceware line for a menuBuild food recipe (e.g.
