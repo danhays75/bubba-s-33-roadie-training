@@ -262,6 +262,17 @@ export default {
           "60%": { transform: "scale(1.01)", opacity: "1" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
+        /* ── Anchor Editor — ADDITIVE keyframe for the active handle.
+           Gentle ring breath while a label handle is actively being
+           dragged so the admin sees the grab. Box-shadow only (no
+           layout animation). Mirrors the @keyframes block in index.css. */
+        "anchor-handle-pulse": {
+          "0%, 100%": { boxShadow: "var(--anchor-handle-shadow-active)" },
+          "50%": {
+            boxShadow:
+              "var(--anchor-handle-shadow-active), 0 0 0 3px oklch(var(--anchor-handle-border-active) / 0.25)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -297,6 +308,10 @@ export default {
            No infinite loop; runs once on mount. Pauses under
            prefers-reduced-motion (handled in index.css). */
         "food-expo-pop": "food-expo-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        /* ── Anchor Editor — ADDITIVE active-handle ring breath.
+           Infinite while a handle is being dragged; pauses under
+           prefers-reduced-motion (handled in index.css). */
+        "anchor-handle-pulse": "anchor-handle-pulse 1.2s ease-in-out infinite",
       },
     },
   },

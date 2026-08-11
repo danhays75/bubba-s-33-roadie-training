@@ -29,10 +29,10 @@ args = [ "-E=M0254", "-W=M0235,M0223,M0236,M0237", "-A=M0241", "--default-persis
 [dependencies]
 core = "2.6.1"
 caffeineai-data-viewer = "0.1.0"
-caffeineai-authorization = "1.0.0"
+caffeineai-authorization = "1.0.1"
 caffeineai-lints = "0.1.0"
 caffeineai-oql = "0.2.0"
-caffeineai-object-storage = "1.1.0"
+caffeineai-object-storage = "1.1.1"
 identity-attributes = "0.4.1"
-caffeineai-email = "0.1.1"
+caffeineai-email = "0.1.2"
 caffeineai-email-verification = "0.1.1"

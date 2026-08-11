@@ -40,8 +40,8 @@ import { toast } from "sonner";
  * downloadable + retryable so the admin can rename and re-drop them.
  *
  * Mirrors the beverage-recipe BulkImportDialog patterns: Radix Dialog, dark
- * Bubba's 33 theme, sonner toasts, sequential per-file processing, React
- * Query cache invalidation on success.
+ * Lake Charles Quik Reference theme, sonner toasts, sequential per-file
+ * processing, React Query cache invalidation on success.
  *
  * Props:
  *   - positionId: the position whose library the photos tool targets.

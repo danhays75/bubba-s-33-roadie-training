@@ -1,4 +1,4 @@
-# Bubba's 33 — Design System
+# Lake Charles Quik Reference — Design System
 
 Dark roadhouse theme. Dark is the only theme — no light mode is defined or
 supported. All colors are OKLCH custom properties consumed via semantic
@@ -18,9 +18,9 @@ A redesign layer stacked on top of the existing Be Legendary banner tokens.
 It does **not** alter any prior token, utility, or flashcard class. Dark is
 the only theme; the `:root` and `.dark` blocks mirror the same values. The
 hero treatment is patriotic — a confident woman bartender's face with
-"BUBBA'S 33" written in red under her eyes like football eye black, pouring
+"LAKE CHARLES QUIK REFERENCE" written in red under her eyes like football eye black, pouring
 a drink against a red/white/blue American flag background. Patriotic
-roadhouse energy, while the dark Bubba's 33 roadhouse base stays intact.
+roadhouse energy, while the dark Lake Charles Quik Reference roadhouse base stays intact.
 
 ### Zones (stacking order, back → front)
 
@@ -37,7 +37,7 @@ roadhouse energy, while the dark Bubba's 33 roadhouse base stays intact.
    cleanly. `position: relative` + `isolation: isolate` so the sweep,
    flash, and glow pseudo-layers anchor to it.
 2. **Hero image** — generated cinematic patriotic bartender portrait: a
-   confident woman bartender's face with "BUBBA'S 33" written in red
+   confident woman bartender's face with "LAKE CHARLES QUIK REFERENCE" written in red
    under her eyes like football eye black, pouring a drink against a
    red/white/blue American flag background. Added by the frontend
    component.
@@ -123,7 +123,7 @@ in `<img src>`, the established pattern.
 ### Home hero banner
 
 - **Intent:** a smiling bartender behind the bar, having fun working, with
-  "BUBBA'S 33" written in eye-black style under the eyes (the roadhouse brand
+  "LAKE CHARLES QUIK REFERENCE" written in eye-black style under the eyes (the roadhouse brand
   look, like sports eye-black). Wide/landscape framing for a cinematic hero
   banner.
 - **File:** `public/assets/generated/bartender-hero-eyeblack.png`

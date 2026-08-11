@@ -48,9 +48,9 @@ function isChannelClosedError(err?: Error): boolean {
 /**
  * Dark-themed Internet Identity sign-in screen.
  *
- * Bubba's 33 wordmark in Anton, a slim red-white-navy stripe accent, and a
- * friendly "Sign In / Get Started" button. No splash — this IS the entry
- * screen for unauthenticated users.
+ * Lake Charles Quik Reference wordmark in Anton, a slim red-white-navy
+ * stripe accent, and a friendly "Sign In / Get Started" button. No
+ * splash — this IS the entry screen for unauthenticated users.
  *
  * A guidance card sits above the primary button to walk first-time Roadies
  * through the Google sign-in flow, and a collapsible "Trouble signing in?"
@@ -89,7 +89,7 @@ export function SignInScreen({
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-6">
       <div className="flex w-full max-w-sm flex-col items-center text-center">
         {/*
-          Brand wordmark — horizontal Bubba's 33 logo with a transparent
+           Brand wordmark — horizontal Lake Charles Quik Reference logo with a transparent
           background, so no frame or card is needed. Sized large as the
           visual anchor of the entry screen; max-w-full keeps it responsive on
           narrow phones. Intrinsic width/height attributes reserve layout
@@ -97,14 +97,14 @@ export function SignInScreen({
         */}
         <img
           src="/assets/brand/logo-horizontal.webp"
-          alt="Bubba's 33"
+          alt="Lake Charles Quik Reference"
           width={640}
           height={240}
           className="mt-2 h-auto w-full max-w-[20rem]"
           data-ocid="signin.brand_logo"
         />
         <p className="mt-2 font-heading text-sm uppercase tracking-[0.2em] text-muted-foreground">
-          Roadie Training
+          Quik Reference
         </p>
 
         {/* slim red-white-navy stripe accent */}

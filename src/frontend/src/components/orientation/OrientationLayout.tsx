@@ -523,8 +523,8 @@ function OurStorySection({
 
 /**
  * Photo-dominant Our Story. Renders ONLY the uploaded poster photo as a
- * plain responsive image — no code-drawn poster placeholder, no Bubba's 33
- * logo, no SCRATCH-MADE banner, no 'Food FOR All' headline, no gradient
+ * plain responsive image — no code-drawn poster placeholder, no Lake
+ * Charles Quik Reference logo, no SCRATCH-MADE banner, no 'Food FOR All' headline, no gradient
  * hero/cluster slots, no card footer, and NO 'Back to category' link.
  *
  * The image is centered, max-width 560px on desktop / full width on mobile,

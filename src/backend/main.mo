@@ -235,12 +235,14 @@ actor {
         .payload("name", func (c) = c.name)
         .payload("coverPhoto", func (c) = switch (c.coverPhoto) { case null ""; case (?t) t })
         .payload("sortOrder", func (c) = c.sortOrder)
+        .payload("accentColor", func (c) = switch (c.accentColor) { case null ""; case (?t) t })
         .sample({
           id = 0;
           positionId = 0;
           name = "";
           coverPhoto = null;
           sortOrder = 0;
+          accentColor = null;
         })
         .build(),
       // LibraryItem: belongs to a category. details and tags are collection

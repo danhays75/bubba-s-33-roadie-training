@@ -21,9 +21,10 @@ import type { ChangeEvent, ReactNode } from "react";
  *
  * The rich text toolbar exposes ONLY: bold, italic, underline, bullet list,
  * numbered list, and line break. No headings, links, images, or color — per
- * the build contract. The editor surface is styled for the dark Bubba's 33
- * theme via the `.bubbas-quill` wrapper class in index.css (dark editor
- * background, rounded corners, red accent on toolbar/active states).
+ * the build contract. The editor surface is styled for the dark Lake
+ * Charles Quik Reference theme via the `.bubbas-quill` wrapper class in
+ * index.css (dark editor background, rounded corners, red accent on
+ * toolbar/active states).
  *
  * The parent owns the array; this component is fully controlled via
  * `value` + `onChange`. Empty rows are preserved on save so admins can

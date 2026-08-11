@@ -71,23 +71,23 @@ mixin (
 
   // --- Category management (admin only) ---
 
-  public shared ({ caller }) func createCategory(positionId : Nat, name : Text, coverPhoto : ?Text) : async Library.Category {
+  public shared ({ caller }) func createCategory(positionId : Nat, name : Text, coverPhoto : ?Text, accentColor : ?Text) : async Library.Category {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
     // Parent-existence validation: refuse to create an orphan category. The
     // positionId MUST refer to an existing Foundation position.
-    if (Foundation.getPosition(positions, positionId) == null) {
+    if (positions.find(func(p) { p.id == positionId }) == null) {
       Runtime.trap("createCategory: position not found");
     };
-    Library.createCategory(categories, nextCategoryId, positionId, name, coverPhoto);
+    Library.createCategory(categories, nextCategoryId, positionId, name, coverPhoto, accentColor);
   };
 
-  public shared ({ caller }) func updateCategory(categoryId : Nat, name : Text, coverPhoto : ?Text) : async Library.Category {
+  public shared ({ caller }) func updateCategory(categoryId : Nat, name : Text, coverPhoto : ?Text, accentColor : ?Text) : async Library.Category {
     if (not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: admin only");
     };
-    switch (Library.updateCategory(categories, categoryId, name, coverPhoto)) {
+    switch (Library.updateCategory(categories, categoryId, name, coverPhoto, accentColor)) {
       case (?updated) { updated };
       case null { Runtime.trap("Category not found") };
     };

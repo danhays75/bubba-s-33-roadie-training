@@ -5,7 +5,7 @@ import {
   useItemsByCategory,
 } from "@/hooks/useLibrary";
 import { cn } from "@/lib/utils";
-import type { LibraryItem } from "@/types/foundation";
+import type { Category, LibraryItem } from "@/types/foundation";
 import { Link } from "@tanstack/react-router";
 import { ChefHat, PackageOpen, Search, SearchX } from "lucide-react";
 import {
@@ -63,6 +63,16 @@ export function KitchenBrowser({
         (a, b) => a.sortOrder - b.sortOrder,
       ),
     [categoriesQuery.data],
+  );
+
+  // Category lookup by id so each tile can read its category's accentColor.
+  // Built from the already-fetched categories array (no extra query). Used to
+  // apply a per-category accent color to the tile stripe and station badge
+  // when the category has a non-null accentColor; null falls back to the
+  // existing station-accent behavior.
+  const categoriesById = useMemo<Map<string, Category>>(
+    () => new Map(categories.map((c) => [c.id, c])),
+    [categories],
   );
 
   // Per-category items state, keyed by category id. Each
@@ -244,7 +254,11 @@ export function KitchenBrowser({
               }}
             />
           ) : (
-            <KitchenTileGrid items={filteredItems} positionId={positionId} />
+            <KitchenTileGrid
+              items={filteredItems}
+              positionId={positionId}
+              categoriesById={categoriesById}
+            />
           )}
         </>
       )}
@@ -432,9 +446,11 @@ function KitchenSearchBox({
 function KitchenTileGrid({
   items,
   positionId,
+  categoriesById,
 }: {
   items: LibraryItem[];
   positionId: string;
+  categoriesById: Map<string, Category>;
 }): ReactElement {
   return (
     <ul
@@ -447,6 +463,9 @@ function KitchenTileGrid({
           item={item}
           positionId={positionId}
           index={index}
+          categoryAccent={
+            categoriesById.get(item.categoryId)?.accentColor ?? null
+          }
         />
       ))}
     </ul>
@@ -457,10 +476,12 @@ function KitchenTile({
   item,
   positionId,
   index,
+  categoryAccent,
 }: {
   item: LibraryItem;
   positionId: string;
   index: number;
+  categoryAccent: string | null;
 }): ReactElement {
   const fr = item.foodRecipe;
   // foodItems are pre-filtered to foodRecipe !== null, but guard for TS.
@@ -473,6 +494,14 @@ function KitchenTile({
   // that RecipeCardPage renders at. Tapping opens the Food Recipe card.
   const to = `/position/${positionId}/library/${item.categoryId}/item/${item.id}`;
 
+  // When the category has a non-null accentColor, the tile stripe and station
+  // badge use that accent via inline backgroundColor (the accent is an
+  // arbitrary hex not in the Tailwind palette). When null, the existing
+  // station-accent classes drive the colors — no regression.
+  const accentStyle = categoryAccent
+    ? { backgroundColor: categoryAccent }
+    : undefined;
+
   return (
     <li>
       <Link
@@ -483,8 +512,14 @@ function KitchenTile({
         data-ocid={`kitchen.browser.tile.${index + 1}`}
         aria-label={`Open ${item.title} recipe card`}
       >
-        {/* Station accent top stripe. */}
-        <div className={cn("food-tile-stripe", accent.bg)} aria-hidden />
+        {/* Station/category accent top stripe. Inline backgroundColor takes
+            precedence over the station accent.bg class when a category
+            accent is set; the class remains as the null-accent fallback. */}
+        <div
+          className={cn("food-tile-stripe", !categoryAccent && accent.bg)}
+          style={accentStyle}
+          aria-hidden
+        />
 
         {/* Thumbnail OR station-wash placeholder for prep recipes (or any
             recipe without a plating photo). Large Anton initial of the
@@ -522,9 +557,17 @@ function KitchenTile({
             <span
               className={cn(
                 "food-station-badge",
-                accent.bg,
-                accent.textOnAccent,
+                !categoryAccent && accent.bg,
+                !categoryAccent && accent.textOnAccent,
               )}
+              style={
+                categoryAccent
+                  ? {
+                      backgroundColor: categoryAccent,
+                      color: "#ffffff",
+                    }
+                  : undefined
+              }
               data-ocid={`kitchen.browser.tile.station.${index + 1}`}
             >
               {fr.station}

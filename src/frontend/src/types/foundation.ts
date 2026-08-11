@@ -168,6 +168,9 @@ export interface RecipeVariant {
  * - `recapAudio`: optional audio-recap clip URL (durable object-storage
  *   URL, same shape as profile photos). Mirrors backend `recapAudio : ?Text`.
  *   Null when the backend omits the optional ?Text field.
+ * - `buildAudio`: optional audio-build clip URL (durable object-storage
+ *   URL, same shape as profile photos). Mirrors backend `buildAudio : ?Text`.
+ *   Null when the backend omits the optional ?Text field.
  */
 export interface Recipe {
   glassware: string;
@@ -180,6 +183,7 @@ export interface Recipe {
   shelfLife: string | null;
   qualityIdentifier: string[];
   recapAudio: string | null;
+  buildAudio: string | null;
 }
 
 /**
@@ -209,6 +213,7 @@ export interface FoodComponent {
   amount: string;
   group: string | null;
   note: string | null;
+  anchorY: number | null;
 }
 
 /**
@@ -265,6 +270,7 @@ export interface FoodRecipe {
   station: string;
   kind: FoodRecipeKind;
   menuSection: string | null;
+  buildHeader: string | null;
   serviceware: FoodServiceware[];
   components: FoodComponent[];
   steps: string[];
@@ -288,12 +294,19 @@ export interface FoodRecipe {
  * translating the Candid Category (which has `id: bigint`, `positionId: bigint`).
  * `sortOrder` is the number form of the bigint sortOrder.
  * `coverPhoto` is null when the backend omits the optional ?Text.
+ *
+ * `accentColor` is the optional per-category brand accent (a hex string like
+ * "#8C5421") used to color the food recipe card title/column bands and the
+ * EXPO callout. Null means "use the default navy brand band" — the frontend
+ * falls back to the `--category-accent` CSS default (navy) when no inline
+ * override is set on the card root.
  */
 export interface Category {
   id: string;
   positionId: string;
   name: string;
   coverPhoto: string | null;
+  accentColor: string | null;
   sortOrder: number;
 }
 

@@ -348,3 +348,54 @@ Faithful Bubba's 33 'Food For All' poster restyle — weathered blue wood-grain 
 - Unmatched files shown as a downloadable/retryable list; confirm-before-overwrite preserved.
 - Station chips derive from `foodRecipe.station`, falling back to position category names when no food recipes exist yet.
 - No inline card editing, no print/PDF export, no per-station printable prep sheets, no allergen filtering across the browser (doNotBuild).
+
+## Anchor Editor (additive — admin Build Card label-position overlay)
+
+> ADDITIVE only — no existing Build Card class or token altered. Admin-only drag-to-adjust overlay that sits inside a shadcn Dialog on top of the Build Card photo+labels. An admin drags each leader-line label to fine-tune its vertical position (anchorY) and saves the new values back to the recipe. All classes prefixed `anchor-` so they never collide with the `build-card-*` family. Reuses `var(--anchor-*)` tokens (already in `:root` + `.dark`). Phone-first: reflows to single-column with touch-draggable handles and no horizontal scroll.
+
+### Direction
+Admin tool chrome over a brand card — the editor's navy/red accents read as an admin surface distinct from the Bubba's blue (#1F3A8A) title band and red (#c0201f) notes of the card underneath. Flat fills, no gradients, no glow (matches the roadhouse rule).
+
+### Anchor Editor Tokens (additive)
+| Token | Value | Use |
+|---|---|---|
+| anchor-handle-bg | #ffffff | handle fill (light paper surface, matches build-card) |
+| anchor-handle-border | 0.34 0.006 95 | idle handle outline (border family) |
+| anchor-handle-border-active | 0.595 0.232 27 | active handle ring (primary red) |
+| anchor-handle-dim | 0.644 0.011 95 | dimmed handle grip (muted grey) |
+| anchor-handle-shadow-active | 0 4px 14px 0 rgba(0,0,0,0.28) | raised shadow while dragging |
+| anchor-readout-bg | 0.285 0.094 254 | percentage pill fill (navy) |
+| anchor-readout-fg | 0.948 0.012 90 | percentage pill text (cream) |
+| anchor-readout-bg-active | 0.595 0.232 27 | pill fill while dragging (red) |
+| anchor-editor-header | 0.285 0.094 254 | editor header band (navy) |
+| anchor-editor-header-fg | 0.948 0.012 90 | header band text (cream) |
+| anchor-editor-success | 0.62 0.09 145 | success feedback (seasonal green) |
+| anchor-editor-error | 0.595 0.232 27 | error feedback (destructive red) |
+| anchor-confirm | 0.72 0.11 65 | unsaved-changes warning (amber) |
+
+### Anchor Editor Zones
+| Zone | Class | Treatment |
+|---|---|---|
+| Header band | `.anchor-editor-header` + `-title` / `-subtitle` | navy fill, cream Oswald uppercase, sits at top of Dialog |
+| Stage | `.anchor-editor-stage` + `-photo-col` / `-photo` / `-labels` | mirrors `.build-card-stage` geometry (photo 46% / labels 54%) so handles sit where published labels render |
+| Handle (idle) | `.anchor-handle` + `-grip` / `-text` | white fill, navy outline, grab cursor, grip dots + label preview |
+| Handle (active) | `.anchor-handle.is-active` | red ring + raised shadow, `anchor-handle-pulse` 1.2s breath, z-index 2 |
+| Handle (dimmed) | `.anchor-handle.is-dimmed` | greyscale 0.6, opacity 0.45 while another handle drags |
+| Readout badge | `.anchor-readout` | navy pill, cream mono percentage; turns red while its handle drags |
+| Actions row | `.anchor-editor-actions` | Save (primary red) / Cancel (ghost) / Reset (navy), card surface, top border |
+| Feedback | `.anchor-editor-feedback.is-success` / `.is-error` + `-label` | flat green/red inline banner, auto-dismiss (JS) |
+| Confirm dialog | `.anchor-confirm` + `-title` / `-body` | amber unsaved-changes warning inside shadcn AlertDialog |
+
+### Motion
+- Active handle: `anchor-handle-pulse` 1.2s ease-in-out infinite — box-shadow ring breathes (0 → 3px red halo → 0). Pauses under `prefers-reduced-motion` (static red ring + shadow).
+- Handle hover/active transitions: 0.15s cubic-bezier border-color + box-shadow only.
+- No other motion; drag is pointer-event driven (no CSS transition on the drag transform).
+
+### Constraints
+- Additive only — never alter existing `build-card-*` classes, tokens, or the fixed Bubba's hex values.
+- Admin-only surface; never shown to non-admin users.
+- Editor chrome (navy header, red active ring) is intentionally distinct from the Bubba's brand hex of the card underneath.
+- Reuses the existing shadcn Dialog/AlertDialog containers; only styles the overlay content inside them.
+- Phone (<720px): stage stacks single-column (photo full-width on top, handles list below as static touch-draggable rows, no absolute positioning, no horizontal scroll, >=44px tap targets).
+- No custom spacing presets for even redistribution (doNotBuild); null anchorY still falls back to `(index + 1) / (total + 1)` via `resolveAnchorY`.
+- No undo/redo history for label edits (doNotBuild).

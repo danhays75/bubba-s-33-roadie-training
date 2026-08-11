@@ -1,166 +1,218 @@
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useCategory } from "@/hooks/useLibrary";
 import type {
   FoodComponent,
   FoodRecipe,
   FoodServiceware,
   LibraryItem,
 } from "@/types/foundation";
-import { UtensilsCrossed } from "lucide-react";
-import type { ReactElement } from "react";
+import { Hand, X } from "lucide-react";
+import { useState } from "react";
+import type { CSSProperties, ReactElement } from "react";
+
+/**
+ * Resolves the per-card accent CSS custom properties from the item's
+ * category accentColor.
+ *
+ * Looks up the category via useCategory(item.categoryId). While the
+ * category is still loading (undefined) or missing (null), no inline
+ * override is returned — the CSS defaults (navy band) apply so the card
+ * still renders. When the category carries a non-null accentColor (a hex
+ * string like "#8C5421"), the inline vars set --category-accent to that
+ * hex and --category-accent-tint to a color-mix tint (22% over white).
+ *
+ * Returns a React.CSSProperties object (cast because custom properties
+ * are not in the type) or undefined when no override should apply.
+ */
+function useCategoryAccentStyle(categoryId: string): CSSProperties | undefined {
+  const { data: category } = useCategory(categoryId);
+  // Loading (undefined) or missing (null) — let CSS defaults apply.
+  if (!category) return undefined;
+  const accent = category.accentColor;
+  if (accent == null || accent.trim().length === 0) return undefined;
+  return {
+    "--category-accent": accent,
+    "--category-accent-tint": `color-mix(in srgb, ${accent} 22%, white)`,
+  } as CSSProperties;
+}
 
 /**
  * FoodRecipeCard — the food-recipe item detail view.
  *
  * RecipeCardPage dispatches to this component when `item.foodRecipe` is
  * present (not null), before the beverage recipe / generic card dispatch.
- * The full food recipe payload renders here as a sibling to the beverage
- * RecipeCardPage: same dark roadhouse base, Anton/Oswald/Barlow type, flat
- * fills (no gradients/glow), and the food-* CSS utilities already added to
- * index.css (station badge, EXPO callout, allergen callout, plating
- * divider, components table, build steps, prep meta badges, prep group
- * labels, quality checklist, equipment line).
+ *
+ * This is a PRESENTATION-ONLY redesign that visually replicates the
+ * official Lake Charles Quik Reference recipe book pages. The foodRecipe
+ * data model and the { item: LibraryItem } prop signature are unchanged
+ * — only the visual presentation changes.
+ *
+ * Shared structure (both menuBuild and prep): a single document-style
+ * card on a light/cream paper-like surface (not the dark library card).
+ * A solid deep-purple (#4B1D74) title band across the very top, full
+ * width, square-cornered to the card edges, with the recipe title
+ * centered, white, Anton uppercase. A footer strip at the very bottom
+ * carries the confidential notice (bottom-left) and the station name
+ * (bottom-right). Screen-only styling (not print).
  *
  * Two layouts based on `foodRecipe.kind`:
- *   - `'menuBuild'` — assembled-to-order menu item. Photo hero, header
- *     (title + station badge + menu-section badge), two-column Components
- *     → Amount table (serviceware first in a subtle 'Plating' group, then
- *     components), numbered Build Steps, EXPO finishing steps in a
- *     purple-red callout, allergen callout at the bottom.
- *   - `'prep'` — make-ahead prep recipe. Photo hero, header (title +
- *     station badge + PREP badge), compact meta row of badges (Yield,
- *     Shelf life, Line utensil, Hold temp, Store temp — only non-null
- *     fields), ingredient table grouped by group ('Step 1', 'Step 2'…),
- *     numbered procedure steps, Quality Identifiers checklist, optional
- *     Equipment line.
+ *   - `'menuBuild'` — assembled-to-order menu item. Purple title band →
+ *     full-width plating photo (edge to edge, object-contain; tap opens
+ *     the photo in a new tab via the existing window.open behavior) →
+ *     purple ASSEMBLY | AMOUNT | PROCEDURE column-header band →
+ *     two-column body (Assembly/Amount on the left with serviceware
+ *     first then components as ■-bullet rows with right-aligned amounts;
+ *     Procedure on the right with a hand-wash note at the top then
+ *     build steps as • bullets) → light-purple EXPO callout with a
+ *     vertical rotated EXPO label down its left edge → allergen callout.
+ *   - `'prep'` — make-ahead prep recipe. Purple title band → intro line
+ *     + optional equipment line → right-aligned Yield/Shelf life/Holding
+ *     meta stack → Ingredient | Amount table (tinted purple header row,
+ *     rows grouped by 'Step 1', 'Step 2'… subheadings) → WASH YOUR HANDS
+ *     procedure (• bullets) → Quality Identifiers ✓ checklist → Line
+ *     utensil / Storage / Hold temp badges.
  *
- * The card is screen-styled (not the print card) and reuses the existing
- * PhotoButton pattern (window.open) from the beverage RecipeCardPage so
- * tapping the photo opens the full-size image in a new tab. When
- * `item.photo` is null the photo hero is omitted and the card falls back
- * to a no-photo layout.
+ * The card reuses the existing window.open photo-tap behavior (no new
+ * lightbox). When `item.photo` is null the photo block is omitted
+ * entirely. Desktop shows the true two-column layout; on mobile the
+ * columns stack — never horizontal scroll.
  *
  * Props:
  *   - item: the LibraryItem with a non-null `foodRecipe`.
  */
 export function FoodRecipeCard({ item }: { item: LibraryItem }): ReactElement {
   const food = item.foodRecipe;
+  // Resolve the per-card accent CSS vars from the item's category. The hook
+  // returns undefined while loading or when the category has no accentColor,
+  // so the CSS defaults (navy band) apply and the card still renders.
+  const accentStyle = useCategoryAccentStyle(item.categoryId);
   // RecipeCardPage only dispatches here when foodRecipe is non-null, but
   // keep a defensive fallback so the component never crashes on a null
   // payload (e.g. a future caller that bypasses the dispatch).
   if (!food) {
     return (
       <article
-        className="mt-4 flex flex-col rounded-md border border-border bg-card px-5 py-6 sm:px-7 sm:py-8"
+        className="food-recipe-card mt-4 flex flex-col"
+        style={accentStyle}
         data-ocid="library.item.food_recipe_card"
       >
-        <h1
-          className="font-display text-2xl uppercase tracking-wide text-foreground sm:text-3xl"
-          data-ocid="library.item.food_recipe.title"
-        >
-          {item.title}
-        </h1>
+        <header className="food-recipe-title-band">
+          <h1
+            className="food-recipe-title"
+            data-ocid="library.item.food_recipe.title"
+          >
+            {item.title}
+          </h1>
+        </header>
       </article>
     );
   }
 
-  return food.kind === "prep" ? (
-    <PrepFoodRecipeCard item={item} food={food} />
+  // Build Card — a presentation-only leader-line layout that replaces the
+  // normal menuBuild/prep card ONLY when the recipe carries a non-empty
+  // buildHeader AND the LibraryItem has a photo. The trigger is intentionally
+  // kind-agnostic and does NOT require every component.anchorY to be non-null
+  // — a recipe with buildHeader + photo renders the Build Card regardless of
+  // kind, and any null anchorY falls back to an even vertical distribution
+  // inside the Build Card. When either prerequisite fails the existing
+  // MenuBuildFoodRecipeCard / PrepFoodRecipeCard render unchanged.
+  //
+  // Display-only fallback: when buildHeader is null/empty BUT the recipe kind
+  // is a burger/plate kind (a `menuBuild` recipe — burgers and plates are both
+  // assembled-to-order menu items in this data model) AND item.photo is truthy,
+  // the Build Card still renders with an inferred kicker ("Build Your Burger"
+  // when menuSection mentions burgers, otherwise "Build Your Plate"). The
+  // stored buildHeader remains null — the inference happens at render time
+  // only and never touches the data layer. Recipes without a photo still
+  // render the generic ASSEMBLY | AMOUNT | PROCEDURE card.
+  const hasBuildHeader =
+    food.buildHeader != null && food.buildHeader.trim().length > 0;
+  const isBuildCard =
+    !!item.photo && (hasBuildHeader || food.kind === "menuBuild");
+
+  return food.kind === "prep" && !isBuildCard ? (
+    <PrepFoodRecipeCard item={item} food={food} accentStyle={accentStyle} />
+  ) : isBuildCard ? (
+    <BuildCardFoodRecipeCard
+      item={item}
+      food={food}
+      accentStyle={accentStyle}
+    />
   ) : (
-    <MenuBuildFoodRecipeCard item={item} food={food} />
+    <MenuBuildFoodRecipeCard
+      item={item}
+      food={food}
+      accentStyle={accentStyle}
+    />
   );
 }
 
 export default FoodRecipeCard;
 
-/* ----------------------------- Station accent ----------------------------- */
+/* --------------------------- Shared sub-blocks --------------------------- */
 
 /**
- * Maps a kitchen station name to its food-station-* CSS color utility
- * classes. The station accent drives the station badge fill and the
- * station-chip text color. Matching is case-insensitive on a trimmed
- * substring so "Grill", "grill station", and "GRILL" all resolve to the
- * grill accent. Falls back to the brand-primary default accent when the
- * station name does not match a known station.
- *
- * Returns the bg/text/border class triplet for the station accent.
+ * Title band — solid deep-purple strip across the very top of the card,
+ * full width, square to the card edges. Anton uppercase white title,
+ * centered.
  */
-function stationAccentClasses(station: string): {
-  bg: string;
-  text: string;
-  border: string;
-} {
-  const key = station.trim().toLowerCase();
-  // EXPO is checked first because it is also a menu-section concept; the
-  // station accent (purple-red) must win when the station is literally EXPO.
-  if (key.includes("expo")) {
-    return {
-      bg: "bg-food-station-expo",
-      text: "text-food-station-expo",
-      border: "border-food-station-expo",
-    };
-  }
-  if (key.includes("grill")) {
-    return {
-      bg: "bg-food-station-grill",
-      text: "text-food-station-grill",
-      border: "border-food-station-grill",
-    };
-  }
-  if (key.includes("fry")) {
-    return {
-      bg: "bg-food-station-fry",
-      text: "text-food-station-fry",
-      border: "border-food-station-fry",
-    };
-  }
-  if (key.includes("pizza")) {
-    return {
-      bg: "bg-food-station-pizza",
-      text: "text-food-station-pizza",
-      border: "border-food-station-pizza",
-    };
-  }
-  if (key.includes("saute") || key.includes("sauté")) {
-    return {
-      bg: "bg-food-station-saute",
-      text: "text-food-station-saute",
-      border: "border-food-station-saute",
-    };
-  }
-  if (key.includes("hot") && key.includes("prep")) {
-    return {
-      bg: "bg-food-station-hotprep",
-      text: "text-food-station-hotprep",
-      border: "border-food-station-hotprep",
-    };
-  }
-  if (key.includes("cold") && key.includes("prep")) {
-    return {
-      bg: "bg-food-station-coldprep",
-      text: "text-food-station-coldprep",
-      border: "border-food-station-coldprep",
-    };
-  }
-  return {
-    bg: "bg-food-station-default",
-    text: "text-food-station-default",
-    border: "border-food-station-default",
-  };
+function RecipeTitleBand({ title }: { title: string }): ReactElement {
+  return (
+    <header
+      className="food-recipe-title-band"
+      data-ocid="library.item.food_recipe.title_band"
+    >
+      <h1
+        className="food-recipe-title"
+        data-ocid="library.item.food_recipe.title"
+      >
+        {title}
+      </h1>
+    </header>
+  );
 }
 
-/* ------------------------------- Photo hero ------------------------------- */
+/**
+ * Footer strip — confidential notice bottom-left, station name
+ * bottom-right. Sits flush to the card's bottom edge.
+ */
+function RecipeFooter({ station }: { station: string }): ReactElement {
+  const year = new Date().getFullYear();
+  return (
+    <footer
+      className="food-recipe-footer"
+      data-ocid="library.item.food_recipe.footer"
+    >
+      <span
+        className="food-recipe-footer-confidential"
+        data-ocid="library.item.food_recipe.footer_confidential"
+      >
+        Confidential and proprietary &copy; {year} Lake Charles Quik Reference
+      </span>
+      {station.trim().length > 0 ? (
+        <span
+          className="food-recipe-footer-station"
+          data-ocid="library.item.food_recipe.footer_station"
+        >
+          {station}
+        </span>
+      ) : null}
+    </footer>
+  );
+}
 
 /**
- * Photo hero — the item photo shown uncompressed/uncropped at the top of
- * the card. Tapping opens the full-size image in a new tab via the same
- * window.open pattern the beverage RecipeCardPage uses (PhotoButton).
- * Renders nothing when `item.photo` is null so the card falls back to a
- * no-photo layout (header directly under the top stripe).
- *
- * Mirrors the beverage card's framed photo treatment: a thin bordered
- * frame on the library-card surface, object-contain so the photo is never
- * cropped, and a focus-visible ring on the tap target.
+ * Photo block — full width, edge to edge, no side padding. Natural
+ * aspect (object-contain) on its own neutral background. Tapping opens
+ * the full-size image in a new tab via the existing window.open pattern
+ * (preserved exactly — no new lightbox).
  */
-function FoodPhotoHero({
+function RecipePhoto({
   photo,
   title,
 }: {
@@ -169,13 +221,13 @@ function FoodPhotoHero({
 }): ReactElement {
   return (
     <div
-      className="overflow-hidden rounded-md border border-border bg-card p-2"
+      className="food-recipe-photo"
       data-ocid="library.item.food_recipe.photo_hero"
     >
       <button
         type="button"
         onClick={() => window.open(photo, "_blank", "noopener,noreferrer")}
-        className="block w-full rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label="Open full-size photo"
         title="Tap to view full size"
         data-ocid="library.item.food_recipe.photo_button"
@@ -183,80 +235,11 @@ function FoodPhotoHero({
         <img
           src={photo}
           alt={title}
-          className="block h-auto w-full object-contain"
+          className="food-recipe-photo-img"
           loading="lazy"
         />
       </button>
     </div>
-  );
-}
-
-/* ------------------------------ Card header ------------------------------- */
-
-/**
- * Card header — Anton title, station badge (station-accent fill), and
- * either a menu-section badge (navy, menuBuild) or a PREP badge (navy,
- * prep). The two badges read as different axes: the station badge says
- * where the recipe is made, the section/PREP badge says what kind of
- * recipe it is.
- *
- * The station badge uses the food-station-* accent classes derived from
- * the station name so each kitchen station gets its own color. The
- * menu-section / PREP badge uses the food-section-badge utility (navy
- * fill, cream text) so it stays distinct from the station accent.
- */
-function FoodCardHeader({
-  title,
-  station,
-  accent,
-  sectionBadge,
-  sectionBadgeLabel,
-}: {
-  title: string;
-  station: string;
-  accent: { bg: string; text: string; border: string };
-  sectionBadge: "menuSection" | "prep";
-  sectionBadgeLabel: string;
-}): ReactElement {
-  return (
-    <header
-      className="flex flex-wrap items-center gap-3"
-      data-ocid="library.item.food_recipe.header"
-    >
-      <h1
-        className="font-display text-2xl uppercase tracking-wide text-foreground sm:text-3xl"
-        data-ocid="library.item.food_recipe.title"
-      >
-        {title}
-      </h1>
-
-      {station.length > 0 ? (
-        <span
-          className={`food-station-badge ${accent.bg} ${
-            // fry + coldprep have dark foregrounds per their -fg tokens; the
-            // remaining stations use cream. We approximate by using the
-            // station's own text utility for the badge text color so the
-            // badge stays readable on its accent fill.
-            accent.text
-          }`}
-          data-ocid="library.item.food_recipe.station_badge"
-        >
-          <UtensilsCrossed className="size-3.5" aria-hidden />
-          {station}
-        </span>
-      ) : null}
-
-      <span
-        className="food-section-badge"
-        data-ocid={
-          sectionBadge === "prep"
-            ? "library.item.food_recipe.prep_badge"
-            : "library.item.food_recipe.section_badge"
-        }
-      >
-        {sectionBadgeLabel}
-      </span>
-    </header>
   );
 }
 
@@ -265,234 +248,939 @@ function FoodCardHeader({
 /**
  * menuBuild food recipe card — assembled-to-order menu item.
  *
- * Layout: photo hero → header (title + station badge + menu-section badge)
- * → two-column Components → Amount table (serviceware first in a subtle
- * 'Plating' group with a dashed divider, then components) → numbered Build
- * Steps list (red Oswald numerals) → EXPO finishing steps in a highlighted
- * purple-red callout (left edge) → allergen callout at the bottom (muted
- * red).
+ * Layout (top to bottom):
+ *   1. Purple title band — title centered, white, Anton uppercase.
+ *   2. Plating photo directly under the band — full width, edge to edge,
+ *      object-contain; tap opens in a new tab. Omitted if no photo.
+ *   3. Purple column-header band — ASSEMBLY (left), AMOUNT (centered over
+ *      the amounts column), PROCEDURE (right). White, uppercase, Oswald.
+ *   4. Two-column body:
+ *      LEFT (~55%) = Assembly / Amount. Serviceware first (under a small
+ *      'Plating' sub-label), then each component as a ■-bullet row with
+ *      the amount right-aligned in its own column. Subtle row separators.
+ *      RIGHT (~45%) = Procedure. Hand-wash/glove note at the top, then
+ *      build steps as • bullets.
+ *   5. EXPO finishing callout — light-purple highlighted box at the
+ *      bottom of the Procedure column, with a vertical 'EXPO' label
+ *      (rotated 90°, purple) down its left edge. If expoSteps is empty,
+ *      the procedure list stands alone (no separate box).
+ *   6. Allergen callout — muted line at the bottom of the Assembly column.
+ *   7. Footer strip — confidential notice + station name.
+ *
+ * Desktop shows the true two-column layout; on mobile the columns stack
+ * (photo + title, then Assembly/Amount, then Procedure, then EXPO box)
+ * — never horizontal scroll.
  */
 function MenuBuildFoodRecipeCard({
   item,
   food,
+  accentStyle,
 }: {
   item: LibraryItem;
   food: FoodRecipe;
+  accentStyle?: CSSProperties;
 }): ReactElement {
-  const accent = stationAccentClasses(food.station);
   const hasServiceware = food.serviceware.length > 0;
   const hasComponents = food.components.length > 0;
   const hasSteps = food.steps.length > 0;
   const hasExpo = food.expoSteps.length > 0;
   const hasAllergen =
     food.allergenNote != null && food.allergenNote.trim().length > 0;
-  const sectionLabel =
-    food.menuSection != null && food.menuSection.trim().length > 0
-      ? food.menuSection
-      : "Menu";
+  const hasAssembly = hasServiceware || hasComponents;
+  // The two-column split only applies when there is a procedure column to
+  // sit beside the assembly column. When there is no procedure at all the
+  // assembly column spans full width.
+  const isSplit = hasSteps || hasExpo;
 
   return (
     <article
-      className="mt-4 flex flex-col rounded-md border border-border bg-library-card px-5 py-6 sm:px-7 sm:py-8"
+      className="food-recipe-card mt-4 flex flex-col"
+      style={accentStyle}
       data-ocid="library.item.food_recipe_card.menu_build"
     >
-      {item.photo ? (
-        <FoodPhotoHero photo={item.photo} title={item.title} />
-      ) : null}
-
+      {/* ── Desktop layout (>=1024px) — preserved byte-for-byte. ── */}
       <div
-        className="mt-4"
-        data-ocid="library.item.food_recipe.menu_build_header"
+        className="food-recipe-desktop"
+        data-ocid="library.item.food_recipe.desktop.menu_build"
       >
-        <FoodCardHeader
-          title={item.title}
-          station={food.station}
-          accent={accent}
-          sectionBadge="menuSection"
-          sectionBadgeLabel={sectionLabel}
-        />
+        <RecipeTitleBand title={item.title} />
+
+        {item.photo ? (
+          <RecipePhoto photo={item.photo} title={item.title} />
+        ) : null}
+
+        {hasAssembly || hasSteps || hasExpo ? (
+          <div
+            className="food-recipe-column-band is-3"
+            data-ocid="library.item.food_recipe.column_band"
+          >
+            <span data-ocid="library.item.food_recipe.column_label.assembly">
+              Assembly
+            </span>
+            <span
+              className="label-center"
+              data-ocid="library.item.food_recipe.column_label.amount"
+            >
+              Amount
+            </span>
+            <span
+              className="label-right"
+              data-ocid="library.item.food_recipe.column_label.procedure"
+            >
+              Procedure
+            </span>
+          </div>
+        ) : null}
+
+        <div
+          className={`food-recipe-body ${isSplit ? "is-split" : ""}`}
+          data-ocid="library.item.food_recipe.body"
+        >
+          {/* LEFT — Assembly / Amount. Serviceware first under a 'Plating'
+              sub-label, then components. Each row is a ■ bullet + item on
+              the left, amount right-aligned in its own column. */}
+          {hasAssembly ? (
+            <section
+              className="food-recipe-column"
+              data-ocid="library.item.food_recipe.assembly"
+            >
+              {hasServiceware ? (
+                <div data-ocid="library.item.food_recipe.plating_group">
+                  <p
+                    className="food-recipe-plating-label"
+                    data-ocid="library.item.food_recipe.plating.label"
+                  >
+                    Plating
+                  </p>
+                  {food.serviceware.map((sw, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    <ServicewareRow key={`sw-${i}`} sw={sw} index={i} />
+                  ))}
+                </div>
+              ) : null}
+
+              {hasComponents ? (
+                <div data-ocid="library.item.food_recipe.components_group">
+                  {food.components.map((c, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    <ComponentRow key={`c-${i}`} component={c} index={i} />
+                  ))}
+                </div>
+              ) : null}
+
+              {hasAllergen ? (
+                <div
+                  className="food-recipe-allergen"
+                  data-ocid="library.item.food_recipe.allergen"
+                >
+                  <span
+                    className="label"
+                    data-ocid="library.item.food_recipe.allergen.label"
+                  >
+                    Allergen Note
+                  </span>
+                  <span data-ocid="library.item.food_recipe.allergen.text">
+                    {food.allergenNote}
+                  </span>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
+          {/* RIGHT — Procedure. Hand-wash/glove note at the top, then build
+              steps as • bullets, then the EXPO callout at the bottom. */}
+          {hasSteps || hasExpo ? (
+            <section
+              className="food-recipe-column"
+              data-ocid="library.item.food_recipe.procedure"
+            >
+              <HandWashNote />
+
+              {hasSteps ? (
+                <ol
+                  className="food-recipe-steps"
+                  data-ocid="library.item.food_recipe.build_steps.list"
+                >
+                  {food.steps.map((step, i) => (
+                    <li
+                      // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                      key={`step-${i}`}
+                      data-ocid={`library.item.food_recipe.build_steps.step.${i + 1}`}
+                    >
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
+
+              {hasExpo ? (
+                <div
+                  className="food-recipe-expo"
+                  data-ocid="library.item.food_recipe.expo"
+                >
+                  <span
+                    className="food-recipe-expo-label"
+                    data-ocid="library.item.food_recipe.expo.label"
+                  >
+                    EXPO
+                  </span>
+                  <div
+                    className="food-recipe-expo-body"
+                    data-ocid="library.item.food_recipe.expo.body"
+                  >
+                    <ol
+                      className="food-recipe-steps"
+                      data-ocid="library.item.food_recipe.expo.list"
+                    >
+                      {food.expoSteps.map((step, i) => (
+                        <li
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                          key={`expo-${i}`}
+                          data-ocid={`library.item.food_recipe.expo.step.${i + 1}`}
+                        >
+                          {step}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+        </div>
+
+        <RecipeFooter station={food.station} />
       </div>
 
-      {/* Components → Amount table. Serviceware listed first in a subtle
-          'Plating' group (dashed divider), then components. */}
-      {hasServiceware || hasComponents ? (
-        <section
-          className="mt-6"
-          data-ocid="library.item.food_recipe.components"
-        >
-          <h2
-            className="font-heading text-sm uppercase tracking-wider text-muted-foreground"
-            data-ocid="library.item.food_recipe.components.heading"
-          >
-            Components
-          </h2>
+      {/* ── Phone layout (<1024px, tuned for ~375px) — single-column
+            stack: title band → photo → Plating serviceware group →
+            components stacked list (item left, amount as bold chip right)
+            → numbered procedure → hand-wash note → EXPO callout with a
+            small purple EXPO tag at the top → footer. ── */}
+      <div
+        className="food-recipe-phone"
+        data-ocid="library.item.food_recipe.phone.menu_build"
+      >
+        <RecipeTitleBand title={item.title} />
 
-          <div
-            className="mt-2"
-            data-ocid="library.item.food_recipe.components.table"
+        {item.photo ? (
+          <RecipePhoto photo={item.photo} title={item.title} />
+        ) : null}
+
+        {hasAssembly ? (
+          <section
+            className="food-recipe-phone-build"
+            data-ocid="library.item.food_recipe.phone.build"
           >
             {hasServiceware ? (
-              <div data-ocid="library.item.food_recipe.plating_group">
+              <div
+                className="food-recipe-phone-plating"
+                data-ocid="library.item.food_recipe.phone.plating_group"
+              >
                 <p
-                  className="food-plating-label pt-2"
-                  data-ocid="library.item.food_recipe.plating.label"
+                  className="food-recipe-phone-section-label"
+                  data-ocid="library.item.food_recipe.phone.plating.label"
                 >
                   Plating
                 </p>
                 {food.serviceware.map((sw, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                  <ServicewareRow key={`sw-${i}`} sw={sw} index={i} />
+                  <PhoneAmountRow
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-sw-${i}`}
+                    item={sw.item}
+                    amount={sw.amount}
+                    index={i}
+                    ocidPrefix="library.item.food_recipe.phone.plating.row"
+                  />
                 ))}
               </div>
-            ) : null}
-
-            {hasServiceware && hasComponents ? (
-              <div
-                className="food-plating-rule my-2"
-                aria-hidden
-                data-ocid="library.item.food_recipe.plating_divider"
-              />
             ) : null}
 
             {hasComponents ? (
-              <div data-ocid="library.item.food_recipe.components_group">
+              <div
+                className="food-recipe-phone-components"
+                data-ocid="library.item.food_recipe.phone.components_group"
+              >
+                {hasServiceware ? (
+                  <p
+                    className="food-recipe-phone-section-label"
+                    data-ocid="library.item.food_recipe.phone.components.label"
+                  >
+                    Build
+                  </p>
+                ) : null}
                 {food.components.map((c, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                  <ComponentRow key={`c-${i}`} component={c} index={i} />
+                  <PhoneAmountRow
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-c-${i}`}
+                    item={c.item}
+                    amount={c.amount}
+                    note={c.note ?? ""}
+                    index={i}
+                    ocidPrefix="library.item.food_recipe.phone.component.row"
+                  />
                 ))}
               </div>
             ) : null}
-          </div>
-        </section>
-      ) : null}
 
-      {/* Numbered Build Steps list (red Oswald numerals). */}
-      {hasSteps ? (
-        <section
-          className="mt-6"
-          data-ocid="library.item.food_recipe.build_steps"
-        >
-          <h2
-            className="font-heading text-sm uppercase tracking-wider text-muted-foreground"
-            data-ocid="library.item.food_recipe.build_steps.heading"
-          >
-            Build Steps
-          </h2>
-          <ol
-            className="food-build-steps mt-2"
-            data-ocid="library.item.food_recipe.build_steps.list"
-          >
-            {food.steps.map((step, i) => (
-              <li
-                // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                key={`step-${i}`}
-                data-ocid={`library.item.food_recipe.build_steps.step.${i + 1}`}
+            {hasAllergen ? (
+              <div
+                className="food-recipe-phone-allergen"
+                data-ocid="library.item.food_recipe.phone.allergen"
               >
-                {step}
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
+                <span
+                  className="label"
+                  data-ocid="library.item.food_recipe.phone.allergen.label"
+                >
+                  Allergen Note
+                </span>
+                <span data-ocid="library.item.food_recipe.phone.allergen.text">
+                  {food.allergenNote}
+                </span>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
 
-      {/* EXPO finishing steps — highlighted purple-red callout, left edge. */}
-      {hasExpo ? (
-        <section
-          className="food-expo-callout animate-food-expo-pop mt-6"
-          data-ocid="library.item.food_recipe.expo"
-        >
-          <p
-            className="food-expo-callout-label"
-            data-ocid="library.item.food_recipe.expo.label"
+        {hasSteps || hasExpo ? (
+          <section
+            className="food-recipe-phone-procedure"
+            data-ocid="library.item.food_recipe.phone.procedure"
           >
-            EXPO Finishing
-          </p>
-          <ol
-            className="food-build-steps mt-2"
-            data-ocid="library.item.food_recipe.expo.list"
-          >
-            {food.expoSteps.map((step, i) => (
-              <li
-                // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                key={`expo-${i}`}
-                data-ocid={`library.item.food_recipe.expo.step.${i + 1}`}
+            <HandWashNote />
+
+            {hasSteps ? (
+              <ol
+                className="food-recipe-phone-steps"
+                data-ocid="library.item.food_recipe.phone.build_steps.list"
               >
-                {step}
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
+                {food.steps.map((step, i) => (
+                  <li
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-step-${i}`}
+                    data-ocid={`library.item.food_recipe.phone.build_steps.step.${i + 1}`}
+                  >
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            ) : null}
 
-      {/* Allergen callout — muted red, bottom of the card. */}
-      {hasAllergen ? (
-        <section
-          className="food-allergen-callout mt-6"
-          data-ocid="library.item.food_recipe.allergen"
-        >
-          <p
-            className="food-allergen-callout-label"
-            data-ocid="library.item.food_recipe.allergen.label"
-          >
-            Allergen Note
-          </p>
-          <p
-            className="mt-1 font-body text-sm leading-relaxed"
-            data-ocid="library.item.food_recipe.allergen.text"
-          >
-            {food.allergenNote}
-          </p>
-        </section>
-      ) : null}
+            {hasExpo ? (
+              <div
+                className="food-recipe-phone-expo"
+                data-ocid="library.item.food_recipe.phone.expo"
+              >
+                <span
+                  className="food-recipe-phone-expo-tag"
+                  data-ocid="library.item.food_recipe.phone.expo.label"
+                >
+                  EXPO
+                </span>
+                <ol
+                  className="food-recipe-phone-steps"
+                  data-ocid="library.item.food_recipe.phone.expo.list"
+                >
+                  {food.expoSteps.map((step, i) => (
+                    <li
+                      // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                      key={`p-expo-${i}`}
+                      data-ocid={`library.item.food_recipe.phone.expo.step.${i + 1}`}
+                    >
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
+        <RecipeFooter station={food.station} />
+      </div>
     </article>
   );
 }
 
-/* ------------------------------ prep layout ------------------------------- */
+/* --------------------------- build-card layout --------------------------- */
+
+/**
+ * BuildCardFoodRecipeCard — presentation-only leader-line Build Card.
+ *
+ * Renders instead of the normal MenuBuildFoodRecipeCard / PrepFoodRecipeCard
+ * whenever the dispatcher's `isBuildCard` predicate is true: a non-empty
+ * `buildHeader` AND a truthy `item.photo`. The recipe's `kind` and the
+ * presence of component.anchorY values do NOT gate the trigger — a recipe
+ * with buildHeader + photo renders the Build Card regardless of kind, and
+ * any component whose anchorY is null falls back to an even vertical
+ * distribution across the label column (see `resolveAnchorY`).
+ *
+ * The Build Card is a visual replica of the official Bubba's 33 build card:
+ * a red kicker (buildHeader) → a deep Bubba's blue (#1F3A8A, or the
+ * per-category accent when one exists) square title band with a white
+ * uppercase title → a two-column stage with the build photo on the left
+ * (~46%) and anchorY-positioned leader-line labels on the right (~54%) → a
+ * confidential footer strip. Build steps render below the card.
+ *
+ * Two layouts, mirroring the existing dual-markup pattern
+ * (.food-recipe-desktop / .food-recipe-phone):
+ *   - Desktop (>= ~720px) — `.build-card-desktop`: red kicker → blue title
+ *     band → two-column stage (photo left ~46%, labels right ~54% with each
+ *     label at top: anchorY*100% translateY(-50%)) → footer → build steps.
+ *   - Phone (< ~720px) — `.build-card-phone`: red kicker → blue title band
+ *     → full-width photo → plain vertical ingredient list (■ item left,
+ *     amount chip right, note in red beneath) → build steps. No leader
+ *     lines, no absolute positioning.
+ *
+ * The photo tap opens a shadcn Dialog lightbox (reusing the
+ * DrinksBuilderActivity pattern) over a dark backdrop instead of
+ * window.open, so the full-size photo stays inside the app. anchorY is
+ * honored exactly when present; null anchorY falls back to even
+ * distribution. The component group header (c.group) is ignored on this
+ * layout.
+ *
+ * Props:
+ *   - item: the LibraryItem (item.photo is guaranteed non-null by the
+ *     dispatcher's isBuildCard predicate).
+ *   - food: the FoodRecipe (buildHeader is guaranteed non-empty by the
+ *     dispatcher's isBuildCard predicate).
+ *   - accentStyle: optional inline CSS vars (--category-accent /
+ *     --category-accent-tint) sourced from the item's category.
+ */
+/**
+ * resolveAnchorY — returns the vertical position (0..1) a Build Card label
+ * should sit at inside the right-hand label column.
+ *
+ * When the component carries a non-null numeric `anchorY`, that value is
+ * honored exactly (the importer preserves it from the source recipe). When
+ * `anchorY` is null (or not a finite number), the label is distributed
+ * evenly across the column using (index + 1) / (total + 1) — so a single
+ * null label lands at 50%, two at 33% / 66%, three at 25/50/75%, etc. This
+ * keeps the Build Card readable when anchorY is missing instead of
+ * collapsing every null label to the top (the old `?? 0` behavior).
+ *
+ * Exported so the admin AnchorEditorDialog can reuse the exact same
+ * resolution logic when rendering its label handles and computing the
+ * "Reset to even spacing" defaults.
+ */
+export function resolveAnchorY(
+  component: FoodComponent,
+  index: number,
+  total: number,
+): number {
+  const y = component.anchorY;
+  if (typeof y === "number" && Number.isFinite(y)) return y;
+  return total > 0 ? (index + 1) / (total + 1) : 0.5;
+}
+
+/**
+ * inferBuildKicker — the display-only fallback kicker used by the Build Card
+ * when the recipe's stored `buildHeader` is null/empty.
+ *
+ * The dispatcher's `isBuildCard` predicate now routes a `menuBuild` recipe
+ * with a photo to the Build Card even when `buildHeader` is blank (migration
+ * 20260810_204000 set buildHeader=null on all pre-existing recipes, so the
+ * Bacon Guacamole burger and every other burger/plate recipe with a photo
+ * would otherwise fall back to the generic ASSEMBLY | AMOUNT | PROCEDURE
+ * card). The Build Card needs a red kicker to match the Bubba's mock, so this
+ * helper infers one from the recipe's `menuSection`:
+ *   - "Build Your Burger" when menuSection mentions "burger" (case-insensitive)
+ *     — matches the Bubba's mock exactly.
+ *   - "Build Your Plate" otherwise (plates and any other assembled-to-order
+ *     menuBuild item).
+ *
+ * This is a render-time display fallback only — the stored buildHeader stays
+ * null and the data layer is untouched. When the recipe carries a real
+ * non-empty buildHeader, the caller uses that instead and this helper is
+ * never consulted.
+ *
+ * Exported so the admin AnchorEditorDialog can render the same kicker
+ * preview the published Build Card shows.
+ */
+export function inferBuildKicker(food: FoodRecipe): string {
+  const section = food.menuSection ?? "";
+  return /burger/i.test(section) ? "Build Your Burger" : "Build Your Plate";
+}
+
+function BuildCardFoodRecipeCard({
+  item,
+  food,
+  accentStyle,
+}: {
+  item: LibraryItem;
+  food: FoodRecipe;
+  accentStyle?: CSSProperties;
+}): ReactElement {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  // Phone step-circle popout — index of the component whose label is
+  // currently shown in the popout Dialog, or null when closed. Only one
+  // popout is open at a time; tapping a different circle re-points this
+  // index, tapping close/backdrop sets it back to null.
+  const [popoutIndex, setPopoutIndex] = useState<number | null>(null);
+  // The Build Card always renders a red kicker. When the recipe carries a
+  // real non-empty buildHeader it is used as-is; otherwise (buildHeader null/
+  // empty on a menuBuild recipe with a photo — the migration 20260810_204000
+  // case) an inferred kicker ("Build Your Burger" / "Build Your Plate") is
+  // substituted at render time so the card still matches the Bubba's mock.
+  // The stored buildHeader remains null — this is a display fallback only.
+  const realKicker =
+    food.buildHeader != null && food.buildHeader.trim().length > 0
+      ? food.buildHeader
+      : null;
+  const kicker = realKicker ?? inferBuildKicker(food);
+  const hasSteps = food.steps.length > 0;
+  // item.photo is guaranteed non-null by the dispatcher's isBuildCard
+  // predicate; assert it once so the JSX stays null-safe and the type
+  // narrows for the photo <img> src.
+  const photo = item.photo ?? "";
+  const componentCount = food.components.length;
+  // The component currently shown in the phone popout (if any). Resolved
+  // here so the Dialog JSX below can render its item/amount/note without
+  // re-indexing the array in multiple places.
+  const popoutComponent =
+    popoutIndex != null ? (food.components[popoutIndex] ?? null) : null;
+
+  return (
+    <article
+      className="food-recipe-card mt-4 flex flex-col"
+      style={accentStyle}
+      data-ocid="library.item.food_recipe_card.build"
+    >
+      {/* ── Desktop / tablet layout (>= ~720px) — leader-line stage. ── */}
+      <div
+        className="build-card-desktop"
+        data-ocid="library.item.food_recipe.desktop.build"
+      >
+        <div
+          className="build-card-kicker"
+          data-ocid="library.item.food_recipe.build.kicker"
+        >
+          {kicker}
+        </div>
+
+        <div
+          className="build-card-title-band"
+          data-ocid="library.item.food_recipe.build.title_band"
+        >
+          <h2
+            className="build-card-title"
+            data-ocid="library.item.food_recipe.build.title"
+          >
+            {item.title}
+          </h2>
+        </div>
+
+        <div
+          className="build-card-stage"
+          data-ocid="library.item.food_recipe.build.stage"
+        >
+          {/* Left ~46% — build photo at natural aspect, top-aligned on
+              white. Tap opens the photo in an in-app shadcn Dialog
+              lightbox (replaces the old window.open new-tab behavior so
+              the full-size photo stays inside the app). */}
+          <div
+            className="build-card-photo-col"
+            data-ocid="library.item.food_recipe.build.photo_col"
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              className="build-card-photo-button"
+              aria-label="Open full-size build photo"
+              title="Tap to view full size"
+              data-ocid="library.item.food_recipe.build.photo_button"
+            >
+              <img
+                className="build-card-photo"
+                src={photo}
+                alt={item.title}
+                loading="lazy"
+              />
+            </button>
+          </div>
+
+          {/* Right ~54% — positioned label layer, same height as the
+              photo. Each label sits at top: anchorY*100% with
+              translateY(-50%) so it is vertically centered on that
+              point. anchorY is honored exactly — no position math. */}
+          <div
+            className="build-card-labels"
+            data-ocid="library.item.food_recipe.build.labels"
+          >
+            {food.components.map((c, i) => {
+              // Step number = build order, bottom layer first. With N
+              // components stored top-to-bottom (matching photo/anchorY
+              // order), index i from the top gets stepNumber = N - i.
+              // So the bottom bun = Step 1 and the top bun = Step N.
+              const stepNumber = componentCount - i;
+              return (
+                <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate component strings can collide, index is the stable key
+                  key={`bc-${i}`}
+                  className="build-card-label"
+                  style={{
+                    top: `${resolveAnchorY(c, i, componentCount) * 100}%`,
+                  }}
+                  data-ocid={`library.item.food_recipe.build.label.${i + 1}`}
+                >
+                  <span
+                    className="build-card-step-connector"
+                    aria-hidden="true"
+                    data-ocid={`library.item.food_recipe.build.leader.${i + 1}`}
+                  />
+                  <span
+                    className="build-card-step-badge"
+                    aria-label={`Step ${stepNumber}`}
+                    data-ocid={`library.item.food_recipe.build.step_badge.${i + 1}`}
+                  >
+                    <span className="build-card-step-badge-label">STEP</span>
+                    <span className="build-card-step-badge-number">
+                      {stepNumber}
+                    </span>
+                  </span>
+                  <span
+                    className="build-card-label-text"
+                    data-ocid={`library.item.food_recipe.build.label_text.${i + 1}`}
+                  >
+                    <strong>
+                      {c.item} - {c.amount}
+                    </strong>
+                    {c.note != null && c.note.trim().length > 0 ? (
+                      <span
+                        className="build-card-label-note"
+                        data-ocid={`library.item.food_recipe.build.label_note.${i + 1}`}
+                      >
+                        {" "}
+                        ({c.note})
+                      </span>
+                    ) : null}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div
+          className="build-card-footer"
+          data-ocid="library.item.food_recipe.build.footer"
+        >
+          <span
+            className="build-card-footer-confidential"
+            data-ocid="library.item.food_recipe.build.footer_confidential"
+          >
+            CONFIDENTIAL AND PROPRIETARY &copy; Bubba&apos;s 33
+          </span>
+          {food.station.trim().length > 0 ? (
+            <span
+              className="build-card-footer-station"
+              data-ocid="library.item.food_recipe.build.footer_station"
+            >
+              {food.station}
+            </span>
+          ) : null}
+        </div>
+
+        {hasSteps ? <BuildSteps steps={food.steps} /> : null}
+      </div>
+
+      {/* ── Phone layout (< ~720px) — single-column reflow. ── */}
+      <div
+        className="build-card-phone"
+        data-ocid="library.item.food_recipe.phone.build"
+      >
+        <div
+          className="build-card-kicker"
+          data-ocid="library.item.food_recipe.phone.build.kicker"
+        >
+          {kicker}
+        </div>
+
+        <div
+          className="build-card-title-band"
+          data-ocid="library.item.food_recipe.phone.build.title_band"
+        >
+          <h2
+            className="build-card-title"
+            data-ocid="library.item.food_recipe.phone.build.title"
+          >
+            {item.title}
+          </h2>
+        </div>
+
+        {/* Photo stage — the full-width photo remains the visual anchor.
+            The photo button (tap-to-zoom lightbox) sits underneath an
+            overlay layer of step circles positioned at each component's
+            anchorY on the LEFT edge of the photo. Tapping a circle opens
+            a label popout (and stops propagation so the photo lightbox
+            does not also fire); tapping the photo itself still opens the
+            lightbox. The old stacked ingredient list is gone — labels now
+            live in the popout. */}
+        <div
+          className="build-card-phone-photo-stage"
+          data-ocid="library.item.food_recipe.phone.build.photo_stage"
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            className="build-card-photo-button"
+            aria-label="Open full-size build photo"
+            title="Tap to view full size"
+            data-ocid="library.item.food_recipe.phone.build.photo_button"
+          >
+            <img
+              className="build-card-photo"
+              src={photo}
+              alt={item.title}
+              loading="lazy"
+            />
+          </button>
+          {componentCount > 0 ? (
+            <div
+              className="build-card-phone-circles"
+              data-ocid="library.item.food_recipe.phone.build.circles"
+            >
+              {food.components.map((c, i) => {
+                // Step number = build order, bottom layer first (same as
+                // desktop). Index i from the top gets stepNumber = N - i.
+                const stepNumber = componentCount - i;
+                return (
+                  <button
+                    type="button"
+                    key={`pbc-${c.item}-${c.amount}-${i}`}
+                    className="build-card-phone-circle"
+                    style={{
+                      top: `${resolveAnchorY(c, i, componentCount) * 100}%`,
+                    }}
+                    aria-label={`Step ${stepNumber}: ${c.item}${c.amount.trim().length > 0 ? ` — ${c.amount}` : ""}`}
+                    data-ocid={`library.item.food_recipe.phone.build.circle.${i + 1}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopoutIndex(i);
+                    }}
+                  >
+                    <span className="build-card-step-badge" aria-hidden="true">
+                      <span className="build-card-step-badge-label">STEP</span>
+                      <span className="build-card-step-badge-number">
+                        {stepNumber}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+
+        {hasSteps ? <BuildSteps steps={food.steps} phone /> : null}
+      </div>
+
+      {/* Lightbox Dialog — full uncropped build photo over a dark
+          backdrop. Tapping the backdrop or the close button dismisses
+          it. Reuses the DrinksBuilderActivity lightbox pattern. The
+          photo is guaranteed non-null by the dispatcher's isBuildCard
+          predicate, so the Dialog renders unconditionally here. */}
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent
+          className="max-w-[90vw] max-h-[90vh] border-primary/40 bg-black/90 p-0 overflow-hidden"
+          data-ocid="library.item.food_recipe.build.lightbox"
+        >
+          <DialogTitle className="sr-only">{item.title}</DialogTitle>
+          <DialogClose
+            asChild
+            data-ocid="library.item.food_recipe.build.lightbox.close_button"
+          >
+            <button
+              type="button"
+              aria-label="Close lightbox"
+              className="absolute right-2 top-2 z-10 inline-flex size-10 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <X className="size-5" aria-hidden />
+            </button>
+          </DialogClose>
+          <div className="flex items-center justify-center p-3">
+            <img
+              src={photo}
+              alt={item.title}
+              className="block h-auto max-h-[90vh] w-auto max-w-[90vw] object-contain"
+              data-ocid="library.item.food_recipe.build.lightbox.photo"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Phone step-label popout — opens when a step circle on the photo
+          is tapped. Shows that step's component label (item name, amount
+          as the existing purple pill, and the note in Bubba's red when
+          present). Only one popout is open at a time; tapping a different
+          circle re-points popoutIndex to that step, tapping close/backdrop
+          sets popoutIndex back to null. Reuses the same shadcn Dialog
+          pattern as the lightbox above. Constrained to max-w-[90vw] so it
+          never causes horizontal scroll on phone. */}
+      <Dialog
+        open={popoutIndex != null}
+        onOpenChange={(open) => {
+          if (!open) setPopoutIndex(null);
+        }}
+      >
+        <DialogContent
+          className="max-w-[90vw] border-primary/40 p-0 overflow-hidden build-card-phone-popout"
+          data-ocid="library.item.food_recipe.phone.build.popout"
+        >
+          <DialogTitle className="sr-only">
+            {popoutComponent
+              ? `Step ${componentCount - (popoutIndex ?? 0)}: ${popoutComponent.item}`
+              : "Step label"}
+          </DialogTitle>
+          <DialogClose
+            asChild
+            data-ocid="library.item.food_recipe.phone.build.popout.close_button"
+          >
+            <button
+              type="button"
+              aria-label="Close step label"
+              className="absolute right-2 top-2 z-10 inline-flex size-10 items-center justify-center rounded-full bg-black/10 text-foreground transition-colors hover:bg-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <X className="size-5" aria-hidden />
+            </button>
+          </DialogClose>
+          {popoutComponent ? (
+            <div
+              className="build-card-phone-popout-body"
+              data-ocid="library.item.food_recipe.phone.build.popout.body"
+            >
+              <div
+                className="build-card-phone-popout-step"
+                data-ocid="library.item.food_recipe.phone.build.popout.step_badge"
+              >
+                <span className="build-card-step-badge" aria-hidden="true">
+                  <span className="build-card-step-badge-label">STEP</span>
+                  <span className="build-card-step-badge-number">
+                    {componentCount - (popoutIndex ?? 0)}
+                  </span>
+                </span>
+              </div>
+              <div
+                className="build-card-phone-popout-text"
+                data-ocid="library.item.food_recipe.phone.build.popout.text"
+              >
+                <p
+                  className="build-card-phone-popout-item"
+                  data-ocid="library.item.food_recipe.phone.build.popout.item"
+                >
+                  {popoutComponent.item}
+                </p>
+                {popoutComponent.amount.trim().length > 0 ? (
+                  <span
+                    className="build-card-phone-amount"
+                    data-ocid="library.item.food_recipe.phone.build.popout.amount"
+                  >
+                    {popoutComponent.amount}
+                  </span>
+                ) : null}
+                {popoutComponent.note != null &&
+                popoutComponent.note.trim().length > 0 ? (
+                  <p
+                    className="build-card-phone-popout-note"
+                    data-ocid="library.item.food_recipe.phone.build.popout.note"
+                  >
+                    {popoutComponent.note}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+    </article>
+  );
+}
+
+/**
+ * Build steps — the existing food.steps list rendered below the Build
+ * Card (desktop) or at the bottom of the phone stack. Presentation only;
+ * reuses the .build-card-steps styling. The `phone` flag swaps to the
+ * phone-tuned variant.
+ */
+function BuildSteps({
+  steps,
+  phone,
+}: {
+  steps: string[];
+  phone?: boolean;
+}): ReactElement {
+  return (
+    <section
+      className={`build-card-steps${phone ? " is-phone" : ""}`}
+      data-ocid={
+        phone
+          ? "library.item.food_recipe.phone.build.steps"
+          : "library.item.food_recipe.build.steps"
+      }
+    >
+      <h3
+        className="build-card-steps-heading"
+        data-ocid={
+          phone
+            ? "library.item.food_recipe.phone.build.steps.heading"
+            : "library.item.food_recipe.build.steps.heading"
+        }
+      >
+        Build steps
+      </h3>
+      <ol
+        className="build-card-steps-list"
+        data-ocid={
+          phone
+            ? "library.item.food_recipe.phone.build.steps.list"
+            : "library.item.food_recipe.build.steps.list"
+        }
+      >
+        {steps.map((step, i) => (
+          <li
+            // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step strings can collide, index is the stable key
+            key={`bs-${i}`}
+            data-ocid={`library.item.food_recipe.build.steps.step.${i + 1}`}
+          >
+            {step}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/* ------------------------------ prep layout ------------------------------ */
 
 /**
  * prep food recipe card — make-ahead prep recipe.
  *
- * Layout: photo hero → header (title + station badge + PREP badge) →
- * compact meta row of badges (Yield, Shelf life, Line utensil, Hold temp,
- * Store temp — only non-null fields) → ingredient table grouped by group
- * ('Step 1', 'Step 2'…; components with null group go in an ungrouped
- * section) → numbered procedure steps → Quality Identifiers checklist
- * with check bullets → optional Equipment line (only if equipment non-null).
+ * Layout (top to bottom):
+ *   1. Purple title band with the product name.
+ *   2. A short intro line ('Gather all ingredients before beginning
+ *      recipe.') and, if present, an Equipment line (muted).
+ *   3. A right-aligned meta stack: Yield (bold), Shelf life, Holding —
+ *      as they appear top-right on the page.
+ *   4. Ingredient table: two columns Ingredient | Amount with a
+ *      purple/tinted header row, rows grouped by component.group with a
+ *      small 'Step 1', 'Step 2'… subheading before each group.
+ *   5. Procedure: the 'WASH YOUR HANDS…' line, then the steps as •
+ *      bullets in a right-hand column (mirrors the page's two-column
+ *      ingredients-left / procedure-right layout when space allows;
+ *      stacks on mobile).
+ *   6. Quality Identifiers as a ✓ checklist, plus Line utensil,
+ *      Storage/Hold temps as small labeled badges.
+ *   7. Footer strip — confidential notice + station name.
  */
 function PrepFoodRecipeCard({
   item,
   food,
+  accentStyle,
 }: {
   item: LibraryItem;
   food: FoodRecipe;
+  accentStyle?: CSSProperties;
 }): ReactElement {
-  const accent = stationAccentClasses(food.station);
-
-  // Meta badges — only render badges for fields that are non-null and
-  // non-empty (after trim). Order matches the dispatch: Yield, Shelf
-  // life, Line utensil, Hold temp, Store temp.
-  const metaBadges: { label: string; value: string }[] = [];
-  if (food.yieldText != null && food.yieldText.trim().length > 0) {
-    metaBadges.push({ label: "Yield", value: food.yieldText });
-  }
-  if (food.shelfLife != null && food.shelfLife.trim().length > 0) {
-    metaBadges.push({ label: "Shelf Life", value: food.shelfLife });
-  }
-  if (food.lineUtensil != null && food.lineUtensil.trim().length > 0) {
-    metaBadges.push({ label: "Line Utensil", value: food.lineUtensil });
-  }
-  if (food.holdTemp != null && food.holdTemp.trim().length > 0) {
-    metaBadges.push({ label: "Hold Temp", value: food.holdTemp });
-  }
-  if (food.storeTemp != null && food.storeTemp.trim().length > 0) {
-    metaBadges.push({ label: "Store Temp", value: food.storeTemp });
-  }
-
-  // Ingredient table — group components by `group`. Components with a
-  // null group go in an ungrouped section (rendered first, no group
-  // label). Grouped components render in insertion order under their
-  // group label. Preserves the backend's array order within each group.
   const { ungrouped, grouped } = groupComponents(food.components);
   const hasIngredients = ungrouped.length > 0 || grouped.length > 0;
   const hasSteps = food.steps.length > 0;
@@ -500,66 +1188,313 @@ function PrepFoodRecipeCard({
   const hasEquipment =
     food.equipment != null && food.equipment.trim().length > 0;
 
+  // Meta stack — Yield (bold), Shelf life, Holding. Only render rows for
+  // fields that are non-null and non-empty (after trim).
+  const metaRows: { label: string; value: string; yield?: boolean }[] = [];
+  if (food.yieldText != null && food.yieldText.trim().length > 0) {
+    metaRows.push({ label: "Yield", value: food.yieldText, yield: true });
+  }
+  if (food.shelfLife != null && food.shelfLife.trim().length > 0) {
+    metaRows.push({ label: "Shelf life", value: food.shelfLife });
+  }
+  if (food.holdTemp != null && food.holdTemp.trim().length > 0) {
+    metaRows.push({ label: "Holding", value: food.holdTemp });
+  }
+
+  // Footer badges — Line utensil, Storage, Hold temp. Only render badges
+  // for fields that are non-null and non-empty (after trim). Yield/Shelf
+  // life are already in the meta stack, so the badges carry the
+  // operational details (utensil + temps).
+  const badges: { label: string; value: string }[] = [];
+  if (food.lineUtensil != null && food.lineUtensil.trim().length > 0) {
+    badges.push({ label: "Line utensil", value: food.lineUtensil });
+  }
+  if (food.storeTemp != null && food.storeTemp.trim().length > 0) {
+    badges.push({ label: "Storage", value: food.storeTemp });
+  }
+  if (food.holdTemp != null && food.holdTemp.trim().length > 0) {
+    badges.push({ label: "Hold temp", value: food.holdTemp });
+  }
+
+  // The two-column split only applies when there is a procedure column
+  // to sit beside the ingredient table. When there is no procedure the
+  // ingredient table spans full width.
+  const isSplit = hasSteps && hasIngredients;
+
   return (
     <article
-      className="mt-4 flex flex-col rounded-md border border-border bg-library-card px-5 py-6 sm:px-7 sm:py-8"
+      className="food-recipe-card mt-4 flex flex-col"
+      style={accentStyle}
       data-ocid="library.item.food_recipe_card.prep"
     >
-      {item.photo ? (
-        <FoodPhotoHero photo={item.photo} title={item.title} />
-      ) : null}
+      {/* ── Desktop layout (>=1024px) — preserved byte-for-byte. ── */}
+      <div
+        className="food-recipe-desktop"
+        data-ocid="library.item.food_recipe.desktop.prep"
+      >
+        <RecipeTitleBand title={item.title} />
 
-      <div className="mt-4" data-ocid="library.item.food_recipe.prep_header">
-        <FoodCardHeader
-          title={item.title}
-          station={food.station}
-          accent={accent}
-          sectionBadge="prep"
-          sectionBadgeLabel="Prep"
-        />
+        {/* Intro line + optional equipment line. */}
+        <p
+          className="food-recipe-intro"
+          data-ocid="library.item.food_recipe.intro"
+        >
+          Gather all ingredients before beginning recipe.
+        </p>
+        {hasEquipment ? (
+          <p
+            className="food-recipe-equipment"
+            data-ocid="library.item.food_recipe.equipment"
+          >
+            <span className="label">Equipment: </span>
+            {food.equipment}
+          </p>
+        ) : null}
+
+        {/* Right-aligned meta stack — Yield (bold), Shelf life, Holding. */}
+        {metaRows.length > 0 ? (
+          <div
+            className="food-recipe-meta"
+            data-ocid="library.item.food_recipe.prep_meta"
+          >
+            {metaRows.map((row, i) => (
+              <div
+                key={`meta-${row.label}-${i}`}
+                className={`row ${row.yield ? "is-yield" : ""}`}
+                data-ocid={`library.item.food_recipe.prep_meta.row.${i + 1}`}
+              >
+                <span className="label">{row.label}</span>
+                <span className="value">{row.value}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {/* Ingredient table + Procedure two-column body. */}
+        {hasIngredients || hasSteps ? (
+          <div
+            className={`food-recipe-body ${isSplit ? "is-split" : ""}`}
+            data-ocid="library.item.food_recipe.prep_body"
+          >
+            {/* LEFT — Ingredient | Amount table. */}
+            {hasIngredients ? (
+              <section
+                className="food-recipe-column"
+                data-ocid="library.item.food_recipe.ingredients"
+              >
+                <div
+                  className="food-recipe-ingredient-header"
+                  data-ocid="library.item.food_recipe.ingredients.header"
+                >
+                  <span data-ocid="library.item.food_recipe.ingredients.header.ingredient">
+                    Ingredient
+                  </span>
+                  <span
+                    className="amount"
+                    data-ocid="library.item.food_recipe.ingredients.header.amount"
+                  >
+                    Amount
+                  </span>
+                </div>
+
+                {ungrouped.length > 0 ? (
+                  <div
+                    className="food-recipe-ingredient-rows"
+                    data-ocid="library.item.food_recipe.ingredients.ungrouped"
+                  >
+                    {ungrouped.map((c, i) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                      <ComponentRow key={`u-${i}`} component={c} index={i} />
+                    ))}
+                  </div>
+                ) : null}
+
+                {grouped.map((group, gi) => (
+                  <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`g-${gi}`}
+                    data-ocid={`library.item.food_recipe.ingredients.group.${gi + 1}`}
+                  >
+                    <p
+                      className="food-recipe-step-label"
+                      data-ocid={`library.item.food_recipe.ingredients.group_label.${gi + 1}`}
+                    >
+                      {group.label}
+                    </p>
+                    <div
+                      className="food-recipe-ingredient-rows"
+                      data-ocid={`library.item.food_recipe.ingredients.group_rows.${gi + 1}`}
+                    >
+                      {group.components.map((c, i) => (
+                        <ComponentRow
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                          key={`g-${gi}-c-${i}`}
+                          component={c}
+                          index={i}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </section>
+            ) : null}
+
+            {/* RIGHT — Procedure. WASH YOUR HANDS heading, then steps as
+                • bullets. */}
+            {hasSteps ? (
+              <section
+                className="food-recipe-column"
+                data-ocid="library.item.food_recipe.procedure"
+              >
+                <h2
+                  className="food-recipe-procedure-heading"
+                  data-ocid="library.item.food_recipe.procedure.heading"
+                >
+                  Wash your hands and put on new gloves before beginning
+                </h2>
+                <ol
+                  className="food-recipe-steps"
+                  data-ocid="library.item.food_recipe.procedure.list"
+                >
+                  {food.steps.map((step, i) => (
+                    <li
+                      // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                      key={`proc-${i}`}
+                      data-ocid={`library.item.food_recipe.procedure.step.${i + 1}`}
+                    >
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* Quality Identifiers checklist. */}
+        {hasQuality ? (
+          <section
+            className="food-recipe-column"
+            data-ocid="library.item.food_recipe.quality"
+          >
+            <h2
+              className="food-recipe-procedure-heading"
+              data-ocid="library.item.food_recipe.quality.heading"
+            >
+              Quality Identifiers
+            </h2>
+            <ul
+              className="food-recipe-quality"
+              data-ocid="library.item.food_recipe.quality.list"
+            >
+              {food.qualityIdentifiers.map((qi, i) => (
+                <li
+                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                  key={`qi-${i}`}
+                  data-ocid={`library.item.food_recipe.quality.item.${i + 1}`}
+                >
+                  {qi}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {/* Line utensil / Storage / Hold temp badges. */}
+        {badges.length > 0 ? (
+          <div
+            className="food-recipe-badges"
+            data-ocid="library.item.food_recipe.prep_badges"
+          >
+            {badges.map((badge, i) => (
+              <span
+                key={`badge-${badge.label}-${i}`}
+                className="food-recipe-badge"
+                data-ocid={`library.item.food_recipe.prep_badge.${i + 1}`}
+              >
+                <span className="label">{badge.label}</span>
+                <span className="value">{badge.value}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <RecipeFooter station={food.station} />
       </div>
 
-      {/* Compact meta row of badges. */}
-      {metaBadges.length > 0 ? (
-        <div
-          className="mt-4 flex flex-wrap gap-2"
-          data-ocid="library.item.food_recipe.prep_meta"
-        >
-          {metaBadges.map((badge, i) => (
-            <span
-              key={`meta-${badge.label}-${i}`}
-              className="food-meta-badge"
-              data-ocid={`library.item.food_recipe.prep_meta.badge.${i + 1}`}
-            >
-              <span className="label">{badge.label}</span>
-              <span className="value">{badge.value}</span>
-            </span>
-          ))}
-        </div>
-      ) : null}
+      {/* ── Phone layout (<1024px, tuned for ~375px) — single-column
+            stack: title band → yield/shelf meta as stacked badges →
+            step-grouped Ingredient/Amount stacked list (amount as chip)
+            → procedure steps → quality-ID checklist → badges → footer. ── */}
+      <div
+        className="food-recipe-phone"
+        data-ocid="library.item.food_recipe.phone.prep"
+      >
+        <RecipeTitleBand title={item.title} />
 
-      {/* Ingredient table grouped by group. */}
-      {hasIngredients ? (
-        <section
-          className="mt-6"
-          data-ocid="library.item.food_recipe.ingredients"
+        <p
+          className="food-recipe-phone-intro"
+          data-ocid="library.item.food_recipe.phone.intro"
         >
-          <h2
-            className="font-heading text-sm uppercase tracking-wider text-muted-foreground"
-            data-ocid="library.item.food_recipe.ingredients.heading"
+          Gather all ingredients before beginning recipe.
+        </p>
+        {hasEquipment ? (
+          <p
+            className="food-recipe-phone-equipment"
+            data-ocid="library.item.food_recipe.phone.equipment"
           >
-            Ingredients
-          </h2>
+            <span className="label">Equipment: </span>
+            {food.equipment}
+          </p>
+        ) : null}
 
+        {/* Yield / Shelf life / Holding as stacked badges. */}
+        {metaRows.length > 0 ? (
           <div
-            className="mt-2"
-            data-ocid="library.item.food_recipe.ingredients.table"
+            className="food-recipe-phone-meta"
+            data-ocid="library.item.food_recipe.phone.prep_meta"
           >
+            {metaRows.map((row, i) => (
+              <span
+                key={`p-meta-${row.label}-${i}`}
+                className={`food-recipe-phone-meta-badge ${row.yield ? "is-yield" : ""}`}
+                data-ocid={`library.item.food_recipe.phone.prep_meta.row.${i + 1}`}
+              >
+                <span className="label">{row.label}</span>
+                <span className="value">{row.value}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {/* Step-grouped Ingredient | Amount stacked list. */}
+        {hasIngredients ? (
+          <section
+            className="food-recipe-phone-ingredients"
+            data-ocid="library.item.food_recipe.phone.ingredients"
+          >
+            <p
+              className="food-recipe-phone-section-label"
+              data-ocid="library.item.food_recipe.phone.ingredients.heading"
+            >
+              Ingredients
+            </p>
+
             {ungrouped.length > 0 ? (
-              <div data-ocid="library.item.food_recipe.ingredients.ungrouped">
+              <div
+                className="food-recipe-phone-ingredient-group"
+                data-ocid="library.item.food_recipe.phone.ingredients.ungrouped"
+              >
                 {ungrouped.map((c, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                  <ComponentRow key={`u-${i}`} component={c} index={i} />
+                  <PhoneAmountRow
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-u-${i}`}
+                    item={c.item}
+                    amount={c.amount}
+                    note={c.note ?? ""}
+                    index={i}
+                    ocidPrefix="library.item.food_recipe.phone.ingredients.ungrouped.row"
+                  />
                 ))}
               </div>
             ) : null}
@@ -567,94 +1502,111 @@ function PrepFoodRecipeCard({
             {grouped.map((group, gi) => (
               <div
                 // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                key={`g-${gi}`}
-                data-ocid={`library.item.food_recipe.ingredients.group.${gi + 1}`}
+                key={`p-g-${gi}`}
+                className="food-recipe-phone-ingredient-group"
+                data-ocid={`library.item.food_recipe.phone.ingredients.group.${gi + 1}`}
               >
                 <p
-                  className="food-prep-group-label"
-                  data-ocid={`library.item.food_recipe.ingredients.group_label.${gi + 1}`}
+                  className="food-recipe-phone-step-label"
+                  data-ocid={`library.item.food_recipe.phone.ingredients.group_label.${gi + 1}`}
                 >
                   {group.label}
                 </p>
                 {group.components.map((c, i) => (
-                  <ComponentRow
+                  <PhoneAmountRow
                     // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                    key={`g-${gi}-c-${i}`}
-                    component={c}
+                    key={`p-g-${gi}-c-${i}`}
+                    item={c.item}
+                    amount={c.amount}
+                    note={c.note ?? ""}
                     index={i}
+                    ocidPrefix={`library.item.food_recipe.phone.ingredients.group_rows.${gi + 1}.row`}
                   />
                 ))}
               </div>
             ))}
+          </section>
+        ) : null}
+
+        {/* Procedure steps. */}
+        {hasSteps ? (
+          <section
+            className="food-recipe-phone-procedure"
+            data-ocid="library.item.food_recipe.phone.procedure"
+          >
+            <h2
+              className="food-recipe-phone-procedure-heading"
+              data-ocid="library.item.food_recipe.phone.procedure.heading"
+            >
+              Wash your hands and put on new gloves before beginning
+            </h2>
+            <ol
+              className="food-recipe-phone-steps"
+              data-ocid="library.item.food_recipe.phone.procedure.list"
+            >
+              {food.steps.map((step, i) => (
+                <li
+                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                  key={`p-proc-${i}`}
+                  data-ocid={`library.item.food_recipe.phone.procedure.step.${i + 1}`}
+                >
+                  {step}
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+
+        {/* Quality Identifiers checklist. */}
+        {hasQuality ? (
+          <section
+            className="food-recipe-phone-quality"
+            data-ocid="library.item.food_recipe.phone.quality"
+          >
+            <h2
+              className="food-recipe-phone-procedure-heading"
+              data-ocid="library.item.food_recipe.phone.quality.heading"
+            >
+              Quality Identifiers
+            </h2>
+            <ul
+              className="food-recipe-phone-quality-list"
+              data-ocid="library.item.food_recipe.phone.quality.list"
+            >
+              {food.qualityIdentifiers.map((qi, i) => (
+                <li
+                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                  key={`p-qi-${i}`}
+                  data-ocid={`library.item.food_recipe.phone.quality.item.${i + 1}`}
+                >
+                  {qi}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {/* Line utensil / Storage / Hold temp badges. */}
+        {badges.length > 0 ? (
+          <div
+            className="food-recipe-phone-badges"
+            data-ocid="library.item.food_recipe.phone.prep_badges"
+          >
+            {badges.map((badge, i) => (
+              <span
+                key={`p-badge-${badge.label}-${i}`}
+                className="food-recipe-phone-badge"
+                data-ocid={`library.item.food_recipe.phone.prep_badge.${i + 1}`}
+              >
+                <span className="label">{badge.label}</span>
+                <span className="value">{badge.value}</span>
+              </span>
+            ))}
           </div>
-        </section>
-      ) : null}
+        ) : null}
 
-      {/* Numbered procedure steps. */}
-      {hasSteps ? (
-        <section
-          className="mt-6"
-          data-ocid="library.item.food_recipe.procedure"
-        >
-          <h2
-            className="font-heading text-sm uppercase tracking-wider text-muted-foreground"
-            data-ocid="library.item.food_recipe.procedure.heading"
-          >
-            Procedure
-          </h2>
-          <ol
-            className="food-build-steps mt-2"
-            data-ocid="library.item.food_recipe.procedure.list"
-          >
-            {food.steps.map((step, i) => (
-              <li
-                // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                key={`proc-${i}`}
-                data-ocid={`library.item.food_recipe.procedure.step.${i + 1}`}
-              >
-                {step}
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
-
-      {/* Quality Identifiers checklist with check bullets. */}
-      {hasQuality ? (
-        <section className="mt-6" data-ocid="library.item.food_recipe.quality">
-          <h2
-            className="font-heading text-sm uppercase tracking-wider text-muted-foreground"
-            data-ocid="library.item.food_recipe.quality.heading"
-          >
-            Quality Identifiers
-          </h2>
-          <ul
-            className="food-quality-list mt-2"
-            data-ocid="library.item.food_recipe.quality.list"
-          >
-            {food.qualityIdentifiers.map((qi, i) => (
-              <li
-                // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                key={`qi-${i}`}
-                data-ocid={`library.item.food_recipe.quality.item.${i + 1}`}
-              >
-                {qi}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {/* Optional Equipment line — only if equipment is non-null. */}
-      {hasEquipment ? (
-        <p
-          className="food-equipment-line mt-6"
-          data-ocid="library.item.food_recipe.equipment"
-        >
-          <span className="label">Equipment: </span>
-          {food.equipment}
-        </p>
-      ) : null}
+        <RecipeFooter station={food.station} />
+      </div>
     </article>
   );
 }
@@ -662,8 +1614,8 @@ function PrepFoodRecipeCard({
 /* ------------------------------ Table rows ------------------------------- */
 
 /**
- * A single serviceware row in the Plating group of the Components table.
- * Reuses the .food-components-row utility (component left, amount
+ * A single serviceware row in the Plating group of the Assembly column.
+ * Reuses the .food-recipe-row utility (item left with a ■ bullet, amount
  * right-aligned). Serviceware has no `note` field, so the row is just
  * item + amount.
  */
@@ -676,18 +1628,18 @@ function ServicewareRow({
 }): ReactElement {
   return (
     <div
-      className="food-components-row"
+      className="food-recipe-row"
       data-ocid={`library.item.food_recipe.plating.row.${index + 1}`}
     >
-      <span className="component">{sw.item}</span>
+      <span className="item">{sw.item}</span>
       <span className="amount">{sw.amount}</span>
     </div>
   );
 }
 
 /**
- * A single component row in the Components / Ingredients table. Reuses
- * the .food-components-row utility. When the component carries a non-null
+ * A single component row in the Assembly / Ingredients table. Reuses
+ * the .food-recipe-row utility. When the component carries a non-null
  * `note`, the note renders as a muted sub-line under the component name
  * so it does not break the two-column amount alignment.
  */
@@ -701,19 +1653,79 @@ function ComponentRow({
   const hasNote = component.note != null && component.note.trim().length > 0;
   return (
     <div
-      className="food-components-row"
+      className="food-recipe-row"
       data-ocid={`library.item.food_recipe.component.row.${index + 1}`}
     >
-      <span className="component flex flex-col">
+      <span className="item">
         <span>{component.item}</span>
-        {hasNote ? (
-          <span className="font-body text-xs text-muted-foreground">
-            {component.note}
-          </span>
-        ) : null}
+        {hasNote ? <span className="item-note">{component.note}</span> : null}
       </span>
       <span className="amount">{component.amount}</span>
     </div>
+  );
+}
+
+/* ------------------------------ Phone rows ------------------------------- */
+
+/**
+ * Phone amount row — item name on the left with its amount as a bold
+ * chip/pill on the right. The amount pill wraps to its own line if it
+ * is long, so amounts stay scannable and never truncate. Used by both
+ * the menuBuild build list (serviceware + components) and the prep
+ * ingredient list. Tap target >=44px.
+ */
+function PhoneAmountRow({
+  item,
+  amount,
+  note,
+  index,
+  ocidPrefix,
+}: {
+  item: string;
+  amount: string;
+  note?: string;
+  index: number;
+  ocidPrefix: string;
+}): ReactElement {
+  const hasNote = note != null && note.trim().length > 0;
+  return (
+    <div
+      className="food-recipe-phone-row"
+      data-ocid={`${ocidPrefix}.${index + 1}`}
+    >
+      <span className="item">
+        <span>{item}</span>
+        {hasNote ? <span className="item-note">{note}</span> : null}
+      </span>
+      {amount.trim().length > 0 ? (
+        <span className="amount-pill">{amount}</span>
+      ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------ Hand-wash note --------------------------- */
+
+/**
+ * Hand-wash / glove note — small muted line at the top of the Procedure
+ * column with a hand-wash icon. Mirrors the Lake Charles Quik Reference
+ * recipe book 'Wash hands and put on new gloves before: • Starting work
+ * • Handling food for guests with food allergies • Returning from
+ * another station' line.
+ */
+function HandWashNote(): ReactElement {
+  return (
+    <p
+      className="food-recipe-handwash"
+      data-ocid="library.item.food_recipe.handwash"
+    >
+      <Hand className="size-4" aria-hidden />
+      <span>
+        Wash hands and put on new gloves before:&nbsp;Starting
+        work&nbsp;&bull;&nbsp;Handling food for guests with food
+        allergies&nbsp;&bull;&nbsp;Returning from another station
+      </span>
+    </p>
   );
 }
 

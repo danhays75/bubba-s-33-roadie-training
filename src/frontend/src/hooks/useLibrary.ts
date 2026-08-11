@@ -53,6 +53,7 @@ function toCategory(c: {
   positionId: bigint;
   name: string;
   coverPhoto?: string;
+  accentColor?: string;
   sortOrder: bigint;
 }): Category {
   return {
@@ -60,6 +61,10 @@ function toCategory(c: {
     positionId: c.positionId.toString(),
     name: c.name,
     coverPhoto: c.coverPhoto ?? null,
+    // Candid sends accentColor as string | null already (it is a non-optional
+    // text on the backend record, but the hook stays defensive for the
+    // undefined case). Map directly — no normalization needed.
+    accentColor: c.accentColor ?? null,
     sortOrder: Number(c.sortOrder),
   };
 }
@@ -98,6 +103,7 @@ function toRecipe(
         shelfLife?: string;
         qualityIdentifier?: Array<string>;
         recapAudio?: string;
+        buildAudio?: string;
       }
     | undefined,
 ): Recipe | null {
@@ -127,6 +133,7 @@ function toRecipe(
     shelfLife: r.shelfLife && r.shelfLife.length > 0 ? r.shelfLife : null,
     qualityIdentifier: r.qualityIdentifier ?? [],
     recapAudio: r.recapAudio && r.recapAudio.length > 0 ? r.recapAudio : null,
+    buildAudio: r.buildAudio && r.buildAudio.length > 0 ? r.buildAudio : null,
   };
 }
 
@@ -160,6 +167,7 @@ function fromRecipe(r: Recipe | null | undefined): {
   shelfLife: string | undefined;
   qualityIdentifier: Array<string>;
   recapAudio: string | undefined;
+  buildAudio: string | undefined;
 } | null {
   if (!r) return null;
   return {
@@ -188,6 +196,8 @@ function fromRecipe(r: Recipe | null | undefined): {
     qualityIdentifier: r.qualityIdentifier ?? [],
     recapAudio:
       r.recapAudio && r.recapAudio.length > 0 ? r.recapAudio : undefined,
+    buildAudio:
+      r.buildAudio && r.buildAudio.length > 0 ? r.buildAudio : undefined,
   };
 }
 
@@ -207,12 +217,14 @@ function toFoodRecipe(
         station: string;
         kind: "prep" | "menuBuild";
         menuSection?: string;
+        buildHeader?: string;
         serviceware: Array<{ item: string; amount: string }>;
         components: Array<{
           item: string;
           amount: string;
           group?: string;
           note?: string;
+          anchorY?: number;
         }>;
         steps: Array<string>;
         expoSteps: Array<string>;
@@ -233,12 +245,18 @@ function toFoodRecipe(
     kind: r.kind === "menuBuild" ? "menuBuild" : "prep",
     menuSection:
       r.menuSection && r.menuSection.length > 0 ? r.menuSection : null,
+    buildHeader:
+      r.buildHeader && r.buildHeader.length > 0 ? r.buildHeader : null,
     serviceware: r.serviceware.map((s) => ({ item: s.item, amount: s.amount })),
     components: r.components.map((c) => ({
       item: c.item,
       amount: c.amount,
       group: c.group && c.group.length > 0 ? c.group : null,
       note: c.note && c.note.length > 0 ? c.note : null,
+      anchorY:
+        typeof c.anchorY === "number" && Number.isFinite(c.anchorY)
+          ? c.anchorY
+          : null,
     })),
     steps: r.steps,
     expoSteps: r.expoSteps,
@@ -279,6 +297,8 @@ function fromFoodRecipe(
     // absent optionals. Translate null/empty -> undefined here.
     menuSection:
       r.menuSection && r.menuSection.length > 0 ? r.menuSection : undefined,
+    buildHeader:
+      r.buildHeader && r.buildHeader.length > 0 ? r.buildHeader : undefined,
     serviceware: r.serviceware.map((s) => ({
       item: s.item,
       amount: s.amount,
@@ -288,6 +308,7 @@ function fromFoodRecipe(
       amount: c.amount,
       group: c.group && c.group.length > 0 ? c.group : undefined,
       note: c.note && c.note.length > 0 ? c.note : undefined,
+      anchorY: c.anchorY !== null ? c.anchorY : undefined,
     })),
     steps: r.steps,
     expoSteps: r.expoSteps,
@@ -344,12 +365,14 @@ function toItem(i: {
     station: string;
     kind: "prep" | "menuBuild";
     menuSection?: string;
+    buildHeader?: string;
     serviceware: Array<{ item: string; amount: string }>;
     components: Array<{
       item: string;
       amount: string;
       group?: string;
       note?: string;
+      anchorY?: number;
     }>;
     steps: Array<string>;
     expoSteps: Array<string>;
@@ -469,6 +492,7 @@ export interface CreateCategoryInput {
   positionId: string;
   name: string;
   coverPhoto?: string | null;
+  accentColor?: string | null;
 }
 
 /** Creates a new category under a position (admin only). */
@@ -478,13 +502,16 @@ export function useCreateCategory() {
   return useMutation({
     mutationFn: async (input: CreateCategoryInput) => {
       if (!actor) throw new Error("Backend not ready");
-      // Candid: createCategory(positionId: bigint, name, coverPhoto: ?Text)
+      // Candid: createCategory(positionId: bigint, name, coverPhoto: ?Text, accentColor: ?Text)
       const result = await actor.createCategory(
         BigInt(input.positionId),
         input.name,
         input.coverPhoto && input.coverPhoto.length > 0
           ? input.coverPhoto
           : null,
+        // Pass accentColor (or null) through. undefined becomes null so the
+        // actor's ?Text boundary always receives an explicit value.
+        input.accentColor ?? null,
       );
       return toCategory(result);
     },
@@ -501,6 +528,7 @@ export interface UpdateCategoryInput {
   positionId: string;
   name: string;
   coverPhoto?: string | null;
+  accentColor?: string | null;
 }
 
 /** Updates an existing category (admin only). */
@@ -510,13 +538,16 @@ export function useUpdateCategory() {
   return useMutation({
     mutationFn: async (input: UpdateCategoryInput) => {
       if (!actor) throw new Error("Backend not ready");
-      // Candid: updateCategory(categoryId: bigint, name, coverPhoto: ?Text)
+      // Candid: updateCategory(categoryId: bigint, name, coverPhoto: ?Text, accentColor: ?Text)
       const result = await actor.updateCategory(
         BigInt(input.categoryId),
         input.name,
         input.coverPhoto && input.coverPhoto.length > 0
           ? input.coverPhoto
           : null,
+        // Pass accentColor (or null) through. undefined becomes null so the
+        // actor's ?Text boundary always receives an explicit value.
+        input.accentColor ?? null,
       );
       return toCategory(result);
     },

@@ -93,6 +93,7 @@ type RecipeSpec =
 type Recipe = 
  record {
    assembly: vec text;
+   buildAudio: opt text;
    equipment: vec text;
    garnish: vec text;
    glassware: text;
@@ -213,6 +214,7 @@ type FoodRecipeKind =
 type FoodRecipe = 
  record {
    allergenNote: opt text;
+   buildHeader: opt text;
    components: vec FoodComponent;
    equipment: opt text;
    expoSteps: vec text;
@@ -231,6 +233,7 @@ type FoodRecipe =
 type FoodComponent = 
  record {
    amount: text;
+   anchorY: opt float64;
    group: opt text;
    item: text;
    note: opt text;
@@ -321,6 +324,7 @@ type Cell =
  };
 type Category = 
  record {
+   accentColor: opt text;
    coverPhoto: opt text;
    id: nat;
    name: text;
@@ -412,8 +416,8 @@ service : {
   assignPosition: (userId: principal, positionId: nat) ->
    (PositionAssignment);
   buildLegendaryActivity: (input: BuildActivityInput) -> (Activity);
-  createCategory: (positionId: nat, name: text, coverPhoto: opt text) ->
-   (Category);
+  createCategory: (positionId: nat, name: text, coverPhoto: opt text,
+   accentColor: opt text) -> (Category);
   createItem: (categoryId: nat, title: text, subtitle: opt text, photo:
    opt text, details: vec DetailField, notes: opt text, tags: vec text,
    seasonal: bool, recipe: opt Recipe, foodRecipe: opt FoodRecipe) ->
@@ -491,8 +495,8 @@ service : {
   setUserRole: (userId: principal, role: Role) -> (UserProfile);
   toggleNsoTask: (id: nat, done: bool, completionDate: opt text) -> ();
   unassignPosition: (userId: principal, positionId: nat) -> ();
-  updateCategory: (categoryId: nat, name: text, coverPhoto: opt text) ->
-   (Category);
+  updateCategory: (categoryId: nat, name: text, coverPhoto: opt text,
+   accentColor: opt text) -> (Category);
   updateItem: (itemId: nat, title: text, subtitle: opt text, photo: opt text,
    details: vec DetailField, notes: opt text, tags: vec text, seasonal: 
    bool, recipe: opt Recipe, foodRecipe: opt FoodRecipe) -> (LibraryItem);

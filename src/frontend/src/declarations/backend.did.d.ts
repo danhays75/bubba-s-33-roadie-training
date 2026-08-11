@@ -46,6 +46,7 @@ export interface Category {
   'id' : bigint,
   'sortOrder' : bigint,
   'name' : string,
+  'accentColor' : [] | [string],
   'positionId' : bigint,
   'coverPhoto' : [] | [string],
 }
@@ -108,6 +109,7 @@ export interface FlashcardRecipe {
   'assembly' : Array<string>,
 }
 export interface FoodComponent {
+  'anchorY' : [] | [number],
   'item' : string,
   'note' : [] | [string],
   'group' : [] | [string],
@@ -120,6 +122,7 @@ export interface FoodRecipe {
   'equipment' : [] | [string],
   'holdTemp' : [] | [string],
   'kind' : FoodRecipeKind,
+  'buildHeader' : [] | [string],
   'qualityIdentifiers' : Array<string>,
   'components' : Array<FoodComponent>,
   'shelfLife' : [] | [string],
@@ -216,6 +219,7 @@ export interface Recipe {
   'qualityIdentifier' : Array<string>,
   'specs' : Array<RecipeSpec>,
   'shelfLife' : [] | [string],
+  'buildAudio' : [] | [string],
   'assembly' : Array<string>,
   'yield' : [] | [string],
 }
@@ -337,7 +341,10 @@ export interface _SERVICE {
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignPosition' : ActorMethod<[Principal, bigint], PositionAssignment>,
   'buildLegendaryActivity' : ActorMethod<[BuildActivityInput], Activity>,
-  'createCategory' : ActorMethod<[bigint, string, [] | [string]], Category>,
+  'createCategory' : ActorMethod<
+    [bigint, string, [] | [string], [] | [string]],
+    Category
+  >,
   'createItem' : ActorMethod<
     [
       bigint,
@@ -428,7 +435,10 @@ export interface _SERVICE {
   'setUserRole' : ActorMethod<[Principal, Role], UserProfile>,
   'toggleNsoTask' : ActorMethod<[bigint, boolean, [] | [string]], undefined>,
   'unassignPosition' : ActorMethod<[Principal, bigint], undefined>,
-  'updateCategory' : ActorMethod<[bigint, string, [] | [string]], Category>,
+  'updateCategory' : ActorMethod<
+    [bigint, string, [] | [string], [] | [string]],
+    Category
+  >,
   'updateItem' : ActorMethod<
     [
       bigint,

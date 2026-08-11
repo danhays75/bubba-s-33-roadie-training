@@ -1,18 +1,17 @@
 {
-  "overview": "A roadie training app with a food recipe library, station-based kitchen browser, and plating photo management.",
+  "overview": "A drag-to-adjust editor that lets admins fine-tune Build Card leader-line label positions on recipe photos and save the new anchorY values back to the recipe.",
   "features": [
-    "Food recipes with plating photos, station badges, and build steps",
-    "Menu build and prep recipe layouts",
-    "Station-filtered searchable kitchen browser",
-    "Photo-aware bulk import for food recipes",
-    "Admin bulk photo attach by filename"
+    "Drag-to-adjust leader-line label positions on Build Card photos",
+    "Live preview matching the public Build Card",
+    "Save anchorY values back to the recipe",
+    "Admin-only access from the item editor"
   ],
   "category": "productivity",
   "tags": [
-    "training",
-    "recipes",
-    "library",
-    "food-service"
+    "admin",
+    "build-card",
+    "editor",
+    "recipes"
   ],
-  "last_updated": "2026-08-02T17:39:15.209Z"
+  "last_updated": "2026-08-10T21:35:55.814Z"
 }

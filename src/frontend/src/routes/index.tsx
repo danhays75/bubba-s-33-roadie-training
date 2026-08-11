@@ -61,12 +61,13 @@ function HeroSection() {
       className="relative mt-2 mb-6 overflow-hidden border border-border bg-card"
       data-ocid="home.hero.section"
     >
-      {/* Cinematic roadhouse hero banner — smiling bartender with Bubba's 33
-          eye-black. Swap the file at public/assets/generated/bartender-hero-eyeblack.png
-          to update the hero photo. */}
+      {/* Cinematic roadhouse hero banner — smiling bartender behind the
+          bar. Swap the file at
+          public/assets/generated/bartender-hero-eyeblack.png to update
+          the hero photo. */}
       <img
         src="/assets/generated/bartender-hero-eyeblack.webp"
-        alt="Bartender with Bubba's 33 eye-black under her eyes, smiling behind the bar"
+        alt="Bartender smiling behind the bar"
         loading="eager"
         className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover object-center"
       />

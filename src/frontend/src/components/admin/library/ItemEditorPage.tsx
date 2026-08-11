@@ -1,4 +1,5 @@
 import { QueryErrorState } from "@/components/QueryErrorState";
+import { AnchorEditorDialog } from "@/components/admin/library/AnchorEditorDialog";
 import { DetailFieldEditor } from "@/components/admin/library/DetailFieldEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,7 @@ import {
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { usePhotoUpload } from "@/hooks/usePhotoUpload";
 import { cn } from "@/lib/utils";
-import type { DetailField, Recipe } from "@/types/foundation";
+import type { DetailField, LibraryItem, Recipe } from "@/types/foundation";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowDown,
@@ -25,6 +26,7 @@ import {
   Play,
   Plus,
   RefreshCw,
+  SlidersHorizontal,
   Trash2,
   Upload,
   X,
@@ -191,8 +193,18 @@ export function ItemEditorPage({
   // Audio is passed STRAIGHT THROUGH to uploadPhoto — never JPEG-encoded
   // via resizeImage (resizeImage throws on non-image input).
   const [recapAudio, setRecapAudio] = useState<string | null>(null);
+  // Build voice clip — optional audio clip URL entered as plain text/URL
+  // (NO recording or upload UI). Stored as a URL string or null when absent.
+  // Mirrors backend `buildAudio : ?Text`.
+  const [buildAudio, setBuildAudio] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  // Anchor editor dialog open/close state. The dialog manages its own
+  // shadcn Dialog internally; ItemEditorPage only owns the open flag and
+  // the trigger button. Shown ONLY in edit mode (itemId !== 'new') when
+  // the recipe renders as a Build Card (photo present AND
+  // foodRecipe.kind === 'menuBuild') — see isBuildCard predicate below.
+  const [anchorEditorOpen, setAnchorEditorOpen] = useState(false);
 
   // Second usePhotoUpload instance dedicated to the recap audio clip.
   // Reuses the photo upload's isUploading / error / reset states for the
@@ -284,6 +296,9 @@ export function ItemEditorPage({
         // Recap voice clip — hydrate from the existing recipe's
         // recapAudio URL (null when the backend omits the optional ?Text).
         setRecapAudio(r.recapAudio ?? null);
+        // Build voice clip — hydrate from the existing recipe's buildAudio
+        // URL (null when the backend omits the optional ?Text).
+        setBuildAudio(r.buildAudio ?? null);
       } else {
         setIsRecipe(false);
       }
@@ -297,6 +312,23 @@ export function ItemEditorPage({
     touched && title.trim().length === 0 ? "Title is required" : null;
   const canSubmit = title.trim().length > 0;
   const isPending = createMutation.isPending || updateMutation.isPending;
+
+  // Build Card predicate — mirrors FoodRecipeCard.tsx isBuildCard exactly:
+  //   !!item.photo && (hasBuildHeader || food.kind === 'menuBuild')
+  // where hasBuildHeader = food.buildHeader != null &&
+  // food.buildHeader.trim().length > 0. The 'Adjust label positions'
+  // action below is gated on this AND on edit mode (itemId !== 'new'),
+  // since the recipe must already exist and have a photo + components to
+  // adjust. Hidden for prep recipes or photo-less items.
+  const isBuildCard = (() => {
+    if (isCreate || !existing) return false;
+    const food = existing.foodRecipe;
+    if (!food) return false;
+    if (!existing.photo) return false;
+    const hasBuildHeader =
+      food.buildHeader != null && food.buildHeader.trim().length > 0;
+    return hasBuildHeader || food.kind === "menuBuild";
+  })();
 
   // --- Recipe helpers -----------------------------------------------------
   // Recipe sub-records (RecipeSpec, RecipeVariant) are value records with no
@@ -399,6 +431,9 @@ export function ItemEditorPage({
       // Recap voice clip — passed through unchanged (URL string or null).
       // The audio upload control owns the URL; buildRecipe just forwards it.
       recapAudio: recapAudio,
+      // Build voice clip — passed through unchanged (URL string or null).
+      // The text input owns the value; buildRecipe just forwards it.
+      buildAudio: buildAudio,
     };
   }
 
@@ -633,6 +668,11 @@ export function ItemEditorPage({
           tags,
           seasonal,
           recipe: recipePayload,
+          // A brand-new item has no Build Card yet — Build Cards are
+          // created/edited via the AnchorEditorDialog path, which already
+          // handles foodRecipe correctly. Pass null so the backend stores
+          // an empty food recipe slot rather than inheriting stale state.
+          foodRecipe: null,
         });
         toast.success("Item created");
       } else {
@@ -647,6 +687,19 @@ export function ItemEditorPage({
           tags,
           seasonal,
           recipe: recipePayload,
+          // Forward the existing item's foodRecipe UNCHANGED so saving
+          // unrelated fields (title, subtitle, photo, details, notes, tags,
+          // seasonal, beverage recipe) preserves the Build Card and its
+          // STEP labels. ItemEditorPage does not edit foodRecipe — that
+          // happens in AnchorEditorDialog, which already persists it
+          // correctly. Without this key, useUpdateItem serializes
+          // undefined as null and the backend overwrites the stored
+          // foodRecipe with null, destroying the Build Card.
+          // existing.foodRecipe is already the frontend FoodRecipe | null
+          // shape (translated by toItem -> toFoodRecipe in useLibrary.ts);
+          // useUpdateItem runs it back through fromFoodRecipe to restore
+          // the Candid shape at the actor boundary.
+          foodRecipe: existing?.foodRecipe ?? null,
         });
         toast.success("Item updated");
       }
@@ -1083,6 +1136,45 @@ export function ItemEditorPage({
                   {audioUploadError}
                 </p>
               ) : null}
+            </div>
+
+            {/* Build voice clip — optional audio clip URL entered as plain
+                text/URL (NO recording or upload UI). Mirrors the recapAudio
+                field's intent but uses a simple text input so the admin can
+                paste a durable object-storage URL (or any reachable audio
+                URL). Empty string is normalized to null on submit. */}
+            <div
+              className="grid gap-2"
+              data-ocid="library.admin.item.editor.recipe.build_audio.section"
+            >
+              <Label
+                htmlFor="recipe-build-audio"
+                className="font-heading uppercase text-xs tracking-wider"
+              >
+                Build audio URL{" "}
+                <span className="text-muted-foreground normal-case">
+                  (optional)
+                </span>
+              </Label>
+              <p className="text-xs text-muted-foreground font-body">
+                URL of a build walk-through clip. Paste a durable object-storage
+                URL (or any reachable audio URL). Leave blank for no build
+                audio.
+              </p>
+              <Input
+                id="recipe-build-audio"
+                type="url"
+                inputMode="url"
+                value={buildAudio ?? ""}
+                onChange={(e) => setBuildAudio(e.target.value)}
+                placeholder="https://…/build-clip.mp3"
+                aria-label="Build audio URL"
+                disabled={isPending}
+                data-ocid="library.admin.item.editor.recipe.build_audio.input"
+                autoComplete="off"
+                spellCheck={false}
+                className="font-body"
+              />
             </div>
 
             {/* Specs — repeatable amount + ingredient rows */}
@@ -2104,6 +2196,57 @@ export function ItemEditorPage({
               </p>
             )}
           </fieldset>
+        )}
+
+        {/* Adjust label positions — Build Card only (edit mode + photo +
+            foodRecipe.kind === 'menuBuild'). Opens the AnchorEditorDialog
+            which overlays the Build Card photo and lets the admin drag
+            each ingredient label's anchorY. The dialog manages its own
+            shadcn Dialog open/close; this page only owns the open flag.
+            On save the dialog calls onSaved — useUpdateItem (called inside
+            the dialog) invalidates the ["library-item", itemId] query, so
+            this editor's itemQuery refetches automatically and the
+            refreshed foodRecipe (with new anchorY values) flows back. */}
+        {isBuildCard && existing && (
+          <div
+            className="flex items-center justify-between gap-4 rounded-md border border-border bg-card p-3"
+            data-ocid="library.admin.item.editor.anchor_editor.section"
+          >
+            <div className="grid gap-0.5">
+              <span className="font-heading uppercase text-xs tracking-wider">
+                Build Card labels
+              </span>
+              <p className="text-xs text-muted-foreground font-body">
+                Drag each ingredient label on the photo to reposition it. Saves
+                the new label positions to this item.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setAnchorEditorOpen(true)}
+              disabled={isPending}
+              data-ocid="library.admin.item.editor.anchor_editor.open_button"
+              className="shrink-0 gap-2"
+            >
+              <SlidersHorizontal className="size-4" aria-hidden="true" />
+              Adjust label positions
+            </Button>
+          </div>
+        )}
+        {isBuildCard && existing && (
+          <AnchorEditorDialog
+            item={existing}
+            open={anchorEditorOpen}
+            onOpenChange={setAnchorEditorOpen}
+            onSaved={() => {
+              // useUpdateItem (called inside the dialog) invalidates the
+              // ["library-item", itemId] query, so itemQuery refetches
+              // automatically and `existing` updates with the new
+              // anchorY values. No manual refetch needed here.
+              setAnchorEditorOpen(false);
+            }}
+          />
         )}
 
         {/* Actions */}

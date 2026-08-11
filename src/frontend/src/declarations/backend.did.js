@@ -21,6 +21,7 @@ export const Category = IDL.Record({
   'id' : IDL.Nat,
   'sortOrder' : IDL.Nat,
   'name' : IDL.Text,
+  'accentColor' : IDL.Opt(IDL.Text),
   'positionId' : IDL.Nat,
   'coverPhoto' : IDL.Opt(IDL.Text),
 });
@@ -33,6 +34,7 @@ export const FoodRecipeKind = IDL.Variant({
   'menuBuild' : IDL.Null,
 });
 export const FoodComponent = IDL.Record({
+  'anchorY' : IDL.Opt(IDL.Float64),
   'item' : IDL.Text,
   'note' : IDL.Opt(IDL.Text),
   'group' : IDL.Opt(IDL.Text),
@@ -45,6 +47,7 @@ export const FoodRecipe = IDL.Record({
   'equipment' : IDL.Opt(IDL.Text),
   'holdTemp' : IDL.Opt(IDL.Text),
   'kind' : FoodRecipeKind,
+  'buildHeader' : IDL.Opt(IDL.Text),
   'qualityIdentifiers' : IDL.Vec(IDL.Text),
   'components' : IDL.Vec(FoodComponent),
   'shelfLife' : IDL.Opt(IDL.Text),
@@ -78,6 +81,7 @@ export const Recipe = IDL.Record({
   'qualityIdentifier' : IDL.Vec(IDL.Text),
   'specs' : IDL.Vec(RecipeSpec),
   'shelfLife' : IDL.Opt(IDL.Text),
+  'buildAudio' : IDL.Opt(IDL.Text),
   'assembly' : IDL.Vec(IDL.Text),
   'yield' : IDL.Opt(IDL.Text),
 });
@@ -411,7 +415,7 @@ export const idlService = IDL.Service({
     ),
   'buildLegendaryActivity' : IDL.Func([BuildActivityInput], [Activity], []),
   'createCategory' : IDL.Func(
-      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
+      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [Category],
       [],
     ),
@@ -553,7 +557,7 @@ export const idlService = IDL.Service({
   'toggleNsoTask' : IDL.Func([IDL.Nat, IDL.Bool, IDL.Opt(IDL.Text)], [], []),
   'unassignPosition' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
   'updateCategory' : IDL.Func(
-      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
+      [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [Category],
       [],
     ),
@@ -617,6 +621,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat,
     'sortOrder' : IDL.Nat,
     'name' : IDL.Text,
+    'accentColor' : IDL.Opt(IDL.Text),
     'positionId' : IDL.Nat,
     'coverPhoto' : IDL.Opt(IDL.Text),
   });
@@ -629,6 +634,7 @@ export const idlFactory = ({ IDL }) => {
     'menuBuild' : IDL.Null,
   });
   const FoodComponent = IDL.Record({
+    'anchorY' : IDL.Opt(IDL.Float64),
     'item' : IDL.Text,
     'note' : IDL.Opt(IDL.Text),
     'group' : IDL.Opt(IDL.Text),
@@ -641,6 +647,7 @@ export const idlFactory = ({ IDL }) => {
     'equipment' : IDL.Opt(IDL.Text),
     'holdTemp' : IDL.Opt(IDL.Text),
     'kind' : FoodRecipeKind,
+    'buildHeader' : IDL.Opt(IDL.Text),
     'qualityIdentifiers' : IDL.Vec(IDL.Text),
     'components' : IDL.Vec(FoodComponent),
     'shelfLife' : IDL.Opt(IDL.Text),
@@ -674,6 +681,7 @@ export const idlFactory = ({ IDL }) => {
     'qualityIdentifier' : IDL.Vec(IDL.Text),
     'specs' : IDL.Vec(RecipeSpec),
     'shelfLife' : IDL.Opt(IDL.Text),
+    'buildAudio' : IDL.Opt(IDL.Text),
     'assembly' : IDL.Vec(IDL.Text),
     'yield' : IDL.Opt(IDL.Text),
   });
@@ -1007,7 +1015,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'buildLegendaryActivity' : IDL.Func([BuildActivityInput], [Activity], []),
     'createCategory' : IDL.Func(
-        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
+        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [Category],
         [],
       ),
@@ -1161,7 +1169,7 @@ export const idlFactory = ({ IDL }) => {
     'toggleNsoTask' : IDL.Func([IDL.Nat, IDL.Bool, IDL.Opt(IDL.Text)], [], []),
     'unassignPosition' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
     'updateCategory' : IDL.Func(
-        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text)],
+        [IDL.Nat, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [Category],
         [],
       ),

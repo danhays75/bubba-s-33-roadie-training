@@ -79,7 +79,7 @@
     --font-script: "Pacifico", "Great Vibes", cursive;
     --radius: 0.25rem;
 
-    /* Bubba's 33 dark roadhouse palette — dark is the only theme */
+    /* Lake Charles Quik Reference dark roadhouse palette — dark is the only theme */
     --background: 0.244 0.005 95;
     --foreground: 0.948 0.012 90;
     --card: 0.273 0.005 95;
@@ -345,6 +345,46 @@
        for the prep-tile placeholder fill when no photo (station wash). */
     --food-tile-placeholder: 0.31 0.006 95; /* library-card base */
     --food-tile-placeholder-fg: 0.644 0.011 95;
+
+    /* ───────────────────────────────────────────────────────────────────
+       Food Recipe Book page — deep bluer purple (#4B1D74 ≈ oklch 0.32 0.18
+       312). Distinct from the existing hue-350 purple-red EXPO tokens and
+       from the brand-red (hue 27) primary. Used for the document-style
+       recipe card title band, column-header band, EXPO callout wash, and
+       footer. Paper surface is a light cream (screen-only, not print).
+       ─────────────────────────────────────────────────────────────────── */
+    --food-recipe-purple: 0.32 0.18 312; /* #4B1D74 — title + column bands */
+    --food-recipe-purple-fg: 0.97 0.005 95; /* near-white on the purple band */
+    --food-recipe-purple-band: 0.32 0.18 312; /* solid band fill */
+    --food-recipe-purple-header: 0.32 0.18 312; /* column-header band fill */
+    --food-recipe-purple-wash: 0.94 0.03 312; /* light-purple EXPO callout surface */
+    --food-recipe-purple-wash-fg: 0.22 0.04 312; /* deep purple text on the wash */
+    --food-recipe-purple-wash-border: 0.55 0.16 312; /* callout edge */
+    --food-recipe-purple-rule: 0.78 0.05 312; /* subtle row separators */
+    --food-recipe-paper: 0.97 0.012 95; /* cream paper surface */
+    --food-recipe-paper-fg: 0.22 0.02 280; /* near-black ink on paper */
+    --food-recipe-paper-muted: 0.45 0.02 280; /* muted ink for sub-labels */
+    --food-recipe-paper-border: 0.82 0.01 280; /* paper edge / dividers */
+    --food-recipe-table-header: 0.9 0.04 312; /* tinted ingredient table header */
+    --food-recipe-table-header-fg: 0.25 0.05 312; /* deep purple header text */
+
+    /* ───────────────────────────────────────────────────────────────────
+       Per-category accent — ADDITIVE tokens. The food recipe card sets
+       --category-accent (a hex string like "#8C5421") inline on its root
+       when the category has an accentColor; otherwise these defaults
+       apply. Navy (#0A2A5E) is the neutral brand default so cards fall
+       back to a navy band when no inline override is present. The tint is
+       a light wash of the accent (22% over white) used for the EXPO
+       callout body. The food-station-* tokens above are PRESERVED — the
+       kitchen browser still uses them as a fallback.
+       ───────────────────────────────────────────────────────────────────
+       NOTE: the inline override is a raw hex string, so the consuming
+       classes use the var directly (e.g. background-color:
+       var(--category-accent)) — never wrap in oklch(). The tint defaults
+       to color-mix(in srgb, var(--category-accent) 22%, white) so a card
+       that only sets --category-accent still gets a matching tint. */
+    --category-accent: #0a2a5e; /* navy brand default (hex) */
+    --category-accent-tint: color-mix(in srgb, #0a2a5e 22%, white);
   }
 
   .dark {
@@ -543,6 +583,75 @@
 
     --food-tile-placeholder: 0.31 0.006 95;
     --food-tile-placeholder-fg: 0.644 0.011 95;
+
+    /* Food Recipe Book page — deep bluer purple (#4B1D74). Mirror of the
+       :root additive tokens (dark is the only theme, but the recipe card
+       is a light/cream paper surface, so these stay light in both). */
+    --food-recipe-purple: 0.32 0.18 312;
+    --food-recipe-purple-fg: 0.97 0.005 95;
+    --food-recipe-purple-band: 0.32 0.18 312;
+    --food-recipe-purple-header: 0.32 0.18 312;
+    --food-recipe-purple-wash: 0.94 0.03 312;
+    --food-recipe-purple-wash-fg: 0.22 0.04 312;
+    --food-recipe-purple-wash-border: 0.55 0.16 312;
+    --food-recipe-purple-rule: 0.78 0.05 312;
+    --food-recipe-paper: 0.97 0.012 95;
+    --food-recipe-paper-fg: 0.22 0.02 280;
+    --food-recipe-paper-muted: 0.45 0.02 280;
+    --food-recipe-paper-border: 0.82 0.01 280;
+    --food-recipe-table-header: 0.9 0.04 312;
+    --food-recipe-table-header-fg: 0.25 0.05 312;
+
+    /* Per-category accent — mirror :root defaults (dark is the only theme,
+       but the recipe card is a light/cream paper surface, so the navy
+       default + light tint read correctly in both scopes). Inline hex
+       overrides on the card root take precedence. */
+    --category-accent: #0a2a5e;
+    --category-accent-tint: color-mix(in srgb, #0a2a5e 22%, white);
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Anchor Editor — ADDITIVE tokens (admin Build Card label-position
+       editor overlay). Admin-only drag-to-adjust editor that overlays the
+       existing Build Card photo+labels. Sits on the SAME light/cream paper
+       surface as the Build Card (it overlays the photo), so the editor's
+       own accent colors come from the dark roadhouse admin palette
+       (primary red, navy secondary, muted greys) — they read as "admin
+       tool" chrome distinct from the Bubba's brand hex of the card itself.
+       Reuses the existing shadcn Dialog for the modal container; these
+       tokens style the editor overlay + chrome inside it. Does NOT alter
+       any existing Build Card class or token. Phone-first: editor reflows
+       to single-column and supports touch dragging.
+       ═══════════════════════════════════════════════════════════════════ */
+    /* Handle — the draggable grip on each label. Idle = subtle navy
+       outline so it reads as an affordance without competing with the
+       Bubba's brand labels underneath. Active = red ring + raised
+       shadow. Dimmed = greyscale while another label is being dragged. */
+    --anchor-handle-bg: #ffffff; /* light paper surface, matches build-card */
+    --anchor-handle-border: 0.34 0.006 95; /* reuse border token family */
+    --anchor-handle-border-active: 0.595 0.232 27; /* primary red */
+    --anchor-handle-dim: 0.644 0.011 95; /* muted-foreground grey */
+    --anchor-handle-shadow-active: 0 4px 14px 0 rgba(0, 0, 0, 0.28);
+    /* Percentage readout badge — small pill, navy fill, cream text.
+       Navy (not red) so it reads as a measurement, not a warning. */
+    --anchor-readout-bg: 0.285 0.094 254; /* secondary navy */
+    --anchor-readout-fg: 0.948 0.012 90; /* cream foreground */
+    --anchor-readout-bg-active: 0.595 0.232 27; /* primary red when dragging */
+    /* Editor chrome — shadcn Dialog container. Header band uses navy so
+       it reads as an admin surface, distinct from the Bubba's blue title
+       band of the card underneath. */
+    --anchor-editor-header: 0.285 0.094 254; /* secondary navy */
+    --anchor-editor-header-fg: 0.948 0.012 90; /* cream */
+    /* Success / error feedback — reuse destructive red for errors,
+       seasonal green for success. */
+    --anchor-editor-success: 0.62 0.09 145; /* seasonal green */
+    --anchor-editor-success-fg: 0.16 0.02 145;
+    --anchor-editor-error: 0.595 0.232 27; /* destructive red */
+    --anchor-editor-error-fg: 0.948 0.012 90;
+    /* Confirm dialog — unsaved-changes warning. Amber, distinct from
+       in-training gold and from destructive red. */
+    --anchor-confirm: 0.72 0.11 65; /* profile-email-pending amber */
+    --anchor-confirm-fg: 0.16 0.02 65;
+    --anchor-confirm-border: 0.72 0.11 65;
   }
 }
 
@@ -1965,6 +2074,1240 @@
     border-color: oklch(var(--primary) / 0.5);
   }
 
+  /* ═══════════════════════════════════════════════════════════════════
+     Food Recipe Book page — document-style card replicating the official
+     Lake Charles Quik Reference recipe book. Light/cream paper surface (screen-only, not
+     print), deep-purple (#4B1D74) title + column-header bands, Anton title,
+     Oswald labels, Barlow body. Distinct from the dark library-card food
+     tiles. All colors come from the --food-recipe-* tokens above.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Paper card — the document surface. Cream fill, square corners flush
+     to the bands, thin paper edge. No dark library-card background. */
+  .food-recipe-card {
+    background-color: oklch(var(--food-recipe-paper));
+    color: oklch(var(--food-recipe-paper-fg));
+    border: 1px solid oklch(var(--food-recipe-paper-border));
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 2px oklch(0.2 0.01 280 / 0.18), 0 4px 12px
+      oklch(0.2 0.01 280 / 0.1);
+  }
+
+  /* Title band — solid accent across the very top, full width, square to
+     the card edges. Anton uppercase white title, centered. The accent is
+     the per-category --category-accent (navy default, hex inline override
+     on the card root); white text reads on every brand swatch. */
+  .food-recipe-title-band {
+    background-color: var(--category-accent);
+    color: #ffffff;
+    padding: 0.85rem 1rem;
+    text-align: center;
+  }
+  .food-recipe-title {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    line-height: 1.05;
+    color: #ffffff;
+  }
+
+  /* Column-header band — accent strip under the photo (menuBuild) or
+     under the title band (prep ingredient table). Oswald uppercase white
+     labels. The three-label menuBuild variant uses a 3-track grid; the
+     two-label prep variant uses a 2-track grid. */
+  .food-recipe-column-band {
+    display: grid;
+    background-color: var(--category-accent);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .food-recipe-column-band.is-3 {
+    grid-template-columns: 1fr auto 1fr;
+    padding: 0.45rem 1rem;
+  }
+  .food-recipe-column-band.is-2 {
+    grid-template-columns: 1fr auto;
+    padding: 0.45rem 1rem;
+  }
+  .food-recipe-column-band > .label-center {
+    text-align: center;
+  }
+  .food-recipe-column-band > .label-right {
+    text-align: right;
+  }
+
+  /* Photo block — full width, edge to edge, no side padding. Natural
+     aspect (object-contain) on its own neutral background so a portrait
+     photo never crops and a landscape photo never stretches. */
+  .food-recipe-photo {
+    width: 100%;
+    background-color: oklch(0.93 0.01 280);
+    line-height: 0;
+  }
+  .food-recipe-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    max-height: 26rem;
+  }
+
+  /* Two-column body — Assembly|Procedure (menuBuild) or
+     Ingredients|Procedure (prep). Stacks on mobile. */
+  .food-recipe-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  @media (min-width: 720px) {
+    .food-recipe-body.is-split {
+      grid-template-columns: 55% 45%;
+    }
+    .food-recipe-body.is-split > * + * {
+      border-left: 1px solid oklch(var(--food-recipe-paper-border));
+    }
+  }
+  .food-recipe-column {
+    padding: 0.9rem 1rem 1rem;
+    min-width: 0;
+  }
+
+  /* Assembly / Ingredient row — square bullet + item on the left, amount
+     right-aligned in its own column so amounts line up under AMOUNT.
+     Subtle row separators. */
+  .food-recipe-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.32rem 0;
+    border-bottom: 1px solid oklch(var(--food-recipe-purple-rule) / 0.6);
+  }
+  .food-recipe-row:last-child {
+    border-bottom: none;
+  }
+  .food-recipe-row .item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+  .food-recipe-row .item::before {
+    content: "\25A0";
+    flex-shrink: 0;
+    font-size: 0.6rem;
+    line-height: 1.4;
+    color: oklch(var(--food-recipe-purple));
+  }
+  .food-recipe-row .item-note {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: oklch(var(--food-recipe-paper-muted));
+    margin-top: 0.1rem;
+  }
+  .food-recipe-row .amount {
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+
+  /* Plating sub-label — small Oswald uppercase divider above the
+     serviceware rows in the Assembly column. */
+  .food-recipe-plating-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.66rem;
+    font-weight: 600;
+    color: oklch(var(--food-recipe-paper-muted));
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.15rem;
+    border-bottom: 1px dashed oklch(var(--food-recipe-purple-rule));
+  }
+
+  /* Hand-wash / glove note — small muted line at the top of the
+     Procedure column with a hand-wash icon. */
+  .food-recipe-handwash {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-family: var(--font-body);
+    font-size: 0.74rem;
+    line-height: 1.45;
+    color: oklch(var(--food-recipe-paper-muted));
+    padding-bottom: 0.55rem;
+    margin-bottom: 0.55rem;
+    border-bottom: 1px solid oklch(var(--food-recipe-paper-border));
+  }
+  .food-recipe-handwash svg {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: oklch(var(--food-recipe-purple));
+  }
+
+  /* Procedure steps — bullet list, Barlow body. */
+  .food-recipe-steps {
+    list-style: disc;
+    padding-left: 1.15rem;
+    margin: 0;
+  }
+  .food-recipe-steps > li {
+    font-family: var(--font-body);
+    color: oklch(var(--food-recipe-paper-fg));
+    padding: 0.16rem 0;
+    line-height: 1.45;
+  }
+  .food-recipe-steps > li::marker {
+    color: oklch(var(--food-recipe-purple));
+  }
+
+  /* EXPO callout — light-tint highlighted box at the bottom of the
+     Procedure column, with a vertical rotated 'EXPO' label down its left
+     edge. writing-mode keeps the label readable top-to-bottom. The body
+     uses --category-accent-tint (a 22%-over-white wash of the per-category
+     accent); the label uses the accent as its background with white text. */
+  .food-recipe-expo {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+    background-color: var(--category-accent-tint);
+    border: 1px solid var(--category-accent);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .food-recipe-expo-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-orientation: mixed;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: #ffffff;
+    background-color: var(--category-accent);
+    padding: 0.6rem 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .food-recipe-expo-body {
+    padding: 0.55rem 0.7rem 0.6rem;
+    min-width: 0;
+  }
+  .food-recipe-expo-body .food-recipe-steps > li {
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+
+  /* Allergen callout (menuBuild) — muted line at the bottom of the
+     Assembly column. */
+  .food-recipe-allergen {
+    margin-top: 0.7rem;
+    padding: 0.5rem 0.65rem;
+    background-color: oklch(0.95 0.02 50);
+    border-left: 3px solid oklch(var(--food-recipe-purple));
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+  .food-recipe-allergen .label {
+    display: block;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 0.68rem;
+    color: oklch(var(--food-recipe-purple));
+    margin-bottom: 0.15rem;
+  }
+
+  /* Prep intro line — muted Barlow line under the title band. */
+  .food-recipe-intro {
+    font-family: var(--font-body);
+    font-style: italic;
+    color: oklch(var(--food-recipe-paper-muted));
+    padding: 0.6rem 1rem 0;
+  }
+  .food-recipe-equipment {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: oklch(var(--food-recipe-paper-muted));
+    padding: 0.3rem 1rem 0;
+  }
+  .food-recipe-equipment .label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: oklch(var(--food-recipe-purple));
+  }
+
+  /* Prep meta stack — right-aligned Yield / Shelf life / Holding block
+     sitting under the title band (top-right of the page). */
+  .food-recipe-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    padding: 0.55rem 1rem 0.4rem;
+    font-family: var(--font-body);
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+  .food-recipe-meta .row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+  }
+  .food-recipe-meta .row .label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: oklch(var(--food-recipe-paper-muted));
+  }
+  .food-recipe-meta .row .value {
+    font-weight: 600;
+  }
+  .food-recipe-meta .row.is-yield .value {
+    font-weight: 700;
+  }
+
+  /* Prep ingredient table — two columns Ingredient | Amount with a
+     tinted purple header row. Rows grouped by Step subheadings. */
+  .food-recipe-ingredient-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    padding: 0.4rem 1rem;
+    background-color: oklch(var(--food-recipe-table-header));
+    color: oklch(var(--food-recipe-table-header-fg));
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    font-size: 0.74rem;
+  }
+  .food-recipe-ingredient-header .amount {
+    text-align: right;
+  }
+  .food-recipe-step-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: oklch(var(--food-recipe-purple));
+    padding: 0.55rem 1rem 0.15rem;
+    border-bottom: 1px solid oklch(var(--food-recipe-purple-rule));
+    margin-bottom: 0.1rem;
+  }
+  .food-recipe-ingredient-rows {
+    padding: 0.2rem 1rem 0.6rem;
+  }
+
+  /* Prep procedure heading — 'WASH YOUR HANDS…' style label. */
+  .food-recipe-procedure-heading {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: oklch(var(--food-recipe-purple));
+    margin-bottom: 0.35rem;
+  }
+
+  /* Quality identifiers checklist — ✓ bullets in deep purple. */
+  .food-recipe-quality {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .food-recipe-quality > li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-family: var(--font-body);
+    color: oklch(var(--food-recipe-paper-fg));
+    padding: 0.16rem 0;
+    line-height: 1.45;
+  }
+  .food-recipe-quality > li::before {
+    content: "\2713";
+    flex-shrink: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: oklch(var(--food-recipe-purple));
+    line-height: 1.3;
+  }
+
+  /* Prep footer badges — Line utensil / Storage / Hold temp small
+     labeled badges. */
+  .food-recipe-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem 0;
+  }
+  .food-recipe-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-size: 0.74rem;
+    padding: 0.22rem 0.5rem;
+    border-radius: var(--radius);
+    border: 1px solid oklch(var(--food-recipe-purple) / 0.4);
+    background-color: oklch(var(--food-recipe-purple-wash));
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+  .food-recipe-badge .label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    font-size: 0.68rem;
+    color: oklch(var(--food-recipe-purple));
+  }
+  .food-recipe-badge .value {
+    font-family: var(--font-body);
+    font-weight: 600;
+  }
+
+  /* Footer strip — confidential notice bottom-left, station name
+     bottom-right. Sits flush to the card's bottom edge. */
+  .food-recipe-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid oklch(var(--food-recipe-paper-border));
+    background-color: oklch(var(--food-recipe-paper));
+  }
+  .food-recipe-footer-confidential {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: oklch(var(--food-recipe-paper-muted));
+  }
+  .food-recipe-footer-station {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: oklch(var(--food-recipe-purple));
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     Food Recipe Book page — PHONE layout (<1024px, tuned for ~375px).
+     A distinct single-column stack that activates below 1024px. The
+     existing >=1024px desktop layout (purple title band, full-width
+     plating photo, ASSEMBLY|AMOUNT|PROCEDURE three-column header band,
+     two-column body grid, EXPO callout with rotated vertical label,
+     confidential/station footer) is preserved EXACTLY — the desktop
+     markup lives inside .food-recipe-desktop and is hidden below 1024px;
+     the phone markup lives inside .food-recipe-phone and is hidden at
+     >=1024px. The existing 720px media query and all >=1024px desktop
+     rules are untouched.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Visibility toggle — desktop shows by default, phone is hidden; the
+     @media (max-width: 1023px) block below flips them. */
+  .food-recipe-phone {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .food-recipe-desktop {
+      display: none;
+    }
+    .food-recipe-phone {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Phone title band — bump Anton title for arm's-length reading. The
+       .food-recipe-title-band / .food-recipe-title rules above already
+       render the purple band + Anton uppercase; here we just enlarge the
+       title within the phone container. */
+    .food-recipe-phone .food-recipe-title-band {
+      padding: 0.95rem 1rem;
+    }
+    .food-recipe-phone .food-recipe-title {
+      font-size: clamp(1.6rem, 6vw, 2.1rem);
+      line-height: 1.08;
+    }
+
+    /* Phone photo — full width, edge to edge. Cap height a touch lower
+       for phone so it does not dominate the small screen. The tap target
+       (the <button>) already opens the photo in a new tab via the
+       existing window.open behavior. */
+    .food-recipe-phone .food-recipe-photo img {
+      max-height: 22rem;
+    }
+
+    /* ── Shared phone section label — small Oswald uppercase divider
+       used by Plating / Build / Ingredients headings. ── */
+    .food-recipe-phone-section-label {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: oklch(var(--food-recipe-purple));
+      padding: 0.65rem 1rem 0.3rem;
+      margin-bottom: 0.2rem;
+      border-bottom: 1px solid oklch(var(--food-recipe-purple-rule));
+    }
+
+    /* ── Phone amount row — item name left, amount as a bold chip/pill
+       on the right. The pill wraps to its own line if long (flex-wrap),
+       so amounts stay scannable and never truncate. Tap target >=44px. ── */
+    .food-recipe-phone-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.65rem;
+      min-height: 2.75rem; /* >=44px tap target */
+      padding: 0.45rem 1rem;
+      border-bottom: 1px solid oklch(var(--food-recipe-purple-rule) / 0.6);
+    }
+    .food-recipe-phone-row:last-child {
+      border-bottom: none;
+    }
+    .food-recipe-phone-row .item {
+      flex: 1 1 60%;
+      min-width: 0;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.4;
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+    .food-recipe-phone-row .item-note {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: oklch(var(--food-recipe-paper-muted));
+      margin-top: 0.1rem;
+    }
+    .food-recipe-phone-row .amount-pill {
+      flex: 0 1 auto;
+      max-width: 100%;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.92rem;
+      line-height: 1.2;
+      color: oklch(var(--food-recipe-purple-fg));
+      background-color: oklch(var(--food-recipe-purple));
+      padding: 0.32rem 0.7rem;
+      border-radius: 999px;
+      white-space: normal; /* allow long amounts to wrap, never truncate */
+      word-break: break-word;
+    }
+
+    /* ── menuBuild phone build section — Plating serviceware group on
+       top, then the components stacked list. ── */
+    .food-recipe-phone-build {
+      padding-bottom: 0.4rem;
+    }
+    .food-recipe-phone-plating,
+    .food-recipe-phone-components {
+      padding-top: 0.2rem;
+    }
+
+    /* Allergen callout (menuBuild phone) — compact muted line. */
+    .food-recipe-phone-allergen {
+      margin: 0.6rem 1rem 0.4rem;
+      padding: 0.55rem 0.7rem;
+      background-color: oklch(0.95 0.02 50);
+      border-left: 3px solid oklch(var(--food-recipe-purple));
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      line-height: 1.45;
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+    .food-recipe-phone-allergen .label {
+      display: block;
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      font-size: 0.72rem;
+      color: oklch(var(--food-recipe-purple));
+      margin-bottom: 0.15rem;
+    }
+
+    /* ── Phone procedure — numbered vertical list with comfortable
+       line-height. ── */
+    .food-recipe-phone-procedure {
+      padding: 0.5rem 1rem 0.7rem;
+    }
+    .food-recipe-phone-procedure-heading {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: oklch(var(--food-recipe-purple));
+      margin-bottom: 0.45rem;
+    }
+    .food-recipe-phone-steps {
+      list-style: decimal;
+      padding-left: 1.4rem;
+      margin: 0;
+    }
+    .food-recipe-phone-steps > li {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: oklch(var(--food-recipe-paper-fg));
+      padding: 0.3rem 0;
+    }
+    .food-recipe-phone-steps > li::marker {
+      color: oklch(var(--food-recipe-purple));
+      font-weight: 700;
+    }
+
+    /* Hand-wash note on phone — one compact muted line (reuses the
+       existing .food-recipe-handwash block; here we just bump the font
+       and tighten the spacing for the phone stack). */
+    .food-recipe-phone .food-recipe-handwash {
+      font-size: 0.86rem;
+      line-height: 1.5;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+
+    /* ── Phone EXPO callout — keeps its highlight; the rotated vertical
+        'EXPO' label becomes a small accent tag at the top of the box
+        (not the vertical-rl rotated label). Body uses the per-category
+        accent tint; tag uses the accent as its background. ── */
+    .food-recipe-phone-expo {
+      margin-top: 0.8rem;
+      background-color: var(--category-accent-tint);
+      border: 1px solid var(--category-accent);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .food-recipe-phone-expo-tag {
+      display: inline-block;
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: #ffffff;
+      background-color: var(--category-accent);
+      padding: 0.35rem 0.8rem;
+      margin: 0;
+    }
+    .food-recipe-phone-expo .food-recipe-phone-steps {
+      padding: 0.55rem 1rem 0.7rem 1.4rem;
+    }
+    .food-recipe-phone-expo .food-recipe-phone-steps > li {
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+
+    /* ── prep phone intro / equipment — bumped for phone reading. ── */
+    .food-recipe-phone-intro {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: oklch(var(--food-recipe-paper-muted));
+      padding: 0.7rem 1rem 0;
+    }
+    .food-recipe-phone-equipment {
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: oklch(var(--food-recipe-paper-muted));
+      padding: 0.35rem 1rem 0;
+    }
+    .food-recipe-phone-equipment .label {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      color: oklch(var(--food-recipe-purple));
+    }
+
+    /* ── prep phone meta — Yield / Shelf life / Holding as stacked
+       badges (full-width rows, label left + value right). ── */
+    .food-recipe-phone-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.65rem 1rem 0.3rem;
+    }
+    .food-recipe-phone-meta-badge {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.6rem;
+      min-height: 2.75rem; /* >=44px tap target */
+      padding: 0.45rem 0.7rem;
+      border-radius: var(--radius);
+      border: 1px solid oklch(var(--food-recipe-purple) / 0.4);
+      background-color: oklch(var(--food-recipe-purple-wash));
+      font-family: var(--font-body);
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+    .food-recipe-phone-meta-badge .label {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: oklch(var(--food-recipe-purple));
+    }
+    .food-recipe-phone-meta-badge .value {
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: right;
+      word-break: break-word;
+    }
+    .food-recipe-phone-meta-badge.is-yield .value {
+      font-weight: 700;
+    }
+
+    /* ── prep phone ingredients — step-grouped stacked list. ── */
+    .food-recipe-phone-ingredients {
+      padding-bottom: 0.4rem;
+    }
+    .food-recipe-phone-ingredient-group {
+      padding-top: 0.2rem;
+    }
+    .food-recipe-phone-step-label {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: oklch(var(--food-recipe-purple));
+      padding: 0.6rem 1rem 0.2rem;
+      border-bottom: 1px solid oklch(var(--food-recipe-purple-rule));
+      margin-bottom: 0.1rem;
+    }
+
+    /* ── prep phone quality-ID checklist — ✓ bullets in deep purple,
+       bumped for phone reading. ── */
+    .food-recipe-phone-quality {
+      padding: 0.5rem 1rem 0.7rem;
+    }
+    .food-recipe-phone-quality-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .food-recipe-phone-quality-list > li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.55;
+      color: oklch(var(--food-recipe-paper-fg));
+      padding: 0.3rem 0;
+    }
+    .food-recipe-phone-quality-list > li::before {
+      content: "\2713";
+      flex-shrink: 0;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      color: oklch(var(--food-recipe-purple));
+      line-height: 1.3;
+    }
+
+    /* ── prep phone badges — Line utensil / Storage / Hold temp pills,
+       bumped for phone reading. ── */
+    .food-recipe-phone-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem 0.7rem;
+    }
+    .food-recipe-phone-badge {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      font-size: 0.88rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: var(--radius);
+      border: 1px solid oklch(var(--food-recipe-purple) / 0.4);
+      background-color: oklch(var(--food-recipe-purple-wash));
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+    .food-recipe-phone-badge .label {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      font-size: 0.74rem;
+      color: oklch(var(--food-recipe-purple));
+    }
+    .food-recipe-phone-badge .value {
+      font-family: var(--font-body);
+      font-weight: 600;
+    }
+
+    /* Phone footer — bump the confidential/station text slightly for
+       arm's-length reading. */
+    .food-recipe-phone .food-recipe-footer {
+      padding: 0.6rem 1rem;
+    }
+    .food-recipe-phone .food-recipe-footer-confidential {
+      font-size: 0.66rem;
+    }
+    .food-recipe-phone .food-recipe-footer-station {
+      font-size: 0.85rem;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     Build Card — ADDITIVE leader-line layout (menuBuild only, when
+     item.photo is set AND every component has a non-null anchorY).
+     Presentation-only replica of the official Bubba's 33 build card:
+     deep Bubba's blue (#1F3A8A, or the per-category accent when one
+     exists) square title band, two-column stage (photo left ~46%,
+     anchorY-positioned leader-line labels right ~54%), confidential
+     footer, and build steps below. Phone reflows to a single column.
+     Reuses the existing food-recipe paper surface, brand fonts, and
+     spacing. Does NOT alter any existing food-recipe class.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Visibility toggle — desktop shows by default, phone is hidden; the
+     @media (max-width: 720px) block below flips them. The build card
+     uses a 720px breakpoint (per the user spec), tighter than the
+     1023px food-recipe breakpoint because the leader-line stage needs
+     ~720px of width to read cleanly. */
+  .build-card-phone {
+    display: none;
+  }
+
+  /* Kicker — small red line above the title band when buildHeader is
+     present. Fixed Bubba's red (#c0201f), Oswald uppercase, weight 800,
+     ~20px. The Build Card family uses fixed hex values (not the
+     per-category accent tokens) so the card always reads as Bubba's
+     brand regardless of the item's category. */
+  .build-card-kicker {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #c0201f;
+    padding: 0.6rem 1rem 0.4rem;
+  }
+
+  /* Title band — deep Bubba's blue with a subtle horizontal gradient
+     (matches the Bubba's mock). Fixed hex (#1F3A8A -> #2A4AA6), not the
+     per-category --category-accent, so the band is always Bubba's blue
+     regardless of the item's category. */
+  .build-card-title-band {
+    background: linear-gradient(90deg, #1f3a8a, #2a4aa6);
+    color: #ffffff;
+    padding: 0.9rem 1rem;
+    text-align: left;
+  }
+  .build-card-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 2rem;
+    line-height: 1.05;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  /* Two-column stage — photo left ~48%, labels right ~52%. The labels
+     layer stretches to the photo's height so anchorY percentages
+     align. align-items: stretch makes both columns the same height;
+     the photo column's natural height drives the row height. */
+  .build-card-stage {
+    display: flex;
+    align-items: stretch;
+    background-color: #ffffff;
+  }
+  .build-card-photo-col {
+    flex: 0 0 48%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: flex-start; /* top-aligned photo */
+    min-width: 0;
+  }
+  .build-card-photo-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: #ffffff;
+    cursor: pointer;
+    line-height: 0;
+  }
+  .build-card-photo-button:focus-visible {
+    outline: 2px solid oklch(var(--primary));
+    outline-offset: 2px;
+  }
+  .build-card-photo {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #ffffff;
+  }
+
+  /* Labels layer — positioned overlay the same height as the photo.
+     Each label is absolutely positioned at top: anchorY*100% with
+     translateY(-50%) so it is vertically centered on that point. */
+  .build-card-labels {
+    flex: 0 0 52%;
+    position: relative;
+    background-color: #ffffff;
+    min-width: 0;
+  }
+  .build-card-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+  /* Step connector — thin ~26px horizontal line fading from transparent
+     (photo side) toward a soft blue-grey where the badge begins. Fixed
+     hex, flex-shrink 0 so it keeps its width. */
+  .build-card-step-connector {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c9d2e8);
+    flex-shrink: 0;
+  }
+  /* Step badge — round glossy blue circle (~52px) with a white border
+     and soft shadow. White text: small "STEP" over a large number.
+     Fixed hex radial gradient for the glossy Bubba's-blue look. */
+  .build-card-step-badge {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    color: #fff;
+    line-height: 1;
+    background: radial-gradient(circle at 35% 30%, #2f56c9, #16307a);
+    border: 2px solid #fff;
+    box-shadow: 0 3px 8px rgba(20, 40, 110, 0.4), inset 0 1px 2px
+      rgba(255, 255, 255, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .build-card-step-badge-label {
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    opacity: 0.92;
+    margin-bottom: 1px;
+  }
+  .build-card-step-badge-number {
+    font-size: 21px;
+    font-weight: 900;
+  }
+  .build-card-label-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: oklch(var(--food-recipe-paper-fg));
+    min-width: 0;
+  }
+  .build-card-label-text strong {
+    font-weight: 700;
+  }
+  /* Note — fixed Bubba's red (#c0201f), ~12px, weight 800, appended
+     after the item+amount. */
+  .build-card-label-note {
+    color: #c0201f;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  /* Footer strip — confidential bottom-left, station bottom-right.
+     Reuses the food-recipe paper surface so it reads as part of the
+     card. */
+  .build-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 1rem;
+    border-top: 1px solid oklch(var(--food-recipe-paper-border));
+    background-color: oklch(var(--food-recipe-paper));
+  }
+  .build-card-footer-confidential {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.56rem;
+    font-weight: 600;
+    color: #888;
+  }
+  .build-card-footer-station {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.56rem;
+    font-weight: 700;
+    color: #888;
+  }
+
+  /* Build steps — the existing food.steps list rendered below the
+     card. Reuses the food-recipe-steps styling for the list itself;
+     the heading is a small Oswald uppercase label. */
+  .build-card-steps {
+    padding: 0.7rem 1rem 0.9rem;
+    border-top: 1px solid oklch(var(--food-recipe-paper-border));
+  }
+  .build-card-steps-heading {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: oklch(var(--food-recipe-purple));
+    margin: 0 0 0.4rem;
+  }
+  .build-card-steps-list {
+    list-style: decimal;
+    padding-left: 1.4rem;
+    margin: 0;
+  }
+  .build-card-steps-list > li {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: oklch(var(--food-recipe-paper-fg));
+    padding: 0.18rem 0;
+  }
+  .build-card-steps-list > li::marker {
+    color: oklch(var(--food-recipe-purple));
+    font-weight: 700;
+  }
+
+  /* ── Phone layout (< ~720px) — single-column reflow. No leader
+     lines, no absolute positioning. Comfortable type, >=44px tap
+     targets, no horizontal scroll, amounts never truncate. ── */
+  @media (max-width: 720px) {
+    .build-card-desktop {
+      display: none;
+    }
+    .build-card-phone {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Title band — slightly smaller title for phone reading. */
+    .build-card-phone .build-card-title-band {
+      padding: 0.85rem 1rem;
+    }
+    .build-card-phone .build-card-title {
+      font-size: clamp(1.5rem, 6vw, 1.9rem);
+      line-height: 1.08;
+    }
+
+    /* Photo — full width, edge to edge. The button opens the in-app
+       lightbox. The photo stage is position: relative so the step-circle
+       overlay can be absolutely positioned on top of the photo at each
+       component's anchorY. The photo button stays at z-index 0 (default)
+       and the circle overlay sits at z-index 1 so circles are tappable;
+       the photo button still receives taps anywhere a circle is not. */
+    .build-card-phone .build-card-photo-button {
+      width: 100%;
+    }
+    .build-card-phone .build-card-photo {
+      width: 100%;
+      height: auto;
+    }
+    .build-card-phone-photo-stage {
+      position: relative;
+      width: 100%;
+    }
+    /* Circle overlay — absolute, inset 0 so it covers the full photo
+       area. Pointer events pass through the overlay itself (the circles
+       re-enable pointer events) so taps on empty photo area still reach
+       the photo button underneath and open the lightbox. */
+    .build-card-phone-circles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    /* Each step circle — absolutely positioned on the LEFT edge of the
+       photo at top: anchorY*100% with translateY(-50%) so the circle is
+       vertically centered on the anchor point (mirroring desktop labels).
+       left: 0.5rem keeps the circle just inside the photo's left edge so
+       there is no horizontal scroll. The button re-enables pointer events
+       so it is tappable; stopPropagation in the JSX prevents the
+       underlying photo button's lightbox from also firing. Reuses the
+       existing .build-card-step-badge visual (glossy blue circle, STEP
+       label + number) via the inner span. */
+    .build-card-phone-circle {
+      position: absolute;
+      left: 0.5rem;
+      transform: translateY(-50%);
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      line-height: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .build-card-phone-circle:focus-visible {
+      outline: 2px solid oklch(var(--primary));
+      outline-offset: 2px;
+      border-radius: 50%;
+    }
+    /* Step badge on phone circles — smaller than desktop (40px) so the
+       circle sits comfortably on the photo without overflowing. Reuses
+       the fixed-hex glossy blue radial-gradient from the base
+       .build-card-step-badge rule. */
+    .build-card-phone-circle .build-card-step-badge {
+      width: 40px;
+      height: 40px;
+    }
+    .build-card-phone-circle .build-card-step-badge-label {
+      font-size: 7px;
+    }
+    .build-card-phone-circle .build-card-step-badge-number {
+      font-size: 16px;
+    }
+
+    /* Step-label popout (Dialog body) — the label content shown when a
+       step circle is tapped. Layout: step badge on the left, text block
+       on the right (item name, amount pill, optional red note). Reuses
+       the .build-card-phone-amount purple pill for the amount. The note
+       uses fixed Bubba's red (#c0201f) to match the existing
+       .build-card-label-note / Bubba's red. */
+    /* The popout container overrides shadcn DialogContent's dark bg-card
+       with the Build Card's cream paper surface so the near-black item
+       text reads with high contrast. Scoped to this popout only — the
+       global DialogContent styling is untouched. The close button's
+       bg-black/10 chip stays legible on the light surface. */
+    .build-card-phone-popout {
+      background-color: oklch(var(--food-recipe-paper));
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+    /* Close button — the global DialogClose chip uses bg-black/10 with
+       text-foreground (near-white), which was tuned for the dark bg-card
+       surface. On the light paper popout it would be near-invisible, so
+       scope a dark-ink-on-translucent-dark chip here. Layout, position,
+       and hit target are unchanged. */
+    .build-card-phone-popout .build-card-phone-popout-close,
+    .build-card-phone-popout
+      [data-ocid="library.item.food_recipe.phone.build.popout.close_button"] {
+      background-color: oklch(0.273 0.005 95 / 0.12);
+      color: oklch(var(--food-recipe-paper-fg));
+    }
+    .build-card-phone-popout
+      [data-ocid="library.item.food_recipe.phone.build.popout.close_button"]:hover {
+      background-color: oklch(0.273 0.005 95 / 0.22);
+    }
+    .build-card-phone-popout-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 1.1rem 1.1rem 1.2rem;
+    }
+    .build-card-phone-popout-step {
+      flex: 0 0 auto;
+    }
+    .build-card-phone-popout-step .build-card-step-badge {
+      width: 52px;
+      height: 52px;
+    }
+    .build-card-phone-popout-text {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.4rem 0.6rem;
+    }
+    .build-card-phone-popout-item {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.35;
+      font-weight: 700;
+      color: oklch(var(--food-recipe-paper-fg));
+      margin: 0;
+      flex: 1 1 100%;
+    }
+    .build-card-phone-popout-note {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      font-weight: 700;
+      color: #c0201f;
+      margin: 0.1rem 0 0;
+      flex: 1 1 100%;
+    }
+    /* Amount chip — bold purple pill, reused from the original phone
+       ingredient list. Never truncates (white-space: nowrap); the popout
+       is max-w-[90vw] so it never causes horizontal scroll. */
+    .build-card-phone-amount {
+      flex: 0 0 auto;
+      max-width: 100%;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.92rem;
+      line-height: 1.2;
+      color: oklch(var(--food-recipe-purple-fg));
+      background-color: oklch(var(--food-recipe-purple));
+      padding: 0.32rem 0.7rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    /* Build steps on phone — bumped for arm's-length reading. */
+    .build-card-steps.is-phone {
+      padding: 0.7rem 1rem 0.9rem;
+    }
+    .build-card-steps.is-phone .build-card-steps-heading {
+      font-size: 0.95rem;
+    }
+    .build-card-steps.is-phone .build-card-steps-list > li {
+      font-size: 1rem;
+      line-height: 1.6;
+      padding: 0.3rem 0;
+    }
+  }
+
   /* Menu/Prep toggle — segmented control. Two flat segments; active
      segment = primary red fill, inactive = transparent. Oswald labels. */
   .food-layout-toggle {
@@ -2072,9 +3415,339 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     Anchor Editor — ADDITIVE utilities (admin Build Card label-position
+     editor overlay). Admin-only drag-to-adjust editor that overlays the
+     existing Build Card photo+labels so an admin can fine-tune each
+     label's vertical position (anchorY) and save it back to the recipe.
+     Reuses the existing shadcn Dialog for the modal container; these
+     utilities style the editor overlay + chrome inside it. All classes
+     prefixed `anchor-` so they never collide with the existing
+     `build-card-*` family. References var(--anchor-*) tokens directly.
+     Does NOT alter any existing Build Card class or token. Phone-first:
+     editor reflows to single-column and supports touch dragging.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Editor header band — navy fill, cream Oswald uppercase title. Navy
+     (not the Bubba's blue #1F3A8A of the card title band) so the editor
+     chrome reads as an admin surface distinct from the brand card
+     underneath. Sits at the top of the Dialog content. */
+  .anchor-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    background-color: oklch(var(--anchor-editor-header));
+    color: oklch(var(--anchor-editor-header-fg));
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+  }
+  .anchor-editor-title {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: oklch(var(--anchor-editor-header-fg));
+    margin: 0;
+  }
+  .anchor-editor-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: oklch(var(--anchor-editor-header-fg) / 0.8);
+  }
+
+  /* Editor stage — wraps the Build Card photo+labels overlay. Same
+     two-column stage geometry as .build-card-stage (photo left ~46%,
+     labels right ~54%) so the editor preview matches the published
+     card exactly. position: relative so the handle layer can anchor. */
+  .anchor-editor-stage {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background-color: #ffffff;
+    overflow: hidden;
+  }
+  .anchor-editor-photo-col {
+    flex: 0 0 46%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .anchor-editor-photo {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #ffffff;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none; /* the handle layer captures all pointer events */
+  }
+  /* Labels layer — mirrors .build-card-labels geometry so handles sit
+     exactly where the published labels render. */
+  .anchor-editor-labels {
+    flex: 0 0 54%;
+    position: relative;
+    background-color: #ffffff;
+    min-width: 0;
+  }
+
+  /* Handle — the draggable grip on each label. Idle = subtle navy
+     outline so it reads as an affordance without competing with the
+     Bubba's brand labels underneath. The handle sits at the same
+     vertical position (top: anchorY*100%, translateY(-50%)) as the
+     published label, spanning the full label column width so the
+     admin can grab anywhere along the row. */
+  .anchor-handle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background-color: var(--anchor-handle-bg);
+    border: 1px solid oklch(var(--anchor-handle-border));
+    border-radius: var(--radius);
+    cursor: grab;
+    touch-action: none; /* allow pointer drag without scrolling */
+    transition: border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow
+      0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .anchor-handle:hover {
+    border-color: oklch(var(--anchor-handle-border-active) / 0.6);
+  }
+  /* Grip icon — three small dots, muted, flex-shrink 0. */
+  .anchor-handle-grip {
+    flex-shrink: 0;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    color: oklch(var(--anchor-handle-dim));
+  }
+  .anchor-handle-grip::before,
+  .anchor-handle-grip::after,
+  .anchor-handle-grip > span {
+    content: "";
+    display: block;
+    width: 12px;
+    height: 2px;
+    background-color: currentColor;
+    border-radius: 1px;
+  }
+  /* Label text preview — Barlow, same size as the published label so
+     the admin sees the real text while dragging. */
+  .anchor-handle-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: oklch(var(--food-recipe-paper-fg));
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Active (dragging) state — red ring + raised shadow. The pulse
+     animation (anchor-handle-pulse) gently breathes the ring while
+     the handle is actively being dragged so the admin sees the grab. */
+  .anchor-handle.is-active {
+    cursor: grabbing;
+    border-color: oklch(var(--anchor-handle-border-active));
+    box-shadow: var(--anchor-handle-shadow-active);
+    animation: anchor-handle-pulse 1.2s ease-in-out infinite;
+    z-index: 2;
+  }
+
+  /* Dimmed state — greyscale while another handle is being dragged so
+     the inactive labels recede and the active one pops. */
+  .anchor-handle.is-dimmed {
+    opacity: 0.45;
+    filter: grayscale(0.6);
+    cursor: default;
+  }
+
+  /* Percentage readout badge — small pill, navy fill, cream text.
+     Navy (not red) so it reads as a measurement, not a warning. Turns
+     red while its handle is being dragged. Sits at the right edge of
+     the handle. */
+  .anchor-readout {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    background-color: oklch(var(--anchor-readout-bg));
+    color: oklch(var(--anchor-readout-fg));
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .anchor-handle.is-active .anchor-readout {
+    background-color: oklch(var(--anchor-readout-bg-active));
+  }
+
+  /* Editor footer — action row beneath the stage. Save (primary red),
+     Cancel (ghost border), Reset (secondary navy). Reuses existing
+     button patterns; this just sets the row layout. */
+  .anchor-editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid oklch(var(--border));
+    background-color: oklch(var(--card));
+  }
+
+  /* Success / error feedback — inline banner above the actions row.
+     Flat fill, Oswald uppercase label, Barlow body. Auto-dismisses
+     (handled in JS); these utilities style the visible states. */
+  .anchor-editor-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .anchor-editor-feedback.is-success {
+    background-color: oklch(var(--anchor-editor-success) / 0.15);
+    color: oklch(var(--anchor-editor-success-fg));
+    border: 1px solid oklch(var(--anchor-editor-success) / 0.5);
+  }
+  .anchor-editor-feedback.is-error {
+    background-color: oklch(var(--anchor-editor-error) / 0.15);
+    color: oklch(var(--anchor-editor-error-fg));
+    border: 1px solid oklch(var(--anchor-editor-error) / 0.5);
+  }
+  .anchor-editor-feedback-label {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+
+  /* Unsaved-changes confirm dialog — amber surface, distinct from
+     in-training gold and from destructive red. Shown when the admin
+     tries to close the editor with pending changes. Reuses the shadcn
+     AlertDialog; this styles the warning content inside it. */
+  .anchor-confirm {
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius);
+    background-color: oklch(var(--anchor-confirm) / 0.15);
+    color: oklch(var(--anchor-confirm-fg));
+    border: 1px solid oklch(var(--anchor-confirm-border) / 0.5);
+  }
+  .anchor-confirm-title {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: oklch(var(--anchor-confirm-fg));
+    margin: 0 0 0.3rem;
+  }
+  .anchor-confirm-body {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: oklch(var(--anchor-confirm-fg));
+  }
+
+  /* Keyframe — gentle ring breath while a handle is actively dragged.
+     Mirrored in tailwind.config.js as `anchor-handle-pulse`. */
+  @keyframes anchor-handle-pulse {
+    0%,
+    100% {
+      box-shadow: var(--anchor-handle-shadow-active);
+    }
+    50% {
+      box-shadow: var(--anchor-handle-shadow-active), 0 0 0 3px
+        oklch(var(--anchor-handle-border-active) / 0.25);
+    }
+  }
+
+  /* Reduced motion — the active-handle pulse becomes a static red
+     ring + shadow (no breathing). The drag still works; only the
+     decorative pulse pauses. */
+  @media (prefers-reduced-motion: reduce) {
+    .anchor-handle.is-active {
+      animation: none;
+    }
+    .anchor-handle {
+      transition: none;
+    }
+  }
+
+  /* ── Phone layout (<720px) — single-column reflow. The editor is a
+     MODAL DIALOG (not the public Build Card page), so the horizontal-
+     scroll concerns that motivated the static-stacked phone layout for
+     the public card do NOT apply here. The photo stacks on top full-
+     width; the labels container stays a positioned (relative) layer so
+     the absolute handles anchor to it, and the handles MUST stay
+     absolutely positioned so inline `style={{ top }}` from the drag
+     logic moves the handle in real time on touch drag. The drag math
+     measures the labels container's rect (getBoundingClientRect) at
+     drag start, so anchorY 0..1 always maps to the container's
+     top..bottom. ── */
+  @media (max-width: 720px) {
+    .anchor-editor-stage {
+      flex-direction: column;
+    }
+    .anchor-editor-photo-col {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+    .anchor-editor-photo {
+      width: 100%;
+    }
+    /* Labels layer stays a positioned (relative) container on phone so
+       the absolute handles anchor to it. Full width below the photo,
+       with a usable touch-drag min-height. The drag math measures this
+       container's rect at drag start, so anchorY 0..1 maps to its
+       top..bottom. */
+    .anchor-editor-labels {
+      flex: 1 1 auto;
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      background-color: #ffffff;
+    }
+    /* Handles STAY absolutely positioned on phone so inline
+       style={{ top: `${y*100}%` }} moves the handle in real time as
+       the admin drags. We do NOT set position: static here — that
+       would make `top` a no-op and break the drag visualization (the
+       readout would update but the handle would not move).
+       position: absolute and transform: translateY(-50%) are inherited
+       from the base rule so the handle centers on its anchorY line. */
+    .anchor-handle {
+      left: 0;
+      right: 0;
+      min-height: 2.75rem; /* >=44px tap target */
+      padding: 0.5rem 0.75rem;
+    }
+    .anchor-handle-text {
+      white-space: normal; /* allow wrap on narrow phone */
+      overflow: visible;
+      text-overflow: clip;
+    }
+  }
 }
 
-/* ── Bubba's 33 Quill — dark rich-text editor for detail field values ──
+/* ── Lake Charles Quik Reference Quill — dark rich-text editor for detail field values ──
    Scoped under .bubbas-quill so it only affects the DetailFieldEditor's
    value editor. Dark editor surface, rounded corners, red accent on the
    toolbar and active states. Toolbar exposes bold/italic/underline,
@@ -2875,7 +4548,7 @@
    star-twinkle / waving-flag). Hover transition on ENTER is the only
    motion and is short enough to leave intact. */
 
-/* The Bubba's 33 'Food For All' code-drawn poster CSS block was removed
+/* The Lake Charles Quik Reference 'Food For All' code-drawn poster CSS block was removed
    when OurStorySection switched to rendering the uploaded poster photo
    directly (photo-dominant view) with a display-only text/chips fallback.
    See .orientation-our-story-photo above. */
@@ -3345,4 +5018,807 @@
 }
 .orientation-detail-item-card.is-gold .recipe-variant-divider {
   border-bottom-color: oklch(var(--patriotic-gold) / 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Beverage Recipe Book page — drink-recipe-doc-* family.
+   A clean printed-page look for beverage recipes (cocktails / mocktails),
+   matching the Bubba's 33 recipe-book reference: a white paper sheet with
+   a centered bold black all-caps underlined title, a centered non-alcoholic
+   subtitle, a two-column body (text ~40% left, photo ~60% right with a
+   thick accent border), accent-colored uppercase section headers, square
+   ■-bullet lists, a two-column Specs alignment (amount left, ingredient
+   right), an audio buttons row styled to fit the document, and a footer
+   strip with the Bubba's 33 wordmark centered, tagline, copyright, and the
+   category name bottom-left in accent color.
+
+   The card is a single shared markup block (no separate desktop/phone
+   variants): .drink-recipe-doc-grid is two columns at >=1024px and stacks
+   to a single column at <1024px (title -> photo -> sections -> audio ->
+   footer). No horizontal scroll on phone.
+
+   Tokens: uses the existing --category-accent (raw hex, navy #0a2a5e
+   default) and --category-accent-tint per-category accent tokens already
+   declared in :root and .dark. The accent is a raw hex string, so
+   consuming classes use the var directly (e.g.
+   border-color: var(--category-accent)) — never wrap in oklch(). The
+   paper surface is a clean white (#fff / very light paper tone) with dark
+   ink, deliberately distinct from the app's dark theme so the card reads
+   as a printed recipe page on a white sheet. DISJOINT from
+   orientation-detail-*, recipe-*, and food-recipe-* classes — those keep
+   using their own families unchanged.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Card root — white paper surface, dark ink, printed-page feel.
+   max-width container with padding and a soft box-shadow so it reads as
+   a sheet of paper lifted off the page. */
+.drink-recipe-doc {
+  background-color: #ffffff;
+  color: #111111;
+  border: 1px solid #e6e6e6;
+  border-radius: var(--radius);
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.75rem 1.25rem;
+  box-shadow: 0 1px 2px oklch(0.2 0.01 280 / 0.16), 0 8px 24px
+    oklch(0.2 0.01 280 / 0.12);
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+/* Visibility toggle — desktop shows by default, phone is hidden; the
+   @media (max-width: 1023px) block below flips them. Mirrors the
+   food-recipe-desktop / food-recipe-phone pattern so only one layout
+   renders per viewport (the markup emits both as siblings and CSS
+   selects which is visible). .drink-recipe-doc-phone is an alias on the
+   phone wrapper so the document-look classes apply inside it. */
+.drink-recipe-phone,
+.drink-recipe-doc-phone {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .drink-recipe-desktop {
+    display: none;
+  }
+  .drink-recipe-phone,
+  .drink-recipe-doc-phone {
+    display: block;
+  }
+}
+
+/* Title — centered, bold, blue, all-caps, underlined with a thin accent
+   rule beneath. The underline is a bottom border so it sits a hair below
+   the text baseline like the reference page. Color and underline use
+   var(--category-accent) so the title respects the per-category accent
+   system (navy #0a2a5e default) and matches the section headers. */
+.drink-recipe-doc-title {
+  margin: 0 0 0.35rem;
+  padding: 0 0 0.4rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--category-accent);
+  border-bottom: 1.5px solid var(--category-accent);
+}
+
+/* Subtitle — centered, smaller, muted ink for the non-alcoholic note. */
+.drink-recipe-doc-subtitle {
+  margin: 0 0 1.1rem;
+  text-align: center;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #555555;
+}
+
+/* Two-column body — text left ~40%, photo right ~60% at >=1024px.
+   Single-column stack at <1024px (title -> photo -> sections -> audio ->
+   footer). When there is no photo, the markup omits the photo column and
+   the text column expands to full width automatically (grid falls back
+   to a single 1fr track). The is-split modifier activates the two-column
+   track at >=1024px when a photo is present; is-single is the explicit
+   no-photo modifier that pins a single full-width text track at every
+   viewport so the layout never silently falls through. */
+.drink-recipe-doc-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.drink-recipe-doc-grid.is-single {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+  .drink-recipe-doc-grid.is-split {
+    grid-template-columns: 40% 60%;
+    gap: 1.75rem;
+  }
+}
+
+/* Left text column. */
+.drink-recipe-doc-text {
+  min-width: 0;
+}
+
+/* Right photo column — thick accent border (var(--category-accent)),
+   object-contain at natural aspect, fills the column height so the
+   border frames the whole right side. */
+.drink-recipe-doc-photo {
+  border: 8px solid var(--category-accent);
+  background-color: #ffffff;
+  padding: 0;
+  line-height: 0;
+  overflow: hidden;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.drink-recipe-doc-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Section block — vertical rhythm between Glassware / Specs / Assembly /
+   Garnish. */
+.drink-recipe-doc-section {
+  margin: 0 0 1.1rem;
+}
+.drink-recipe-doc-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Section header — accent color via var(--category-accent), bold,
+   uppercase, tracked. Falls back to the navy default when no accent is
+   set (the variable itself carries the default). */
+.drink-recipe-doc-section-header {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  color: var(--category-accent);
+}
+
+/* List — square ■ bullets via list-style:none and a ::before square
+   character. Used for Glassware, Assembly, and Garnish lists. */
+.drink-recipe-doc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.drink-recipe-doc-list > li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.18rem 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+.drink-recipe-doc-list > li::before {
+  content: "\25A0";
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  line-height: 1.4;
+  color: #111111;
+}
+
+/* Specs — single vertical column. Each row lists the measurement FIRST
+   (larger and bold) then the ingredient name on the same line (inline
+   flow), matching the Bubba's 33 recipe-book reference. The markup emits
+   the amount span before the ingredient span, so removing the two-column
+   grid lets them flow inline on one line. Shared by desktop
+   (DrinkDocStandard) and phone (DrinkDocStandardPhone) — both use the
+   same .drink-recipe-doc-specs classes. */
+.drink-recipe-doc-specs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.25rem;
+}
+.drink-recipe-doc-spec-row {
+  display: block;
+}
+.drink-recipe-doc-spec-amount {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: #111111;
+}
+.drink-recipe-doc-spec-amount + .drink-recipe-doc-spec-ingredient {
+  margin-left: 0.5rem;
+}
+.drink-recipe-doc-spec-ingredient {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+
+/* Audio buttons row — subtle bordered pills that fit the document look.
+   The buttons themselves are rendered by the markup engineer; this
+   styles the row container and the pill buttons inside it. */
+.drink-recipe-doc-audio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.1rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+}
+.drink-recipe-doc-audio button,
+.drink-recipe-doc-audio .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--category-accent);
+  background-color: #ffffff;
+  border: 1px solid var(--category-accent);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.drink-recipe-doc-audio button:hover,
+.drink-recipe-doc-audio .pill:hover {
+  background-color: var(--category-accent);
+  color: #ffffff;
+}
+
+/* Footer strip — top border, padding, flex layout. The Bubba's 33
+   wordmark is centered, the tagline sits under it, the copyright line
+   under that, and the category name is bottom-left in accent color. */
+.drink-recipe-doc-footer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  margin-top: 1rem;
+  padding: 0.9rem 0 0.25rem;
+  border-top: 1.5px solid #000000;
+  text-align: center;
+}
+.drink-recipe-doc-footer-brand {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #000000;
+}
+.drink-recipe-doc-footer-tagline {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #444444;
+}
+.drink-recipe-doc-footer-copy {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: #777777;
+}
+.drink-recipe-doc-footer-category {
+  position: absolute;
+  left: 0;
+  bottom: 0.25rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--category-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Beverage Recipe Book page — PHONE layout (<1024px).
+   The same .drink-recipe-doc-* classes apply; .drink-recipe-doc-grid
+   becomes single-column (stacked) at <1024px via the media query above.
+   This block tunes spacing and the footer category placement for the
+   stacked view so nothing overflows and there is no horizontal scroll.
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+  .drink-recipe-doc {
+    max-width: 100%;
+    padding: 1.25rem 1rem 1rem;
+  }
+  .drink-recipe-doc-title {
+    font-size: clamp(1.5rem, 6vw, 1.9rem);
+  }
+  .drink-recipe-doc-grid {
+    gap: 1.25rem;
+  }
+  /* Stacked order: title -> photo -> sections -> audio -> footer.
+     The photo column comes first in the stacked flow so it reads like
+     the reference page on a phone. */
+  .drink-recipe-doc-grid.is-split {
+    grid-template-columns: 1fr;
+  }
+  .drink-recipe-doc-grid.is-split .drink-recipe-doc-photo {
+    order: -1;
+  }
+  /* On phone the footer category sits above the brand line (left-aligned)
+     rather than absolutely positioned, to avoid overlap with the
+     centered wordmark on a narrow sheet. */
+  .drink-recipe-doc-footer {
+    align-items: stretch;
+  }
+  .drink-recipe-doc-footer-category {
+    position: static;
+    text-align: left;
+    margin-bottom: 0.4rem;
+  }
+  .drink-recipe-doc-footer-brand,
+  .drink-recipe-doc-footer-tagline,
+  .drink-recipe-doc-footer-copy {
+    text-align: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Bulk-mix / variant / quality identifier — RESTORED legacy drink-recipe-*
+   classes. These code paths (bulk-mix desktop + phone, variants, quality
+   identifier) are EXCLUDED from the new Bubba's 33 document-look restyle
+   (doNotBuild: variants section restyle). They are styled here on the same
+   white paper surface as the .drink-recipe-doc-* family so they render
+   legibly and correctly laid out, but they do NOT adopt the new document
+   look. Dark ink (#111111), accent color via var(--category-accent) for
+   headings/labels, square-bullet lists, two-column specs rows with
+   amount/ingredient alignment, and a phone stack with section labels and
+   amount pills. Layout patterns reference the .food-recipe-* paper-surface
+   classes above.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Desktop / bulk classes ──────────────────────────────────────────── */
+
+/* Column-header band — accent strip across the top of the bulk-mix body
+   (EQUIPMENT | METHOD | BATCH). Mirrors .food-recipe-column-band: solid
+   accent fill, white Oswald uppercase labels, 3-track grid. */
+.drink-recipe-column-band {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  background-color: var(--category-accent);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.45rem 1rem;
+}
+.drink-recipe-column-band > .label-center {
+  text-align: center;
+}
+.drink-recipe-column-band > .label-right {
+  text-align: right;
+}
+
+/* Two-column body — Equipment + Bulk Mix + Shelf Life on the left,
+   Method (Assembly) on the right. Stacks on narrow viewports. Mirrors
+   .food-recipe-body / .food-recipe-body.is-split. */
+.drink-recipe-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 720px) {
+  .drink-recipe-body.is-split {
+    grid-template-columns: 55% 45%;
+  }
+  .drink-recipe-body.is-split > * + * {
+    border-left: 1px solid #e6e6e6;
+  }
+}
+.drink-recipe-column {
+  padding: 0.9rem 1rem 1rem;
+  min-width: 0;
+}
+
+/* Section heading — accent-colored Oswald uppercase label for Equipment,
+   Assembly, Specs, Notes, etc. Mirrors .drink-recipe-doc-section-header
+   but used by the bulk-mix / variant / quality paths. */
+.drink-recipe-section-heading {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  color: var(--category-accent);
+}
+
+/* Specs row — ■-bullet ingredient on the left, amount right-aligned in
+   its own column. Subtle row separators. Mirrors .food-recipe-row. */
+.drink-recipe-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.32rem 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+.drink-recipe-row:last-child {
+  border-bottom: none;
+}
+.drink-recipe-row .item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+.drink-recipe-row .item::before {
+  content: "\25A0";
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  line-height: 1.4;
+  color: #111111;
+}
+.drink-recipe-row .amount {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: right;
+  white-space: nowrap;
+  color: #111111;
+}
+
+/* Procedure steps — numbered ordered list, Barlow body, accent markers.
+   Mirrors .food-recipe-steps. */
+.drink-recipe-steps {
+  list-style: decimal;
+  padding-left: 1.15rem;
+  margin: 0;
+}
+.drink-recipe-steps > li {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+  padding: 0.16rem 0;
+}
+.drink-recipe-steps > li::marker {
+  color: var(--category-accent);
+}
+
+/* Equipment list — square-bullet unordered list. Mirrors
+   .drink-recipe-doc-list. */
+.drink-recipe-equipment {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.drink-recipe-equipment > li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.18rem 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+.drink-recipe-equipment > li::before {
+  content: "\25A0";
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  line-height: 1.4;
+  color: #111111;
+}
+
+/* Meta stack — Bulk Mix / Shelf Life block under the title band.
+   Right-aligned label/value rows. Mirrors .food-recipe-meta. */
+.drink-recipe-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  margin-top: 0.6rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #e6e6e6;
+  font-family: var(--font-body);
+  color: #111111;
+}
+.drink-recipe-meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+.drink-recipe-meta-row .label {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--category-accent);
+}
+.drink-recipe-meta-row .value {
+  font-weight: 600;
+  color: #111111;
+}
+
+/* Variant block — full-width section below the two-column body. Accent
+   label with an accent underline rule, then Specs + Assembly in a
+   two-column split when both are present. Used by both the standard
+   drink variants and the bulk-mix Specs block. */
+.drink-recipe-variant {
+  margin: 1.1rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid #e6e6e6;
+}
+.drink-recipe-variant-label {
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.3rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1rem;
+  line-height: 1.2;
+  color: var(--category-accent);
+  border-bottom: 1.5px solid var(--category-accent);
+}
+
+/* Variant body — two-column split (Specs left, Assembly right) when both
+   are present, single column otherwise. Mirrors .drink-recipe-body. */
+.drink-variant-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 720px) {
+  .drink-variant-body.is-split {
+    grid-template-columns: 55% 45%;
+  }
+  .drink-variant-body.is-split > * + * {
+    border-left: 1px solid #e6e6e6;
+  }
+}
+.drink-variant-column {
+  padding: 0.6rem 0.9rem 0.8rem;
+  min-width: 0;
+}
+.drink-variant-column:first-child {
+  padding-left: 0;
+}
+.drink-variant-column:last-child {
+  padding-right: 0;
+}
+
+/* Quality identifier checklist — square-bullet list of ✓-style quality
+   markers. Mirrors .drink-recipe-doc-list with a check-tinted bullet. */
+.drink-recipe-quality {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.drink-recipe-quality > li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.18rem 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+.drink-recipe-quality > li::before {
+  content: "\2713";
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--category-accent);
+}
+
+/* ── Phone classes ───────────────────────────────────────────────────── */
+
+/* Phone section label — accent-colored Oswald uppercase label that opens
+   each stacked section on phone. Mirrors .drink-recipe-doc-section-header
+   but for the phone stack. */
+.drink-recipe-phone-section-label {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: var(--category-accent);
+}
+
+/* Phone specs row — item name on the left with its amount as a bold
+   accent pill on the right. Pill wraps to its own line if long. Tap
+   target >=44px. Mirrors the food-recipe phone row pattern. */
+.drink-recipe-phone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+.drink-recipe-phone-row:last-child {
+  border-bottom: none;
+}
+.drink-recipe-phone-row .item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #111111;
+}
+.drink-recipe-phone-row .amount-pill {
+  flex-shrink: 0;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background-color: var(--category-accent);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Phone variant block — full-width, accent label, then Specs (item +
+   amount pill rows) and Assembly (numbered steps) stacked. */
+.drink-recipe-phone-variant {
+  margin: 1rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e6e6e6;
+}
+.drink-recipe-phone-variant-label {
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.3rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  color: var(--category-accent);
+  border-bottom: 1.5px solid var(--category-accent);
+}
+
+/* Phone procedure container — wraps the numbered Assembly steps on phone. */
+.drink-recipe-phone-procedure {
+  margin: 0.2rem 0 0;
+}
+
+/* Phone steps — numbered ordered list for Assembly on phone. Mirrors
+   .drink-recipe-steps. */
+.drink-recipe-phone-steps {
+  list-style: decimal;
+  padding-left: 1.15rem;
+  margin: 0;
+}
+.drink-recipe-phone-steps > li {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+  padding: 0.16rem 0;
+}
+.drink-recipe-phone-steps > li::marker {
+  color: var(--category-accent);
+}
+
+/* Phone quality identifier checklist — square-bullet list on phone.
+   Mirrors .drink-recipe-quality. */
+.drink-recipe-phone-quality {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.drink-recipe-phone-quality > li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.18rem 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+.drink-recipe-phone-quality > li::before {
+  content: "\2713";
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--category-accent);
+}
+
+/* Phone equipment list — square-bullet unordered list on phone. Mirrors
+   .drink-recipe-equipment. */
+.drink-recipe-phone-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.drink-recipe-phone-list > li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.18rem 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #111111;
+}
+.drink-recipe-phone-list > li::before {
+  content: "\25A0";
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  line-height: 1.4;
+  color: #111111;
+}
+
+/* Phone meta stack — Bulk Mix / Shelf Life as stacked badges on phone. */
+.drink-recipe-phone-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+}
+.drink-recipe-phone-meta-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  background-color: #f5f5f5;
+  border: 1px solid #e6e6e6;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #111111;
+}
+.drink-recipe-phone-meta-badge .label {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--category-accent);
+}
+.drink-recipe-phone-meta-badge .value {
+  font-weight: 600;
+  color: #111111;
 }

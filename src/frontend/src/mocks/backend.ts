@@ -126,6 +126,18 @@ const categories = [
     positionId: 1n,
     coverPhoto: undefined,
   },
+  // Position 1 — Bartender: a MOCKTAILS category with a blue accent so the
+  // drink recipe card's accent (title band, section headers, photo border,
+  // footer category) renders in the reference blue. Mirrors the Bubba's 33
+  // recipe-book reference page.
+  {
+    id: 13n,
+    sortOrder: 3n,
+    name: "Mocktails",
+    positionId: 1n,
+    coverPhoto: undefined,
+    accentColor: "#1d4ed8",
+  },
   // Position 2 — Server
   {
     id: 20n,
@@ -292,12 +304,19 @@ const categories = [
   // recipes by menu section so the KitchenBrowser's station chips + tile
   // grid have realistic content. The browser filters by foodRecipe.station
   // (not category), so the category here is just the organizational bucket.
+  // accentColor is set per category so the Food Recipe card theming + the
+  // kitchen browser tile stripe/badge pick up the category accent:
+  //   - Appetizers → Purple #521A5E (mirrors the printed recipe book)
+  //   - Burgers    → Brown #8C5421 (mirrors the printed recipe book)
+  //   - Prep Recipes → null (exercises the navy brand-default fallback so
+  //     the visual QA verifies the null-accent path, not just the set path)
   {
     id: 70n,
     sortOrder: 0n,
     name: "Appetizers",
     positionId: 6n,
     coverPhoto: undefined,
+    accentColor: "#521A5E",
   },
   {
     id: 71n,
@@ -305,6 +324,7 @@ const categories = [
     name: "Burgers",
     positionId: 6n,
     coverPhoto: undefined,
+    accentColor: "#8C5421",
   },
   {
     id: 72n,
@@ -312,6 +332,7 @@ const categories = [
     name: "Prep Recipes",
     positionId: 6n,
     coverPhoto: undefined,
+    accentColor: null,
   },
 ];
 
@@ -434,6 +455,55 @@ const items = [
     seasonal: false,
     sortOrder: 2n,
     recipe: negroniRecipe,
+  },
+  // Tropical Breeze — a non-alcoholic mocktail that mirrors the Bubba's 33
+  // recipe-book reference page: a photo (so the two-column text-left /
+  // photo-right split is exercised), the "(Does Not Contain Alcohol)"
+  // subtitle, the blue-accent Mocktails category, and the full Specs /
+  // Assembly / Garnish sections. The photo is an inline SVG data URL so the
+  // headless browser loads it without a network request.
+  {
+    id: 104n,
+    categoryId: 13n,
+    title: "Tropical Breeze",
+    subtitle: "(Does Not Contain Alcohol)",
+    photo:
+      "data:image/svg+xml;utf8," +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="800" viewBox="0 0 640 800"><rect width="640" height="800" fill="#bfe3f5"/><rect x="220" y="180" width="200" height="520" rx="20" fill="#ffffff" stroke="#c9c9c9" stroke-width="6"/><rect x="240" y="320" width="160" height="360" rx="8" fill="#1ca6e0"/><rect x="240" y="560" width="160" height="120" rx="8" fill="#0a7fb8"/><circle cx="300" cy="300" r="14" fill="#ff8a3d"/><circle cx="350" cy="290" r="12" fill="#ff8a3d"/><path d="M320 180 Q300 120 340 100 Q330 150 320 180" fill="#3fa34d"/><path d="M320 180 Q340 130 360 110 Q345 150 320 180" fill="#5cc46a"/></svg>',
+      ),
+    details: [],
+    notes: undefined,
+    tags: ["mocktail", "non-alcoholic", "tropical"],
+    seasonal: false,
+    sortOrder: 3n,
+    recipe: {
+      glassware: "16 oz. Collins Glass",
+      specs: [
+        { ingredient: "Monin Blue Curacao", amount: "1 pump", upsell: false },
+        { ingredient: "Monin Coconut", amount: "1 pump", upsell: false },
+        { ingredient: "Monin Mango", amount: "1 pump", upsell: false },
+        { ingredient: "Bubba's Sweet 'N Sour", amount: "1 oz", upsell: false },
+        { ingredient: "Mango Chunks", amount: "3", upsell: false },
+        { ingredient: "Lime Juice", amount: "1 wedge", upsell: false },
+        { ingredient: "Club Soda", amount: "Approx. 2 oz", upsell: false },
+      ],
+      assembly: [
+        "Fill glass with ice.",
+        "Using designated NA jigger, add ingredients (minus Club Soda and lime wedge) to glass.",
+        "Add juice from 1 squeezed lime wedge. Discard rind.",
+        "Pour into designated NA mixing tin and shake vigorously 4-6 times.",
+        "Pour ingredients into glass.",
+        "Add enough Club Soda to fill glass.",
+        "Roll into mixing tin and back into glass 1 time to mix.",
+      ],
+      garnish: ["Mint sprig"],
+      variants: [],
+      equipment: [],
+      yield: null,
+      shelfLife: null,
+      qualityIdentifier: [],
+    },
   },
   {
     id: 102n,
@@ -1673,16 +1743,22 @@ export const mockBackend: backendInterface = {
   getCategoriesByPosition: async (positionId) =>
     categories.filter((c) => c.positionId === positionId),
   getCategory: async (id) => categories.find((c) => c.id === id) ?? null,
-  createCategory: async (positionId, name, coverPhoto) => ({
+  createCategory: async (positionId, name, coverPhoto, accentColor) => ({
     id: 100n,
     sortOrder: 100n,
     name,
     positionId,
     coverPhoto: coverPhoto ?? undefined,
+    accentColor: accentColor ?? undefined,
   }),
-  updateCategory: async (id, name, coverPhoto) => {
+  updateCategory: async (id, name, coverPhoto, accentColor) => {
     const c = categories.find((x) => x.id === id);
-    return { ...c, name, coverPhoto: coverPhoto ?? undefined } as never;
+    return {
+      ...c,
+      name,
+      coverPhoto: coverPhoto ?? undefined,
+      accentColor: accentColor ?? undefined,
+    } as never;
   },
   deleteCategory: async () => undefined,
   reorderCategories: async (_positionId, orderedIds) =>

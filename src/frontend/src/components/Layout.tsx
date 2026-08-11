@@ -8,9 +8,10 @@ import { LogOut } from "lucide-react";
 /**
  * Shared layout for all authenticated pages.
  *
- * Black top nav bar with a thin red bottom border. Bubba's 33 wordmark in
- * Anton on the left; the signed-in user's avatar/initials on the right.
- * The main content area uses the dark `bg-background` token.
+ * Black top nav bar with a thin red bottom border. Lake Charles Quik
+ * Reference wordmark in Anton on the left; the signed-in user's
+ * avatar/initials on the right. The main content area uses the dark
+ * `bg-background` token.
  */
 export function Layout() {
   const { principal, clear } = useAuth();
@@ -38,21 +39,21 @@ export function Layout() {
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-4">
           <Link
             to="/"
-            aria-label="Bubba's 33 — home"
+            aria-label="Lake Charles Quik Reference — home"
             className="flex items-center transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
             data-ocid="layout.brand_link"
           >
             {/*
-              Brand wordmark — horizontal Bubba's 33 logo with a transparent
-              background, so it reads as an integrated nav wordmark with no
-              frame. Height-clamped to 2.25rem (36px) so it fits the 56px
+              Brand wordmark — horizontal Lake Charles Quik Reference logo
+              with a transparent background, so it reads as an integrated
+              nav wordmark with no frame. Height-clamped to 2.25rem (36px) so it fits the 56px
               sticky header with vertical breathing room; width auto preserves
               the aspect ratio. Intrinsic width/height reserve layout space to
               avoid CLS.
             */}
             <img
               src="/assets/brand/logo-horizontal.webp"
-              alt="Bubba's 33"
+              alt="Lake Charles Quik Reference"
               width={640}
               height={240}
               className="h-9 w-auto"

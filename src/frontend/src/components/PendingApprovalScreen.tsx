@@ -51,7 +51,7 @@ export function PendingApprovalScreen() {
           data-ocid="pending_approval.message"
         >
           An admin is reviewing your access request. You&rsquo;ll be able to
-          sign in and use Bubba&rsquo;s 33 Roadie Training once your access is
+          sign in and use Lake Charles Quik Reference once your access is
           approved. Check back shortly, or sign out and try again later.
         </p>
 

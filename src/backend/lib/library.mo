@@ -90,12 +90,14 @@ module {
     positionId : Nat,
     name : Text,
     coverPhoto : ?Text,
+    accentColor : ?Text,
   ) : Category {
     let id = nextId.value;
     nextId.value := nextId.value + 1;
     // sortOrder is PER POSITION: the new category appends to the end of its
     // position's sequence starting at 1. Count the existing categories in the
-    // same position and add 1 — mirrors createPosition in foundation.mo.
+    // same position and add 1 — mirrors the createItem pattern below and the
+    // createPosition pattern in foundation.mo.
     let samePositionCount = categories.filter(func(c) { c.positionId == positionId }).size();
     let sortOrder = samePositionCount + 1;
     let category : Category = {
@@ -104,6 +106,7 @@ module {
       name;
       coverPhoto;
       sortOrder;
+      accentColor;
     };
     categories.add(category);
     category;
@@ -114,11 +117,22 @@ module {
     id : Nat,
     name : Text,
     coverPhoto : ?Text,
+    accentColor : ?Text,
   ) : ?Category {
     let found = categories.find(func(c) { c.id == id });
     switch (found) {
       case (?existing) {
-        let updated : Category = { existing with name; coverPhoto };
+        // Spread the existing record and override the editable fields. The
+        // id / positionId / sortOrder are preserved (not part of the update
+        // payload); accentColor is carried through so the admin can set, change,
+        // or clear (null) the category's accent color. Mirrors updateItem below
+        // and updatePosition in foundation.mo.
+        let updated : Category = {
+          existing with
+          name;
+          coverPhoto;
+          accentColor;
+        };
         categories.mapInPlace(
           func(c) {
             if (c.id == id) { updated } else { c };

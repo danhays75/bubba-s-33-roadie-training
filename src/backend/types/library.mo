@@ -10,13 +10,16 @@ module {
 
   // A Library category. Belongs to a position. sortOrder is PER POSITION
   // (1-based, renumbered on delete/reorder) — NOT a global running count.
-  // coverPhoto is optional — never required to save a category.
+  // coverPhoto is optional — never required to save a category. accentColor is
+  // an optional hex string (e.g. "#8C5421") used to theme the category's Food
+  // Recipe cards; null means the neutral brand default.
   public type Category = {
     id : Nat;
     positionId : Nat;
     name : Text;
     coverPhoto : ?Text;
     sortOrder : Nat;
+    accentColor : ?Text;
   };
 
   // A single measured ingredient line in a recipe spec list. `amount` carries
@@ -70,6 +73,14 @@ module {
   // NO pool, decoy, scoring, or round-flow logic reads it; it rides along on
   // the LibraryItem returned by getDrinksBuilderPlayablePool unchanged.
   // Defaults to null — drinks without a clip just show the visual recap.
+  //
+  // `buildAudio` is the optional durable object-storage URL of the drink's
+  // build voice clip — a spoken walk-through played while a Roadie builds
+  // this drink (parallel to recapAudio, which plays after the round). Like
+  // recapAudio it is playback-only — NO pool, decoy, scoring, or round-flow
+  // logic reads it; it rides along on the LibraryItem returned by
+  // getDrinksBuilderPlayablePool unchanged. Defaults to null — drinks
+  // without a clip just show the visual build.
   public type Recipe = {
     glassware : Text;
     specs : [RecipeSpec];
@@ -81,6 +92,7 @@ module {
     shelfLife : ?Text;
     qualityIdentifier : [Text];
     recapAudio : ?Text;
+    buildAudio : ?Text;
   };
 
   // A food recipe kind. #menuBuild is a plated dish built to order (with
@@ -102,11 +114,17 @@ module {
   // (components render as a flat table). `note` is an optional per-component
   // note (e.g. "to taste", "heated"). Both `group` and `note` default to
   // null — most components carry neither.
+  //
+  // `anchorY` is the optional vertical position (0.0–1.0) of this ingredient
+  // on the build photo (0 = top of the image, 1 = bottom). Used by the Build
+  // Card layout to place each label beside its layer. Defaults to null —
+  // components without it render exactly as they do today.
   public type FoodComponent = {
     item : Text;
     amount : Text;
     group : ?Text;
     note : ?Text;
+    anchorY : ?Float;
   };
 
   // A plating vessel / serviceware line for a menuBuild food recipe (e.g.
@@ -136,6 +154,9 @@ module {
   //
   // `menuSection` is the menu section the dish belongs to ("Appetizers",
   // "Burgers", …) — only meaningful for #menuBuild; null for #prep.
+  // `buildHeader` is the optional small kicker line above the title on the
+  // Build Card layout (e.g. "Build Your Burger"). Defaults to null — recipes
+  // without it render exactly as they do today (no kicker).
   // `serviceware` is the ordered plating-vessel list (#menuBuild only;
   // empty for #prep). `components` is the ordered component/ingredient
   // list — for #prep it is grouped by `group` ("Step 1", "Step 2", …).
@@ -153,6 +174,7 @@ module {
     station : Text;
     kind : FoodRecipeKind;
     menuSection : ?Text;
+    buildHeader : ?Text;
     serviceware : [FoodServiceware];
     components : [FoodComponent];
     steps : [Text];

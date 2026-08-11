@@ -106,6 +106,10 @@ function toFrontendItem(i: BackendLibraryItem): LibraryItem {
             i.recipe.recapAudio && i.recipe.recapAudio.length > 0
               ? i.recipe.recapAudio
               : null,
+          buildAudio:
+            i.recipe.buildAudio && i.recipe.buildAudio.length > 0
+              ? i.recipe.buildAudio
+              : null,
         }
       : null,
     foodRecipe: null,

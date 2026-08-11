@@ -22,9 +22,10 @@ import { toast } from "sonner";
  *   - edit mode  → useUpdateNsoPhase({ id, name })
  *   - create mode → useCreateNsoPhase({ name })
  *
- * Mirrors CategoryFormDialog: Radix Dialog, dark Bubba's 33 theme, red
- * primary button, inline validation on blur. The hooks translate string
- * ids to bigint internally, so this component stays in string-land.
+ * Mirrors CategoryFormDialog: Radix Dialog, dark Lake Charles Quik
+ * Reference theme, red primary button, inline validation on blur. The
+ * hooks translate string ids to bigint internally, so this component
+ * stays in string-land.
  */
 export function NsoPhaseFormDialog({
   open,

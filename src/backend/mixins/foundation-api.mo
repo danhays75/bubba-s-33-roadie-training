@@ -149,7 +149,7 @@ mixin (
       "no-reply",
       [email],
       "Verify your email address",
-      "Please <a href=\"{{VERIFICATION_URL}}\">click here</a> to verify your email address for Bubba 33 Roadie Training.",
+      "Please <a href=\"{{VERIFICATION_URL}}\">click here</a> to verify your email address for Lake Charles Quik Reference.",
     );
   };
 
@@ -514,17 +514,17 @@ mixin (
       case (?email) {
         let (subject, body) = if (approved) {
           (
-            "Your access to Bubba 33 Roadie Training has been approved",
+            "Your access to Lake Charles Quik Reference has been approved",
             "Hello " # profile.name # ",<br><br>"
-              # "Your access to Bubba 33 Roadie Training has been approved. "
+              # "Your access to Lake Charles Quik Reference has been approved. "
               # "You can now sign in and begin your training.<br><br>"
               # "Welcome aboard!",
           );
         } else {
           (
-            "Your access to Bubba 33 Roadie Training has been denied",
+            "Your access to Lake Charles Quik Reference has been denied",
             "Hello " # profile.name # ",<br><br>"
-              # "Your request for access to Bubba 33 Roadie Training has been denied. "
+              # "Your request for access to Lake Charles Quik Reference has been denied. "
               # "If you believe this is an error, please contact your manager.",
           );
         };

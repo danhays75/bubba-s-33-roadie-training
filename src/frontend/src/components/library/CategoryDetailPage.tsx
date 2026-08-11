@@ -168,7 +168,7 @@ function PatrioticHeader({
             data-ocid="library.category.flourish"
           >
             {tone === "red"
-              ? "Service"
+              ? "Legendary"
               : tone === "blue"
                 ? "Food"
                 : tone === "gold"

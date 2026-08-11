@@ -42,7 +42,7 @@ export function CreateProfileScreen() {
       <div className="w-full max-w-sm">
         <div className="text-center">
           {/*
-            Brand wordmark — horizontal Bubba's 33 logo with a transparent
+            Brand wordmark — horizontal Lake Charles Quik Reference logo with a transparent
             background. Sized between the sign-in (largest) and nav (smallest)
             treatments — prominent enough to anchor the "one last step"
             screen without dominating the form. Intrinsic width/height
@@ -50,7 +50,7 @@ export function CreateProfileScreen() {
           */}
           <img
             src="/assets/brand/logo-horizontal.webp"
-            alt="Bubba's 33"
+            alt="Lake Charles Quik Reference"
             width={640}
             height={240}
             className="mx-auto h-auto w-full max-w-[16rem]"

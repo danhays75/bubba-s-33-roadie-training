@@ -79,6 +79,7 @@ export interface Phase {
     name: string;
 }
 export interface FoodComponent {
+    anchorY?: number;
     item: string;
     note?: string;
     group?: string;
@@ -147,6 +148,7 @@ export interface Category {
     id: bigint;
     sortOrder: bigint;
     name: string;
+    accentColor?: string;
     positionId: bigint;
     coverPhoto?: string;
 }
@@ -210,6 +212,7 @@ export interface FoodRecipe {
     equipment?: string;
     holdTemp?: string;
     kind: FoodRecipeKind;
+    buildHeader?: string;
     qualityIdentifiers: Array<string>;
     components: Array<FoodComponent>;
     shelfLife?: string;
@@ -306,6 +309,7 @@ export interface Recipe {
     qualityIdentifier: Array<string>;
     specs: Array<RecipeSpec>;
     shelfLife?: string;
+    buildAudio?: string;
     assembly: Array<string>;
     yield?: string;
 }
@@ -384,7 +388,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignPosition(userId: Principal, positionId: bigint): Promise<PositionAssignment>;
     buildLegendaryActivity(input: BuildActivityInput): Promise<Activity>;
-    createCategory(positionId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
+    createCategory(positionId: bigint, name: string, coverPhoto: string | null, accentColor: string | null): Promise<Category>;
     createItem(categoryId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null, foodRecipe: FoodRecipe | null): Promise<LibraryItem>;
     createMyProfile(name: string, storeLocation: string): Promise<UserProfile>;
     createNsoPhase(name: string): Promise<Phase>;
@@ -446,7 +450,7 @@ export interface backendInterface {
     setUserRole(userId: Principal, role: Role): Promise<UserProfile>;
     toggleNsoTask(id: bigint, done: boolean, completionDate: string | null): Promise<void>;
     unassignPosition(userId: Principal, positionId: bigint): Promise<void>;
-    updateCategory(categoryId: bigint, name: string, coverPhoto: string | null): Promise<Category>;
+    updateCategory(categoryId: bigint, name: string, coverPhoto: string | null, accentColor: string | null): Promise<Category>;
     updateItem(itemId: bigint, title: string, subtitle: string | null, photo: string | null, details: Array<DetailField>, notes: string | null, tags: Array<string>, seasonal: boolean, recipe: Recipe | null, foodRecipe: FoodRecipe | null): Promise<LibraryItem>;
     updateLegendaryActivity(input: UpdateActivityInput): Promise<Activity>;
     updateMyProfile(name: string, storeLocation: string): Promise<UserProfile>;

@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreatePosition, useUpdatePosition } from "@/hooks/useAllPositions";
 import { cn } from "@/lib/utils";
 import type { LayoutStyle, Position } from "@/types/foundation";
-import { Compass, LayoutGrid, Loader2 } from "lucide-react";
+import { Compass, LayoutGrid, Loader2, UtensilsCrossed } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PhotoField } from "./PhotoField";
@@ -51,6 +51,12 @@ const LAYOUT_OPTIONS: ReadonlyArray<{
     label: "Orientation",
     description: "Patriotic onboarding layout",
     icon: Compass,
+  },
+  {
+    value: "kitchen",
+    label: "Kitchen",
+    description: "Station-filtered recipe browser for food recipes",
+    icon: UtensilsCrossed,
   },
 ];
 

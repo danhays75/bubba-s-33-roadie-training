@@ -48,9 +48,9 @@ export function RejectedAccessScreen() {
           className="mt-3 font-body text-sm leading-relaxed text-muted-foreground"
           data-ocid="rejected_access.message"
         >
-          Your access request was not approved. You can&rsquo;t use
-          Bubba&rsquo;s 33 Roadie Training with this account. If you think this
-          is a mistake, please contact an admin.
+          Your access request was not approved. You can&rsquo;t use Lake Charles
+          Quik Reference with this account. If you think this is a mistake,
+          please contact an admin.
         </p>
 
         <Button

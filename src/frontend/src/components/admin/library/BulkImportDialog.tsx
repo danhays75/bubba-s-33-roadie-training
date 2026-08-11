@@ -71,8 +71,8 @@ import { toast } from "sonner";
  * created items, skipped items), then closes the dialog and clears the
  * textarea.
  *
- * Styling mirrors CategoryFormDialog (Radix Dialog, dark Bubba's 33 theme,
- * red primary button, sonner toasts).
+ * Styling mirrors CategoryFormDialog (Radix Dialog, dark Lake Charles
+ * Quik Reference theme, red primary button, sonner toasts).
  */
 type ImportMode = "skip" | "update";
 
@@ -936,6 +936,10 @@ export function BulkImportDialog({
       // null so the constructed Recipe satisfies the required recapAudio
       // field. The admin can attach a clip later via the item editor.
       recapAudio: null,
+      // The bulk-import JSON does not carry a build voice clip — default to
+      // null so the constructed Recipe satisfies the required buildAudio
+      // field. The admin can attach a clip later via the item editor.
+      buildAudio: null,
     };
   }
 
@@ -1243,6 +1247,7 @@ function toItem(i: {
     shelfLife?: string;
     qualityIdentifier: string[];
     recapAudio?: string;
+    buildAudio?: string;
     variants: Array<{
       variantLabel: string;
       specs: Array<{
@@ -1307,6 +1312,7 @@ function toItem(i: {
           shelfLife: i.recipe.shelfLife ?? null,
           qualityIdentifier: i.recipe.qualityIdentifier ?? [],
           recapAudio: i.recipe.recapAudio ?? null,
+          buildAudio: i.recipe.buildAudio ?? null,
           variants: i.recipe.variants.map((v) => ({
             variantLabel: v.variantLabel,
             specs: v.specs.map((s) => ({
@@ -1342,12 +1348,14 @@ function toFoodRecipeLocal(
         station: string;
         kind: "prep" | "menuBuild";
         menuSection?: string;
+        buildHeader?: string;
         serviceware: Array<{ item: string; amount: string }>;
         components: Array<{
           item: string;
           amount: string;
           group?: string;
           note?: string;
+          anchorY?: number;
         }>;
         steps: Array<string>;
         expoSteps: Array<string>;
@@ -1374,6 +1382,10 @@ function toFoodRecipeLocal(
       amount: c.amount,
       group: c.group && c.group.length > 0 ? c.group : null,
       note: c.note && c.note.length > 0 ? c.note : null,
+      anchorY:
+        typeof c.anchorY === "number" && Number.isFinite(c.anchorY)
+          ? c.anchorY
+          : null,
     })),
     steps: r.steps,
     expoSteps: r.expoSteps,
@@ -1387,6 +1399,8 @@ function toFoodRecipeLocal(
       r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : null,
     equipment: r.equipment && r.equipment.length > 0 ? r.equipment : null,
     qualityIdentifiers: r.qualityIdentifiers ?? [],
+    buildHeader:
+      r.buildHeader && r.buildHeader.length > 0 ? r.buildHeader : null,
   };
 }
 
@@ -1457,12 +1471,14 @@ interface ImportFoodRecipe {
   station: string;
   kind: "prep" | "menuBuild";
   menuSection?: string;
+  buildHeader?: string;
   serviceware?: Array<{ item: string; amount: string }>;
   components: Array<{
     item: string;
     amount: string;
     group?: string;
     note?: string;
+    anchorY?: number;
   }>;
   steps: string[];
   expoSteps?: string[];
@@ -1723,7 +1739,11 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     if (item.length === 0 || amount.length === 0) return undefined;
     const group = typeof cr.group === "string" ? cr.group : undefined;
     const note = typeof cr.note === "string" ? cr.note : undefined;
-    components.push({ item, amount, group, note });
+    const anchorY =
+      typeof cr.anchorY === "number" && Number.isFinite(cr.anchorY)
+        ? Math.max(0, Math.min(1, cr.anchorY))
+        : undefined;
+    components.push({ item, amount, group, note, anchorY });
   }
 
   if (!Array.isArray(r.steps) || r.steps.length === 0) return undefined;
@@ -1738,6 +1758,9 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
 
   const menuSection =
     typeof r.menuSection === "string" ? r.menuSection : undefined;
+
+  const buildHeader =
+    typeof r.buildHeader === "string" ? r.buildHeader : undefined;
 
   const serviceware = Array.isArray(r.serviceware)
     ? r.serviceware
@@ -1782,6 +1805,7 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     station,
     kind,
     menuSection,
+    buildHeader,
     serviceware,
     components,
     steps,
@@ -1834,6 +1858,10 @@ function buildFoodRecipePayload(
       amount: c.amount,
       group: strOrNull(c.group),
       note: strOrNull(c.note),
+      anchorY:
+        typeof c.anchorY === "number" && Number.isFinite(c.anchorY)
+          ? c.anchorY
+          : null,
     })),
     steps: raw.steps,
     expoSteps: raw.expoSteps ?? [],
@@ -1845,6 +1873,7 @@ function buildFoodRecipePayload(
     lineUtensil: strOrNull(raw.lineUtensil),
     equipment: strOrNull(raw.equipment),
     qualityIdentifiers: raw.qualityIdentifiers ?? [],
+    buildHeader: strOrNull(raw.buildHeader),
   };
 }
 
