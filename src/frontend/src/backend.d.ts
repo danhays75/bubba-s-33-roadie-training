@@ -102,6 +102,10 @@ export interface Cell {
     value: Value;
     name: string;
 }
+export interface FoodStepGroup {
+    title?: string;
+    steps: Array<string>;
+}
 export interface LibraryItem {
     id: bigint;
     categoryId: bigint;
@@ -158,6 +162,10 @@ export interface FoodServiceware {
     item: string;
     amount: string;
 }
+export interface FoodWhy {
+    question: string;
+    answer: string;
+}
 export interface FoodComponentSize {
     value: string;
     size: string;
@@ -211,6 +219,7 @@ export type Error_ = {
     };
 };
 export interface FoodRecipe {
+    stepGroups: Array<FoodStepGroup>;
     lineUtensil?: string;
     serviceware: Array<FoodServiceware>;
     station: string;
@@ -218,6 +227,7 @@ export interface FoodRecipe {
     holdTemp?: string;
     kind: FoodRecipeKind;
     buildHeader?: string;
+    whys: Array<FoodWhy>;
     qualityIdentifiers: Array<string>;
     components: Array<FoodComponent>;
     shelfLife?: string;

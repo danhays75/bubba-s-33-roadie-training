@@ -237,6 +237,8 @@ function toFoodRecipe(
         lineUtensil?: string;
         equipment?: string;
         qualityIdentifiers: Array<string>;
+        stepGroups?: Array<{ title?: string; steps: Array<string> }>;
+        whys?: Array<{ question: string; answer: string }>;
       }
     | undefined,
 ): FoodRecipe | null {
@@ -278,6 +280,16 @@ function toFoodRecipe(
       r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : null,
     equipment: r.equipment && r.equipment.length > 0 ? r.equipment : null,
     qualityIdentifiers: r.qualityIdentifiers ?? [],
+    // stepGroups / whys are non-optional arrays on the backend; default to []
+    // when absent so the frontend treats recipes without them uniformly.
+    stepGroups: (r.stepGroups ?? []).map((g) => ({
+      title: g.title && g.title.length > 0 ? g.title : undefined,
+      steps: g.steps,
+    })),
+    whys: (r.whys ?? []).map((w) => ({
+      question: w.question,
+      answer: w.answer,
+    })),
   };
 }
 
@@ -332,6 +344,18 @@ function fromFoodRecipe(
       r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : undefined,
     equipment: r.equipment && r.equipment.length > 0 ? r.equipment : undefined,
     qualityIdentifiers: r.qualityIdentifiers ?? [],
+    // stepGroups / whys are non-optional arrays on the backend; map from the
+    // frontend optional fields defaulting to [] so items without them pass
+    // through as empty arrays. stepGroups.title is ?Text — normalize empty
+    // string to undefined for the Candid ?Text boundary.
+    stepGroups: (r.stepGroups ?? []).map((g) => ({
+      title: g.title && g.title.length > 0 ? g.title : undefined,
+      steps: g.steps,
+    })),
+    whys: (r.whys ?? []).map((w) => ({
+      question: w.question,
+      answer: w.answer,
+    })),
   };
 }
 
@@ -395,6 +419,8 @@ function toItem(i: {
     lineUtensil?: string;
     equipment?: string;
     qualityIdentifiers: Array<string>;
+    stepGroups?: Array<{ title?: string; steps: Array<string> }>;
+    whys?: Array<{ question: string; answer: string }>;
   };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({

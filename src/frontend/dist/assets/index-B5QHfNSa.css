@@ -3978,6 +3978,37 @@ video {
 .animate-seasonal-shimmer {
     animation: seasonal-shimmer 3s ease-in-out infinite;
   }
+/* ── Prep-card inline markdown — bold chip + italic note ──────────────
+     ADDITIVE utilities for the tiny inline-markdown renderer
+     (lib/inlineMarkdown.tsx). Bold renders as a pale-yellow inline chip
+     wrapping the phrase; italic renders as a muted-color italic span.
+     Both work on the dark theme (the prep card's cream paper surface is
+     light, but these classes also appear on dark surfaces for the
+     menuBuild/build-card steps, so the colors are tuned for both). */
+.prep-bold-chip {
+    /* Pale-yellow chip — readable on cream paper AND on the dark
+       roadhouse background. Inline so it wraps within a step line. */
+    background-color: oklch(0.95 0.1 95);
+    color: oklch(0.22 0.04 95);
+    font-weight: 700;
+    border-radius: 0.1875rem; /* 3px — small rounded, matches --radius feel */
+    padding: 0 0.28125rem; /* ~4.5px horizontal, no vertical so line height stays */
+    display: inline;
+    /* box-decoration-break keeps the chip background continuous across
+       line wraps (each wrapped segment gets its own background box). */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    /* Slight vertical alignment nudge so the chip sits on the text
+       baseline rather than dipping below it. */
+    line-height: inherit;
+  }
+.prep-italic-note {
+    /* Muted color italic — reads as a quiet aside on both light and
+       dark surfaces. No background, no padding; just italic + color. */
+    color: oklch(0.6 0.02 95);
+    font-style: italic;
+    line-height: inherit;
+  }
 /* ── Photo field — either/or single slot ──────────────────────────────
      One slot: upload from device OR paste URL. Choosing one clears the other.
      Photos stay OPTIONAL everywhere. Tokens are additive; existing theme intact. */
@@ -5658,6 +5689,70 @@ video {
     color: oklch(var(--food-recipe-purple));
     line-height: 1.3;
   }
+/* ── Prep stepGroups section header — brand-red, uppercase, small
+     left border rule. Renders above each stepGroup's numbered <ol> when
+     foodRecipe.stepGroups is non-empty. Distinct from the purple
+     .food-recipe-step-label (used for ingredient-table groupings) so
+     the procedure sections read as their own structural divisions. ── */
+.food-recipe-step-group-header {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: oklch(var(--primary));
+    padding-left: 0.5rem;
+    border-left: 3px solid oklch(var(--primary));
+    margin: 0.7rem 0 0.35rem;
+    line-height: 1.3;
+  }
+.food-recipe-step-group-header:first-child {
+    margin-top: 0;
+  }
+/* ── Bubba's Why's Q&A panel — lightly tinted purple panel sitting
+     near the bottom of the prep card (after quality identifiers, before
+     the footer). Each entry is a bold purple question followed by its
+     answer beneath. Omitted entirely when whys is empty. ── */
+.food-recipe-whys {
+    margin: 0.8rem 1rem 0;
+    padding: 0.7rem 0.85rem 0.8rem;
+    background-color: oklch(var(--food-recipe-purple-wash));
+    border: 1px solid oklch(var(--food-recipe-purple-wash-border));
+    border-radius: var(--radius);
+  }
+.food-recipe-whys-heading {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: oklch(var(--food-recipe-purple));
+    margin-bottom: 0.5rem;
+  }
+.food-recipe-whys-entry {
+    padding: 0.3rem 0;
+  }
+.food-recipe-whys-entry + .food-recipe-whys-entry {
+    border-top: 1px solid oklch(var(--food-recipe-purple-rule) / 0.7);
+    margin-top: 0.3rem;
+    padding-top: 0.5rem;
+  }
+.food-recipe-whys-question {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.86rem;
+    color: oklch(var(--food-recipe-purple));
+    line-height: 1.45;
+    margin-bottom: 0.2rem;
+  }
+.food-recipe-whys-answer {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    color: oklch(var(--food-recipe-paper-fg));
+    line-height: 1.5;
+  }
 /* Prep footer badges — Line utensil / Storage / Hold temp small
      labeled badges. */
 .food-recipe-badges {
@@ -6072,6 +6167,73 @@ video {
       font-weight: 600;
     }
 
+    /* ── prep phone stepGroups section header — brand-red, uppercase,
+        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
+        reading. Renders above each stepGroup's numbered <ol> when
+        foodRecipe.stepGroups is non-empty. ── */
+    .food-recipe-phone-step-group-header {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: oklch(var(--primary));
+      padding-left: 0.6rem;
+      border-left: 3px solid oklch(var(--primary));
+      margin: 0.85rem 0 0.45rem;
+      line-height: 1.35;
+    }
+    .food-recipe-phone-step-group-header:first-child {
+      margin-top: 0;
+    }
+
+    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
+        panel sitting after the phone quality identifiers, before the
+        phone footer. Each entry is a bold purple question followed by
+        its answer beneath. Phone-tuned sizing (~0.95rem) with
+        comfortable line-heights and full-width padding. Omitted when
+        whys is empty. ── */
+    .food-recipe-phone-whys {
+      margin: 0.6rem 1rem 0.2rem;
+      padding: 0.85rem 1rem 0.95rem;
+      background-color: oklch(var(--food-recipe-purple-wash));
+      border: 1px solid oklch(var(--food-recipe-purple-wash-border));
+      border-radius: var(--radius);
+    }
+    .food-recipe-phone-whys-heading {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: oklch(var(--food-recipe-purple));
+      margin-bottom: 0.6rem;
+    }
+    .food-recipe-phone-whys-entry {
+      padding: 0.4rem 0;
+    }
+    .food-recipe-phone-whys-entry + .food-recipe-phone-whys-entry {
+      border-top: 1px solid oklch(var(--food-recipe-purple-rule) / 0.7);
+      margin-top: 0.4rem;
+      padding-top: 0.6rem;
+    }
+    .food-recipe-phone-whys-question {
+      display: block;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: oklch(var(--food-recipe-purple));
+      line-height: 1.5;
+      margin-bottom: 0.25rem;
+    }
+    .food-recipe-phone-whys-answer {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: oklch(var(--food-recipe-paper-fg));
+      line-height: 1.6;
+    }
+
     /* Phone footer — bump the confidential/station text slightly for
        arm's-length reading. */
     .food-recipe-phone .food-recipe-footer {
@@ -6139,68 +6301,17 @@ video {
     /* ── prep phone badges — Line utensil / Storage / Hold temp pills,
        bumped for phone reading. ── */
 
-    /* Phone footer — bump the confidential/station text slightly for
-       arm's-length reading. */
+    /* ── prep phone stepGroups section header — brand-red, uppercase,
+        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
+        reading. Renders above each stepGroup's numbered <ol> when
+        foodRecipe.stepGroups is non-empty. ── */
 
-    /* Phone title band — bump Anton title for arm's-length reading. The
-       .food-recipe-title-band / .food-recipe-title rules above already
-       render the purple band + Anton uppercase; here we just enlarge the
-       title within the phone container. */
-
-    /* Phone photo — full width, edge to edge. Cap height a touch lower
-       for phone so it does not dominate the small screen. The tap target
-       (the <button>) already opens the photo in a new tab via the
-       existing window.open behavior. */
-
-    /* ── Shared phone section label — small Oswald uppercase divider
-       used by Plating / Build / Ingredients headings. ── */
-
-    /* ── Phone amount row — item name left, amount as a bold chip/pill
-       on the right. The pill wraps to its own line if long (flex-wrap),
-       so amounts stay scannable and never truncate. Tap target >=44px. ── */
-
-    /* ── menuBuild phone build section — Plating serviceware group on
-       top, then the components stacked list. ── */
-
-    /* Allergen callout (menuBuild phone) — compact muted line. */
-
-    /* ── Phone procedure — numbered vertical list with comfortable
-       line-height. ── */
-
-    /* Hand-wash note on phone — one compact muted line (reuses the
-       existing .food-recipe-handwash block; here we just bump the font
-       and tighten the spacing for the phone stack). */
-
-    /* ── Phone EXPO callout — keeps its highlight; the rotated vertical
-        'EXPO' label becomes a small accent tag at the top of the box
-        (not the vertical-rl rotated label). Body uses the per-category
-        accent tint; tag uses the accent as its background. ── */
-
-    /* ── prep phone intro / equipment — bumped for phone reading. ── */
-
-    /* ── prep phone meta — Yield / Shelf life / Holding as stacked
-       badges (full-width rows, label left + value right). ── */
-    .food-recipe-phone-meta-badge .\!value {
-      font-weight: 600 !important;
-      font-size: 0.95rem !important;
-      text-align: right !important;
-      word-break: break-word !important;
-    }
-    .food-recipe-phone-meta-badge.is-yield .\!value {
-      font-weight: 700 !important;
-    }
-
-    /* ── prep phone ingredients — step-grouped stacked list. ── */
-
-    /* ── prep phone quality-ID checklist — ✓ bullets in deep purple,
-       bumped for phone reading. ── */
-
-    /* ── prep phone badges — Line utensil / Storage / Hold temp pills,
-       bumped for phone reading. ── */
-    .food-recipe-phone-badge .\!value {
-      font-family: var(--font-body) !important;
-      font-weight: 600 !important;
-    }
+    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
+        panel sitting after the phone quality identifiers, before the
+        phone footer. Each entry is a bold purple question followed by
+        its answer beneath. Phone-tuned sizing (~0.95rem) with
+        comfortable line-heights and full-width padding. Omitted when
+        whys is empty. ── */
 
     /* Phone footer — bump the confidential/station text slightly for
        arm's-length reading. */
@@ -6265,6 +6376,18 @@ video {
       font-weight: 600 !important;
     }
 
+    /* ── prep phone stepGroups section header — brand-red, uppercase,
+        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
+        reading. Renders above each stepGroup's numbered <ol> when
+        foodRecipe.stepGroups is non-empty. ── */
+
+    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
+        panel sitting after the phone quality identifiers, before the
+        phone footer. Each entry is a bold purple question followed by
+        its answer beneath. Phone-tuned sizing (~0.95rem) with
+        comfortable line-heights and full-width padding. Omitted when
+        whys is empty. ── */
+
     /* Phone footer — bump the confidential/station text slightly for
        arm's-length reading. */
 
@@ -6327,6 +6450,93 @@ video {
       font-family: var(--font-body) !important;
       font-weight: 600 !important;
     }
+
+    /* ── prep phone stepGroups section header — brand-red, uppercase,
+        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
+        reading. Renders above each stepGroup's numbered <ol> when
+        foodRecipe.stepGroups is non-empty. ── */
+
+    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
+        panel sitting after the phone quality identifiers, before the
+        phone footer. Each entry is a bold purple question followed by
+        its answer beneath. Phone-tuned sizing (~0.95rem) with
+        comfortable line-heights and full-width padding. Omitted when
+        whys is empty. ── */
+
+    /* Phone footer — bump the confidential/station text slightly for
+       arm's-length reading. */
+
+    /* Phone title band — bump Anton title for arm's-length reading. The
+       .food-recipe-title-band / .food-recipe-title rules above already
+       render the purple band + Anton uppercase; here we just enlarge the
+       title within the phone container. */
+
+    /* Phone photo — full width, edge to edge. Cap height a touch lower
+       for phone so it does not dominate the small screen. The tap target
+       (the <button>) already opens the photo in a new tab via the
+       existing window.open behavior. */
+
+    /* ── Shared phone section label — small Oswald uppercase divider
+       used by Plating / Build / Ingredients headings. ── */
+
+    /* ── Phone amount row — item name left, amount as a bold chip/pill
+       on the right. The pill wraps to its own line if long (flex-wrap),
+       so amounts stay scannable and never truncate. Tap target >=44px. ── */
+
+    /* ── menuBuild phone build section — Plating serviceware group on
+       top, then the components stacked list. ── */
+
+    /* Allergen callout (menuBuild phone) — compact muted line. */
+
+    /* ── Phone procedure — numbered vertical list with comfortable
+       line-height. ── */
+
+    /* Hand-wash note on phone — one compact muted line (reuses the
+       existing .food-recipe-handwash block; here we just bump the font
+       and tighten the spacing for the phone stack). */
+
+    /* ── Phone EXPO callout — keeps its highlight; the rotated vertical
+        'EXPO' label becomes a small accent tag at the top of the box
+        (not the vertical-rl rotated label). Body uses the per-category
+        accent tint; tag uses the accent as its background. ── */
+
+    /* ── prep phone intro / equipment — bumped for phone reading. ── */
+
+    /* ── prep phone meta — Yield / Shelf life / Holding as stacked
+       badges (full-width rows, label left + value right). ── */
+    .food-recipe-phone-meta-badge .\!value {
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+      text-align: right !important;
+      word-break: break-word !important;
+    }
+    .food-recipe-phone-meta-badge.is-yield .\!value {
+      font-weight: 700 !important;
+    }
+
+    /* ── prep phone ingredients — step-grouped stacked list. ── */
+
+    /* ── prep phone quality-ID checklist — ✓ bullets in deep purple,
+       bumped for phone reading. ── */
+
+    /* ── prep phone badges — Line utensil / Storage / Hold temp pills,
+       bumped for phone reading. ── */
+    .food-recipe-phone-badge .\!value {
+      font-family: var(--font-body) !important;
+      font-weight: 600 !important;
+    }
+
+    /* ── prep phone stepGroups section header — brand-red, uppercase,
+        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
+        reading. Renders above each stepGroup's numbered <ol> when
+        foodRecipe.stepGroups is non-empty. ── */
+
+    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
+        panel sitting after the phone quality identifiers, before the
+        phone footer. Each entry is a bold purple question followed by
+        its answer beneath. Phone-tuned sizing (~0.95rem) with
+        comfortable line-heights and full-width padding. Omitted when
+        whys is empty. ── */
 
     /* Phone footer — bump the confidential/station text slightly for
        arm's-length reading. */

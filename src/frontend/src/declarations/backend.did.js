@@ -25,6 +25,10 @@ export const Category = IDL.Record({
   'positionId' : IDL.Nat,
   'coverPhoto' : IDL.Opt(IDL.Text),
 });
+export const FoodStepGroup = IDL.Record({
+  'title' : IDL.Opt(IDL.Text),
+  'steps' : IDL.Vec(IDL.Text),
+});
 export const FoodServiceware = IDL.Record({
   'item' : IDL.Text,
   'amount' : IDL.Text,
@@ -32,6 +36,10 @@ export const FoodServiceware = IDL.Record({
 export const FoodRecipeKind = IDL.Variant({
   'prep' : IDL.Null,
   'menuBuild' : IDL.Null,
+});
+export const FoodWhy = IDL.Record({
+  'question' : IDL.Text,
+  'answer' : IDL.Text,
 });
 export const FoodComponentSize = IDL.Record({
   'value' : IDL.Text,
@@ -46,6 +54,7 @@ export const FoodComponent = IDL.Record({
   'amount' : IDL.Text,
 });
 export const FoodRecipe = IDL.Record({
+  'stepGroups' : IDL.Vec(FoodStepGroup),
   'lineUtensil' : IDL.Opt(IDL.Text),
   'serviceware' : IDL.Vec(FoodServiceware),
   'station' : IDL.Text,
@@ -53,6 +62,7 @@ export const FoodRecipe = IDL.Record({
   'holdTemp' : IDL.Opt(IDL.Text),
   'kind' : FoodRecipeKind,
   'buildHeader' : IDL.Opt(IDL.Text),
+  'whys' : IDL.Vec(FoodWhy),
   'qualityIdentifiers' : IDL.Vec(IDL.Text),
   'components' : IDL.Vec(FoodComponent),
   'shelfLife' : IDL.Opt(IDL.Text),
@@ -630,6 +640,10 @@ export const idlFactory = ({ IDL }) => {
     'positionId' : IDL.Nat,
     'coverPhoto' : IDL.Opt(IDL.Text),
   });
+  const FoodStepGroup = IDL.Record({
+    'title' : IDL.Opt(IDL.Text),
+    'steps' : IDL.Vec(IDL.Text),
+  });
   const FoodServiceware = IDL.Record({
     'item' : IDL.Text,
     'amount' : IDL.Text,
@@ -638,6 +652,7 @@ export const idlFactory = ({ IDL }) => {
     'prep' : IDL.Null,
     'menuBuild' : IDL.Null,
   });
+  const FoodWhy = IDL.Record({ 'question' : IDL.Text, 'answer' : IDL.Text });
   const FoodComponentSize = IDL.Record({
     'value' : IDL.Text,
     'size' : IDL.Text,
@@ -651,6 +666,7 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Text,
   });
   const FoodRecipe = IDL.Record({
+    'stepGroups' : IDL.Vec(FoodStepGroup),
     'lineUtensil' : IDL.Opt(IDL.Text),
     'serviceware' : IDL.Vec(FoodServiceware),
     'station' : IDL.Text,
@@ -658,6 +674,7 @@ export const idlFactory = ({ IDL }) => {
     'holdTemp' : IDL.Opt(IDL.Text),
     'kind' : FoodRecipeKind,
     'buildHeader' : IDL.Opt(IDL.Text),
+    'whys' : IDL.Vec(FoodWhy),
     'qualityIdentifiers' : IDL.Vec(IDL.Text),
     'components' : IDL.Vec(FoodComponent),
     'shelfLife' : IDL.Opt(IDL.Text),

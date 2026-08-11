@@ -286,6 +286,14 @@ export interface FoodServiceware {
  * - `qualityIdentifiers` — quality checks to perform (required array,
  *   defaults to []).
  */
+export interface FoodStepGroup {
+  title?: string;
+  steps: string[];
+}
+export interface FoodWhy {
+  question: string;
+  answer: string;
+}
 export interface FoodRecipe {
   station: string;
   kind: FoodRecipeKind;
@@ -303,6 +311,8 @@ export interface FoodRecipe {
   lineUtensil: string | null;
   equipment: string | null;
   qualityIdentifiers: string[];
+  stepGroups?: FoodStepGroup[];
+  whys?: FoodWhy[];
 }
 
 /**

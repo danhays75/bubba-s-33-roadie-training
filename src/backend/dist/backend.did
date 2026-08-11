@@ -201,6 +201,16 @@ type LayoutStyle =
    library;
    orientation;
  };
+type FoodWhy = 
+ record {
+   answer: text;
+   question: text;
+ };
+type FoodStepGroup = 
+ record {
+   steps: vec text;
+   title: opt text;
+ };
 type FoodServiceware = 
  record {
    amount: text;
@@ -226,8 +236,10 @@ type FoodRecipe =
    serviceware: vec FoodServiceware;
    shelfLife: opt text;
    station: text;
+   stepGroups: vec FoodStepGroup;
    steps: vec text;
    storeTemp: opt text;
+   whys: vec FoodWhy;
    yieldText: opt text;
  };
 type FoodComponentSize = 

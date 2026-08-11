@@ -159,6 +159,35 @@ module {
     amount : Text;
   };
 
+  // A named section of grouped procedure steps on a food recipe. Detailed
+  // prep recipes split their procedure into named sections — e.g. Rib Prep =
+  // Cook / Proper Rib Cooling Procedures / Storage; Side Item Portions =
+  // Mac N' Cheese / Garden Rice / Steamed Broccoli / …. `title` is the
+  // optional section header (rendered brand-red, uppercase, with a small
+  // left rule); null means the section has no header. `steps` is the
+  // ordered list of step strings for that section — numbering restarts at 1
+  // within each section. Step text may contain Markdown bold (`**like
+  // this**`) and italic (`*like this*`) markers taken from the printed
+  // recipe; the frontend renders bold as a highlighted callout chip and
+  // italic as a muted-color sub-note. Defaults to an empty list on
+  // FoodRecipe — recipes without `stepGroups` fall back to the flat `steps`
+  // array exactly as today (back-compat).
+  public type FoodStepGroup = {
+    title : ?Text;
+    steps : [Text];
+  };
+
+  // A single "Bubba's Why's" training Q&A entry on a food recipe. Detailed
+  // recipes carry a Q&A that explains the why behind a step or standard.
+  // `question` is the bolded question (rendered in brand purple); `answer`
+  // is the answer beneath it, in a lightly tinted panel. Defaults to an
+  // empty list on FoodRecipe — recipes without `whys` omit the section
+  // entirely (back-compat).
+  public type FoodWhy = {
+    question : Text;
+    answer : Text;
+  };
+
   // A structured food recipe payload, parallel to the beverage `Recipe`.
   // When present on a LibraryItem (as `foodRecipe`), the item is a food
   // recipe and the Food Recipe card renders from this payload; when null,
@@ -191,6 +220,21 @@ module {
   // temperature; `lineUtensil` is the line utensil; `equipment` is the
   // equipment needed. `qualityIdentifiers` is the ordered quality-check
   // checklist (✓ bullets) — defaults to an empty array (like components).
+  //
+  // `stepGroups` is the optional grouped-procedure list — when non-empty,
+  // the frontend renders each group as a named section header followed by
+  // its own numbered steps (numbering restarts at 1 within each section);
+  // when empty, the frontend falls back to the flat `steps` array exactly
+  // as today. Step text inside `stepGroups` may carry Markdown bold/italic
+  // markers. Defaults to an empty list — existing recipes migrate to
+  // `stepGroups = []` and render unchanged.
+  //
+  // `whys` is the optional "Bubba's Why's" training Q&A list — when
+  // non-empty, the frontend renders a "Bubba's Why's" section near the
+  // bottom of the prep card with each question (brand purple, bold) and its
+  // answer beneath; when empty, the section is omitted. Defaults to an
+  // empty list — existing recipes migrate to `whys = []` and render
+  // unchanged.
   public type FoodRecipe = {
     station : Text;
     kind : FoodRecipeKind;
@@ -208,6 +252,8 @@ module {
     lineUtensil : ?Text;
     equipment : ?Text;
     qualityIdentifiers : [Text];
+    stepGroups : [FoodStepGroup];
+    whys : [FoodWhy];
   };
 
   // A Library item (a recipe / reference entry). Belongs to a category.

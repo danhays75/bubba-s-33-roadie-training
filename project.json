@@ -1,17 +1,18 @@
 {
-  "overview": "A restaurant recipe reference library with Build Cards showing exploded ingredient photos, step-by-step assembly labels, and pizza size selectors.",
+  "overview": "Restaurant staff training app with a library of food and beverage recipe cards rendered to match the official recipe book.",
   "features": [
-    "Recipe library with Build Cards showing exploded photos and step-by-step assembly",
-    "Pizza size selector (12\"/16\") on Build Cards with per-size amount chips",
-    "Bulk recipe import with validation",
-    "Anchor-position editor for Build Card labels"
+    "Inline bold/italic markdown highlighting in recipe steps, components, and quality identifiers",
+    "Sectioned step groups with per-section numbered steps and brand-red headers",
+    "Bubba's Why's training Q&A panel with bold purple questions",
+    "Mobile-friendly single-column prep card layout",
+    "Backward-compatible import validator accepting stepGroups and whys"
   ],
   "category": "productivity",
   "tags": [
-    "recipe",
     "restaurant",
-    "reference",
-    "build-card"
+    "training",
+    "recipes",
+    "reference"
   ],
-  "last_updated": "2026-08-11T01:49:13.334Z"
+  "last_updated": "2026-08-11T14:09:27.693Z"
 }

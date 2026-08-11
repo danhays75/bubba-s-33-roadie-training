@@ -25,6 +25,8 @@ import type {
   FoodComponentSize,
   FoodRecipe,
   FoodServiceware,
+  FoodStepGroup,
+  FoodWhy,
   LibraryItem,
   Recipe,
   RecipeSpec,
@@ -1281,6 +1283,8 @@ function toItem(i: {
     lineUtensil?: string;
     equipment?: string;
     qualityIdentifiers: Array<string>;
+    stepGroups?: Array<{ title?: string; steps: Array<string> }>;
+    whys?: Array<{ question: string; answer: string }>;
   };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({
@@ -1370,6 +1374,8 @@ function toFoodRecipeLocal(
         lineUtensil?: string;
         equipment?: string;
         qualityIdentifiers: Array<string>;
+        stepGroups?: Array<{ title?: string; steps: Array<string> }>;
+        whys?: Array<{ question: string; answer: string }>;
       }
     | undefined,
 ): FoodRecipe | null {
@@ -1408,6 +1414,18 @@ function toFoodRecipeLocal(
     qualityIdentifiers: r.qualityIdentifiers ?? [],
     buildHeader:
       r.buildHeader && r.buildHeader.length > 0 ? r.buildHeader : null,
+    // stepGroups / whys are non-optional arrays on the backend; default to []
+    // when absent so the frontend treats recipes without them uniformly.
+    // stepGroups.title is ?Text — normalize empty string to undefined to match
+    // the foundation FoodStepGroup contract (title?: string).
+    stepGroups: (r.stepGroups ?? []).map((g) => ({
+      title: g.title && g.title.length > 0 ? g.title : undefined,
+      steps: g.steps,
+    })),
+    whys: (r.whys ?? []).map((w) => ({
+      question: w.question,
+      answer: w.answer,
+    })),
   };
 }
 
@@ -1498,6 +1516,22 @@ interface ImportFoodRecipe {
   lineUtensil?: string;
   equipment?: string;
   qualityIdentifiers?: string[];
+  /**
+   * Optional grouped steps. Each entry is { title?, steps: string[] }. Malformed
+   * entries (steps missing, not an array, or with no non-empty strings after
+   * filtering) are dropped during readImportFoodRecipe; only valid entries are
+   * kept. Absent or non-array stepGroups defaults to [] in
+   * buildFoodRecipePayload.
+   */
+  stepGroups?: FoodStepGroup[];
+  /**
+   * Optional "why" Q&A pairs. Each entry accepts keys question/q (for the
+   * question) and answer/a (for the answer); both must be non-empty strings
+   * after trimming. Entries missing either field or with empty values are
+   * dropped during readImportFoodRecipe. Absent or non-array whys defaults to
+   * [] in buildFoodRecipePayload.
+   */
+  whys?: FoodWhy[];
   /** Import-only convenience fields (foodRecipes path → Library item). */
   photo?: string;
   subtitle?: string;
@@ -1824,6 +1858,55 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     : undefined;
   const notes = typeof r.notes === "string" ? r.notes : undefined;
 
+  // stepGroups: array of { title?, steps: string[] }. Each entry's steps must
+  // be an array of non-empty strings (filtered); title is an optional string.
+  // Malformed entries (steps missing, not an array, or with no valid non-empty
+  // strings after filtering) are dropped. Absent or non-array stepGroups → [].
+  const stepGroups: FoodStepGroup[] = [];
+  if (Array.isArray(r.stepGroups)) {
+    for (const g of r.stepGroups) {
+      if (typeof g !== "object" || g === null || Array.isArray(g)) continue;
+      const gr = g as Record<string, unknown>;
+      if (!Array.isArray(gr.steps)) continue;
+      const groupSteps = gr.steps
+        .filter((s): s is string => typeof s === "string")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+      if (groupSteps.length === 0) continue;
+      const title =
+        typeof gr.title === "string" && gr.title.trim().length > 0
+          ? gr.title.trim()
+          : undefined;
+      stepGroups.push({ title, steps: groupSteps });
+    }
+  }
+
+  // whys: array of { question, answer }. Accept keys question/q (for the
+  // question) and answer/a (for the answer). Both must be non-empty strings
+  // after trimming; entries missing either field or with empty values are
+  // dropped. Absent or non-array whys → [].
+  const whys: FoodWhy[] = [];
+  if (Array.isArray(r.whys)) {
+    for (const w of r.whys) {
+      if (typeof w !== "object" || w === null || Array.isArray(w)) continue;
+      const wr = w as Record<string, unknown>;
+      const question =
+        typeof wr.question === "string"
+          ? wr.question.trim()
+          : typeof wr.q === "string"
+            ? wr.q.trim()
+            : "";
+      const answer =
+        typeof wr.answer === "string"
+          ? wr.answer.trim()
+          : typeof wr.a === "string"
+            ? wr.a.trim()
+            : "";
+      if (question.length === 0 || answer.length === 0) continue;
+      whys.push({ question, answer });
+    }
+  }
+
   return {
     title,
     category,
@@ -1843,6 +1926,8 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     lineUtensil: str(r.lineUtensil),
     equipment: str(r.equipment),
     qualityIdentifiers,
+    stepGroups,
+    whys,
     photo,
     subtitle,
     tags,
@@ -1903,6 +1988,11 @@ function buildFoodRecipePayload(
     equipment: strOrNull(raw.equipment),
     qualityIdentifiers: raw.qualityIdentifiers ?? [],
     buildHeader: strOrNull(raw.buildHeader),
+    // stepGroups / whys: normalize to [] when absent (matching the existing
+    // array-field normalization pattern). The reader already filtered out
+    // malformed entries, so a present array is already clean.
+    stepGroups: raw.stepGroups ?? [],
+    whys: raw.whys ?? [],
   };
 }
 

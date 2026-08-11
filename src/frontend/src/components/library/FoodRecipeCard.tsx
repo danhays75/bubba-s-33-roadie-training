@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCategory } from "@/hooks/useLibrary";
+import { renderInlineMarkdown } from "@/lib/inlineMarkdown";
 import type {
   FoodComponent,
   FoodRecipe,
@@ -407,7 +408,7 @@ function MenuBuildFoodRecipeCard({
                       key={`step-${i}`}
                       data-ocid={`library.item.food_recipe.build_steps.step.${i + 1}`}
                     >
-                      {step}
+                      {renderInlineMarkdown(step)}
                     </li>
                   ))}
                 </ol>
@@ -438,7 +439,7 @@ function MenuBuildFoodRecipeCard({
                           key={`expo-${i}`}
                           data-ocid={`library.item.food_recipe.expo.step.${i + 1}`}
                         >
-                          {step}
+                          {renderInlineMarkdown(step)}
                         </li>
                       ))}
                     </ol>
@@ -560,7 +561,7 @@ function MenuBuildFoodRecipeCard({
                     key={`p-step-${i}`}
                     data-ocid={`library.item.food_recipe.phone.build_steps.step.${i + 1}`}
                   >
-                    {step}
+                    {renderInlineMarkdown(step)}
                   </li>
                 ))}
               </ol>
@@ -587,7 +588,7 @@ function MenuBuildFoodRecipeCard({
                       key={`p-expo-${i}`}
                       data-ocid={`library.item.food_recipe.phone.expo.step.${i + 1}`}
                     >
-                      {step}
+                      {renderInlineMarkdown(step)}
                     </li>
                   ))}
                 </ol>
@@ -999,17 +1000,22 @@ function BuildCardFoodRecipeCard({
                   >
                     {multiSize ? (
                       <>
-                        <span className="build-card-label-item">{c.item}</span>
+                        <span className="build-card-label-item">
+                          {renderInlineMarkdown(c.item)}
+                        </span>
                         <span
                           className="build-card-amount-chip"
                           data-ocid={`library.item.food_recipe.build.amount_chip.${i + 1}`}
                         >
-                          {resolveAmountForSize(c, selectedSize)}
+                          {renderInlineMarkdown(
+                            resolveAmountForSize(c, selectedSize),
+                          )}
                         </span>
                       </>
                     ) : (
                       <strong>
-                        {c.item} - {c.amount}
+                        {renderInlineMarkdown(c.item)} -{" "}
+                        {renderInlineMarkdown(c.amount)}
                       </strong>
                     )}
                     {c.note != null && c.note.trim().length > 0 ? (
@@ -1294,7 +1300,7 @@ function BuildCardFoodRecipeCard({
                   className="build-card-phone-popout-item"
                   data-ocid="library.item.food_recipe.phone.build.popout.item"
                 >
-                  {popoutComponent.item}
+                  {renderInlineMarkdown(popoutComponent.item)}
                 </p>
                 {(() => {
                   // When multi-size, the displayed amount is the selected
@@ -1309,7 +1315,7 @@ function BuildCardFoodRecipeCard({
                       className="build-card-phone-amount"
                       data-ocid="library.item.food_recipe.phone.build.popout.amount"
                     >
-                      {resolvedAmount}
+                      {renderInlineMarkdown(resolvedAmount)}
                     </span>
                   ) : null;
                 })()}
@@ -1377,7 +1383,7 @@ function BuildSteps({
             key={`bs-${i}`}
             data-ocid={`library.item.food_recipe.build.steps.step.${i + 1}`}
           >
-            {step}
+            {renderInlineMarkdown(step)}
           </li>
         ))}
       </ol>
@@ -1587,20 +1593,56 @@ function PrepFoodRecipeCard({
                 >
                   Wash your hands and put on new gloves before beginning
                 </h2>
-                <ol
-                  className="food-recipe-steps"
-                  data-ocid="library.item.food_recipe.procedure.list"
-                >
-                  {food.steps.map((step, i) => (
-                    <li
-                      // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                      key={`proc-${i}`}
-                      data-ocid={`library.item.food_recipe.procedure.step.${i + 1}`}
-                    >
-                      {step}
-                    </li>
-                  ))}
-                </ol>
+                {food.stepGroups != null && food.stepGroups.length > 0 ? (
+                  <div data-ocid="library.item.food_recipe.procedure.groups">
+                    {food.stepGroups.map((group, gi) => (
+                      <div
+                        // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                        key={`sg-${gi}`}
+                        data-ocid={`library.item.food_recipe.procedure.group.${gi + 1}`}
+                      >
+                        {group.title != null &&
+                        group.title.trim().length > 0 ? (
+                          <div
+                            className="food-recipe-step-group-header"
+                            data-ocid={`library.item.food_recipe.procedure.group.${gi + 1}.heading`}
+                          >
+                            {group.title}
+                          </div>
+                        ) : null}
+                        <ol
+                          className="food-recipe-steps"
+                          data-ocid={`library.item.food_recipe.procedure.group.${gi + 1}.list`}
+                        >
+                          {group.steps.map((step, si) => (
+                            <li
+                              // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                              key={`sg-${gi}-step-${si}`}
+                              data-ocid={`library.item.food_recipe.procedure.group.${gi + 1}.step.${si + 1}`}
+                            >
+                              {renderInlineMarkdown(step)}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <ol
+                    className="food-recipe-steps"
+                    data-ocid="library.item.food_recipe.procedure.list"
+                  >
+                    {food.steps.map((step, i) => (
+                      <li
+                        // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                        key={`proc-${i}`}
+                        data-ocid={`library.item.food_recipe.procedure.step.${i + 1}`}
+                      >
+                        {renderInlineMarkdown(step)}
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </section>
             ) : null}
           </div>
@@ -1628,10 +1670,47 @@ function PrepFoodRecipeCard({
                   key={`qi-${i}`}
                   data-ocid={`library.item.food_recipe.quality.item.${i + 1}`}
                 >
-                  {qi}
+                  {renderInlineMarkdown(qi)}
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {/* Bubba's Why's Q&A panel — after quality identifiers, before
+            the footer badges. Omitted entirely when whys is empty. */}
+        {food.whys != null && food.whys.length > 0 ? (
+          <section
+            className="food-recipe-whys"
+            data-ocid="library.item.food_recipe.whys"
+          >
+            <h2
+              className="food-recipe-whys-heading"
+              data-ocid="library.item.food_recipe.whys.heading"
+            >
+              Bubba's Why's
+            </h2>
+            {food.whys.map((why, i) => (
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                key={`why-${i}`}
+                className="food-recipe-whys-entry"
+                data-ocid={`library.item.food_recipe.whys.entry.${i + 1}`}
+              >
+                <span
+                  className="food-recipe-whys-question"
+                  data-ocid={`library.item.food_recipe.whys.entry.${i + 1}.question`}
+                >
+                  {why.question}
+                </span>
+                <span
+                  className="food-recipe-whys-answer"
+                  data-ocid={`library.item.food_recipe.whys.entry.${i + 1}.answer`}
+                >
+                  {why.answer}
+                </span>
+              </div>
+            ))}
           </section>
         ) : null}
 
@@ -1775,20 +1854,55 @@ function PrepFoodRecipeCard({
             >
               Wash your hands and put on new gloves before beginning
             </h2>
-            <ol
-              className="food-recipe-phone-steps"
-              data-ocid="library.item.food_recipe.phone.procedure.list"
-            >
-              {food.steps.map((step, i) => (
-                <li
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                  key={`p-proc-${i}`}
-                  data-ocid={`library.item.food_recipe.phone.procedure.step.${i + 1}`}
-                >
-                  {step}
-                </li>
-              ))}
-            </ol>
+            {food.stepGroups != null && food.stepGroups.length > 0 ? (
+              <div data-ocid="library.item.food_recipe.phone.procedure.groups">
+                {food.stepGroups.map((group, gi) => (
+                  <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-sg-${gi}`}
+                    data-ocid={`library.item.food_recipe.phone.procedure.group.${gi + 1}`}
+                  >
+                    {group.title != null && group.title.trim().length > 0 ? (
+                      <div
+                        className="food-recipe-phone-step-group-header"
+                        data-ocid={`library.item.food_recipe.phone.procedure.group.${gi + 1}.heading`}
+                      >
+                        {group.title}
+                      </div>
+                    ) : null}
+                    <ol
+                      className="food-recipe-phone-steps"
+                      data-ocid={`library.item.food_recipe.phone.procedure.group.${gi + 1}.list`}
+                    >
+                      {group.steps.map((step, si) => (
+                        <li
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                          key={`p-sg-${gi}-step-${si}`}
+                          data-ocid={`library.item.food_recipe.phone.procedure.group.${gi + 1}.step.${si + 1}`}
+                        >
+                          {renderInlineMarkdown(step)}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ol
+                className="food-recipe-phone-steps"
+                data-ocid="library.item.food_recipe.phone.procedure.list"
+              >
+                {food.steps.map((step, i) => (
+                  <li
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-proc-${i}`}
+                    data-ocid={`library.item.food_recipe.phone.procedure.step.${i + 1}`}
+                  >
+                    {renderInlineMarkdown(step)}
+                  </li>
+                ))}
+              </ol>
+            )}
           </section>
         ) : null}
 
@@ -1814,10 +1928,47 @@ function PrepFoodRecipeCard({
                   key={`p-qi-${i}`}
                   data-ocid={`library.item.food_recipe.phone.quality.item.${i + 1}`}
                 >
-                  {qi}
+                  {renderInlineMarkdown(qi)}
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {/* Bubba's Why's Q&A panel — phone variant, after phone quality
+            identifiers, before phone footer badges. Omitted when empty. */}
+        {food.whys != null && food.whys.length > 0 ? (
+          <section
+            className="food-recipe-phone-whys"
+            data-ocid="library.item.food_recipe.phone.whys"
+          >
+            <h2
+              className="food-recipe-phone-whys-heading"
+              data-ocid="library.item.food_recipe.phone.whys.heading"
+            >
+              Bubba's Why's
+            </h2>
+            {food.whys.map((why, i) => (
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                key={`p-why-${i}`}
+                className="food-recipe-phone-whys-entry"
+                data-ocid={`library.item.food_recipe.phone.whys.entry.${i + 1}`}
+              >
+                <span
+                  className="food-recipe-phone-whys-question"
+                  data-ocid={`library.item.food_recipe.phone.whys.entry.${i + 1}.question`}
+                >
+                  {why.question}
+                </span>
+                <span
+                  className="food-recipe-phone-whys-answer"
+                  data-ocid={`library.item.food_recipe.phone.whys.entry.${i + 1}.answer`}
+                >
+                  {why.answer}
+                </span>
+              </div>
+            ))}
           </section>
         ) : null}
 
@@ -1892,10 +2043,10 @@ function ComponentRow({
       data-ocid={`library.item.food_recipe.component.row.${index + 1}`}
     >
       <span className="item">
-        <span>{component.item}</span>
+        <span>{renderInlineMarkdown(component.item)}</span>
         {hasNote ? <span className="item-note">{component.note}</span> : null}
       </span>
-      <span className="amount">{component.amount}</span>
+      <span className="amount">{renderInlineMarkdown(component.amount)}</span>
     </div>
   );
 }
@@ -1929,11 +2080,11 @@ function PhoneAmountRow({
       data-ocid={`${ocidPrefix}.${index + 1}`}
     >
       <span className="item">
-        <span>{item}</span>
+        <span>{renderInlineMarkdown(item)}</span>
         {hasNote ? <span className="item-note">{note}</span> : null}
       </span>
       {amount.trim().length > 0 ? (
-        <span className="amount-pill">{amount}</span>
+        <span className="amount-pill">{renderInlineMarkdown(amount)}</span>
       ) : null}
     </div>
   );

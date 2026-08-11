@@ -118,6 +118,7 @@ export interface FoodComponent {
 }
 export interface FoodComponentSize { 'value' : string, 'size' : string }
 export interface FoodRecipe {
+  'stepGroups' : Array<FoodStepGroup>,
   'lineUtensil' : [] | [string],
   'serviceware' : Array<FoodServiceware>,
   'station' : string,
@@ -125,6 +126,7 @@ export interface FoodRecipe {
   'holdTemp' : [] | [string],
   'kind' : FoodRecipeKind,
   'buildHeader' : [] | [string],
+  'whys' : Array<FoodWhy>,
   'qualityIdentifiers' : Array<string>,
   'components' : Array<FoodComponent>,
   'shelfLife' : [] | [string],
@@ -138,6 +140,11 @@ export interface FoodRecipe {
 export type FoodRecipeKind = { 'prep' : null } |
   { 'menuBuild' : null };
 export interface FoodServiceware { 'item' : string, 'amount' : string }
+export interface FoodStepGroup {
+  'title' : [] | [string],
+  'steps' : Array<string>,
+}
+export interface FoodWhy { 'question' : string, 'answer' : string }
 export type LayoutStyle = { 'library' : null } |
   { 'kitchen' : null } |
   { 'orientation' : null };

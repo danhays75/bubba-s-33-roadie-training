@@ -1223,12 +1223,12 @@ const items = [
   {
     id: 721n,
     categoryId: 72n,
-    title: "Marinara Sauce",
+    title: "Rib Prep - Cook and Cool",
     subtitle: undefined,
     photo: undefined,
     details: [],
     notes: undefined,
-    tags: ["prep", "sauce", "pizza"],
+    tags: ["prep", "ribs", "hot prep"],
     seasonal: false,
     sortOrder: 1n,
     foodRecipe: {
@@ -1238,23 +1238,11 @@ const items = [
       serviceware: [],
       components: [
         {
-          item: "San Marzano tomatoes",
-          amount: "2 #10 cans",
-          group: "Step 1",
-          note: "Crushed by hand",
-        },
-        { item: "Olive oil", amount: "8 oz", group: "Step 1", note: null },
-        {
-          item: "Yellow onion, diced",
-          amount: "1 lb",
-          group: "Step 1",
+          item: "Seasoned & Panned Pork Ribs",
+          amount: "all pans",
+          group: null,
           note: null,
         },
-        { item: "Garlic, minced", amount: "2 oz", group: "Step 1", note: null },
-        { item: "Basil, fresh", amount: "1 bunch", group: "Step 2", note: null },
-        { item: "Oregano, dried", amount: "2 tbsp", group: "Step 2", note: null },
-        { item: "Salt", amount: "to taste", group: "Step 2", note: null },
-        { item: "Sugar", amount: "1 tbsp", group: "Step 2", note: null },
       ],
       steps: [
         "Sweat onion and garlic in olive oil until translucent.",
@@ -1262,19 +1250,99 @@ const items = [
         "Stir in basil, oregano, salt, and sugar.",
         "Cool to 70°F within 2 hours, then refrigerate.",
       ],
+      // stepGroups — sectioned procedure mirroring mock_prep_rich.png
+      // (Cook / Proper Rib Cooling Procedures / Storage). Step text carries
+      // **bold** highlight markers (temps, "DO NOT DRAIN", hold instructions)
+      // and *italic* caution notes so the inline-markdown renderer is
+      // exercised on the prep card. Numbering restarts at 1 per section.
+      stepGroups: [
+        {
+          title: "Cook",
+          steps: [
+            "Preheat oven to **225°F**, LOW-fan.",
+            'Adjust oven racks to fit 4" full pans of ribs. Pans must sit on oven racks and **not be stacked on each other**.',
+            "Place no more than **six pans** of ribs with lids in preheated oven. Make sure pan liners within pans are closed well and ribs are not exposed.",
+            "Label the oven with the start time to cook and the time to check rib temperature for doneness (**3 ½ hours later**). Set a timer.",
+            "Cook to a **minimum internal temperature of 190 - 200°F** (approx. 3 ½ hrs).",
+          ],
+        },
+        {
+          title: "Proper Rib Cooling Procedures",
+          steps: [
+            "Carefully remove pans of ribs from the oven. **DO NOT UNCOVER**.",
+            "Allow ribs to rest fully covered for **5 minutes**. Set a timer.",
+            "Remove lids, foil, and plastic wrap from all pans.",
+            "Open all pan liners as much as possible. **DO NOT DRAIN**. *CAUTION: Be careful as steam will rise quickly and may burn you.*",
+            "Place all open pans of ribs on a rolling rack.",
+            "Stagger open pan ribs on rolling rack so half of each pan is exposed to cool air.",
+            "Allow ribs to sit at room temperature for **30 minutes**. Set a timer.",
+            "Track cooling process with a thermometer and document time and temperatures on the cooling chart.",
+            "Place rolling rack of ribs inside walk-in freezer for **30 – 60 minutes**. Set a timer. *Do not leave ribs in the freezer for longer than 1 hour.*",
+            "Place rack of ribs in **40°F walk-in cooler** where it receives the coldest air flow. Set a timer and track temperature.",
+            "Product must chill from **145°F to ≤70°F in 2 hours**, and from **145°F to ≤40°F in a total of 6 hours**.",
+          ],
+        },
+        {
+          title: "Storage",
+          steps: [
+            'Place pan liner in a new **6 1/2 inch full or half pan**.',
+            "Place cooked ribs neatly inside the lined 6 1/2 pan. **No more than 120 bones per full pan or 60 bones per half pan.**",
+            "Cover, label, date, initial and store at **40°F or below** in walk-in cooler.",
+          ],
+        },
+      ],
       expoSteps: [],
       allergenNote: null,
-      yieldText: "4 ¾ gallons",
-      shelfLife: "7 days refrigerated",
+      yieldText: "1 cooked full pan = approx. 10 orders",
+      shelfLife: "4 days",
       holdTemp: "145°F",
       storeTemp: "34–38°F",
       lineUtensil: "8-oz ladle",
       equipment: "60-quart stockpot, immersion blender",
       qualityIdentifiers: [
-        "Bright red color — not brown or orange.",
-        "Thick enough to coat a spoon; not watery.",
-        "Balanced tomato flavor with a hint of sweetness.",
-        "No whole tomato chunks remaining.",
+        "Even reddish, brown color",
+        "Cut neatly along the bone with Rib meat on one side",
+        "Moist and tender, not stringy",
+        "Good spice from the seasoning",
+      ],
+      // whys — Bubba's Why's Q&A panel mirroring mock_prep_rich.png. Each
+      // entry is a bold purple question with its answer beneath in a tinted
+      // panel. Exercises the food-recipe-whys rendering on the prep card.
+      whys: [
+        {
+          question:
+            "Why is it important NOT to stack pans of ribs on each other when loading the oven to cook?",
+          answer:
+            "Even hot air flow around all pans of ribs is necessary for consistent cooking and doneness.",
+        },
+        {
+          question:
+            "Why is it important to check every pan of ribs for doneness (190 - 200°F)?",
+          answer:
+            "Different pans of ribs will cook to different speeds due to size variations and placement in the oven.",
+        },
+        {
+          question:
+            "Why is it important to allow cooked ribs to sit fully covered for 5 minutes before removing them from the oven?",
+          answer:
+            "This will help the ribs hold moisture and lessen the hot steam released when uncovered.",
+        },
+        {
+          question:
+            "Why is it important to let cooked ribs sit at room temperature for 30 minutes before putting them in the walk-in?",
+          answer:
+            "Putting very hot pans into the walk-in would raise the internal temperature of the walk-in to non-food safe levels.",
+        },
+        {
+          question:
+            "Why is it important NOT to exceed 1 hour of cooling ribs in the freezer?",
+          answer: "After 1 hr the ribs will begin to freeze and worsen the quality of the ribs.",
+        },
+        {
+          question:
+            "Why is it important to store cooked and cooled single-bone ribs neatly in appropriate pans with a pan liner?",
+          answer: "The pan liner will prevent the ribs from drying out while in storage.",
+        },
       ],
     },
   },
