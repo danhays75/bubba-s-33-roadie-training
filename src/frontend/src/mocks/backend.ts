@@ -1170,7 +1170,7 @@ const items = [
   {
     id: 720n,
     categoryId: 72n,
-    title: "House Ranch Dressing",
+    title: "Ranch Dressing",
     subtitle: undefined,
     photo: undefined,
     details: [],
@@ -1183,41 +1183,105 @@ const items = [
       kind: "prep" as const,
       menuSection: null,
       serviceware: [],
+      // Multi-batch prep recipe — each component carries `amounts` for the
+      // 1x and ½x batch sizes (matching mock_batch_1x.png /
+      // mock_batch_half.png). The recipe carries `yields` for the per-size
+      // yield. The scalar `amount` is kept as the back-compat fallback
+      // (empty string = "use the amounts array"). The scalar `yieldText`
+      // is kept as the single-batch / fallback yield.
       components: [
-        { item: "Mayonnaise", amount: "1 gallon", group: "Step 1", note: null },
-        { item: "Buttermilk", amount: "1 quart", group: "Step 1", note: null },
-        { item: "Sour cream", amount: "1 pint", group: "Step 1", note: null },
-        { item: "Dill, chopped", amount: "0.5 oz", group: "Step 2", note: null },
         {
-          item: "Parsley, chopped",
-          amount: "0.5 oz",
+          item: "Buttermilk",
+          amount: "",
+          amounts: [
+            { size: "1x", value: "6 quarts" },
+            { size: "½x", value: "3 quarts" },
+          ],
+          group: "Step 1",
+          note: null,
+        },
+        {
+          item: "Ranch Packet",
+          amount: "",
+          amounts: [
+            { size: "1x", value: "4 packets" },
+            { size: "½x", value: "2 packets" },
+          ],
+          group: "Step 1",
+          note: null,
+        },
+        {
+          item: "Mayonnaise",
+          amount: "",
+          amounts: [
+            { size: "1x", value: "30 lbs 8 oz" },
+            { size: "½x", value: "15 lbs 4 oz" },
+          ],
           group: "Step 2",
           note: null,
         },
-        { item: "Garlic powder", amount: "2 tbsp", group: "Step 2", note: null },
-        { item: "Onion powder", amount: "1 tbsp", group: "Step 2", note: null },
-        { item: "Black pepper", amount: "1 tsp", group: "Step 2", note: null },
-        { item: "Lemon juice", amount: "2 tbsp", group: "Step 2", note: null },
+      ],
+      yields: [
+        { size: "1x", value: "5 ½ gallons" },
+        { size: "½x", value: "2 ¾ gallons" },
       ],
       steps: [
-        "Whisk mayonnaise, buttermilk, and sour cream until smooth.",
-        "Fold in herbs, spices, and lemon juice.",
-        "Transfer to a covered container; refrigerate.",
+        "Place Step 1 ingredients into a stockpot or large mixing bowl.",
+        "Use power mixer to mix on low speed for 1 minute.",
+        "Turn power mixer off, scrap sides and bottom of container with spatula.",
+        "Mix an additional 30 seconds if necessary.",
+        "Add half the amount of mayonnaise needed.",
+        "Mix on low speed for 1 minute.",
+        "Turn power mixer off, scrap sides and bottom of container with spatula.",
+        "Add the rest of the mayonnaise needed.",
+        "Mix on high speed until all ingredients are well-combined (approx. 1 more minute).",
+        "Turn power mixer off, scrap sides and bottom of container with spatula.",
+        "Mix an additional 30 seconds if necessary.",
+        "Divide Ranch dressing evenly into appropriate containers.",
+        "Cover, label, date and initial. Store at 40°F or below.",
+        "Product prepared at room temperature using cold or room temperature ingredients must reach 40°F or below within 4 hours.",
+      ],
+      stepGroups: [
+        {
+          title: "Step 1",
+          steps: [
+            "Place Step 1 ingredients into a stockpot or large mixing bowl.",
+            "Use power mixer to mix on low speed for 1 minute.",
+            "Turn power mixer off, scrap sides and bottom of container with spatula.",
+            "Mix an additional 30 seconds if necessary.",
+          ],
+        },
+        {
+          title: "Step 2",
+          steps: [
+            "Add half the amount of mayonnaise needed.",
+            "Mix on low speed for 1 minute.",
+            "Turn power mixer off, scrap sides and bottom of container with spatula.",
+            "Add the rest of the mayonnaise needed.",
+            "Mix on high speed until all ingredients are well-combined (approx. 1 more minute).",
+            "Turn power mixer off, scrap sides and bottom of container with spatula.",
+            "Mix an additional 30 seconds if necessary.",
+          ],
+        },
+        {
+          title: "Step 3",
+          steps: [
+            "Divide Ranch dressing evenly into appropriate containers.",
+            "Cover, label, date and initial. Store at 40°F or below.",
+            "Product prepared at room temperature using cold or room temperature ingredients must reach 40°F or below within 4 hours.",
+          ],
+        },
       ],
       expoSteps: [],
       allergenNote: "Contains dairy and egg.",
-      yieldText: "1.5 gallons",
-      shelfLife: "5 days refrigerated",
+      yieldText: "5 ½ gallons",
+      shelfLife: "6 days",
       holdTemp: null,
-      storeTemp: "34–38°F",
-      lineUtensil: "2-oz spoodle",
-      equipment: "Whisk, 1-gallon container",
-      qualityIdentifiers: [
-        "Smooth, pourable consistency — not lumpy or separated.",
-        "Pale cream color with visible green herb flecks.",
-        "Tangy, herby aroma — no sour or off smell.",
-        "Coats the back of a spoon without running thin.",
-      ],
+      storeTemp: "40°F or below",
+      lineUtensil: null,
+      equipment: null,
+      qualityIdentifiers: [],
+      whys: [],
     },
   },
   {

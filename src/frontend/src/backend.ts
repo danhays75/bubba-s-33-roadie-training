@@ -278,6 +278,7 @@ export type Error_ = {
 export interface FoodRecipe {
     stepGroups: Array<FoodStepGroup>;
     lineUtensil?: string;
+    yields: Array<FoodSizeAmount>;
     serviceware: Array<FoodServiceware>;
     station: string;
     equipment?: string;
@@ -352,6 +353,10 @@ export interface NsoImportPhase {
     tasks: Array<NsoImportTask>;
     name: string;
 }
+export interface FoodSizeAmount {
+    value: string;
+    size: string;
+}
 export interface Flashcard {
     itemTitle: string;
     detailFields: Array<{
@@ -360,17 +365,6 @@ export interface Flashcard {
     }>;
     itemPhoto?: string;
     recipe?: FlashcardRecipe;
-}
-export interface Activity {
-    id: bigint;
-    activityType: ActivityType;
-    content: ActivityContent;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    positionId: bigint;
-    sourceCategoryIds: Array<bigint>;
-    quizSettings?: QuizSettings;
 }
 export interface Recipe {
     equipment: Array<string>;
@@ -408,6 +402,17 @@ export type Question = {
         isTrue: boolean;
     };
 };
+export interface Activity {
+    id: bigint;
+    activityType: ActivityType;
+    content: ActivityContent;
+    name: string;
+    createdAt: bigint;
+    createdBy: Principal;
+    positionId: bigint;
+    sourceCategoryIds: Array<bigint>;
+    quizSettings?: QuizSettings;
+}
 export interface UserProfile {
     id: Principal;
     name: string;
@@ -557,7 +562,7 @@ export interface backendInterface {
     updateNsoTask(id: bigint, text: string, section: string | null, done: boolean, assignedTo: Principal | null, completionDate: string | null, notes: string | null): Promise<void>;
     updatePosition(id: bigint, name: string, description: string | null, coverPhoto: string | null, layoutStyle: LayoutStyle): Promise<Position>;
 }
-import type { Activity as _Activity, ActivityContent as _ActivityContent, ActivityType as _ActivityType, ApprovalStatus as _ApprovalStatus, AssignmentStatus as _AssignmentStatus, BuildActivityInput as _BuildActivityInput, Category as _Category, Cell as _Cell, DetailField as _DetailField, DrinksBuilderAnswerClip as _DrinksBuilderAnswerClip, DrinksBuilderContent as _DrinksBuilderContent, DrinksBuilderPrompt as _DrinksBuilderPrompt, DrinksBuilderSettings as _DrinksBuilderSettings, Error as _Error, Flashcard as _Flashcard, FlashcardContent as _FlashcardContent, FlashcardRecipe as _FlashcardRecipe, FoodComponent as _FoodComponent, FoodComponentSize as _FoodComponentSize, FoodRecipe as _FoodRecipe, FoodRecipeKind as _FoodRecipeKind, FoodServiceware as _FoodServiceware, FoodStepGroup as _FoodStepGroup, FoodWhy as _FoodWhy, LayoutStyle as _LayoutStyle, LibraryItem as _LibraryItem, NsoImportInput as _NsoImportInput, NsoImportPhase as _NsoImportPhase, NsoImportTask as _NsoImportTask, Phase as _Phase, Position as _Position, PositionAssignment as _PositionAssignment, Question as _Question, QuizContent as _QuizContent, QuizSettings as _QuizSettings, Recipe as _Recipe, RecipeSpec as _RecipeSpec, RecipeVariant as _RecipeVariant, Result as _Result, Result__1 as _Result__1, Role as _Role, SendResult as _SendResult, Task as _Task, UpdateActivityInput as _UpdateActivityInput, UserProfile as _UserProfile, UserRole as _UserRole, Value as _Value, _ImmutableObjectStorageRefillInformation as __ImmutableObjectStorageRefillInformation, _ImmutableObjectStorageRefillResult as __ImmutableObjectStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { Activity as _Activity, ActivityContent as _ActivityContent, ActivityType as _ActivityType, ApprovalStatus as _ApprovalStatus, AssignmentStatus as _AssignmentStatus, BuildActivityInput as _BuildActivityInput, Category as _Category, Cell as _Cell, DetailField as _DetailField, DrinksBuilderAnswerClip as _DrinksBuilderAnswerClip, DrinksBuilderContent as _DrinksBuilderContent, DrinksBuilderPrompt as _DrinksBuilderPrompt, DrinksBuilderSettings as _DrinksBuilderSettings, Error as _Error, Flashcard as _Flashcard, FlashcardContent as _FlashcardContent, FlashcardRecipe as _FlashcardRecipe, FoodComponent as _FoodComponent, FoodComponentSize as _FoodComponentSize, FoodRecipe as _FoodRecipe, FoodRecipeKind as _FoodRecipeKind, FoodServiceware as _FoodServiceware, FoodSizeAmount as _FoodSizeAmount, FoodStepGroup as _FoodStepGroup, FoodWhy as _FoodWhy, LayoutStyle as _LayoutStyle, LibraryItem as _LibraryItem, NsoImportInput as _NsoImportInput, NsoImportPhase as _NsoImportPhase, NsoImportTask as _NsoImportTask, Phase as _Phase, Position as _Position, PositionAssignment as _PositionAssignment, Question as _Question, QuizContent as _QuizContent, QuizSettings as _QuizSettings, Recipe as _Recipe, RecipeSpec as _RecipeSpec, RecipeVariant as _RecipeVariant, Result as _Result, Result__1 as _Result__1, Role as _Role, SendResult as _SendResult, Task as _Task, UpdateActivityInput as _UpdateActivityInput, UserProfile as _UserProfile, UserRole as _UserRole, Value as _Value, _ImmutableObjectStorageRefillInformation as __ImmutableObjectStorageRefillInformation, _ImmutableObjectStorageRefillResult as __ImmutableObjectStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async __accessControlState(): Promise<any> {
@@ -2141,6 +2146,7 @@ function from_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uin
 function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     stepGroups: Array<_FoodStepGroup>;
     lineUtensil: [] | [string];
+    yields: Array<_FoodSizeAmount>;
     serviceware: Array<_FoodServiceware>;
     station: string;
     equipment: [] | [string];
@@ -2160,6 +2166,7 @@ function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }): {
     stepGroups: Array<FoodStepGroup>;
     lineUtensil?: string;
+    yields: Array<FoodSizeAmount>;
     serviceware: Array<FoodServiceware>;
     station: string;
     equipment?: string;
@@ -2180,6 +2187,7 @@ function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uin
     return {
         stepGroups: from_candid_vec_n17(_uploadFile, _downloadFile, value.stepGroups),
         lineUtensil: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.lineUtensil)),
+        yields: value.yields,
         serviceware: value.serviceware,
         station: value.station,
         equipment: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.equipment)),
@@ -3134,6 +3142,7 @@ function to_candid_record_n108(_uploadFile: (file: ExternalBlob) => Promise<Uint
 function to_candid_record_n111(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     stepGroups: Array<FoodStepGroup>;
     lineUtensil?: string;
+    yields: Array<FoodSizeAmount>;
     serviceware: Array<FoodServiceware>;
     station: string;
     equipment?: string;
@@ -3153,6 +3162,7 @@ function to_candid_record_n111(_uploadFile: (file: ExternalBlob) => Promise<Uint
 }): {
     stepGroups: Array<_FoodStepGroup>;
     lineUtensil: [] | [string];
+    yields: Array<_FoodSizeAmount>;
     serviceware: Array<_FoodServiceware>;
     station: string;
     equipment: [] | [string];
@@ -3173,6 +3183,7 @@ function to_candid_record_n111(_uploadFile: (file: ExternalBlob) => Promise<Uint
     return {
         stepGroups: to_candid_vec_n112(_uploadFile, _downloadFile, value.stepGroups),
         lineUtensil: value.lineUtensil ? candid_some(value.lineUtensil) : candid_none(),
+        yields: value.yields,
         serviceware: value.serviceware,
         station: value.station,
         equipment: value.equipment ? candid_some(value.equipment) : candid_none(),

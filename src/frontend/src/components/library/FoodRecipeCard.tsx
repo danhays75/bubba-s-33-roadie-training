@@ -179,6 +179,153 @@ function RecipeTitleBand({ title }: { title: string }): ReactElement {
 }
 
 /**
+ * PrepTitleBand — the prep card title band, with an optional multi-batch
+ * size selector.
+ *
+ * When `multiBatch` is false (single-batch prep), this renders the plain
+ * centered title band IDENTICAL to RecipeTitleBand — so single-batch prep
+ * recipes are unchanged. It delegates to RecipeTitleBand directly so the
+ * non-multiBatch path shares the exact same markup and styling (no
+ * duplication).
+ *
+ * When `multiBatch` is true, the band gains the `is-multibatch` modifier
+ * (desktop flex row: title left, picker right; phone: title band as today
+ * PLUS a full-width picker pinned under it). The picker reuses the EXACT
+ * build-card classes so prep and build cards feel identical:
+ *   - Desktop: `.build-card-size-picker` (role=tablist) with one
+ *     `.build-card-size-btn` per size label; the active button gets `.on`;
+ *     onClick calls onSelectSize.
+ *   - Phone: `.build-card-phone-size-picker` (full-width segmented control)
+ *     with the same buttons, pinned UNDER the band via the existing phone
+ *     class.
+ *
+ * The size selector is only rendered when there is more than one distinct
+ * size label (a single distinct size has no functional selector — the
+ * build card renders a static label in that case, but for prep we simply
+ * omit the selector and let the scalar amounts/yield render, matching the
+ * "additive only" rule).
+ *
+ * Props:
+ *   - title: the recipe title (item.title).
+ *   - multiBatch: whether the recipe carries per-size amounts/yields.
+ *   - sizeLabels: the ordered distinct size labels (e.g. ["1x", "½x"]).
+ *     Empty when not multiBatch.
+ *   - selectedSize: the currently active size, or null.
+ *   - onSelectSize: setter that updates selectedSize.
+ *   - phone: when true, renders the phone variant (full-width picker under
+ *     the band instead of an inline right-side picker).
+ */
+function PrepTitleBand({
+  title,
+  multiBatch,
+  sizeLabels,
+  selectedSize,
+  onSelectSize,
+  phone,
+}: {
+  title: string;
+  multiBatch: boolean;
+  sizeLabels: string[];
+  selectedSize: string | null;
+  onSelectSize: (size: string | null) => void;
+  phone?: boolean;
+}): ReactElement {
+  // Single-batch prep — render the plain centered title band unchanged.
+  // Delegating to RecipeTitleBand keeps the non-multiBatch path byte-for-byte
+  // identical to the original (no selector, no modifier class).
+  if (!multiBatch || sizeLabels.length === 0) {
+    return <RecipeTitleBand title={title} />;
+  }
+
+  // Multi-batch with a single distinct size has no functional selector —
+  // omit the picker and render the plain title band so the scalar
+  // amounts/yield render without a non-functional control. (The build card
+  // renders a static label here; prep keeps it simple per "additive only".)
+  if (sizeLabels.length === 1) {
+    return <RecipeTitleBand title={title} />;
+  }
+
+  // Multi-batch with 2+ distinct sizes — render the title band with the
+  // size selector. Desktop places the picker inline on the right (the
+  // is-multibatch modifier flips the band to a flex row); phone renders
+  // the band as today PLUS a full-width picker pinned under it.
+  const ocidStem = phone
+    ? "library.item.food_recipe.phone.prep"
+    : "library.item.food_recipe.prep";
+
+  return (
+    <>
+      <header
+        className={`food-recipe-title-band is-multibatch${phone ? " is-phone" : ""}`}
+        data-ocid={`${ocidStem}.title_band`}
+      >
+        <h1 className="food-recipe-title" data-ocid={`${ocidStem}.title`}>
+          {title}
+        </h1>
+        {/* Desktop picker — inline on the right of the title band. The
+            is-multibatch modifier (without is-phone) makes the band a flex
+            row so this picker sits on the right. Hidden on phone via the
+            CSS @media block (phone renders the full-width picker below). */}
+        {!phone ? (
+          <div
+            className="build-card-size-picker"
+            role="tablist"
+            aria-label="Select size"
+            data-ocid={`${ocidStem}.size_picker`}
+          >
+            {sizeLabels.map((label) => {
+              const active = selectedSize === label;
+              return (
+                <button
+                  type="button"
+                  key={label}
+                  role="tab"
+                  aria-selected={active}
+                  className={`build-card-size-btn${active ? " on" : ""}`}
+                  onClick={() => onSelectSize(label)}
+                  data-ocid={`${ocidStem}.size_btn.${label}`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </header>
+      {/* Phone picker — full-width segmented control pinned UNDER the
+          title band. Reuses .build-card-phone-size-picker so it matches
+          the build card's phone picker exactly. Rendered as a sibling
+          block so it can span full width. */}
+      {phone ? (
+        <div
+          className="build-card-phone-size-picker"
+          role="tablist"
+          aria-label="Select size"
+          data-ocid={`${ocidStem}.size_picker`}
+        >
+          {sizeLabels.map((label) => {
+            const active = selectedSize === label;
+            return (
+              <button
+                type="button"
+                key={label}
+                role="tab"
+                aria-selected={active}
+                className={`build-card-size-btn${active ? " on" : ""}`}
+                onClick={() => onSelectSize(label)}
+                data-ocid={`${ocidStem}.size_btn.${label}`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/**
  * Footer strip — confidential notice bottom-left, station name
  * bottom-right. Sits flush to the card's bottom edge.
  */
@@ -779,6 +926,37 @@ export function resolveAmountForSize(
     if (match != null) return match.value;
   }
   return component.amount;
+}
+
+/**
+ * resolveYieldForSize — returns the yield string a prep recipe should
+ * display for a given selected size.
+ *
+ * When the recipe carries a non-empty `yields` array, finds the entry
+ * whose `size` === `selectedSize` and returns its `value`. When `yields`
+ * is empty, or no entry matches the selected size, or `selectedSize` is
+ * null, falls back to the scalar `food.yieldText` (the single-batch /
+ * fallback yield). This keeps single-batch prep recipes rendering exactly
+ * as today (no selector, one Yield badge from yieldText) while multi-batch
+ * prep recipes show the per-size yield that matches the active size.
+ *
+ * Exported so the admin editor (and any future caller) can preview the
+ * same yield the published prep card shows for a given size.
+ */
+export function resolveYieldForSize(
+  food: FoodRecipe,
+  selectedSize: string | null | undefined,
+): string | null {
+  if (
+    Array.isArray(food.yields) &&
+    food.yields.length > 0 &&
+    selectedSize != null &&
+    selectedSize.length > 0
+  ) {
+    const match = food.yields.find((y) => y.size === selectedSize);
+    if (match != null && match.value.length > 0) return match.value;
+  }
+  return food.yieldText;
 }
 
 function BuildCardFoodRecipeCard({
@@ -1429,11 +1607,34 @@ function PrepFoodRecipeCard({
   const hasEquipment =
     food.equipment != null && food.equipment.trim().length > 0;
 
+  // Multi-batch detection — a prep recipe is multi-batch when any
+  // component carries a non-empty `amounts` array (all components share
+  // the same ordered size labels, e.g. 1x, ½x). Reuses the existing
+  // isMultiSizeRecipe helper (already used by the Build Card). When
+  // multi-batch, a segmented size selector renders in the title band
+  // (desktop right side, phone full-width under the band) reusing the
+  // EXACT build-card .build-card-size-picker / .build-card-size-btn /
+  // .build-card-size-btn.on / .build-card-phone-size-picker CSS classes
+  // so the two cards feel identical. Single-batch prep (no amounts)
+  // renders EXACTLY as today — no selector, one amount per ingredient,
+  // single Yield badge from yieldText.
+  const multiBatch = isMultiSizeRecipe(food);
+  const sizeLabels = multiBatch ? getSizeLabels(food) : [];
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    multiBatch && sizeLabels.length > 0 ? sizeLabels[0] : null,
+  );
+  // The yield value for the active size. resolveYieldForSize falls back
+  // to food.yieldText when yields is empty or no entry matches, so
+  // single-batch prep keeps its existing yieldText badge unchanged.
+  const activeYield = resolveYieldForSize(food, selectedSize);
+
   // Meta stack — Yield (bold), Shelf life, Holding. Only render rows for
-  // fields that are non-null and non-empty (after trim).
+  // fields that are non-null and non-empty (after trim). The Yield row
+  // uses the size-resolved activeYield so it updates together with the
+  // selector (multi-batch); single-batch activeYield === food.yieldText.
   const metaRows: { label: string; value: string; yield?: boolean }[] = [];
-  if (food.yieldText != null && food.yieldText.trim().length > 0) {
-    metaRows.push({ label: "Yield", value: food.yieldText, yield: true });
+  if (activeYield != null && activeYield.trim().length > 0) {
+    metaRows.push({ label: "Yield", value: activeYield, yield: true });
   }
   if (food.shelfLife != null && food.shelfLife.trim().length > 0) {
     metaRows.push({ label: "Shelf life", value: food.shelfLife });
@@ -1473,7 +1674,13 @@ function PrepFoodRecipeCard({
         className="food-recipe-desktop"
         data-ocid="library.item.food_recipe.desktop.prep"
       >
-        <RecipeTitleBand title={item.title} />
+        <PrepTitleBand
+          title={item.title}
+          multiBatch={multiBatch}
+          sizeLabels={sizeLabels}
+          selectedSize={selectedSize}
+          onSelectSize={setSelectedSize}
+        />
 
         {/* Intro line + optional equipment line. */}
         <p
@@ -1544,8 +1751,17 @@ function PrepFoodRecipeCard({
                     data-ocid="library.item.food_recipe.ingredients.ungrouped"
                   >
                     {ungrouped.map((c, i) => (
-                      // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                      <ComponentRow key={`u-${i}`} component={c} index={i} />
+                      <ComponentRow
+                        // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                        key={`u-${i}`}
+                        component={c}
+                        index={i}
+                        amount={
+                          multiBatch
+                            ? resolveAmountForSize(c, selectedSize)
+                            : undefined
+                        }
+                      />
                     ))}
                   </div>
                 ) : null}
@@ -1572,6 +1788,11 @@ function PrepFoodRecipeCard({
                           key={`g-${gi}-c-${i}`}
                           component={c}
                           index={i}
+                          amount={
+                            multiBatch
+                              ? resolveAmountForSize(c, selectedSize)
+                              : undefined
+                          }
                         />
                       ))}
                     </div>
@@ -1744,7 +1965,14 @@ function PrepFoodRecipeCard({
         className="food-recipe-phone"
         data-ocid="library.item.food_recipe.phone.prep"
       >
-        <RecipeTitleBand title={item.title} />
+        <PrepTitleBand
+          title={item.title}
+          multiBatch={multiBatch}
+          sizeLabels={sizeLabels}
+          selectedSize={selectedSize}
+          onSelectSize={setSelectedSize}
+          phone
+        />
 
         <p
           className="food-recipe-phone-intro"
@@ -1804,7 +2032,11 @@ function PrepFoodRecipeCard({
                     // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
                     key={`p-u-${i}`}
                     item={c.item}
-                    amount={c.amount}
+                    amount={
+                      multiBatch
+                        ? resolveAmountForSize(c, selectedSize)
+                        : c.amount
+                    }
                     note={c.note ?? ""}
                     index={i}
                     ocidPrefix="library.item.food_recipe.phone.ingredients.ungrouped.row"
@@ -1831,7 +2063,11 @@ function PrepFoodRecipeCard({
                     // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
                     key={`p-g-${gi}-c-${i}`}
                     item={c.item}
-                    amount={c.amount}
+                    amount={
+                      multiBatch
+                        ? resolveAmountForSize(c, selectedSize)
+                        : c.amount
+                    }
                     note={c.note ?? ""}
                     index={i}
                     ocidPrefix={`library.item.food_recipe.phone.ingredients.group_rows.${gi + 1}.row`}
@@ -2028,15 +2264,31 @@ function ServicewareRow({
  * the .food-recipe-row utility. When the component carries a non-null
  * `note`, the note renders as a muted sub-line under the component name
  * so it does not break the two-column amount alignment.
+ *
+ * Multi-batch amount override: when `amount` is provided (non-undefined),
+ * the row renders that amount as a build-card amount chip
+ * (.build-card-amount-chip — the pale blue pill the Build Card uses) in
+ * the amount column instead of the scalar `component.amount`. This keeps
+ * multi-batch prep ingredient amounts visually identical to the Build
+ * Card's per-size amount chips. When `amount` is undefined (single-batch
+ * prep, or any caller that does not pass an override), the row falls back
+ * to `component.amount` rendered as the existing right-aligned text — so
+ * single-batch prep is unchanged.
  */
 function ComponentRow({
   component,
   index,
+  amount,
 }: {
   component: FoodComponent;
   index: number;
+  amount?: string;
 }): ReactElement {
   const hasNote = component.note != null && component.note.trim().length > 0;
+  // When an explicit amount override is passed (multi-batch), use it;
+  // otherwise fall back to the scalar component.amount (single-batch).
+  const displayAmount = amount ?? component.amount;
+  const useChip = amount !== undefined;
   return (
     <div
       className="food-recipe-row"
@@ -2046,7 +2298,16 @@ function ComponentRow({
         <span>{renderInlineMarkdown(component.item)}</span>
         {hasNote ? <span className="item-note">{component.note}</span> : null}
       </span>
-      <span className="amount">{renderInlineMarkdown(component.amount)}</span>
+      {useChip ? (
+        <span
+          className="build-card-amount-chip"
+          data-ocid={`library.item.food_recipe.component.row.${index + 1}.amount`}
+        >
+          {renderInlineMarkdown(displayAmount)}
+        </span>
+      ) : (
+        <span className="amount">{renderInlineMarkdown(displayAmount)}</span>
+      )}
     </div>
   );
 }

@@ -211,6 +211,11 @@ type FoodStepGroup =
    steps: vec text;
    title: opt text;
  };
+type FoodSizeAmount = 
+ record {
+   size: text;
+   value: text;
+ };
 type FoodServiceware = 
  record {
    amount: text;
@@ -241,6 +246,7 @@ type FoodRecipe =
    storeTemp: opt text;
    whys: vec FoodWhy;
    yieldText: opt text;
+   yields: vec FoodSizeAmount;
  };
 type FoodComponentSize = 
  record {

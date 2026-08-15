@@ -239,6 +239,7 @@ function toFoodRecipe(
         qualityIdentifiers: Array<string>;
         stepGroups?: Array<{ title?: string; steps: Array<string> }>;
         whys?: Array<{ question: string; answer: string }>;
+        yields?: Array<{ size: string; value: string }>;
       }
     | undefined,
 ): FoodRecipe | null {
@@ -289,6 +290,15 @@ function toFoodRecipe(
     whys: (r.whys ?? []).map((w) => ({
       question: w.question,
       answer: w.answer,
+    })),
+    // yields is a non-optional Array<FoodSizeAmount> on the backend
+    // (FoodSizeAmount is an alias of FoodComponentSize — { size, value }).
+    // Default to [] when absent so the frontend treats recipes without
+    // per-size yields uniformly (empty array = scalar `yieldText` fallback).
+    // Mirrors the amounts defaulting above.
+    yields: (r.yields ?? []).map((y) => ({
+      size: y.size,
+      value: y.value,
     })),
   };
 }
@@ -356,6 +366,8 @@ function fromFoodRecipe(
       question: w.question,
       answer: w.answer,
     })),
+    // yields is a non-optional array on the backend; pass through as-is.
+    yields: (r.yields ?? []).map((y) => ({ size: y.size, value: y.value })),
   };
 }
 
@@ -421,6 +433,7 @@ function toItem(i: {
     qualityIdentifiers: Array<string>;
     stepGroups?: Array<{ title?: string; steps: Array<string> }>;
     whys?: Array<{ question: string; answer: string }>;
+    yields?: Array<{ size: string; value: string }>;
   };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({

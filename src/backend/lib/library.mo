@@ -22,6 +22,8 @@ module {
   public type FoodRecipe = Types.FoodRecipe;
   public type FoodRecipeKind = Types.FoodRecipeKind;
   public type FoodComponent = Types.FoodComponent;
+  public type FoodComponentSize = Types.FoodComponentSize;
+  public type FoodSizeAmount = Types.FoodSizeAmount;
   public type FoodServiceware = Types.FoodServiceware;
 
   // Auto-tag upsell ingredients in the recipe import path. The admin supplies

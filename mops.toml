@@ -5,6 +5,7 @@ version = "0.1.0"
 [build]
 outputDir = "src/backend/dist"
 args = [ "--release" ]
+check-wasm = false
 
 [canisters.backend]
 main = "src/backend/main.mo"

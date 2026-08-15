@@ -2145,6 +2145,22 @@
     color: #ffffff;
   }
 
+  /* Multi-batch prep title band — mirrors the build-card title band flex
+     layout so the title sits left and the reused .build-card-size-picker
+     sits right. Additive: only applies when the band carries the
+     is-multibatch modifier (multi-batch prep with 2+ distinct sizes).
+     Single-batch prep keeps the centered title band above unchanged. */
+  .food-recipe-title-band.is-multibatch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    text-align: left;
+  }
+  .food-recipe-title-band.is-multibatch .food-recipe-title {
+    text-align: left;
+  }
+
   /* Column-header band — accent strip under the photo (menuBuild) or
      under the title band (prep ingredient table). Oswald uppercase white
      labels. The three-label menuBuild variant uses a 3-track grid; the
@@ -2650,6 +2666,17 @@
     .food-recipe-phone .food-recipe-title {
       font-size: clamp(1.6rem, 6vw, 2.1rem);
       line-height: 1.08;
+    }
+
+    /* Multi-batch prep on phone — hide the inline desktop picker that
+       sits on the right of the title band; the full-width
+       .build-card-phone-size-picker sibling (already styled full-width
+       by the existing build-card phone CSS) renders instead. Additive:
+       only hides the inline picker on phone for multi-batch prep. */
+    .food-recipe-phone
+      .food-recipe-title-band.is-multibatch
+      .build-card-size-picker {
+      display: none;
     }
 
     /* Phone photo — full width, edge to edge. Cap height a touch lower

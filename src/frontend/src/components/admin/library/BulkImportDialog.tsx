@@ -1285,6 +1285,7 @@ function toItem(i: {
     qualityIdentifiers: Array<string>;
     stepGroups?: Array<{ title?: string; steps: Array<string> }>;
     whys?: Array<{ question: string; answer: string }>;
+    yields?: Array<{ size: string; value: string }>;
   };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({
@@ -1376,6 +1377,7 @@ function toFoodRecipeLocal(
         qualityIdentifiers: Array<string>;
         stepGroups?: Array<{ title?: string; steps: Array<string> }>;
         whys?: Array<{ question: string; answer: string }>;
+        yields?: Array<{ size: string; value: string }>;
       }
     | undefined,
 ): FoodRecipe | null {
@@ -1426,6 +1428,12 @@ function toFoodRecipeLocal(
       question: w.question,
       answer: w.answer,
     })),
+    // yields: per-size yield rows. Map r.yields to the foundation
+    // FoodComponentSize[] shape. Default to [] when absent — the back-compat
+    // sentinel that means "use the scalar yieldText fallback". Additive only:
+    // existing single-batch prep recipes import with yields: [] and are
+    // unchanged.
+    yields: (r.yields ?? []).map((y) => ({ size: y.size, value: y.value })),
   };
 }
 
@@ -1532,6 +1540,16 @@ interface ImportFoodRecipe {
    * [] in buildFoodRecipePayload.
    */
   whys?: FoodWhy[];
+  /**
+   * Optional per-size yield rows. Each entry is { size, value } where both
+   * size and value must be non-empty strings. Malformed entries (missing size
+   * or value, or where either is not a non-empty string) are dropped during
+   * readImportFoodRecipe. Absent or non-array yields defaults to [] in
+   * buildFoodRecipePayload — the back-compat sentinel that means "use the
+   * scalar yieldText fallback". Additive only: single-batch prep recipes
+   * import with yields: [] and are unchanged.
+   */
+  yields?: Array<{ size: string; value: string }>;
   /** Import-only convenience fields (foodRecipes path → Library item). */
   photo?: string;
   subtitle?: string;
@@ -1907,6 +1925,25 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     }
   }
 
+  // yields: per-size yield rows. An array of { size, value } where both size
+  // and value must be non-empty strings. Malformed entries (missing size or
+  // value, or where either is not a non-empty string) are skipped. Absent or
+  // non-array yields → [] (the back-compat sentinel that means "use the
+  // scalar yieldText fallback"). Mirrors the per-component amounts filtering
+  // pattern above. Additive only: single-batch prep recipes that omit yields
+  // import with yields: [] and are unchanged.
+  const yields: Array<{ size: string; value: string }> = [];
+  if (Array.isArray(r.yields)) {
+    for (const y of r.yields) {
+      if (typeof y !== "object" || y === null || Array.isArray(y)) continue;
+      const yr = y as Record<string, unknown>;
+      const size = typeof yr.size === "string" ? yr.size.trim() : "";
+      const value = typeof yr.value === "string" ? yr.value.trim() : "";
+      if (size.length === 0 || value.length === 0) continue;
+      yields.push({ size, value });
+    }
+  }
+
   return {
     title,
     category,
@@ -1928,6 +1965,7 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     qualityIdentifiers,
     stepGroups,
     whys,
+    yields,
     photo,
     subtitle,
     tags,
@@ -1993,6 +2031,13 @@ function buildFoodRecipePayload(
     // malformed entries, so a present array is already clean.
     stepGroups: raw.stepGroups ?? [],
     whys: raw.whys ?? [],
+    // yields: per-size yield rows. Map raw.yields (Array of { size, value })
+    // to the foundation FoodComponentSize[] shape. Default to [] when absent —
+    // the back-compat sentinel that means "use the scalar yieldText fallback".
+    // The reader already filtered out malformed entries, so a present array is
+    // already clean. Additive only: existing single-batch prep recipes import
+    // with yields: [] and are unchanged.
+    yields: (raw.yields ?? []).map((y) => ({ size: y.size, value: y.value })),
   };
 }
 

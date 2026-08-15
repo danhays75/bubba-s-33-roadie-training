@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-CYkOsPXk.js"(exports, module) {
+  "assets/index-VoUwFZZ4.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33255,6 +33255,10 @@ variant ${k2} -> ${e.message}`, {
       "title": Opt(Text$2),
       "steps": Vec(Text$2)
     });
+    const FoodSizeAmount = Record({
+      "value": Text$2,
+      "size": Text$2
+    });
     const FoodServiceware = Record({
       "item": Text$2,
       "amount": Text$2
@@ -33282,6 +33286,7 @@ variant ${k2} -> ${e.message}`, {
     const FoodRecipe = Record({
       "stepGroups": Vec(FoodStepGroup),
       "lineUtensil": Opt(Text$2),
+      "yields": Vec(FoodSizeAmount),
       "serviceware": Vec(FoodServiceware),
       "station": Text$2,
       "equipment": Opt(Text$2),
@@ -33866,6 +33871,7 @@ variant ${k2} -> ${e.message}`, {
         "title": IDL2.Opt(IDL2.Text),
         "steps": IDL2.Vec(IDL2.Text)
       });
+      const FoodSizeAmount2 = IDL2.Record({ "value": IDL2.Text, "size": IDL2.Text });
       const FoodServiceware2 = IDL2.Record({
         "item": IDL2.Text,
         "amount": IDL2.Text
@@ -33890,6 +33896,7 @@ variant ${k2} -> ${e.message}`, {
       const FoodRecipe2 = IDL2.Record({
         "stepGroups": IDL2.Vec(FoodStepGroup2),
         "lineUtensil": IDL2.Opt(IDL2.Text),
+        "yields": IDL2.Vec(FoodSizeAmount2),
         "serviceware": IDL2.Vec(FoodServiceware2),
         "station": IDL2.Text,
         "equipment": IDL2.Opt(IDL2.Text),
@@ -36046,6 +36053,7 @@ variant ${k2} -> ${e.message}`, {
       return {
         stepGroups: from_candid_vec_n17(_uploadFile, _downloadFile, value.stepGroups),
         lineUtensil: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.lineUtensil)),
+        yields: value.yields,
         serviceware: value.serviceware,
         station: value.station,
         equipment: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.equipment)),
@@ -36509,6 +36517,7 @@ variant ${k2} -> ${e.message}`, {
       return {
         stepGroups: to_candid_vec_n112(_uploadFile, _downloadFile, value.stepGroups),
         lineUtensil: value.lineUtensil ? candid_some(value.lineUtensil) : candid_none(),
+        yields: value.yields,
         serviceware: value.serviceware,
         station: value.station,
         equipment: value.equipment ? candid_some(value.equipment) : candid_none(),
@@ -51629,6 +51638,15 @@ variant ${k2} -> ${e.message}`, {
         whys: (r2.whys ?? []).map((w2) => ({
           question: w2.question,
           answer: w2.answer
+        })),
+        // yields is a non-optional Array<FoodSizeAmount> on the backend
+        // (FoodSizeAmount is an alias of FoodComponentSize — { size, value }).
+        // Default to [] when absent so the frontend treats recipes without
+        // per-size yields uniformly (empty array = scalar `yieldText` fallback).
+        // Mirrors the amounts defaulting above.
+        yields: (r2.yields ?? []).map((y2) => ({
+          size: y2.size,
+          value: y2.value
         }))
       };
     }
@@ -51675,7 +51693,9 @@ variant ${k2} -> ${e.message}`, {
         whys: (r2.whys ?? []).map((w2) => ({
           question: w2.question,
           answer: w2.answer
-        }))
+        })),
+        // yields is a non-optional array on the backend; pass through as-is.
+        yields: (r2.yields ?? []).map((y2) => ({ size: y2.size, value: y2.value }))
       };
     }
     function toItem$1(i) {
@@ -52888,7 +52908,13 @@ variant ${k2} -> ${e.message}`, {
         whys: (r2.whys ?? []).map((w2) => ({
           question: w2.question,
           answer: w2.answer
-        }))
+        })),
+        // yields: per-size yield rows. Map r.yields to the foundation
+        // FoodComponentSize[] shape. Default to [] when absent — the back-compat
+        // sentinel that means "use the scalar yieldText fallback". Additive only:
+        // existing single-batch prep recipes import with yields: [] and are
+        // unchanged.
+        yields: (r2.yields ?? []).map((y2) => ({ size: y2.size, value: y2.value }))
       };
     }
     function formatSummary$1(createdCategories, updatedItems, createdItems, skippedItems, skippedDuplicates) {
@@ -53081,6 +53107,17 @@ variant ${k2} -> ${e.message}`, {
           whys.push({ question, answer });
         }
       }
+      const yields = [];
+      if (Array.isArray(r2.yields)) {
+        for (const y2 of r2.yields) {
+          if (typeof y2 !== "object" || y2 === null || Array.isArray(y2)) continue;
+          const yr = y2;
+          const size2 = typeof yr.size === "string" ? yr.size.trim() : "";
+          const value = typeof yr.value === "string" ? yr.value.trim() : "";
+          if (size2.length === 0 || value.length === 0) continue;
+          yields.push({ size: size2, value });
+        }
+      }
       return {
         title,
         category,
@@ -53102,6 +53139,7 @@ variant ${k2} -> ${e.message}`, {
         qualityIdentifiers,
         stepGroups,
         whys,
+        yields,
         photo,
         subtitle,
         tags,
@@ -53145,7 +53183,14 @@ variant ${k2} -> ${e.message}`, {
         // array-field normalization pattern). The reader already filtered out
         // malformed entries, so a present array is already clean.
         stepGroups: raw.stepGroups ?? [],
-        whys: raw.whys ?? []
+        whys: raw.whys ?? [],
+        // yields: per-size yield rows. Map raw.yields (Array of { size, value })
+        // to the foundation FoodComponentSize[] shape. Default to [] when absent —
+        // the back-compat sentinel that means "use the scalar yieldText fallback".
+        // The reader already filtered out malformed entries, so a present array is
+        // already clean. Additive only: existing single-batch prep recipes import
+        // with yields: [] and are unchanged.
+        yields: (raw.yields ?? []).map((y2) => ({ size: y2.size, value: y2.value }))
       };
     }
     function detectImportShape(parsed) {
@@ -55437,6 +55482,84 @@ variant ${k2} -> ${e.message}`, {
         }
       );
     }
+    function PrepTitleBand({
+      title,
+      multiBatch,
+      sizeLabels: sizeLabels2,
+      selectedSize,
+      onSelectSize,
+      phone
+    }) {
+      if (!multiBatch || sizeLabels2.length === 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeTitleBand, { title });
+      }
+      if (sizeLabels2.length === 1) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeTitleBand, { title });
+      }
+      const ocidStem = phone ? "library.item.food_recipe.phone.prep" : "library.item.food_recipe.prep";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "header",
+          {
+            className: `food-recipe-title-band is-multibatch${phone ? " is-phone" : ""}`,
+            "data-ocid": `${ocidStem}.title_band`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "food-recipe-title", "data-ocid": `${ocidStem}.title`, children: title }),
+              !phone ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "build-card-size-picker",
+                  role: "tablist",
+                  "aria-label": "Select size",
+                  "data-ocid": `${ocidStem}.size_picker`,
+                  children: sizeLabels2.map((label) => {
+                    const active = selectedSize === label;
+                    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        role: "tab",
+                        "aria-selected": active,
+                        className: `build-card-size-btn${active ? " on" : ""}`,
+                        onClick: () => onSelectSize(label),
+                        "data-ocid": `${ocidStem}.size_btn.${label}`,
+                        children: label
+                      },
+                      label
+                    );
+                  })
+                }
+              ) : null
+            ]
+          }
+        ),
+        phone ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "build-card-phone-size-picker",
+            role: "tablist",
+            "aria-label": "Select size",
+            "data-ocid": `${ocidStem}.size_picker`,
+            children: sizeLabels2.map((label) => {
+              const active = selectedSize === label;
+              return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  role: "tab",
+                  "aria-selected": active,
+                  className: `build-card-size-btn${active ? " on" : ""}`,
+                  onClick: () => onSelectSize(label),
+                  "data-ocid": `${ocidStem}.size_btn.${label}`,
+                  children: label
+                },
+                label
+              );
+            })
+          }
+        ) : null
+      ] });
+    }
     function RecipeFooter({ station }) {
       const year = (/* @__PURE__ */ new Date()).getFullYear();
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -55865,6 +55988,13 @@ variant ${k2} -> ${e.message}`, {
         if (match2 != null) return match2.value;
       }
       return component.amount;
+    }
+    function resolveYieldForSize(food, selectedSize) {
+      if (Array.isArray(food.yields) && food.yields.length > 0 && selectedSize != null && selectedSize.length > 0) {
+        const match2 = food.yields.find((y2) => y2.size === selectedSize);
+        if (match2 != null && match2.value.length > 0) return match2.value;
+      }
+      return food.yieldText;
     }
     function BuildCardFoodRecipeCard({
       item,
@@ -56433,9 +56563,15 @@ variant ${k2} -> ${e.message}`, {
       const hasSteps = food.steps.length > 0;
       const hasQuality = food.qualityIdentifiers.length > 0;
       const hasEquipment = food.equipment != null && food.equipment.trim().length > 0;
+      const multiBatch = isMultiSizeRecipe(food);
+      const sizeLabels2 = multiBatch ? getSizeLabels(food) : [];
+      const [selectedSize, setSelectedSize] = reactExports.useState(
+        multiBatch && sizeLabels2.length > 0 ? sizeLabels2[0] : null
+      );
+      const activeYield = resolveYieldForSize(food, selectedSize);
       const metaRows = [];
-      if (food.yieldText != null && food.yieldText.trim().length > 0) {
-        metaRows.push({ label: "Yield", value: food.yieldText, yield: true });
+      if (activeYield != null && activeYield.trim().length > 0) {
+        metaRows.push({ label: "Yield", value: activeYield, yield: true });
       }
       if (food.shelfLife != null && food.shelfLife.trim().length > 0) {
         metaRows.push({ label: "Shelf life", value: food.shelfLife });
@@ -56467,7 +56603,16 @@ variant ${k2} -> ${e.message}`, {
                 className: "food-recipe-desktop",
                 "data-ocid": "library.item.food_recipe.desktop.prep",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeTitleBand, { title: item.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    PrepTitleBand,
+                    {
+                      title: item.title,
+                      multiBatch,
+                      sizeLabels: sizeLabels2,
+                      selectedSize,
+                      onSelectSize: setSelectedSize
+                    }
+                  ),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "p",
                     {
@@ -56541,9 +56686,14 @@ variant ${k2} -> ${e.message}`, {
                                 {
                                   className: "food-recipe-ingredient-rows",
                                   "data-ocid": "library.item.food_recipe.ingredients.ungrouped",
-                                  children: ungrouped.map((c2, i) => (
-                                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                                    /* @__PURE__ */ jsxRuntimeExports.jsx(ComponentRow, { component: c2, index: i }, `u-${i}`)
+                                  children: ungrouped.map((c2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    ComponentRow,
+                                    {
+                                      component: c2,
+                                      index: i,
+                                      amount: multiBatch ? resolveAmountForSize(c2, selectedSize) : void 0
+                                    },
+                                    `u-${i}`
                                   ))
                                 }
                               ) : null,
@@ -56569,7 +56719,8 @@ variant ${k2} -> ${e.message}`, {
                                           ComponentRow,
                                           {
                                             component: c2,
-                                            index: i
+                                            index: i,
+                                            amount: multiBatch ? resolveAmountForSize(c2, selectedSize) : void 0
                                           },
                                           `g-${gi}-c-${i}`
                                         ))
@@ -56752,7 +56903,17 @@ variant ${k2} -> ${e.message}`, {
                 className: "food-recipe-phone",
                 "data-ocid": "library.item.food_recipe.phone.prep",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeTitleBand, { title: item.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    PrepTitleBand,
+                    {
+                      title: item.title,
+                      multiBatch,
+                      sizeLabels: sizeLabels2,
+                      selectedSize,
+                      onSelectSize: setSelectedSize,
+                      phone: true
+                    }
+                  ),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "p",
                     {
@@ -56814,7 +56975,7 @@ variant ${k2} -> ${e.message}`, {
                               PhoneAmountRow,
                               {
                                 item: c2.item,
-                                amount: c2.amount,
+                                amount: multiBatch ? resolveAmountForSize(c2, selectedSize) : c2.amount,
                                 note: c2.note ?? "",
                                 index: i,
                                 ocidPrefix: "library.item.food_recipe.phone.ingredients.ungrouped.row"
@@ -56841,7 +57002,7 @@ variant ${k2} -> ${e.message}`, {
                                 PhoneAmountRow,
                                 {
                                   item: c2.item,
-                                  amount: c2.amount,
+                                  amount: multiBatch ? resolveAmountForSize(c2, selectedSize) : c2.amount,
                                   note: c2.note ?? "",
                                   index: i,
                                   ocidPrefix: `library.item.food_recipe.phone.ingredients.group_rows.${gi + 1}.row`
@@ -57038,9 +57199,12 @@ variant ${k2} -> ${e.message}`, {
     }
     function ComponentRow({
       component,
-      index: index2
+      index: index2,
+      amount
     }) {
       const hasNote = component.note != null && component.note.trim().length > 0;
+      const displayAmount = amount ?? component.amount;
+      const useChip = amount !== void 0;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -57051,7 +57215,14 @@ variant ${k2} -> ${e.message}`, {
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: renderInlineMarkdown(component.item) }),
               hasNote ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "item-note", children: component.note }) : null
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount", children: renderInlineMarkdown(component.amount) })
+            useChip ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "build-card-amount-chip",
+                "data-ocid": `library.item.food_recipe.component.row.${index2 + 1}.amount`,
+                children: renderInlineMarkdown(displayAmount)
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "amount", children: renderInlineMarkdown(displayAmount) })
           ]
         }
       );

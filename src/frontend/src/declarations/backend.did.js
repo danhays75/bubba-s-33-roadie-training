@@ -29,6 +29,10 @@ export const FoodStepGroup = IDL.Record({
   'title' : IDL.Opt(IDL.Text),
   'steps' : IDL.Vec(IDL.Text),
 });
+export const FoodSizeAmount = IDL.Record({
+  'value' : IDL.Text,
+  'size' : IDL.Text,
+});
 export const FoodServiceware = IDL.Record({
   'item' : IDL.Text,
   'amount' : IDL.Text,
@@ -56,6 +60,7 @@ export const FoodComponent = IDL.Record({
 export const FoodRecipe = IDL.Record({
   'stepGroups' : IDL.Vec(FoodStepGroup),
   'lineUtensil' : IDL.Opt(IDL.Text),
+  'yields' : IDL.Vec(FoodSizeAmount),
   'serviceware' : IDL.Vec(FoodServiceware),
   'station' : IDL.Text,
   'equipment' : IDL.Opt(IDL.Text),
@@ -644,6 +649,7 @@ export const idlFactory = ({ IDL }) => {
     'title' : IDL.Opt(IDL.Text),
     'steps' : IDL.Vec(IDL.Text),
   });
+  const FoodSizeAmount = IDL.Record({ 'value' : IDL.Text, 'size' : IDL.Text });
   const FoodServiceware = IDL.Record({
     'item' : IDL.Text,
     'amount' : IDL.Text,
@@ -668,6 +674,7 @@ export const idlFactory = ({ IDL }) => {
   const FoodRecipe = IDL.Record({
     'stepGroups' : IDL.Vec(FoodStepGroup),
     'lineUtensil' : IDL.Opt(IDL.Text),
+    'yields' : IDL.Vec(FoodSizeAmount),
     'serviceware' : IDL.Vec(FoodServiceware),
     'station' : IDL.Text,
     'equipment' : IDL.Opt(IDL.Text),

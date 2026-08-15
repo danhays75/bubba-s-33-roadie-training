@@ -120,6 +120,7 @@ export interface FoodComponentSize { 'value' : string, 'size' : string }
 export interface FoodRecipe {
   'stepGroups' : Array<FoodStepGroup>,
   'lineUtensil' : [] | [string],
+  'yields' : Array<FoodSizeAmount>,
   'serviceware' : Array<FoodServiceware>,
   'station' : string,
   'equipment' : [] | [string],
@@ -140,6 +141,7 @@ export interface FoodRecipe {
 export type FoodRecipeKind = { 'prep' : null } |
   { 'menuBuild' : null };
 export interface FoodServiceware { 'item' : string, 'amount' : string }
+export interface FoodSizeAmount { 'value' : string, 'size' : string }
 export interface FoodStepGroup {
   'title' : [] | [string],
   'steps' : Array<string>,

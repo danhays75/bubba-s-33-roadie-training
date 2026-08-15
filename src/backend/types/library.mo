@@ -117,6 +117,17 @@ module {
     value : Text;
   };
 
+  // A per-size yield entry on a food recipe. Same shape as FoodComponentSize
+  // ({ size : Text; value : Text }) — aliased here so the prep-card domain
+  // can name the per-size yield concept distinctly without duplicating the
+  // type. `size` is the size label shared across a recipe's components and
+  // yields (e.g. "1x", "½x"); `value` is the free-text batch yield for that
+  // size (e.g. "5 ½ gallons", "2 ¾ gallons"). A recipe carries a `yields`
+  // array of these entries when it is multi-batch (prep recipes: 1x/½x);
+  // single-batch recipes leave `yields` empty and fall back to the scalar
+  // `yieldText` field.
+  public type FoodSizeAmount = FoodComponentSize;
+
   // A single component line in a food recipe's component list. `item` is the
   // component name (e.g. "Cheddar Cheese", "Burger Patty"). `amount` is the
   // free-text measure (e.g. "2 oz", "1 each") — kept as the scalar fallback
@@ -235,6 +246,16 @@ module {
   // answer beneath; when empty, the section is omitted. Defaults to an
   // empty list — existing recipes migrate to `whys = []` and render
   // unchanged.
+  //
+  // `yields` is the optional per-size yield list — when non-empty, the
+  // frontend renders a batch-size selector on the prep card and the Yield
+  // badge shows the selected size's value from `yields`; when empty, the
+  // Yield badge falls back to the scalar `yieldText` exactly as today
+  // (back-compat for single-batch prep recipes and all menuBuild recipes).
+  // The size labels in `yields` match the size labels in the components'
+  // `amounts` arrays (e.g. "1x", "½x"). Defaults to an empty list —
+  // existing recipes migrate to `yields = []` and render unchanged. The
+  // scalar `yieldText` is kept as the single-batch / fallback yield.
   public type FoodRecipe = {
     station : Text;
     kind : FoodRecipeKind;
@@ -254,6 +275,7 @@ module {
     qualityIdentifiers : [Text];
     stepGroups : [FoodStepGroup];
     whys : [FoodWhy];
+    yields : [FoodSizeAmount];
   };
 
   // A Library item (a recipe / reference entry). Belongs to a category.

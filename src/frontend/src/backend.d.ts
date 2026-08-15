@@ -221,6 +221,7 @@ export type Error_ = {
 export interface FoodRecipe {
     stepGroups: Array<FoodStepGroup>;
     lineUtensil?: string;
+    yields: Array<FoodSizeAmount>;
     serviceware: Array<FoodServiceware>;
     station: string;
     equipment?: string;
@@ -295,6 +296,10 @@ export interface NsoImportPhase {
     tasks: Array<NsoImportTask>;
     name: string;
 }
+export interface FoodSizeAmount {
+    value: string;
+    size: string;
+}
 export interface Flashcard {
     itemTitle: string;
     detailFields: Array<{
@@ -303,17 +308,6 @@ export interface Flashcard {
     }>;
     itemPhoto?: string;
     recipe?: FlashcardRecipe;
-}
-export interface Activity {
-    id: bigint;
-    activityType: ActivityType;
-    content: ActivityContent;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    positionId: bigint;
-    sourceCategoryIds: Array<bigint>;
-    quizSettings?: QuizSettings;
 }
 export interface Recipe {
     equipment: Array<string>;
@@ -351,6 +345,17 @@ export type Question = {
         isTrue: boolean;
     };
 };
+export interface Activity {
+    id: bigint;
+    activityType: ActivityType;
+    content: ActivityContent;
+    name: string;
+    createdAt: bigint;
+    createdBy: Principal;
+    positionId: bigint;
+    sourceCategoryIds: Array<bigint>;
+    quizSettings?: QuizSettings;
+}
 export interface UserProfile {
     id: Principal;
     name: string;

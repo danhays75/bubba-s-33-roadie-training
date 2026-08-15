@@ -4,6 +4,11 @@ type AccessControlState__1062068120 =
     var adminAssigned : Bool;
     userRoles : Map__386906547<Principal, UserRole__599446107>
   };
+type AccessControlState__191071654 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__386906547<Principal, UserRole__231090681>
+  };
 type AccessControlState__22568020 =
   {
     var adminAssigned : Bool;
@@ -160,6 +165,12 @@ type ActivityContent__393732496 =
     #flashcardContent : FlashcardContent__122500135;
     #quizContent : QuizContent__174314654
   };
+type ActivityContent__495763160 =
+  {
+    #drinksBuilderContent : DrinksBuilderContent__156411953;
+    #flashcardContent : FlashcardContent__891486706;
+    #quizContent : QuizContent__969421210
+  };
 type ActivityContent__506961017 =
   {
     #drinksBuilderContent : DrinksBuilderContent__784182968;
@@ -232,6 +243,7 @@ type ActivityType__354676686 = {#flashcards; #quiz};
 type ActivityType__364579 = {#drinksBuilder; #flashcards; #quiz};
 type ActivityType__500304687 = {#drinksBuilder; #flashcards; #quiz};
 type ActivityType__531388235 = {#drinksBuilder; #flashcards; #quiz};
+type ActivityType__550080123 = {#drinksBuilder; #flashcards; #quiz};
 type ActivityType__56691551 = {#drinksBuilder; #flashcards; #quiz};
 type ActivityType__599065722 = {#drinksBuilder; #flashcards; #quiz};
 type ActivityType__698381679 = {#drinksBuilder; #flashcards; #quiz};
@@ -354,6 +366,18 @@ type Activity__564896493 =
     sourceCategoryIds : [Nat]
   };
 type Activity__616495317 = Activity__247612037;
+type Activity__643542565 =
+  {
+    activityType : ActivityType__550080123;
+    content : ActivityContent__495763160;
+    createdAt : Nat;
+    createdBy : Principal;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    quizSettings : ?QuizSettings__312316435;
+    sourceCategoryIds : [Nat]
+  };
 type Activity__833780558 =
   {
     activityType : ActivityType__1034421412;
@@ -422,6 +446,7 @@ type ApprovalStatus__503913631 = {#approved; #pending; #rejected};
 type ApprovalStatus__531246788 = {#approved; #pending; #rejected};
 type ApprovalStatus__537507273 = {#approved; #pending; #rejected};
 type ApprovalStatus__565029793 = {#approved; #pending; #rejected};
+type ApprovalStatus__580386695 = {#approved; #pending; #rejected};
 type ApprovalStatus__652282428 = {#approved; #pending; #rejected};
 type ApprovalStatus__673972231 = {#approved; #pending; #rejected};
 type ApprovalStatus__754997242 = {#approved; #pending; #rejected};
@@ -451,6 +476,7 @@ type AssignmentStatus__742456625 = {#certified; #inTraining};
 type AssignmentStatus__750850714 = {#certified; #inTraining};
 type AssignmentStatus__784384027 = {#certified; #inTraining};
 type AssignmentStatus__849517848 = {#certified; #inTraining};
+type AssignmentStatus__856110266 = {#certified; #inTraining};
 type AssignmentStatus__878099892 = {#certified; #inTraining};
 type AssignmentStatus__912651953 = {#certified; #inTraining};
 type Category__1020215759 =
@@ -602,6 +628,15 @@ type Category__56484344 =
     positionId : Nat;
     sortOrder : Nat
   };
+type Category__643010700 =
+  {
+    accentColor : ?Text;
+    coverPhoto : ?Text;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    sortOrder : Nat
+  };
 type Category__681034651 =
   {
     coverPhoto : ?Text;
@@ -667,6 +702,7 @@ type DetailField__579089233 = {fieldLabel : Text; value : Text};
 type DetailField__678066914 = {fieldLabel : Text; value : Text};
 type DetailField__691996818 = {fieldLabel : Text; value : Text};
 type DetailField__695576903 = {fieldLabel : Text; value : Text};
+type DetailField__732678054 = {fieldLabel : Text; value : Text};
 type DetailField__746999893 = {fieldLabel : Text; value : Text};
 type DetailField__804330347 = {fieldLabel : Text; value : Text};
 type DetailField__813458055 = {fieldLabel : Text; value : Text};
@@ -685,9 +721,12 @@ type DrinksBuilderAnswerClip__553112586 = {answer : Text; audioUrl : Text};
 type DrinksBuilderAnswerClip__555575205 = {answer : Text; audioUrl : Text};
 type DrinksBuilderAnswerClip__591121174 = {answer : Text; audioUrl : Text};
 type DrinksBuilderAnswerClip__646883061 = {answer : Text; audioUrl : Text};
+type DrinksBuilderAnswerClip__654475994 = {answer : Text; audioUrl : Text};
 type DrinksBuilderAnswerClip__686874987 = {answer : Text; audioUrl : Text};
 type DrinksBuilderAnswerClip__746228020 = {answer : Text; audioUrl : Text};
 type DrinksBuilderAnswerClip__792195856 = {answer : Text; audioUrl : Text};
+type DrinksBuilderContent__156411953 =
+  {settings : DrinksBuilderSettings__1026291311};
 type DrinksBuilderContent__275749364 =
   {settings : DrinksBuilderSettings__824272476};
 type DrinksBuilderContent__314782049 =
@@ -722,6 +761,7 @@ type DrinksBuilderPrompt__1002166407 = {audioUrl : ?Text; text : Text};
 type DrinksBuilderPrompt__1046685774 = {audioUrl : ?Text; text : Text};
 type DrinksBuilderPrompt__1070219480 = {audioUrl : ?Text; text : Text};
 type DrinksBuilderPrompt__112343910 = {audioUrl : ?Text; text : Text};
+type DrinksBuilderPrompt__288977878 = {audioUrl : ?Text; text : Text};
 type DrinksBuilderPrompt__295816437 = {audioUrl : ?Text; text : Text};
 type DrinksBuilderPrompt__343375143 = {audioUrl : ?Text; text : Text};
 type DrinksBuilderPrompt__353641831 = {audioUrl : ?Text; text : Text};
@@ -739,6 +779,26 @@ type DrinksBuilderSettings__1006694907 =
     roundsPerSession : Nat;
     showScoring : Bool;
     soundDefault : Bool;
+    streakMultiplier : Bool
+  };
+type DrinksBuilderSettings__1026291311 =
+  {
+    answerClips : [DrinksBuilderAnswerClip__654475994];
+    assemblyPrompts : [DrinksBuilderPrompt__288977878];
+    celebrationClips : [Text];
+    correctAffirmations : [Text];
+    decoyCount : Nat;
+    enforceAssemblyOrder : Bool;
+    excludedDrinkTitles : [Text];
+    garnishPrompts : [DrinksBuilderPrompt__288977878];
+    glasswarePrompts : [DrinksBuilderPrompt__288977878];
+    includedCategories : [Text];
+    pointsPerCorrect : Nat;
+    requireExactAmounts : Bool;
+    roundsPerSession : Nat;
+    showScoring : Bool;
+    soundDefault : Bool;
+    specsPrompts : [DrinksBuilderPrompt__288977878];
     streakMultiplier : Bool
   };
 type DrinksBuilderSettings__1054017361 =
@@ -1002,6 +1062,7 @@ type FlashcardContent__715472496 = [Flashcard__753329757];
 type FlashcardContent__717620283 = [Flashcard__247724104];
 type FlashcardContent__783231457 = [Flashcard__834767429];
 type FlashcardContent__818154083 = [Flashcard__14884103];
+type FlashcardContent__891486706 = [Flashcard__991328959];
 type FlashcardContent__940199489 = [Flashcard__435867289];
 type FlashcardContent__944664772 = [Flashcard__972452812];
 type FlashcardContent__94961007 = [Flashcard__119857192];
@@ -1049,6 +1110,13 @@ type FlashcardRecipe__374263167 =
     specs : [{amount : Text; ingredient : Text}]
   };
 type FlashcardRecipe__518992149 =
+  {
+    assembly : [Text];
+    garnish : [Text];
+    glassware : Text;
+    specs : [{amount : Text; ingredient : Text}]
+  };
+type FlashcardRecipe__537236474 =
   {
     assembly : [Text];
     garnish : [Text];
@@ -1261,6 +1329,14 @@ type Flashcard__972452812 =
     itemTitle : Text;
     recipe : ?FlashcardRecipe__730295543
   };
+type Flashcard__991328959 =
+  {
+    detailFields : [{fieldLabel : Text; value : Text}];
+    itemPhoto : ?Text;
+    itemTitle : Text;
+    recipe : ?FlashcardRecipe__537236474
+  };
+type FoodComponentSize__202019857 = {size : Text; value : Text};
 type FoodComponentSize__832498346 = {size : Text; value : Text};
 type FoodComponentSize__847671915 = {size : Text; value : Text};
 type FoodComponentSize__886762347 = {size : Text; value : Text};
@@ -1268,6 +1344,15 @@ type FoodComponent__185799128 =
   {amount : Text; group : ?Text; item : Text; note : ?Text};
 type FoodComponent__28409800 =
   {amount : Text; group : ?Text; item : Text; note : ?Text};
+type FoodComponent__431978396 =
+  {
+    amount : Text;
+    amounts : [FoodComponentSize__202019857];
+    anchorY : ?Float;
+    group : ?Text;
+    item : Text;
+    note : ?Text
+  };
 type FoodComponent__641927804 =
   {
     amount : Text;
@@ -1295,6 +1380,7 @@ type FoodRecipeKind__310126768 = {#menuBuild; #prep};
 type FoodRecipeKind__402427073 = {#menuBuild; #prep};
 type FoodRecipeKind__417309614 = {#menuBuild; #prep};
 type FoodRecipeKind__434568513 = {#menuBuild; #prep};
+type FoodRecipeKind__501629268 = {#menuBuild; #prep};
 type FoodRecipeKind__553336859 = {#menuBuild; #prep};
 type FoodRecipeKind__714187813 = {#menuBuild; #prep};
 type FoodRecipeKind__943385779 = {#menuBuild; #prep};
@@ -1335,7 +1421,8 @@ type FoodRecipe__422191799 =
     steps : [Text];
     storeTemp : ?Text;
     whys : [FoodWhy__706792619];
-    yieldText : ?Text
+    yieldText : ?Text;
+    yields : [FoodSizeAmount__147218313]
   };
 type FoodRecipe__856130276 =
   {
@@ -1375,20 +1462,26 @@ type FoodRecipe__985779106 =
   };
 type FoodServiceware__1005871308 = {amount : Text; item : Text};
 type FoodServiceware__263174487 = {amount : Text; item : Text};
+type FoodServiceware__424442507 = {amount : Text; item : Text};
 type FoodServiceware__434027358 = {amount : Text; item : Text};
 type FoodServiceware__434750312 = {amount : Text; item : Text};
 type FoodServiceware__65086706 = {amount : Text; item : Text};
 type FoodServiceware__725385949 = {amount : Text; item : Text};
 type FoodServiceware__934731889 = {amount : Text; item : Text};
 type FoodServiceware__940998977 = {amount : Text; item : Text};
+type FoodSizeAmount__1061280444 = {size : Text; value : Text};
+type FoodSizeAmount__147218313 = FoodComponentSize__886762347;
 type FoodStepGroup__818213460 = {steps : [Text]; title : ?Text};
+type FoodStepGroup__947869111 = {steps : [Text]; title : ?Text};
 type FoodStepGroup__961681676 = {steps : [Text]; title : ?Text};
 type FoodWhy__1053339392 = {answer : Text; question : Text};
+type FoodWhy__463510841 = {answer : Text; question : Text};
 type FoodWhy__706792619 = {answer : Text; question : Text};
 type Internal__161573640<K, V> =
   {children : [var ?Node__430031793<K, V>]; data : Data__265875254<K, V>};
 type Internal__778364379<T> =
   {children : [var ?Node__1045371124<T>]; data : Data__859131645<T>};
+type LayoutStyle__185165630 = {#kitchen; #library; #orientation};
 type LayoutStyle__249377617 = {#kitchen; #library; #orientation};
 type LayoutStyle__280124463 = {#kitchen; #library; #orientation};
 type LayoutStyle__45915257 = {#library; #orientation};
@@ -1923,6 +2016,25 @@ type NewActor__299107891 =
     positions : List__89170296<Position__572056758>;
     profiles : Map__386906547<Principal, UserProfile__921863851>
   };
+type NewActor__337573549 =
+  {
+    var accessControlState : AccessControlState__191071654;
+    assignments : List__89170296<PositionAssignment__949322701>;
+    categories : List__89170296<Category__643010700>;
+    items : List__89170296<NewLibraryItem__681413232>;
+    legendaryActivities : List__89170296<Activity__643542565>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__89170296<Phase__527633934>;
+    nsoTasks : List__89170296<Task__9449369>;
+    positions : List__89170296<Position__825978207>;
+    profiles : Map__386906547<Principal, UserProfile__264694744>;
+    verifiedEmails : VerifiedEmailsState__587322524
+  };
 type NewActor__363430820 =
   {
     var accessControlState : AccessControlState__341620451;
@@ -2290,6 +2402,28 @@ type NewFoodRecipe__218310249 =
     whys : [FoodWhy__1053339392];
     yieldText : ?Text
   };
+type NewFoodRecipe__402416419 =
+  {
+    allergenNote : ?Text;
+    buildHeader : ?Text;
+    components : [FoodComponent__431978396];
+    equipment : ?Text;
+    expoSteps : [Text];
+    holdTemp : ?Text;
+    kind : FoodRecipeKind__501629268;
+    lineUtensil : ?Text;
+    menuSection : ?Text;
+    qualityIdentifiers : [Text];
+    serviceware : [FoodServiceware__424442507];
+    shelfLife : ?Text;
+    station : Text;
+    stepGroups : [FoodStepGroup__947869111];
+    steps : [Text];
+    storeTemp : ?Text;
+    whys : [FoodWhy__463510841];
+    yieldText : ?Text;
+    yields : [FoodSizeAmount__1061280444]
+  };
 type NewFoodRecipe__667925794 =
   {
     allergenNote : ?Text;
@@ -2439,6 +2573,21 @@ type NewLibraryItem__653316188 =
     notes : ?Text;
     photo : ?Text;
     recipe : ?Recipe__539567614;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
+type NewLibraryItem__681413232 =
+  {
+    categoryId : Nat;
+    details : [DetailField__732678054];
+    foodRecipe : ?NewFoodRecipe__402416419;
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?Recipe__856786456;
     seasonal : Bool;
     sortOrder : Nat;
     subtitle : ?Text;
@@ -3099,6 +3248,25 @@ type OldActor__893632986 =
     profiles : Map__386906547<Principal, UserProfile__170374672>;
     verifiedEmails : VerifiedEmailsState__314065022
   };
+type OldActor__953152984 =
+  {
+    var accessControlState : AccessControlState__191071654;
+    assignments : List__89170296<PositionAssignment__949322701>;
+    categories : List__89170296<Category__643010700>;
+    items : List__89170296<OldLibraryItem__549704105>;
+    legendaryActivities : List__89170296<Activity__643542565>;
+    nextCategoryId : {var value : Nat};
+    nextItemId : {var value : Nat};
+    nextLegendaryActivityId : {var value : Nat};
+    nextPhaseId : {var value : Nat};
+    nextPositionId : {var value : Nat};
+    nextTaskId : {var value : Nat};
+    nsoPhases : List__89170296<Phase__527633934>;
+    nsoTasks : List__89170296<Task__9449369>;
+    positions : List__89170296<Position__825978207>;
+    profiles : Map__386906547<Principal, UserProfile__264694744>;
+    verifiedEmails : VerifiedEmailsState__587322524
+  };
 type OldCategory__840586145 =
   {
     coverPhoto : ?Text;
@@ -3172,6 +3340,27 @@ type OldFoodComponent__710955125 =
   {amount : Text; anchorY : ?Float; group : ?Text; item : Text; note : ?Text};
 type OldFoodComponent__81596454 =
   {amount : Text; group : ?Text; item : Text; note : ?Text};
+type OldFoodRecipe__310586664 =
+  {
+    allergenNote : ?Text;
+    buildHeader : ?Text;
+    components : [FoodComponent__431978396];
+    equipment : ?Text;
+    expoSteps : [Text];
+    holdTemp : ?Text;
+    kind : FoodRecipeKind__501629268;
+    lineUtensil : ?Text;
+    menuSection : ?Text;
+    qualityIdentifiers : [Text];
+    serviceware : [FoodServiceware__424442507];
+    shelfLife : ?Text;
+    station : Text;
+    stepGroups : [FoodStepGroup__947869111];
+    steps : [Text];
+    storeTemp : ?Text;
+    whys : [FoodWhy__463510841];
+    yieldText : ?Text
+  };
 type OldFoodRecipe__505659909 =
   {
     allergenNote : ?Text;
@@ -3359,6 +3548,21 @@ type OldLibraryItem__471373874 =
     tags : [Text];
     title : Text
   };
+type OldLibraryItem__549704105 =
+  {
+    categoryId : Nat;
+    details : [DetailField__732678054];
+    foodRecipe : ?OldFoodRecipe__310586664;
+    id : Nat;
+    notes : ?Text;
+    photo : ?Text;
+    recipe : ?Recipe__856786456;
+    seasonal : Bool;
+    sortOrder : Nat;
+    subtitle : ?Text;
+    tags : [Text];
+    title : Text
+  };
 type OldLibraryItem__680704592 =
   {
     categoryId : Nat;
@@ -3520,6 +3724,7 @@ type Phase__454293786 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__493625523 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__496045583 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__50981955 = {id : Nat; name : Text; sortOrder : Nat};
+type Phase__527633934 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__585612074 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__680823036 = {id : Nat; name : Text; sortOrder : Nat};
 type Phase__698421073 = {id : Nat; name : Text; sortOrder : Nat};
@@ -3677,6 +3882,12 @@ type PositionAssignment__929565473 =
   {
     positionId : Nat;
     status : AssignmentStatus__132582410;
+    userId : Principal
+  };
+type PositionAssignment__949322701 =
+  {
+    positionId : Nat;
+    status : AssignmentStatus__856110266;
     userId : Principal
   };
 type Position__1007899447 =
@@ -3838,6 +4049,15 @@ type Position__820110026 =
     description : ?Text;
     id : Nat;
     layoutStyle : LayoutStyle__914178928;
+    name : Text;
+    sortOrder : Nat
+  };
+type Position__825978207 =
+  {
+    coverPhoto : ?Text;
+    description : ?Text;
+    id : Nat;
+    layoutStyle : LayoutStyle__185165630;
     name : Text;
     sortOrder : Nat
   };
@@ -4046,6 +4266,16 @@ type Question__665470715 =
     #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
     #trueFalse : {isTrue : Bool; statement : Text}
   };
+type Question__711345541 =
+  {
+    #matching :
+      {
+        pairs : [{fieldValue : Text; itemTitle : Text}];
+        shuffledOptions : [Text]
+      };
+    #multipleChoice : {choices : [Text]; correctIndex : Nat; prompt : Text};
+    #trueFalse : {isTrue : Bool; statement : Text}
+  };
 type Question__815930206 =
   {
     #matching :
@@ -4117,6 +4347,7 @@ type QuizContent__777510998 = [Question__1217471];
 type QuizContent__816489604 = [Question__1069184899];
 type QuizContent__843562392 = [Question__561373191];
 type QuizContent__960612181 = [Question__1000099812];
+type QuizContent__969421210 = [Question__711345541];
 type QuizSettings__1056897083 =
   {
     includeMatching : Bool;
@@ -4130,6 +4361,12 @@ type QuizSettings__178438194 =
     includeTrueFalse : Bool
   };
 type QuizSettings__221133405 =
+  {
+    includeMatching : Bool;
+    includeMultipleChoice : Bool;
+    includeTrueFalse : Bool
+  };
+type QuizSettings__312316435 =
   {
     includeMatching : Bool;
     includeMultipleChoice : Bool;
@@ -4205,6 +4442,8 @@ type RecipeSpec__205429737 =
   {amount : Text; ingredient : Text; upsell : Bool};
 type RecipeSpec__220073553 =
   {amount : Text; ingredient : Text; upsell : Bool};
+type RecipeSpec__255097641 =
+  {amount : Text; ingredient : Text; upsell : Bool};
 type RecipeSpec__35855457 = {amount : Text; ingredient : Text; upsell : Bool};
 type RecipeSpec__370267107 =
   {amount : Text; ingredient : Text; upsell : Bool};
@@ -4235,6 +4474,8 @@ type RecipeVariant__477665623 =
   {assembly : [Text]; specs : [RecipeSpec__220073553]; variantLabel : Text};
 type RecipeVariant__530313952 =
   {assembly : [Text]; specs : [RecipeSpec__845553566]; variantLabel : Text};
+type RecipeVariant__596402454 =
+  {assembly : [Text]; specs : [RecipeSpec__255097641]; variantLabel : Text};
 type RecipeVariant__634619341 =
   {assembly : [Text]; specs : [RecipeSpec__35855457]; variantLabel : Text};
 type RecipeVariant__636199106 =
@@ -4449,11 +4690,26 @@ type Recipe__853497905 =
     variants : [RecipeVariant__774837362];
     yield : ?Text
   };
+type Recipe__856786456 =
+  {
+    assembly : [Text];
+    buildAudio : ?Text;
+    equipment : [Text];
+    garnish : [Text];
+    glassware : Text;
+    qualityIdentifier : [Text];
+    recapAudio : ?Text;
+    shelfLife : ?Text;
+    specs : [RecipeSpec__255097641];
+    variants : [RecipeVariant__596402454];
+    yield : ?Text
+  };
 type Role__1000133192 = {#admin; #manager; #trainee; #trainer};
 type Role__176865372 = {#admin; #manager; #trainee; #trainer};
 type Role__21333812 = {#admin; #manager; #trainee; #trainer};
 type Role__269972045 = {#admin; #manager; #trainee; #trainer};
 type Role__276568515 = {#admin; #manager; #trainee; #trainer};
+type Role__378827129 = {#admin; #manager; #trainee; #trainer};
 type Role__380131693 = {#admin; #manager; #trainee; #trainer};
 type Role__50349522 = {#admin; #manager; #trainee; #trainer};
 type Role__532432903 = {#admin; #manager; #trainee; #trainer};
@@ -4731,6 +4987,18 @@ type Task__837317978 =
     sortOrder : Nat;
     text : Text
   };
+type Task__9449369 =
+  {
+    assignedTo : ?Principal;
+    completionDate : ?Text;
+    done : Bool;
+    id : Nat;
+    notes : ?Text;
+    phaseId : Nat;
+    section : ?Text;
+    sortOrder : Nat;
+    text : Text
+  };
 type Task__965807062 =
   {
     assignedTo : ?Principal;
@@ -4782,6 +5050,16 @@ type UserProfile__255476170 =
     id : Principal;
     name : Text;
     role : Role__1000133192;
+    storeLocation : Text
+  };
+type UserProfile__264694744 =
+  {
+    approvalStatus : ApprovalStatus__580386695;
+    email : ?Text;
+    id : Principal;
+    name : Text;
+    photo : ?Text;
+    role : Role__378827129;
     storeLocation : Text
   };
 type UserProfile__278634132 =
@@ -4896,6 +5174,7 @@ type UserRole__127019868 = {#admin; #guest; #user};
 type UserRole__137770035 = {#admin; #guest; #user};
 type UserRole__163450367 = {#admin; #guest; #user};
 type UserRole__199018766 = {#admin; #guest; #user};
+type UserRole__231090681 = {#admin; #guest; #user};
 type UserRole__241738365 = {#admin; #guest; #user};
 type UserRole__275970964 = {#admin; #guest; #user};
 type UserRole__287066177 = {#admin; #guest; #user};
@@ -4929,6 +5208,7 @@ type VerifiedEmailsState__32073611 = {verifiedEmails : Set__195681557<Text>};
 type VerifiedEmailsState__382335030 = {verifiedEmails : Set__195681557<Text>};
 type VerifiedEmailsState__479282635 = {verifiedEmails : Set__195681557<Text>};
 type VerifiedEmailsState__533945037 = {verifiedEmails : Set__195681557<Text>};
+type VerifiedEmailsState__587322524 = {verifiedEmails : Set__195681557<Text>};
 type VerifiedEmailsState__747736547 = {verifiedEmails : Set__195681557<Text>};
 type VerifiedEmailsState__789855390 = {verifiedEmails : Set__195681557<Text>};
 type VerifiedEmailsState__858072010 = {verifiedEmails : Set__195681557<Text>};
@@ -4957,7 +5237,8 @@ type VerifiedEmailsState__858072010 = {verifiedEmails : Set__195681557<Text>};
   "20260810_190000" : (old : OldActor__893632986) -> NewActor__177586636;
   "20260810_204000" : (old : OldActor__162310729) -> NewActor__363430820;
   "20260811_000000" : (old : OldActor__557104277) -> NewActor__616788696;
-  "20260811_120000" : (old : OldActor__359538329) -> NewActor__495869011
+  "20260811_120000" : (old : OldActor__359538329) -> NewActor__495869011;
+  "20260811_130000" : (old : OldActor__953152984) -> NewActor__337573549
 }
 actor  {
   stable accessControlState :

@@ -313,6 +313,21 @@ export interface FoodRecipe {
   qualityIdentifiers: string[];
   stepGroups?: FoodStepGroup[];
   whys?: FoodWhy[];
+  /**
+   * Per-size yield entries for a prep recipe (e.g. { size: "1x", value: "2 qt" },
+   * { size: "Half", value: "1 qt" }). Mirrors the backend Candid
+   * `yields : [FoodSizeAmount]` field, where `FoodSizeAmount` is an alias of
+   * `FoodComponentSize` (both `{ size: Text; value: Text }`) — so the frontend
+   * reuses the existing `FoodComponentSize` type (no separate `FoodSizeAmount`
+   * frontend type).
+   *
+   * It is a non-optional array on the backend; the hook layer defaults it to []
+   * when absent so the frontend treats recipes without per-size yields
+   * uniformly (empty array = use the scalar `yieldText` fallback). Additive only
+   * — single-batch prep recipes keep `yieldText` as the single-batch/fallback
+   * yield; `yields` carries the additional per-size yield rows.
+   */
+  yields: FoodComponentSize[];
 }
 
 /**
