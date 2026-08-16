@@ -2381,6 +2381,33 @@
     margin-bottom: 0.15rem;
   }
 
+  /* Recipe note callout — compact highlighted box surfacing item.notes.
+     Lightly tinted purple surface, purple left edge, uppercase NOTE label.
+     Sits near the top of the card (after the meta stack, before the
+     ingredients) and is clearly set apart from the steps. Flat, no glow.
+     The note text runs through renderInlineMarkdown so **bold** / *italic*
+     emphasize consistently with the steps. */
+  .food-recipe-note {
+    margin: 0.7rem 1rem 0;
+    padding: 0.55rem 0.7rem;
+    background-color: oklch(var(--food-recipe-purple-wash));
+    border-left: 3px solid oklch(var(--food-recipe-purple));
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+  .food-recipe-note .label {
+    display: block;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 0.68rem;
+    color: oklch(var(--food-recipe-purple));
+    margin-bottom: 0.15rem;
+  }
+
   /* Prep intro line — muted Barlow line under the title band. */
   .food-recipe-intro {
     font-family: var(--font-body);
@@ -2476,6 +2503,45 @@
     font-size: 0.82rem;
     color: oklch(var(--food-recipe-purple));
     margin-bottom: 0.35rem;
+  }
+
+  /* ── Prep Diagram figure — labeled 'Diagram' reference the Roadie
+     checks while cutting. Rendered in the right/procedure column after
+     the step sections. A small uppercase brand-colored 'Diagram' label
+     (same styling family as the other section headers) above the item's
+     photo on a white/very-light card background with a thin border and
+     small rounded corners. The image is capped at ~380px wide, centered,
+     and object-fit: contain so line-art never crops and never causes
+     horizontal scroll. Shows nothing when item.photo is null/empty. ── */
+  .food-recipe-diagram {
+    margin: 1rem 0 0;
+    padding: 0.6rem 0.6rem 0.7rem;
+    background-color: oklch(var(--food-recipe-paper));
+    border: 1px solid oklch(var(--food-recipe-paper-border));
+    border-radius: calc(var(--radius) + 0.125rem);
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+  }
+  .food-recipe-diagram figcaption {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: oklch(var(--food-recipe-purple));
+    text-align: center;
+    margin-bottom: 0.45rem;
+  }
+  .food-recipe-diagram img {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: calc(var(--radius) + 0.0625rem);
   }
 
   /* Quality identifiers checklist — ✓ bullets in deep purple. */
@@ -2793,6 +2859,19 @@
       color: oklch(var(--food-recipe-purple));
       margin-bottom: 0.45rem;
     }
+    /* ── Phone Diagram — stacks full-width under the phone steps, still
+       max-width-capped and centered so it never causes horizontal scroll.
+       Same white/very-light card, thin border, small rounded corners,
+       object-fit contain as the desktop variant. ── */
+    .food-recipe-diagram.is-phone {
+      margin: 1rem 0 0;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .food-recipe-diagram.is-phone img {
+      max-width: 380px;
+    }
     .food-recipe-phone-steps {
       list-style: decimal;
       padding-left: 1.4rem;
@@ -2911,6 +2990,12 @@
     }
     .food-recipe-phone-meta-badge.is-yield .value {
       font-weight: 700;
+    }
+
+    /* Recipe note callout (phone) — same compact highlighted box as the
+       desktop variant, aligned to the phone content's 1rem padding. */
+    .food-recipe-note.is-phone {
+      margin: 0.7rem 1rem 0;
     }
 
     /* ── prep phone ingredients — step-grouped stacked list. ── */

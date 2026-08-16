@@ -22,7 +22,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 var require_index_001 = __commonJS({
-  "assets/index-VoUwFZZ4.js"(exports, module) {
+  "assets/index-Cjhxs-Nz.js"(exports, module) {
     var _disableTimeVerification, _agent, _dbName, _storeName, _dbPromise, _IndexedDBExpirableStore_instances, getDb_fn, openDb_fn, openRequest_fn, prune_fn, _entries, _InMemoryExpirableStore_instances, prune_fn2, _rawKey, _derKey, _a, _currentInterval, _randomizationFactor, _multiplier, _maxInterval, _startTime, _maxElapsedTime, _maxIterations, _date, _count, _rootKeyPromise, _shouldFetchRootKey, _timeDiffMsecs, _hasSyncedTime, _syncTimePromise, _shouldSyncTime, _identity, _fetch, _fetchOptions, _callOptions, _credentials, _retryTimes, _backoffStrategy, _maxIngressExpiryInMinutes, _subnetNodeKeyExpirableStore, _HttpAgent_instances, maxIngressExpiryInMs_get, _queryPipeline, _updatePipeline, _subnetKeysFetching, _verifyQuerySignatures, handleV4SyncResponse_fn, handleV2Rejection_fn, requestAndRetryQuery_fn, requestAndRetry_fn, _verifyQueryResponse, readStateInner_fn, setTimeDiffMsecs_fn, asyncGuard_fn, rootKeyGuard_fn, syncTimeGuard_fn, doFetchSubnetKeys_fn, _focused, _cleanup, _setup, _b, _provider, _providerCalled, _c, _online, _cleanup2, _setup2, _d, _gcTimeout, _e, _queryType, _initialState, _revertState, _cache, _client, _retryer, _defaultOptions, _abortSignalConsumed, _Query_instances, isInitialPausedFetch_fn, dispatch_fn, _f, _client2, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _currentThenable, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _QueryObserver_instances, executeFetch_fn, updateStaleTimeout_fn, computeRefetchInterval_fn, updateRefetchInterval_fn, updateTimers_fn, clearStaleTimeout_fn, clearRefetchInterval_fn, updateQuery_fn, notify_fn, _g, _client3, _observers, _mutationCache, _retryer2, _Mutation_instances, dispatch_fn2, _h, _mutations, _scopes, _mutationId, _i, _client4, _currentResult2, _currentMutation, _mutateOptions, _MutationObserver_instances, updateResult_fn, notify_fn2, _j, _queries, _k, _queryCache, _mutationCache2, _defaultOptions2, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _l, _rawKey2, _derKey2, _publicKey, _privateKey, _inner, _delegation, _inner2, _attributes, _signer, _options, _channel, _establishingChannel, _scheduledChannelClosure, _pendingRequestCount, _Signer_instances, rpc_fn, applyTransforms_fn, _options2, _status, _HeartbeatClient_instances, establish_fn, maintain_fn, receiveStatusResponse_fn, sendStatusRequest_fn, _options3, _closeListeners, _options4, _closed, _pendingQueue, _instance, _callbacks, _idleTimeout, _timeoutID, _resetTimer, _options5, _identity2, _chain, _storage, _signer2, _options6, _initPromise, _AuthClient_instances, resolveNonce_fn, init_fn, hydrate_fn, registerDefaultIdleCallback_fn, _m, _n, _o, _p, _q;
     function _mergeNamespaces(n, m2) {
       for (var i = 0; i < m2.length; i++) {
@@ -33263,6 +33263,10 @@ variant ${k2} -> ${e.message}`, {
       "item": Text$2,
       "amount": Text$2
     });
+    const FoodQualityGroup = Record({
+      "title": Opt(Text$2),
+      "items": Vec(Text$2)
+    });
     const FoodRecipeKind$1 = Variant({
       "prep": Null,
       "menuBuild": Null
@@ -33288,6 +33292,7 @@ variant ${k2} -> ${e.message}`, {
       "lineUtensil": Opt(Text$2),
       "yields": Vec(FoodSizeAmount),
       "serviceware": Vec(FoodServiceware),
+      "qualityGroups": Vec(FoodQualityGroup),
       "station": Text$2,
       "equipment": Opt(Text$2),
       "holdTemp": Opt(Text$2),
@@ -33876,6 +33881,10 @@ variant ${k2} -> ${e.message}`, {
         "item": IDL2.Text,
         "amount": IDL2.Text
       });
+      const FoodQualityGroup2 = IDL2.Record({
+        "title": IDL2.Opt(IDL2.Text),
+        "items": IDL2.Vec(IDL2.Text)
+      });
       const FoodRecipeKind2 = IDL2.Variant({
         "prep": IDL2.Null,
         "menuBuild": IDL2.Null
@@ -33898,6 +33907,7 @@ variant ${k2} -> ${e.message}`, {
         "lineUtensil": IDL2.Opt(IDL2.Text),
         "yields": IDL2.Vec(FoodSizeAmount2),
         "serviceware": IDL2.Vec(FoodServiceware2),
+        "qualityGroups": IDL2.Vec(FoodQualityGroup2),
         "station": IDL2.Text,
         "equipment": IDL2.Opt(IDL2.Text),
         "holdTemp": IDL2.Opt(IDL2.Text),
@@ -34572,14 +34582,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n32(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__legendaryActivities(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n32(this._uploadFile, this._downloadFile, result);
         }
       }
       async __nextCategoryId() {
@@ -34684,42 +34694,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n56(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__nsoTasks(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n56(this._uploadFile, this._downloadFile, result);
         }
       }
       async __positions(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n57(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.__positions(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n57(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
         }
       }
       async __profiles(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.__profiles(to_candid_opt_n62(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.__profiles(to_candid_opt_n65(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.__profiles(to_candid_opt_n62(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.__profiles(to_candid_opt_n65(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
         }
       }
       async __verifiedEmails() {
@@ -34809,15 +34819,15 @@ variant ${k2} -> ${e.message}`, {
       async _immutableObjectStorageRefillCashier(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n71(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__ImmutableObjectStorageRefillResult_n74(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n74(this._uploadFile, this._downloadFile, arg0));
+            return from_candid__ImmutableObjectStorageRefillResult_n77(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n71(this._uploadFile, this._downloadFile, arg0));
-          return from_candid__ImmutableObjectStorageRefillResult_n74(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n74(this._uploadFile, this._downloadFile, arg0));
+          return from_candid__ImmutableObjectStorageRefillResult_n77(this._uploadFile, this._downloadFile, result);
         }
       }
       async _immutableObjectStorageUpdateGatewayPrincipals() {
@@ -34852,14 +34862,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor._internet_identity_sign_in_finish();
-            return from_candid_Result__1_n78(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result__1_n81(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor._internet_identity_sign_in_finish();
-          return from_candid_Result__1_n78(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result__1_n81(this._uploadFile, this._downloadFile, result);
         }
       }
       async _internet_identity_sign_in_start() {
@@ -34880,27 +34890,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.approveUser(arg0);
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.approveUser(arg0);
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async assignCallerUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n82(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n85(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n82(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n85(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -34921,42 +34931,42 @@ variant ${k2} -> ${e.message}`, {
       async buildLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n84(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_Activity_n30(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n87(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n84(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_Activity_n30(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.buildLegendaryActivity(to_candid_BuildActivityInput_n87(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async createCategory(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3));
+          const result = await this.actor.createCategory(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async createItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) {
         if (this.processError) {
           try {
-            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n106(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n109(this._uploadFile, this._downloadFile, arg9));
+            const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n109(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n112(this._uploadFile, this._downloadFile, arg9));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n106(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n109(this._uploadFile, this._downloadFile, arg9));
+          const result = await this.actor.createItem(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n109(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n112(this._uploadFile, this._downloadFile, arg9));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -34964,14 +34974,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.createMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.createMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async createNsoPhase(arg0) {
@@ -34991,29 +35001,29 @@ variant ${k2} -> ${e.message}`, {
       async createNsoTask(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n62(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Task_n54(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n65(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Task_n57(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n62(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Task_n54(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createNsoTask(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n65(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Task_n57(this._uploadFile, this._downloadFile, result);
         }
       }
       async createPosition(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.createPosition(arg0, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n120(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_Position_n58(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.createPosition(arg0, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n126(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_Position_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.createPosition(arg0, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n120(this._uploadFile, this._downloadFile, arg3));
-          return from_candid_Position_n58(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.createPosition(arg0, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_LayoutStyle_n126(this._uploadFile, this._downloadFile, arg3));
+          return from_candid_Position_n61(this._uploadFile, this._downloadFile, result);
         }
       }
       async deleteCategory(arg0) {
@@ -35104,56 +35114,56 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.execute(arg0);
-            return from_candid_Result_n122(this._uploadFile, this._downloadFile, result);
+            return from_candid_Result_n128(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.execute(arg0);
-          return from_candid_Result_n122(this._uploadFile, this._downloadFile, result);
+          return from_candid_Result_n128(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllPositions() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllPositions();
-            return from_candid_vec_n57(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllPositions();
-          return from_candid_vec_n57(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
         }
       }
       async getAllUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getAllUsers();
-            return from_candid_vec_n130(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n136(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getAllUsers();
-          return from_candid_vec_n130(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n136(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCallerUserRole() {
         if (this.processError) {
           try {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n131(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n137(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCallerUserRole();
-          return from_candid_UserRole_n131(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserRole_n137(this._uploadFile, this._downloadFile, result);
         }
       }
       async getCategoriesByPosition(arg0) {
@@ -35174,14 +35184,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getCategory(arg0);
-            return from_candid_opt_n133(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n139(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getCategory(arg0);
-          return from_candid_opt_n133(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n139(this._uploadFile, this._downloadFile, result);
         }
       }
       async getDrinksBuilderDecoyPool(arg0) {
@@ -35216,14 +35226,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getItem(arg0);
-            return from_candid_opt_n134(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n140(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getItem(arg0);
-          return from_candid_opt_n134(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n140(this._uploadFile, this._downloadFile, result);
         }
       }
       async getItemsByCategory(arg0) {
@@ -35244,28 +35254,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
-            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n32(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivitiesByPosition(arg0);
-          return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n32(this._uploadFile, this._downloadFile, result);
         }
       }
       async getLegendaryActivity(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getLegendaryActivity(arg0);
-            return from_candid_opt_n135(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n141(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getLegendaryActivity(arg0);
-          return from_candid_opt_n135(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n141(this._uploadFile, this._downloadFile, result);
         }
       }
       async getMyAssignments() {
@@ -35286,28 +35296,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getMyProfile();
-            return from_candid_opt_n136(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n142(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getMyProfile();
-          return from_candid_opt_n136(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n142(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoAssignableUsers() {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoAssignableUsers();
-            return from_candid_vec_n130(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n136(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoAssignableUsers();
-          return from_candid_vec_n130(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n136(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoOverallProgress() {
@@ -35328,14 +35338,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoPhase(arg0);
-            return from_candid_opt_n137(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n143(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoPhase(arg0);
-          return from_candid_opt_n137(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n143(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoPhaseProgressCounts() {
@@ -35370,42 +35380,42 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTask(arg0);
-            return from_candid_opt_n138(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n144(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTask(arg0);
-          return from_candid_opt_n138(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n144(this._uploadFile, this._downloadFile, result);
         }
       }
       async getNsoTasksByPhase(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getNsoTasksByPhase(arg0);
-            return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n56(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getNsoTasksByPhase(arg0);
-          return from_candid_vec_n53(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n56(this._uploadFile, this._downloadFile, result);
         }
       }
       async getPosition(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.getPosition(arg0);
-            return from_candid_opt_n139(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n145(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getPosition(arg0);
-          return from_candid_opt_n139(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n145(this._uploadFile, this._downloadFile, result);
         }
       }
       async getUserAssignments(arg0) {
@@ -35426,27 +35436,27 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.getUserRole(arg0);
-            return from_candid_opt_n140(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n146(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.getUserRole(arg0);
-          return from_candid_opt_n140(this._uploadFile, this._downloadFile, result);
+          return from_candid_opt_n146(this._uploadFile, this._downloadFile, result);
         }
       }
       async importNsoTasks(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n141(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n147(this._uploadFile, this._downloadFile, arg0));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n141(this._uploadFile, this._downloadFile, arg0));
+          const result = await this.actor.importNsoTasks(to_candid_NsoImportInput_n147(this._uploadFile, this._downloadFile, arg0));
           return result;
         }
       }
@@ -35454,14 +35464,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.initiateEmailVerification(arg0);
-            return from_candid_SendResult_n149(this._uploadFile, this._downloadFile, result);
+            return from_candid_SendResult_n155(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.initiateEmailVerification(arg0);
-          return from_candid_SendResult_n149(this._uploadFile, this._downloadFile, result);
+          return from_candid_SendResult_n155(this._uploadFile, this._downloadFile, result);
         }
       }
       async isCallerAdmin() {
@@ -35482,28 +35492,28 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.rebuildLegendaryActivity(arg0);
-            return from_candid_Activity_n30(this._uploadFile, this._downloadFile, result);
+            return from_candid_Activity_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.rebuildLegendaryActivity(arg0);
-          return from_candid_Activity_n30(this._uploadFile, this._downloadFile, result);
+          return from_candid_Activity_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async rejectUser(arg0) {
         if (this.processError) {
           try {
             const result = await this.actor.rejectUser(arg0);
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.rejectUser(arg0);
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async reorderCategories(arg0, arg1) {
@@ -35537,28 +35547,28 @@ variant ${k2} -> ${e.message}`, {
       async reorderNsoPhases(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n151(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n157(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n151(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoPhases(arg0, to_candid_variant_n157(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async reorderNsoTasks(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n151(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n157(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n151(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.reorderNsoTasks(arg0, to_candid_variant_n157(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35566,14 +35576,14 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.reorderPositions(arg0);
-            return from_candid_vec_n57(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.reorderPositions(arg0);
-          return from_candid_vec_n57(this._uploadFile, this._downloadFile, result);
+          return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
         }
       }
       async resendApprovalEmail(arg0) {
@@ -35621,14 +35631,14 @@ variant ${k2} -> ${e.message}`, {
       async setAssignmentStatus(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n152(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n158(this._uploadFile, this._downloadFile, arg2));
             return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n152(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.setAssignmentStatus(arg0, arg1, to_candid_AssignmentStatus_n158(this._uploadFile, this._downloadFile, arg2));
           return from_candid_PositionAssignment_n3(this._uploadFile, this._downloadFile, result);
         }
       }
@@ -35636,55 +35646,55 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.setEmailForUser(arg0);
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.setEmailForUser(arg0);
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async setMyPhoto(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.setMyPhoto(to_candid_opt_n105(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setMyPhoto(to_candid_opt_n108(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setMyPhoto(to_candid_opt_n105(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setMyPhoto(to_candid_opt_n108(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async setNsoTaskAssignment(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n62(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n65(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n62(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskAssignment(arg0, to_candid_opt_n65(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
       async setNsoTaskCompletionDate(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg1));
+            const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg1));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg1));
+          const result = await this.actor.setNsoTaskCompletionDate(arg0, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg1));
           return result;
         }
       }
@@ -35692,55 +35702,55 @@ variant ${k2} -> ${e.message}`, {
         if (this.processError) {
           try {
             const result = await this.actor.setUserEmail(arg0, arg1);
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.setUserEmail(arg0, arg1);
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async setUserPhoto(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserPhoto(arg0, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async setUserRole(arg0, arg1) {
         if (this.processError) {
           try {
-            const result = await this.actor.setUserRole(arg0, to_candid_Role_n154(this._uploadFile, this._downloadFile, arg1));
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.setUserRole(arg0, to_candid_Role_n160(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.setUserRole(arg0, to_candid_Role_n154(this._uploadFile, this._downloadFile, arg1));
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.setUserRole(arg0, to_candid_Role_n160(this._uploadFile, this._downloadFile, arg1));
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async toggleNsoTask(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2));
+          const result = await this.actor.toggleNsoTask(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2));
           return result;
         }
       }
@@ -35761,71 +35771,71 @@ variant ${k2} -> ${e.message}`, {
       async updateCategory(arg0, arg1, arg2, arg3) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3));
             return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3));
+          const result = await this.actor.updateCategory(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3));
           return from_candid_Category_n8(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateItem(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n106(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n109(this._uploadFile, this._downloadFile, arg9));
+            const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n109(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n112(this._uploadFile, this._downloadFile, arg9));
             return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n106(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n109(this._uploadFile, this._downloadFile, arg9));
+          const result = await this.actor.updateItem(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3), arg4, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg5), arg6, arg7, to_candid_opt_n109(this._uploadFile, this._downloadFile, arg8), to_candid_opt_n112(this._uploadFile, this._downloadFile, arg9));
           return from_candid_LibraryItem_n12(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateLegendaryActivity(arg0) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n156(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_Activity_n30(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n162(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_Activity_n33(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n156(this._uploadFile, this._downloadFile, arg0));
-          return from_candid_Activity_n30(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateLegendaryActivity(to_candid_UpdateActivityInput_n162(this._uploadFile, this._downloadFile, arg0));
+          return from_candid_Activity_n33(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfile(arg0, arg1) {
         if (this.processError) {
           try {
             const result = await this.actor.updateMyProfile(arg0, arg1);
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
           const result = await this.actor.updateMyProfile(arg0, arg1);
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateMyProfileWithPhoto(arg0, arg1, arg2) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2));
-            return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2));
+            return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2));
-          return from_candid_UserProfile_n65(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updateMyProfileWithPhoto(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2));
+          return from_candid_UserProfile_n68(this._uploadFile, this._downloadFile, result);
         }
       }
       async updateNsoPhase(arg0, arg1) {
@@ -35845,43 +35855,43 @@ variant ${k2} -> ${e.message}`, {
       async updateNsoTask(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
         if (this.processError) {
           try {
-            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n62(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n65(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg6));
             return result;
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n62(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg6));
+          const result = await this.actor.updateNsoTask(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n65(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg6));
           return result;
         }
       }
       async updatePosition(arg0, arg1, arg2, arg3, arg4) {
         if (this.processError) {
           try {
-            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n120(this._uploadFile, this._downloadFile, arg4));
-            return from_candid_Position_n58(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n126(this._uploadFile, this._downloadFile, arg4));
+            return from_candid_Position_n61(this._uploadFile, this._downloadFile, result);
           } catch (e) {
             this.processError(e);
             throw new Error("unreachable");
           }
         } else {
-          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n105(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n105(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n120(this._uploadFile, this._downloadFile, arg4));
-          return from_candid_Position_n58(this._uploadFile, this._downloadFile, result);
+          const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n108(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n108(this._uploadFile, this._downloadFile, arg3), to_candid_LayoutStyle_n126(this._uploadFile, this._downloadFile, arg4));
+          return from_candid_Position_n61(this._uploadFile, this._downloadFile, result);
         }
       }
     }
-    function from_candid_ActivityContent_n34(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n35(_uploadFile, _downloadFile, value);
+    function from_candid_ActivityContent_n37(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n38(_uploadFile, _downloadFile, value);
     }
-    function from_candid_ActivityType_n32(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n33(_uploadFile, _downloadFile, value);
+    function from_candid_ActivityType_n35(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n36(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Activity_n30(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n31(_uploadFile, _downloadFile, value);
+    function from_candid_Activity_n33(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n34(_uploadFile, _downloadFile, value);
     }
-    function from_candid_ApprovalStatus_n69(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n70(_uploadFile, _downloadFile, value);
+    function from_candid_ApprovalStatus_n72(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n73(_uploadFile, _downloadFile, value);
     }
     function from_candid_AssignmentStatus_n5(_uploadFile, _downloadFile, value) {
       return from_candid_variant_n6(_uploadFile, _downloadFile, value);
@@ -35889,32 +35899,35 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_Category_n8(_uploadFile, _downloadFile, value) {
       return from_candid_record_n9(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Cell_n126(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n127(_uploadFile, _downloadFile, value);
+    function from_candid_Cell_n132(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n133(_uploadFile, _downloadFile, value);
     }
-    function from_candid_DrinksBuilderContent_n36(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n37(_uploadFile, _downloadFile, value);
+    function from_candid_DrinksBuilderContent_n39(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n40(_uploadFile, _downloadFile, value);
     }
-    function from_candid_DrinksBuilderPrompt_n41(_uploadFile, _downloadFile, value) {
+    function from_candid_DrinksBuilderPrompt_n44(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n45(_uploadFile, _downloadFile, value);
+    }
+    function from_candid_DrinksBuilderSettings_n41(_uploadFile, _downloadFile, value) {
       return from_candid_record_n42(_uploadFile, _downloadFile, value);
     }
-    function from_candid_DrinksBuilderSettings_n38(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n39(_uploadFile, _downloadFile, value);
+    function from_candid_Error_n83(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n84(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Error_n80(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n81(_uploadFile, _downloadFile, value);
+    function from_candid_FlashcardContent_n50(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n51(_uploadFile, _downloadFile, value);
     }
-    function from_candid_FlashcardContent_n47(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n48(_uploadFile, _downloadFile, value);
+    function from_candid_Flashcard_n52(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n53(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Flashcard_n49(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n50(_uploadFile, _downloadFile, value);
+    function from_candid_FoodComponent_n26(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n27(_uploadFile, _downloadFile, value);
     }
-    function from_candid_FoodComponent_n23(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n24(_uploadFile, _downloadFile, value);
+    function from_candid_FoodQualityGroup_n21(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n22(_uploadFile, _downloadFile, value);
     }
-    function from_candid_FoodRecipeKind_n20(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n21(_uploadFile, _downloadFile, value);
+    function from_candid_FoodRecipeKind_n23(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n24(_uploadFile, _downloadFile, value);
     }
     function from_candid_FoodRecipe_n15(_uploadFile, _downloadFile, value) {
       return from_candid_record_n16(_uploadFile, _downloadFile, value);
@@ -35922,8 +35935,8 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_FoodStepGroup_n18(_uploadFile, _downloadFile, value) {
       return from_candid_record_n19(_uploadFile, _downloadFile, value);
     }
-    function from_candid_LayoutStyle_n60(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n61(_uploadFile, _downloadFile, value);
+    function from_candid_LayoutStyle_n63(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n64(_uploadFile, _downloadFile, value);
     }
     function from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value) {
       return from_candid_record_n13(_uploadFile, _downloadFile, value);
@@ -35931,106 +35944,100 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, value) {
       return from_candid_record_n4(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Position_n58(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n59(_uploadFile, _downloadFile, value);
+    function from_candid_Position_n61(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n62(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Question_n45(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n46(_uploadFile, _downloadFile, value);
+    function from_candid_Question_n48(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n49(_uploadFile, _downloadFile, value);
     }
-    function from_candid_QuizContent_n43(_uploadFile, _downloadFile, value) {
-      return from_candid_vec_n44(_uploadFile, _downloadFile, value);
+    function from_candid_QuizContent_n46(_uploadFile, _downloadFile, value) {
+      return from_candid_vec_n47(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Recipe_n27(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n28(_uploadFile, _downloadFile, value);
+    function from_candid_Recipe_n30(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n31(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result__1_n78(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n79(_uploadFile, _downloadFile, value);
+    function from_candid_Result__1_n81(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n82(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Result_n122(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n123(_uploadFile, _downloadFile, value);
+    function from_candid_Result_n128(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n129(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Role_n67(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n68(_uploadFile, _downloadFile, value);
+    function from_candid_Role_n70(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n71(_uploadFile, _downloadFile, value);
     }
-    function from_candid_SendResult_n149(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n150(_uploadFile, _downloadFile, value);
+    function from_candid_SendResult_n155(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n156(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Task_n54(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n55(_uploadFile, _downloadFile, value);
+    function from_candid_Task_n57(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n58(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserProfile_n65(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n66(_uploadFile, _downloadFile, value);
+    function from_candid_UserProfile_n68(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n69(_uploadFile, _downloadFile, value);
     }
-    function from_candid_UserRole_n131(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n132(_uploadFile, _downloadFile, value);
+    function from_candid_UserRole_n137(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n138(_uploadFile, _downloadFile, value);
     }
-    function from_candid_Value_n128(_uploadFile, _downloadFile, value) {
-      return from_candid_variant_n129(_uploadFile, _downloadFile, value);
+    function from_candid_Value_n134(_uploadFile, _downloadFile, value) {
+      return from_candid_variant_n135(_uploadFile, _downloadFile, value);
     }
-    function from_candid__ImmutableObjectStorageRefillResult_n74(_uploadFile, _downloadFile, value) {
-      return from_candid_record_n75(_uploadFile, _downloadFile, value);
+    function from_candid__ImmutableObjectStorageRefillResult_n77(_uploadFile, _downloadFile, value) {
+      return from_candid_record_n78(_uploadFile, _downloadFile, value);
     }
     function from_candid_opt_n10(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n133(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n134(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n135(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Activity_n30(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n136(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_UserProfile_n65(_uploadFile, _downloadFile, value[0]);
-    }
-    function from_candid_opt_n137(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : value[0];
-    }
-    function from_candid_opt_n138(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Task_n54(_uploadFile, _downloadFile, value[0]);
-    }
     function from_candid_opt_n139(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Position_n58(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_Category_n8(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n14(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : from_candid_FoodRecipe_n15(_uploadFile, _downloadFile, value[0]);
     }
     function from_candid_opt_n140(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Role_n67(_uploadFile, _downloadFile, value[0]);
+      return value.length === 0 ? null : from_candid_LibraryItem_n12(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n25(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n141(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Activity_n33(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n142(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_UserProfile_n68(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n143(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n26(_uploadFile, _downloadFile, value) {
-      return value.length === 0 ? null : from_candid_Recipe_n27(_uploadFile, _downloadFile, value[0]);
+    function from_candid_opt_n144(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Task_n57(_uploadFile, _downloadFile, value[0]);
     }
-    function from_candid_opt_n51(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n145(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Position_n61(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n146(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Role_n70(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n28(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n52(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n29(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : from_candid_Recipe_n30(_uploadFile, _downloadFile, value[0]);
+    }
+    function from_candid_opt_n54(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n56(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n55(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n76(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n59(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_opt_n77(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n79(_uploadFile, _downloadFile, value) {
       return value.length === 0 ? null : value[0];
     }
-    function from_candid_record_n123(_uploadFile, _downloadFile, value) {
+    function from_candid_opt_n80(_uploadFile, _downloadFile, value) {
+      return value.length === 0 ? null : value[0];
+    }
+    function from_candid_record_n129(_uploadFile, _downloadFile, value) {
       return {
         hasMore: value.hasMore,
-        rows: from_candid_vec_n124(_uploadFile, _downloadFile, value.rows)
-      };
-    }
-    function from_candid_record_n127(_uploadFile, _downloadFile, value) {
-      return {
-        value: from_candid_Value_n128(_uploadFile, _downloadFile, value.value),
-        name: value.name
+        rows: from_candid_vec_n130(_uploadFile, _downloadFile, value.rows)
       };
     }
     function from_candid_record_n13(_uploadFile, _downloadFile, value) {
@@ -36046,7 +36053,13 @@ variant ${k2} -> ${e.message}`, {
         details: value.details,
         photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo)),
         subtitle: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.subtitle)),
-        recipe: record_opt_to_undefined(from_candid_opt_n26(_uploadFile, _downloadFile, value.recipe))
+        recipe: record_opt_to_undefined(from_candid_opt_n29(_uploadFile, _downloadFile, value.recipe))
+      };
+    }
+    function from_candid_record_n133(_uploadFile, _downloadFile, value) {
+      return {
+        value: from_candid_Value_n134(_uploadFile, _downloadFile, value.value),
+        name: value.name
       };
     }
     function from_candid_record_n16(_uploadFile, _downloadFile, value) {
@@ -36055,14 +36068,15 @@ variant ${k2} -> ${e.message}`, {
         lineUtensil: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.lineUtensil)),
         yields: value.yields,
         serviceware: value.serviceware,
+        qualityGroups: from_candid_vec_n20(_uploadFile, _downloadFile, value.qualityGroups),
         station: value.station,
         equipment: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.equipment)),
         holdTemp: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.holdTemp)),
-        kind: from_candid_FoodRecipeKind_n20(_uploadFile, _downloadFile, value.kind),
+        kind: from_candid_FoodRecipeKind_n23(_uploadFile, _downloadFile, value.kind),
         buildHeader: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.buildHeader)),
         whys: value.whys,
         qualityIdentifiers: value.qualityIdentifiers,
-        components: from_candid_vec_n22(_uploadFile, _downloadFile, value.components),
+        components: from_candid_vec_n25(_uploadFile, _downloadFile, value.components),
         shelfLife: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.shelfLife)),
         steps: value.steps,
         yieldText: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.yieldText)),
@@ -36078,9 +36092,15 @@ variant ${k2} -> ${e.message}`, {
         steps: value.steps
       };
     }
-    function from_candid_record_n24(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n22(_uploadFile, _downloadFile, value) {
       return {
-        anchorY: record_opt_to_undefined(from_candid_opt_n25(_uploadFile, _downloadFile, value.anchorY)),
+        title: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.title)),
+        items: value.items
+      };
+    }
+    function from_candid_record_n27(_uploadFile, _downloadFile, value) {
+      return {
+        anchorY: record_opt_to_undefined(from_candid_opt_n28(_uploadFile, _downloadFile, value.anchorY)),
         item: value.item,
         note: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.note)),
         amounts: value.amounts,
@@ -36088,7 +36108,7 @@ variant ${k2} -> ${e.message}`, {
         amount: value.amount
       };
     }
-    function from_candid_record_n28(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n31(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         recapAudio: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.recapAudio)),
@@ -36103,43 +36123,17 @@ variant ${k2} -> ${e.message}`, {
         yield: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.yield))
       };
     }
-    function from_candid_record_n31(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n34(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        activityType: from_candid_ActivityType_n32(_uploadFile, _downloadFile, value.activityType),
-        content: from_candid_ActivityContent_n34(_uploadFile, _downloadFile, value.content),
+        activityType: from_candid_ActivityType_n35(_uploadFile, _downloadFile, value.activityType),
+        content: from_candid_ActivityContent_n37(_uploadFile, _downloadFile, value.content),
         name: value.name,
         createdAt: value.createdAt,
         createdBy: value.createdBy,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds,
-        quizSettings: record_opt_to_undefined(from_candid_opt_n52(_uploadFile, _downloadFile, value.quizSettings))
-      };
-    }
-    function from_candid_record_n37(_uploadFile, _downloadFile, value) {
-      return {
-        settings: from_candid_DrinksBuilderSettings_n38(_uploadFile, _downloadFile, value.settings)
-      };
-    }
-    function from_candid_record_n39(_uploadFile, _downloadFile, value) {
-      return {
-        garnishPrompts: from_candid_vec_n40(_uploadFile, _downloadFile, value.garnishPrompts),
-        includedCategories: value.includedCategories,
-        enforceAssemblyOrder: value.enforceAssemblyOrder,
-        pointsPerCorrect: value.pointsPerCorrect,
-        excludedDrinkTitles: value.excludedDrinkTitles,
-        showScoring: value.showScoring,
-        assemblyPrompts: from_candid_vec_n40(_uploadFile, _downloadFile, value.assemblyPrompts),
-        requireExactAmounts: value.requireExactAmounts,
-        answerClips: value.answerClips,
-        glasswarePrompts: from_candid_vec_n40(_uploadFile, _downloadFile, value.glasswarePrompts),
-        soundDefault: value.soundDefault,
-        decoyCount: value.decoyCount,
-        celebrationClips: value.celebrationClips,
-        correctAffirmations: value.correctAffirmations,
-        specsPrompts: from_candid_vec_n40(_uploadFile, _downloadFile, value.specsPrompts),
-        streakMultiplier: value.streakMultiplier,
-        roundsPerSession: value.roundsPerSession
+        quizSettings: record_opt_to_undefined(from_candid_opt_n55(_uploadFile, _downloadFile, value.quizSettings))
       };
     }
     function from_candid_record_n4(_uploadFile, _downloadFile, value) {
@@ -36149,25 +36143,51 @@ variant ${k2} -> ${e.message}`, {
         positionId: value.positionId
       };
     }
+    function from_candid_record_n40(_uploadFile, _downloadFile, value) {
+      return {
+        settings: from_candid_DrinksBuilderSettings_n41(_uploadFile, _downloadFile, value.settings)
+      };
+    }
     function from_candid_record_n42(_uploadFile, _downloadFile, value) {
+      return {
+        garnishPrompts: from_candid_vec_n43(_uploadFile, _downloadFile, value.garnishPrompts),
+        includedCategories: value.includedCategories,
+        enforceAssemblyOrder: value.enforceAssemblyOrder,
+        pointsPerCorrect: value.pointsPerCorrect,
+        excludedDrinkTitles: value.excludedDrinkTitles,
+        showScoring: value.showScoring,
+        assemblyPrompts: from_candid_vec_n43(_uploadFile, _downloadFile, value.assemblyPrompts),
+        requireExactAmounts: value.requireExactAmounts,
+        answerClips: value.answerClips,
+        glasswarePrompts: from_candid_vec_n43(_uploadFile, _downloadFile, value.glasswarePrompts),
+        soundDefault: value.soundDefault,
+        decoyCount: value.decoyCount,
+        celebrationClips: value.celebrationClips,
+        correctAffirmations: value.correctAffirmations,
+        specsPrompts: from_candid_vec_n43(_uploadFile, _downloadFile, value.specsPrompts),
+        streakMultiplier: value.streakMultiplier,
+        roundsPerSession: value.roundsPerSession
+      };
+    }
+    function from_candid_record_n45(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         audioUrl: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.audioUrl))
       };
     }
-    function from_candid_record_n50(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n53(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
         itemPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.itemPhoto)),
-        recipe: record_opt_to_undefined(from_candid_opt_n51(_uploadFile, _downloadFile, value.recipe))
+        recipe: record_opt_to_undefined(from_candid_opt_n54(_uploadFile, _downloadFile, value.recipe))
       };
     }
-    function from_candid_record_n55(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n58(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         completionDate: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.completionDate)),
-        assignedTo: record_opt_to_undefined(from_candid_opt_n56(_uploadFile, _downloadFile, value.assignedTo)),
+        assignedTo: record_opt_to_undefined(from_candid_opt_n59(_uploadFile, _downloadFile, value.assignedTo)),
         sortOrder: value.sortOrder,
         done: value.done,
         text: value.text,
@@ -36176,31 +36196,31 @@ variant ${k2} -> ${e.message}`, {
         phaseId: value.phaseId
       };
     }
-    function from_candid_record_n59(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n62(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        layoutStyle: from_candid_LayoutStyle_n60(_uploadFile, _downloadFile, value.layoutStyle),
+        layoutStyle: from_candid_LayoutStyle_n63(_uploadFile, _downloadFile, value.layoutStyle),
         sortOrder: value.sortOrder,
         name: value.name,
         description: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.description)),
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_record_n66(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n69(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
         name: value.name,
-        role: from_candid_Role_n67(_uploadFile, _downloadFile, value.role),
+        role: from_candid_Role_n70(_uploadFile, _downloadFile, value.role),
         email: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.email)),
-        approvalStatus: from_candid_ApprovalStatus_n69(_uploadFile, _downloadFile, value.approvalStatus),
+        approvalStatus: from_candid_ApprovalStatus_n72(_uploadFile, _downloadFile, value.approvalStatus),
         storeLocation: value.storeLocation,
         photo: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.photo))
       };
     }
-    function from_candid_record_n75(_uploadFile, _downloadFile, value) {
+    function from_candid_record_n78(_uploadFile, _downloadFile, value) {
       return {
-        success: record_opt_to_undefined(from_candid_opt_n76(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n77(_uploadFile, _downloadFile, value.topped_up_amount))
+        success: record_opt_to_undefined(from_candid_opt_n79(_uploadFile, _downloadFile, value.success)),
+        topped_up_amount: record_opt_to_undefined(from_candid_opt_n80(_uploadFile, _downloadFile, value.topped_up_amount))
       };
     }
     function from_candid_record_n9(_uploadFile, _downloadFile, value) {
@@ -36213,13 +36233,13 @@ variant ${k2} -> ${e.message}`, {
         coverPhoto: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.coverPhoto))
       };
     }
-    function from_candid_tuple_n64(_uploadFile, _downloadFile, value) {
+    function from_candid_tuple_n67(_uploadFile, _downloadFile, value) {
       return [
         value[0],
-        from_candid_UserProfile_n65(_uploadFile, _downloadFile, value[1])
+        from_candid_UserProfile_n68(_uploadFile, _downloadFile, value[1])
       ];
     }
-    function from_candid_variant_n129(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n135(_uploadFile, _downloadFile, value) {
       return "int" in value ? {
         __kind__: "int",
         int: value.int
@@ -36240,10 +36260,10 @@ variant ${k2} -> ${e.message}`, {
         text: value.text
       } : value;
     }
-    function from_candid_variant_n132(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n138(_uploadFile, _downloadFile, value) {
       return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
     }
-    function from_candid_variant_n150(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n156(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
@@ -36252,25 +36272,25 @@ variant ${k2} -> ${e.message}`, {
         err: value.err
       } : value;
     }
-    function from_candid_variant_n21(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n24(_uploadFile, _downloadFile, value) {
       return "prep" in value ? "prep" : "menuBuild" in value ? "menuBuild" : value;
     }
-    function from_candid_variant_n33(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n36(_uploadFile, _downloadFile, value) {
       return "drinksBuilder" in value ? "drinksBuilder" : "quiz" in value ? "quiz" : "flashcards" in value ? "flashcards" : value;
     }
-    function from_candid_variant_n35(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n38(_uploadFile, _downloadFile, value) {
       return "drinksBuilderContent" in value ? {
         __kind__: "drinksBuilderContent",
-        drinksBuilderContent: from_candid_DrinksBuilderContent_n36(_uploadFile, _downloadFile, value.drinksBuilderContent)
+        drinksBuilderContent: from_candid_DrinksBuilderContent_n39(_uploadFile, _downloadFile, value.drinksBuilderContent)
       } : "quizContent" in value ? {
         __kind__: "quizContent",
-        quizContent: from_candid_QuizContent_n43(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: from_candid_QuizContent_n46(_uploadFile, _downloadFile, value.quizContent)
       } : "flashcardContent" in value ? {
         __kind__: "flashcardContent",
-        flashcardContent: from_candid_FlashcardContent_n47(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: from_candid_FlashcardContent_n50(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function from_candid_variant_n46(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n49(_uploadFile, _downloadFile, value) {
       return "multipleChoice" in value ? {
         __kind__: "multipleChoice",
         multipleChoice: value.multipleChoice
@@ -36285,25 +36305,25 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_variant_n6(_uploadFile, _downloadFile, value) {
       return "inTraining" in value ? "inTraining" : "certified" in value ? "certified" : value;
     }
-    function from_candid_variant_n61(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n64(_uploadFile, _downloadFile, value) {
       return "library" in value ? "library" : "kitchen" in value ? "kitchen" : "orientation" in value ? "orientation" : value;
     }
-    function from_candid_variant_n68(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n71(_uploadFile, _downloadFile, value) {
       return "manager" in value ? "manager" : "admin" in value ? "admin" : "trainee" in value ? "trainee" : "trainer" in value ? "trainer" : value;
     }
-    function from_candid_variant_n70(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n73(_uploadFile, _downloadFile, value) {
       return "pending" in value ? "pending" : "approved" in value ? "approved" : "rejected" in value ? "rejected" : value;
     }
-    function from_candid_variant_n79(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n82(_uploadFile, _downloadFile, value) {
       return "ok" in value ? {
         __kind__: "ok",
         ok: value.ok
       } : "err" in value ? {
         __kind__: "err",
-        err: from_candid_Error_n80(_uploadFile, _downloadFile, value.err)
+        err: from_candid_Error_n83(_uploadFile, _downloadFile, value.err)
       } : value;
     }
-    function from_candid_variant_n81(_uploadFile, _downloadFile, value) {
+    function from_candid_variant_n84(_uploadFile, _downloadFile, value) {
       return "FrontendOriginsNotConfigured" in value ? {
         __kind__: "FrontendOriginsNotConfigured",
         FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
@@ -36339,14 +36359,14 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_vec_n11(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_LibraryItem_n12(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n124(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_vec_n125(_uploadFile, _downloadFile, x2));
-    }
-    function from_candid_vec_n125(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Cell_n126(_uploadFile, _downloadFile, x2));
-    }
     function from_candid_vec_n130(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_UserProfile_n65(_uploadFile, _downloadFile, x2));
+      return value.map((x2) => from_candid_vec_n131(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n131(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Cell_n132(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n136(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_UserProfile_n68(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n17(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_FoodStepGroup_n18(_uploadFile, _downloadFile, x2));
@@ -36354,151 +36374,162 @@ variant ${k2} -> ${e.message}`, {
     function from_candid_vec_n2(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_PositionAssignment_n3(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n22(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_FoodComponent_n23(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n20(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_FoodQualityGroup_n21(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n29(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Activity_n30(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n25(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_FoodComponent_n26(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n40(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_DrinksBuilderPrompt_n41(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n32(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Activity_n33(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n44(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Question_n45(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n43(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_DrinksBuilderPrompt_n44(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n48(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Flashcard_n49(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n47(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Question_n48(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n53(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Task_n54(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n51(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Flashcard_n52(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n57(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_Position_n58(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n56(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Task_n57(_uploadFile, _downloadFile, x2));
     }
-    function from_candid_vec_n63(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => from_candid_tuple_n64(_uploadFile, _downloadFile, x2));
+    function from_candid_vec_n60(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_Position_n61(_uploadFile, _downloadFile, x2));
+    }
+    function from_candid_vec_n66(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => from_candid_tuple_n67(_uploadFile, _downloadFile, x2));
     }
     function from_candid_vec_n7(_uploadFile, _downloadFile, value) {
       return value.map((x2) => from_candid_Category_n8(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_ActivityContent_n88(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n89(_uploadFile, _downloadFile, value);
+    function to_candid_ActivityContent_n91(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n92(_uploadFile, _downloadFile, value);
     }
-    function to_candid_ActivityType_n86(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n87(_uploadFile, _downloadFile, value);
+    function to_candid_ActivityType_n89(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n90(_uploadFile, _downloadFile, value);
     }
-    function to_candid_AssignmentStatus_n152(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n153(_uploadFile, _downloadFile, value);
+    function to_candid_AssignmentStatus_n158(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n159(_uploadFile, _downloadFile, value);
     }
-    function to_candid_BuildActivityInput_n84(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n85(_uploadFile, _downloadFile, value);
+    function to_candid_BuildActivityInput_n87(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n88(_uploadFile, _downloadFile, value);
     }
-    function to_candid_DrinksBuilderContent_n98(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n99(_uploadFile, _downloadFile, value);
+    function to_candid_DrinksBuilderContent_n101(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n102(_uploadFile, _downloadFile, value);
     }
-    function to_candid_DrinksBuilderPrompt_n103(_uploadFile, _downloadFile, value) {
+    function to_candid_DrinksBuilderPrompt_n106(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n107(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_DrinksBuilderSettings_n103(_uploadFile, _downloadFile, value) {
       return to_candid_record_n104(_uploadFile, _downloadFile, value);
     }
-    function to_candid_DrinksBuilderSettings_n100(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n101(_uploadFile, _downloadFile, value);
+    function to_candid_FlashcardContent_n93(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n94(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FlashcardContent_n90(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n91(_uploadFile, _downloadFile, value);
+    function to_candid_Flashcard_n95(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n96(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Flashcard_n92(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n93(_uploadFile, _downloadFile, value);
+    function to_candid_FoodComponent_n124(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n125(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FoodComponent_n118(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n119(_uploadFile, _downloadFile, value);
+    function to_candid_FoodQualityGroup_n119(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n120(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FoodRecipeKind_n115(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n116(_uploadFile, _downloadFile, value);
+    function to_candid_FoodRecipeKind_n121(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n122(_uploadFile, _downloadFile, value);
     }
-    function to_candid_FoodRecipe_n110(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n111(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_FoodStepGroup_n113(_uploadFile, _downloadFile, value) {
+    function to_candid_FoodRecipe_n113(_uploadFile, _downloadFile, value) {
       return to_candid_record_n114(_uploadFile, _downloadFile, value);
     }
-    function to_candid_LayoutStyle_n120(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n121(_uploadFile, _downloadFile, value);
+    function to_candid_FoodStepGroup_n116(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n117(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportInput_n141(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n142(_uploadFile, _downloadFile, value);
+    function to_candid_LayoutStyle_n126(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n127(_uploadFile, _downloadFile, value);
     }
-    function to_candid_NsoImportPhase_n144(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n145(_uploadFile, _downloadFile, value);
-    }
-    function to_candid_NsoImportTask_n147(_uploadFile, _downloadFile, value) {
+    function to_candid_NsoImportInput_n147(_uploadFile, _downloadFile, value) {
       return to_candid_record_n148(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Question_n96(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n97(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportPhase_n150(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n151(_uploadFile, _downloadFile, value);
     }
-    function to_candid_QuizContent_n94(_uploadFile, _downloadFile, value) {
-      return to_candid_vec_n95(_uploadFile, _downloadFile, value);
+    function to_candid_NsoImportTask_n153(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n154(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Recipe_n107(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n108(_uploadFile, _downloadFile, value);
+    function to_candid_Question_n99(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n100(_uploadFile, _downloadFile, value);
     }
-    function to_candid_Role_n154(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n155(_uploadFile, _downloadFile, value);
+    function to_candid_QuizContent_n97(_uploadFile, _downloadFile, value) {
+      return to_candid_vec_n98(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UpdateActivityInput_n156(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n157(_uploadFile, _downloadFile, value);
+    function to_candid_Recipe_n110(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n111(_uploadFile, _downloadFile, value);
     }
-    function to_candid_UserRole_n82(_uploadFile, _downloadFile, value) {
-      return to_candid_variant_n83(_uploadFile, _downloadFile, value);
+    function to_candid_Role_n160(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n161(_uploadFile, _downloadFile, value);
     }
-    function to_candid__ImmutableObjectStorageRefillInformation_n72(_uploadFile, _downloadFile, value) {
-      return to_candid_record_n73(_uploadFile, _downloadFile, value);
+    function to_candid_UpdateActivityInput_n162(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n163(_uploadFile, _downloadFile, value);
+    }
+    function to_candid_UserRole_n85(_uploadFile, _downloadFile, value) {
+      return to_candid_variant_n86(_uploadFile, _downloadFile, value);
+    }
+    function to_candid__ImmutableObjectStorageRefillInformation_n75(_uploadFile, _downloadFile, value) {
+      return to_candid_record_n76(_uploadFile, _downloadFile, value);
     }
     function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n105(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n108(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
-    }
-    function to_candid_opt_n106(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid_Recipe_n107(_uploadFile, _downloadFile, value));
     }
     function to_candid_opt_n109(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid_FoodRecipe_n110(_uploadFile, _downloadFile, value));
+      return value === null ? candid_none() : candid_some(to_candid_Recipe_n110(_uploadFile, _downloadFile, value));
     }
-    function to_candid_opt_n62(_uploadFile, _downloadFile, value) {
+    function to_candid_opt_n112(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid_FoodRecipe_n113(_uploadFile, _downloadFile, value));
+    }
+    function to_candid_opt_n65(_uploadFile, _downloadFile, value) {
       return value === null ? candid_none() : candid_some(value);
     }
-    function to_candid_opt_n71(_uploadFile, _downloadFile, value) {
-      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n72(_uploadFile, _downloadFile, value));
+    function to_candid_opt_n74(_uploadFile, _downloadFile, value) {
+      return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n75(_uploadFile, _downloadFile, value));
     }
-    function to_candid_record_n101(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n102(_uploadFile, _downloadFile, value) {
       return {
-        garnishPrompts: to_candid_vec_n102(_uploadFile, _downloadFile, value.garnishPrompts),
+        settings: to_candid_DrinksBuilderSettings_n103(_uploadFile, _downloadFile, value.settings)
+      };
+    }
+    function to_candid_record_n104(_uploadFile, _downloadFile, value) {
+      return {
+        garnishPrompts: to_candid_vec_n105(_uploadFile, _downloadFile, value.garnishPrompts),
         includedCategories: value.includedCategories,
         enforceAssemblyOrder: value.enforceAssemblyOrder,
         pointsPerCorrect: value.pointsPerCorrect,
         excludedDrinkTitles: value.excludedDrinkTitles,
         showScoring: value.showScoring,
-        assemblyPrompts: to_candid_vec_n102(_uploadFile, _downloadFile, value.assemblyPrompts),
+        assemblyPrompts: to_candid_vec_n105(_uploadFile, _downloadFile, value.assemblyPrompts),
         requireExactAmounts: value.requireExactAmounts,
         answerClips: value.answerClips,
-        glasswarePrompts: to_candid_vec_n102(_uploadFile, _downloadFile, value.glasswarePrompts),
+        glasswarePrompts: to_candid_vec_n105(_uploadFile, _downloadFile, value.glasswarePrompts),
         soundDefault: value.soundDefault,
         decoyCount: value.decoyCount,
         celebrationClips: value.celebrationClips,
         correctAffirmations: value.correctAffirmations,
-        specsPrompts: to_candid_vec_n102(_uploadFile, _downloadFile, value.specsPrompts),
+        specsPrompts: to_candid_vec_n105(_uploadFile, _downloadFile, value.specsPrompts),
         streakMultiplier: value.streakMultiplier,
         roundsPerSession: value.roundsPerSession
       };
     }
-    function to_candid_record_n104(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n107(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         audioUrl: value.audioUrl ? candid_some(value.audioUrl) : candid_none()
       };
     }
-    function to_candid_record_n108(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n111(_uploadFile, _downloadFile, value) {
       return {
         equipment: value.equipment,
         recapAudio: value.recapAudio ? candid_some(value.recapAudio) : candid_none(),
@@ -36513,20 +36544,21 @@ variant ${k2} -> ${e.message}`, {
         yield: value.yield ? candid_some(value.yield) : candid_none()
       };
     }
-    function to_candid_record_n111(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n114(_uploadFile, _downloadFile, value) {
       return {
-        stepGroups: to_candid_vec_n112(_uploadFile, _downloadFile, value.stepGroups),
+        stepGroups: to_candid_vec_n115(_uploadFile, _downloadFile, value.stepGroups),
         lineUtensil: value.lineUtensil ? candid_some(value.lineUtensil) : candid_none(),
         yields: value.yields,
         serviceware: value.serviceware,
+        qualityGroups: to_candid_vec_n118(_uploadFile, _downloadFile, value.qualityGroups),
         station: value.station,
         equipment: value.equipment ? candid_some(value.equipment) : candid_none(),
         holdTemp: value.holdTemp ? candid_some(value.holdTemp) : candid_none(),
-        kind: to_candid_FoodRecipeKind_n115(_uploadFile, _downloadFile, value.kind),
+        kind: to_candid_FoodRecipeKind_n121(_uploadFile, _downloadFile, value.kind),
         buildHeader: value.buildHeader ? candid_some(value.buildHeader) : candid_none(),
         whys: value.whys,
         qualityIdentifiers: value.qualityIdentifiers,
-        components: to_candid_vec_n117(_uploadFile, _downloadFile, value.components),
+        components: to_candid_vec_n123(_uploadFile, _downloadFile, value.components),
         shelfLife: value.shelfLife ? candid_some(value.shelfLife) : candid_none(),
         steps: value.steps,
         yieldText: value.yieldText ? candid_some(value.yieldText) : candid_none(),
@@ -36536,13 +36568,19 @@ variant ${k2} -> ${e.message}`, {
         allergenNote: value.allergenNote ? candid_some(value.allergenNote) : candid_none()
       };
     }
-    function to_candid_record_n114(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n117(_uploadFile, _downloadFile, value) {
       return {
         title: value.title ? candid_some(value.title) : candid_none(),
         steps: value.steps
       };
     }
-    function to_candid_record_n119(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n120(_uploadFile, _downloadFile, value) {
+      return {
+        title: value.title ? candid_some(value.title) : candid_none(),
+        items: value.items
+      };
+    }
+    function to_candid_record_n125(_uploadFile, _downloadFile, value) {
       return {
         anchorY: value.anchorY ? candid_some(value.anchorY) : candid_none(),
         item: value.item,
@@ -36552,50 +36590,50 @@ variant ${k2} -> ${e.message}`, {
         amount: value.amount
       };
     }
-    function to_candid_record_n142(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n148(_uploadFile, _downloadFile, value) {
       return {
         moduleName: value.moduleName,
-        phases: to_candid_vec_n143(_uploadFile, _downloadFile, value.phases)
+        phases: to_candid_vec_n149(_uploadFile, _downloadFile, value.phases)
       };
     }
-    function to_candid_record_n145(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n151(_uploadFile, _downloadFile, value) {
       return {
-        tasks: to_candid_vec_n146(_uploadFile, _downloadFile, value.tasks),
+        tasks: to_candid_vec_n152(_uploadFile, _downloadFile, value.tasks),
         name: value.name
       };
     }
-    function to_candid_record_n148(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n154(_uploadFile, _downloadFile, value) {
       return {
         text: value.text,
         section: value.section ? candid_some(value.section) : candid_none(),
         notes: value.notes ? candid_some(value.notes) : candid_none()
       };
     }
-    function to_candid_record_n157(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n163(_uploadFile, _downloadFile, value) {
       return {
         id: value.id,
-        content: value.content ? candid_some(to_candid_ActivityContent_n88(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        content: value.content ? candid_some(to_candid_ActivityContent_n91(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         sourceCategoryIds: value.sourceCategoryIds,
         quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
       };
     }
-    function to_candid_record_n73(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n76(_uploadFile, _downloadFile, value) {
       return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
       };
     }
-    function to_candid_record_n85(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n88(_uploadFile, _downloadFile, value) {
       return {
-        activityType: to_candid_ActivityType_n86(_uploadFile, _downloadFile, value.activityType),
-        content: value.content ? candid_some(to_candid_ActivityContent_n88(_uploadFile, _downloadFile, value.content)) : candid_none(),
+        activityType: to_candid_ActivityType_n89(_uploadFile, _downloadFile, value.activityType),
+        content: value.content ? candid_some(to_candid_ActivityContent_n91(_uploadFile, _downloadFile, value.content)) : candid_none(),
         name: value.name,
         positionId: value.positionId,
         sourceCategoryIds: value.sourceCategoryIds,
         quizSettings: value.quizSettings ? candid_some(value.quizSettings) : candid_none()
       };
     }
-    function to_candid_record_n93(_uploadFile, _downloadFile, value) {
+    function to_candid_record_n96(_uploadFile, _downloadFile, value) {
       return {
         itemTitle: value.itemTitle,
         detailFields: value.detailFields,
@@ -36603,19 +36641,23 @@ variant ${k2} -> ${e.message}`, {
         recipe: value.recipe ? candid_some(value.recipe) : candid_none()
       };
     }
-    function to_candid_record_n99(_uploadFile, _downloadFile, value) {
-      return {
-        settings: to_candid_DrinksBuilderSettings_n100(_uploadFile, _downloadFile, value.settings)
-      };
+    function to_candid_variant_n100(_uploadFile, _downloadFile, value) {
+      return value.__kind__ === "multipleChoice" ? {
+        multipleChoice: value.multipleChoice
+      } : value.__kind__ === "matching" ? {
+        matching: value.matching
+      } : value.__kind__ === "trueFalse" ? {
+        trueFalse: value.trueFalse
+      } : value;
     }
-    function to_candid_variant_n116(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n122(_uploadFile, _downloadFile, value) {
       return value == "prep" ? {
         prep: null
       } : value == "menuBuild" ? {
         menuBuild: null
       } : value;
     }
-    function to_candid_variant_n121(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n127(_uploadFile, _downloadFile, value) {
       return value == "library" ? {
         library: null
       } : value == "kitchen" ? {
@@ -36624,21 +36666,21 @@ variant ${k2} -> ${e.message}`, {
         orientation: null
       } : value;
     }
-    function to_candid_variant_n151(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n157(_uploadFile, _downloadFile, value) {
       return value == "up" ? {
         up: null
       } : value == "down" ? {
         down: null
       } : value;
     }
-    function to_candid_variant_n153(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n159(_uploadFile, _downloadFile, value) {
       return value == "inTraining" ? {
         inTraining: null
       } : value == "certified" ? {
         certified: null
       } : value;
     }
-    function to_candid_variant_n155(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n161(_uploadFile, _downloadFile, value) {
       return value == "manager" ? {
         manager: null
       } : value == "admin" ? {
@@ -36649,7 +36691,7 @@ variant ${k2} -> ${e.message}`, {
         trainer: null
       } : value;
     }
-    function to_candid_variant_n83(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n86(_uploadFile, _downloadFile, value) {
       return value == "admin" ? {
         admin: null
       } : value == "user" ? {
@@ -36658,7 +36700,7 @@ variant ${k2} -> ${e.message}`, {
         guest: null
       } : value;
     }
-    function to_candid_variant_n87(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n90(_uploadFile, _downloadFile, value) {
       return value == "drinksBuilder" ? {
         drinksBuilder: null
       } : value == "quiz" ? {
@@ -36667,44 +36709,38 @@ variant ${k2} -> ${e.message}`, {
         flashcards: null
       } : value;
     }
-    function to_candid_variant_n89(_uploadFile, _downloadFile, value) {
+    function to_candid_variant_n92(_uploadFile, _downloadFile, value) {
       return value.__kind__ === "drinksBuilderContent" ? {
-        drinksBuilderContent: to_candid_DrinksBuilderContent_n98(_uploadFile, _downloadFile, value.drinksBuilderContent)
+        drinksBuilderContent: to_candid_DrinksBuilderContent_n101(_uploadFile, _downloadFile, value.drinksBuilderContent)
       } : value.__kind__ === "quizContent" ? {
-        quizContent: to_candid_QuizContent_n94(_uploadFile, _downloadFile, value.quizContent)
+        quizContent: to_candid_QuizContent_n97(_uploadFile, _downloadFile, value.quizContent)
       } : value.__kind__ === "flashcardContent" ? {
-        flashcardContent: to_candid_FlashcardContent_n90(_uploadFile, _downloadFile, value.flashcardContent)
+        flashcardContent: to_candid_FlashcardContent_n93(_uploadFile, _downloadFile, value.flashcardContent)
       } : value;
     }
-    function to_candid_variant_n97(_uploadFile, _downloadFile, value) {
-      return value.__kind__ === "multipleChoice" ? {
-        multipleChoice: value.multipleChoice
-      } : value.__kind__ === "matching" ? {
-        matching: value.matching
-      } : value.__kind__ === "trueFalse" ? {
-        trueFalse: value.trueFalse
-      } : value;
+    function to_candid_vec_n105(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_DrinksBuilderPrompt_n106(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n102(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_DrinksBuilderPrompt_n103(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n115(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_FoodStepGroup_n116(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n112(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_FoodStepGroup_n113(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n118(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_FoodQualityGroup_n119(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n117(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_FoodComponent_n118(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n123(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_FoodComponent_n124(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n143(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportPhase_n144(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n149(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportPhase_n150(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n146(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_NsoImportTask_n147(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n152(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_NsoImportTask_n153(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n91(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Flashcard_n92(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n94(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Flashcard_n95(_uploadFile, _downloadFile, x2));
     }
-    function to_candid_vec_n95(_uploadFile, _downloadFile, value) {
-      return value.map((x2) => to_candid_Question_n96(_uploadFile, _downloadFile, x2));
+    function to_candid_vec_n98(_uploadFile, _downloadFile, value) {
+      return value.map((x2) => to_candid_Question_n99(_uploadFile, _downloadFile, x2));
     }
     function createActor(canisterId, _uploadFile, _downloadFile, options2 = {}) {
       const agent = options2.agent || HttpAgent.createSync({
@@ -51629,6 +51665,15 @@ variant ${k2} -> ${e.message}`, {
         lineUtensil: r2.lineUtensil && r2.lineUtensil.length > 0 ? r2.lineUtensil : null,
         equipment: r2.equipment && r2.equipment.length > 0 ? r2.equipment : null,
         qualityIdentifiers: r2.qualityIdentifiers ?? [],
+        // qualityGroups is a non-optional array on the backend; default to [] when
+        // absent so the frontend treats recipes without grouped quality identifiers
+        // uniformly (empty array = flat qualityIdentifiers fallback). Mirrors the
+        // stepGroups defaulting above. title is ?Text — normalize empty string to
+        // null so the frontend renders the shared/general block unlabeled.
+        qualityGroups: (r2.qualityGroups ?? []).map((g2) => ({
+          title: g2.title && g2.title.length > 0 ? g2.title : null,
+          items: g2.items
+        })),
         // stepGroups / whys are non-optional arrays on the backend; default to []
         // when absent so the frontend treats recipes without them uniformly.
         stepGroups: (r2.stepGroups ?? []).map((g2) => ({
@@ -51682,6 +51727,14 @@ variant ${k2} -> ${e.message}`, {
         lineUtensil: r2.lineUtensil && r2.lineUtensil.length > 0 ? r2.lineUtensil : void 0,
         equipment: r2.equipment && r2.equipment.length > 0 ? r2.equipment : void 0,
         qualityIdentifiers: r2.qualityIdentifiers ?? [],
+        // qualityGroups is a non-optional array on the backend; map from the
+        // frontend optional field defaulting to [] so items without grouped
+        // quality identifiers pass through as an empty array. qualityGroups.title
+        // is ?Text — normalize null to undefined for the Candid ?Text boundary.
+        qualityGroups: (r2.qualityGroups ?? []).map((g2) => ({
+          title: g2.title && g2.title.length > 0 ? g2.title : void 0,
+          items: g2.items
+        })),
         // stepGroups / whys are non-optional arrays on the backend; map from the
         // frontend optional fields defaulting to [] so items without them pass
         // through as empty arrays. stepGroups.title is ?Text — normalize empty
@@ -52896,6 +52949,13 @@ variant ${k2} -> ${e.message}`, {
         lineUtensil: r2.lineUtensil && r2.lineUtensil.length > 0 ? r2.lineUtensil : null,
         equipment: r2.equipment && r2.equipment.length > 0 ? r2.equipment : null,
         qualityIdentifiers: r2.qualityIdentifiers ?? [],
+        // qualityGroups: array of { title?, items }. title is ?Text on the backend —
+        // normalize empty/absent titles to null to match the foundation FoodQualityGroup
+        // contract (title: string | null). Default to [] when absent.
+        qualityGroups: (r2.qualityGroups ?? []).map((g2) => ({
+          title: g2.title && g2.title.length > 0 ? g2.title : null,
+          items: g2.items
+        })),
         buildHeader: r2.buildHeader && r2.buildHeader.length > 0 ? r2.buildHeader : null,
         // stepGroups / whys are non-optional arrays on the backend; default to []
         // when absent so the frontend treats recipes without them uniformly.
@@ -53080,6 +53140,18 @@ variant ${k2} -> ${e.message}`, {
       const expoSteps = Array.isArray(r2.expoSteps) ? r2.expoSteps.filter((s) => typeof s === "string") : void 0;
       const str = (v2) => typeof v2 === "string" ? v2 : void 0;
       const qualityIdentifiers = Array.isArray(r2.qualityIdentifiers) ? r2.qualityIdentifiers.filter((q2) => typeof q2 === "string") : void 0;
+      const qualityGroups = [];
+      if (Array.isArray(r2.qualityGroups)) {
+        for (const g2 of r2.qualityGroups) {
+          if (typeof g2 !== "object" || g2 === null || Array.isArray(g2)) continue;
+          const gr = g2;
+          if (!Array.isArray(gr.items)) continue;
+          const groupItems = gr.items.filter((s) => typeof s === "string").map((s) => s.trim()).filter((s) => s.length > 0);
+          if (groupItems.length === 0) continue;
+          const title2 = typeof gr.title === "string" && gr.title.trim().length > 0 ? gr.title.trim() : null;
+          qualityGroups.push({ title: title2, items: groupItems });
+        }
+      }
       const photo = typeof r2.photo === "string" && r2.photo.length > 0 ? r2.photo : void 0;
       const subtitle = typeof r2.subtitle === "string" && r2.subtitle.length > 0 ? r2.subtitle : void 0;
       const tags = Array.isArray(r2.tags) ? r2.tags.filter((t) => typeof t === "string") : void 0;
@@ -53137,6 +53209,7 @@ variant ${k2} -> ${e.message}`, {
         lineUtensil: str(r2.lineUtensil),
         equipment: str(r2.equipment),
         qualityIdentifiers,
+        qualityGroups,
         stepGroups,
         whys,
         yields,
@@ -53178,6 +53251,7 @@ variant ${k2} -> ${e.message}`, {
         lineUtensil: strOrNull(raw.lineUtensil),
         equipment: strOrNull(raw.equipment),
         qualityIdentifiers: raw.qualityIdentifiers ?? [],
+        qualityGroups: raw.qualityGroups ?? [],
         buildHeader: strOrNull(raw.buildHeader),
         // stepGroups / whys: normalize to [] when absent (matching the existing
         // array-field normalization pattern). The reader already filtered out
@@ -55624,6 +55698,51 @@ variant ${k2} -> ${e.message}`, {
         }
       );
     }
+    function RecipeNote({
+      notes,
+      phone
+    }) {
+      if (notes == null || notes.trim().length === 0) return null;
+      const ocidStem = phone ? "library.item.food_recipe.phone.note" : "library.item.food_recipe.note";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: `food-recipe-note${phone ? " is-phone" : ""}`,
+          "data-ocid": ocidStem,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "label", "data-ocid": `${ocidStem}.label`, children: "Note" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "data-ocid": `${ocidStem}.text`, children: renderInlineMarkdown(notes) })
+          ]
+        }
+      );
+    }
+    function RecipeDiagram({
+      photo,
+      title,
+      phone
+    }) {
+      if (photo == null || photo.trim().length === 0) return null;
+      const ocidStem = phone ? "library.item.food_recipe.phone.diagram" : "library.item.food_recipe.diagram";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "figure",
+        {
+          className: `food-recipe-diagram${phone ? " is-phone" : ""}`,
+          "data-ocid": ocidStem,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("figcaption", { "data-ocid": `${ocidStem}.label`, children: "Diagram" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: photo,
+                alt: `${title} diagram`,
+                loading: "lazy",
+                "data-ocid": `${ocidStem}.image`
+              }
+            )
+          ]
+        }
+      );
+    }
     function MenuBuildFoodRecipeCard({
       item,
       food,
@@ -55650,6 +55769,7 @@ variant ${k2} -> ${e.message}`, {
                 "data-ocid": "library.item.food_recipe.desktop.menu_build",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeTitleBand, { title: item.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeNote, { notes: item.notes }),
                   item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipePhoto, { photo: item.photo, title: item.title }) : null,
                   hasAssembly || hasSteps || hasExpo ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
@@ -55806,6 +55926,7 @@ variant ${k2} -> ${e.message}`, {
                 "data-ocid": "library.item.food_recipe.phone.menu_build",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeTitleBand, { title: item.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeNote, { notes: item.notes, phone: true }),
                   item.photo ? /* @__PURE__ */ jsxRuntimeExports.jsx(RecipePhoto, { photo: item.photo, title: item.title }) : null,
                   hasAssembly ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "section",
@@ -56086,6 +56207,7 @@ variant ${k2} -> ${e.message}`, {
                       ]
                     }
                   ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeNote, { notes: item.notes }),
                   multiSize && sizeLabels2.length > 1 && selectedSize != null ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "p",
                     {
@@ -56285,6 +56407,7 @@ variant ${k2} -> ${e.message}`, {
                       ]
                     }
                   ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeNote, { notes: item.notes, phone: true }),
                   multiSize && sizeLabels2.length > 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "div",
                     {
@@ -56561,7 +56684,8 @@ variant ${k2} -> ${e.message}`, {
       const { ungrouped, grouped } = groupComponents(food.components);
       const hasIngredients = ungrouped.length > 0 || grouped.length > 0;
       const hasSteps = food.steps.length > 0;
-      const hasQuality = food.qualityIdentifiers.length > 0;
+      const hasQualityGroups = food.qualityGroups != null && food.qualityGroups.length > 0;
+      const hasQuality = hasQualityGroups || food.qualityIdentifiers.length > 0;
       const hasEquipment = food.equipment != null && food.equipment.trim().length > 0;
       const multiBatch = isMultiSizeRecipe(food);
       const sizeLabels2 = multiBatch ? getSizeLabels(food) : [];
@@ -56651,6 +56775,7 @@ variant ${k2} -> ${e.message}`, {
                       ))
                     }
                   ) : null,
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeNote, { notes: item.notes }),
                   hasIngredients || hasSteps ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
@@ -56792,7 +56917,8 @@ variant ${k2} -> ${e.message}`, {
                                     `proc-${i}`
                                   ))
                                 }
-                              )
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeDiagram, { photo: item.photo, title: item.title })
                             ]
                           }
                         ) : null
@@ -56813,7 +56939,38 @@ variant ${k2} -> ${e.message}`, {
                             children: "Quality Identifiers"
                           }
                         ),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        hasQualityGroups ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "library.item.food_recipe.quality.groups", children: food.qualityGroups.map((group, gi) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "div",
+                          {
+                            "data-ocid": `library.item.food_recipe.quality.group.${gi + 1}`,
+                            children: [
+                              group.title != null && group.title.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "div",
+                                {
+                                  className: "food-recipe-step-group-header",
+                                  "data-ocid": `library.item.food_recipe.quality.group.${gi + 1}.heading`,
+                                  children: group.title
+                                }
+                              ) : null,
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "ul",
+                                {
+                                  className: "food-recipe-quality",
+                                  "data-ocid": `library.item.food_recipe.quality.group.${gi + 1}.list`,
+                                  children: group.items.map((qi, ii) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    "li",
+                                    {
+                                      "data-ocid": `library.item.food_recipe.quality.group.${gi + 1}.item.${ii + 1}`,
+                                      children: renderInlineMarkdown(qi)
+                                    },
+                                    `qg-${gi}-item-${ii}`
+                                  ))
+                                }
+                              )
+                            ]
+                          },
+                          `qg-${gi}`
+                        )) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
                           "ul",
                           {
                             className: "food-recipe-quality",
@@ -56952,6 +57109,7 @@ variant ${k2} -> ${e.message}`, {
                       ))
                     }
                   ) : null,
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeNote, { notes: item.notes, phone: true }),
                   hasIngredients ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "section",
                     {
@@ -57075,7 +57233,8 @@ variant ${k2} -> ${e.message}`, {
                               `p-proc-${i}`
                             ))
                           }
-                        )
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeDiagram, { photo: item.photo, title: item.title, phone: true })
                       ]
                     }
                   ) : null,
@@ -57093,7 +57252,38 @@ variant ${k2} -> ${e.message}`, {
                             children: "Quality Identifiers"
                           }
                         ),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        hasQualityGroups ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-ocid": "library.item.food_recipe.phone.quality.groups", children: food.qualityGroups.map((group, gi) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "div",
+                          {
+                            "data-ocid": `library.item.food_recipe.phone.quality.group.${gi + 1}`,
+                            children: [
+                              group.title != null && group.title.trim().length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "div",
+                                {
+                                  className: "food-recipe-phone-step-group-header",
+                                  "data-ocid": `library.item.food_recipe.phone.quality.group.${gi + 1}.heading`,
+                                  children: group.title
+                                }
+                              ) : null,
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "ul",
+                                {
+                                  className: "food-recipe-phone-quality-list",
+                                  "data-ocid": `library.item.food_recipe.phone.quality.group.${gi + 1}.list`,
+                                  children: group.items.map((qi, ii) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    "li",
+                                    {
+                                      "data-ocid": `library.item.food_recipe.phone.quality.group.${gi + 1}.item.${ii + 1}`,
+                                      children: renderInlineMarkdown(qi)
+                                    },
+                                    `p-qg-${gi}-item-${ii}`
+                                  ))
+                                }
+                              )
+                            ]
+                          },
+                          `p-qg-${gi}`
+                        )) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
                           "ul",
                           {
                             className: "food-recipe-phone-quality-list",

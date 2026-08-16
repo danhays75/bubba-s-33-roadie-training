@@ -23,6 +23,7 @@ import type {
   DetailField,
   FoodComponent,
   FoodComponentSize,
+  FoodQualityGroup,
   FoodRecipe,
   FoodServiceware,
   FoodStepGroup,
@@ -1375,6 +1376,7 @@ function toFoodRecipeLocal(
         lineUtensil?: string;
         equipment?: string;
         qualityIdentifiers: Array<string>;
+        qualityGroups?: Array<{ title?: string; items: Array<string> }>;
         stepGroups?: Array<{ title?: string; steps: Array<string> }>;
         whys?: Array<{ question: string; answer: string }>;
         yields?: Array<{ size: string; value: string }>;
@@ -1414,6 +1416,13 @@ function toFoodRecipeLocal(
       r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : null,
     equipment: r.equipment && r.equipment.length > 0 ? r.equipment : null,
     qualityIdentifiers: r.qualityIdentifiers ?? [],
+    // qualityGroups: array of { title?, items }. title is ?Text on the backend —
+    // normalize empty/absent titles to null to match the foundation FoodQualityGroup
+    // contract (title: string | null). Default to [] when absent.
+    qualityGroups: (r.qualityGroups ?? []).map((g) => ({
+      title: g.title && g.title.length > 0 ? g.title : null,
+      items: g.items,
+    })),
     buildHeader:
       r.buildHeader && r.buildHeader.length > 0 ? r.buildHeader : null,
     // stepGroups / whys are non-optional arrays on the backend; default to []
@@ -1524,6 +1533,16 @@ interface ImportFoodRecipe {
   lineUtensil?: string;
   equipment?: string;
   qualityIdentifiers?: string[];
+  /**
+   * Optional grouped quality identifiers. Each entry is { title?: string,
+   * items: string[] } where title is an optional string (null/absent for the
+   * shared/general block) and items is an array of non-empty strings.
+   * Malformed entries (items missing, not an array, or with no non-empty
+   * strings after filtering) are dropped during readImportFoodRecipe; only
+   * valid entries are kept. Absent or non-array qualityGroups defaults to []
+   * in buildFoodRecipePayload.
+   */
+  qualityGroups?: FoodQualityGroup[];
   /**
    * Optional grouped steps. Each entry is { title?, steps: string[] }. Malformed
    * entries (steps missing, not an array, or with no non-empty strings after
@@ -1864,6 +1883,30 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     ? r.qualityIdentifiers.filter((q): q is string => typeof q === "string")
     : undefined;
 
+  // qualityGroups: array of { title?, items: string[] }. Each entry's items
+  // must be an array of non-empty strings (filtered); title is an optional
+  // string (null/absent for the shared/general block). Malformed entries
+  // (items missing, not an array, or with no valid non-empty strings after
+  // filtering) are dropped. Absent or non-array qualityGroups → [].
+  const qualityGroups: FoodQualityGroup[] = [];
+  if (Array.isArray(r.qualityGroups)) {
+    for (const g of r.qualityGroups) {
+      if (typeof g !== "object" || g === null || Array.isArray(g)) continue;
+      const gr = g as Record<string, unknown>;
+      if (!Array.isArray(gr.items)) continue;
+      const groupItems = gr.items
+        .filter((s): s is string => typeof s === "string")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+      if (groupItems.length === 0) continue;
+      const title =
+        typeof gr.title === "string" && gr.title.trim().length > 0
+          ? gr.title.trim()
+          : null;
+      qualityGroups.push({ title, items: groupItems });
+    }
+  }
+
   // Import-only convenience fields (foodRecipes path → Library item).
   const photo =
     typeof r.photo === "string" && r.photo.length > 0 ? r.photo : undefined;
@@ -1963,6 +2006,7 @@ function readImportFoodRecipe(raw: unknown): ImportFoodRecipe | undefined {
     lineUtensil: str(r.lineUtensil),
     equipment: str(r.equipment),
     qualityIdentifiers,
+    qualityGroups,
     stepGroups,
     whys,
     yields,
@@ -2025,6 +2069,7 @@ function buildFoodRecipePayload(
     lineUtensil: strOrNull(raw.lineUtensil),
     equipment: strOrNull(raw.equipment),
     qualityIdentifiers: raw.qualityIdentifiers ?? [],
+    qualityGroups: raw.qualityGroups ?? [],
     buildHeader: strOrNull(raw.buildHeader),
     // stepGroups / whys: normalize to [] when absent (matching the existing
     // array-field normalization pattern). The reader already filtered out

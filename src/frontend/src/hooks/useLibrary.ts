@@ -240,6 +240,7 @@ function toFoodRecipe(
         stepGroups?: Array<{ title?: string; steps: Array<string> }>;
         whys?: Array<{ question: string; answer: string }>;
         yields?: Array<{ size: string; value: string }>;
+        qualityGroups?: Array<{ title?: string; items: Array<string> }>;
       }
     | undefined,
 ): FoodRecipe | null {
@@ -281,6 +282,15 @@ function toFoodRecipe(
       r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : null,
     equipment: r.equipment && r.equipment.length > 0 ? r.equipment : null,
     qualityIdentifiers: r.qualityIdentifiers ?? [],
+    // qualityGroups is a non-optional array on the backend; default to [] when
+    // absent so the frontend treats recipes without grouped quality identifiers
+    // uniformly (empty array = flat qualityIdentifiers fallback). Mirrors the
+    // stepGroups defaulting above. title is ?Text — normalize empty string to
+    // null so the frontend renders the shared/general block unlabeled.
+    qualityGroups: (r.qualityGroups ?? []).map((g) => ({
+      title: g.title && g.title.length > 0 ? g.title : null,
+      items: g.items,
+    })),
     // stepGroups / whys are non-optional arrays on the backend; default to []
     // when absent so the frontend treats recipes without them uniformly.
     stepGroups: (r.stepGroups ?? []).map((g) => ({
@@ -354,6 +364,14 @@ function fromFoodRecipe(
       r.lineUtensil && r.lineUtensil.length > 0 ? r.lineUtensil : undefined,
     equipment: r.equipment && r.equipment.length > 0 ? r.equipment : undefined,
     qualityIdentifiers: r.qualityIdentifiers ?? [],
+    // qualityGroups is a non-optional array on the backend; map from the
+    // frontend optional field defaulting to [] so items without grouped
+    // quality identifiers pass through as an empty array. qualityGroups.title
+    // is ?Text — normalize null to undefined for the Candid ?Text boundary.
+    qualityGroups: (r.qualityGroups ?? []).map((g) => ({
+      title: g.title && g.title.length > 0 ? g.title : undefined,
+      items: g.items,
+    })),
     // stepGroups / whys are non-optional arrays on the backend; map from the
     // frontend optional fields defaulting to [] so items without them pass
     // through as empty arrays. stepGroups.title is ?Text — normalize empty
@@ -434,6 +452,7 @@ function toItem(i: {
     stepGroups?: Array<{ title?: string; steps: Array<string> }>;
     whys?: Array<{ question: string; answer: string }>;
     yields?: Array<{ size: string; value: string }>;
+    qualityGroups?: Array<{ title?: string; items: Array<string> }>;
   };
 }): LibraryItem {
   const details: DetailField[] = (i.details ?? []).map((d) => ({

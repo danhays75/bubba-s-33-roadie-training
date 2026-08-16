@@ -117,11 +117,16 @@ export interface FoodComponent {
   'amount' : string,
 }
 export interface FoodComponentSize { 'value' : string, 'size' : string }
+export interface FoodQualityGroup {
+  'title' : [] | [string],
+  'items' : Array<string>,
+}
 export interface FoodRecipe {
   'stepGroups' : Array<FoodStepGroup>,
   'lineUtensil' : [] | [string],
   'yields' : Array<FoodSizeAmount>,
   'serviceware' : Array<FoodServiceware>,
+  'qualityGroups' : Array<FoodQualityGroup>,
   'station' : string,
   'equipment' : [] | [string],
   'holdTemp' : [] | [string],

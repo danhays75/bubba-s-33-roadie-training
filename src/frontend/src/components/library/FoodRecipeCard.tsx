@@ -391,6 +391,81 @@ function RecipePhoto({
   );
 }
 
+/**
+ * RecipeNote — compact highlighted callout surfacing `item.notes`.
+ *
+ * Renders a small uppercase 'NOTE' label (brand purple) followed by the
+ * note text on a lightly tinted purple surface with a purple left edge.
+ * The note text runs through renderInlineMarkdown so **bold** / *italic*
+ * emphasize consistently with the steps. Shows nothing when `notes` is
+ * null/empty. The `phone` flag swaps to the phone-tuned variant
+ * (.food-recipe-note.is-phone) which aligns to the phone content padding.
+ */
+function RecipeNote({
+  notes,
+  phone,
+}: {
+  notes: string | null;
+  phone?: boolean;
+}): ReactElement | null {
+  if (notes == null || notes.trim().length === 0) return null;
+  const ocidStem = phone
+    ? "library.item.food_recipe.phone.note"
+    : "library.item.food_recipe.note";
+  return (
+    <div
+      className={`food-recipe-note${phone ? " is-phone" : ""}`}
+      data-ocid={ocidStem}
+    >
+      <span className="label" data-ocid={`${ocidStem}.label`}>
+        Note
+      </span>
+      <span data-ocid={`${ocidStem}.text`}>{renderInlineMarkdown(notes)}</span>
+    </div>
+  );
+}
+
+/**
+ * RecipeDiagram — a labeled 'Diagram' figure for prep recipes.
+ *
+ * Renders a small uppercase 'Diagram' label (same styling family as the
+ * other section headers like 'Ingredients' / 'Quality Identifiers') above
+ * the item's photo on a white/very-light card background with a thin
+ * border and small rounded corners. The image is capped at ~380px wide,
+ * centered, and object-fit: contain so line-art never crops and never
+ * causes horizontal scroll. Shows nothing when `photo` is null/empty.
+ * The `phone` flag swaps to the phone-tuned variant
+ * (.food-recipe-diagram.is-phone) which stacks full-width under the steps.
+ */
+function RecipeDiagram({
+  photo,
+  title,
+  phone,
+}: {
+  photo: string | null;
+  title: string;
+  phone?: boolean;
+}): ReactElement | null {
+  if (photo == null || photo.trim().length === 0) return null;
+  const ocidStem = phone
+    ? "library.item.food_recipe.phone.diagram"
+    : "library.item.food_recipe.diagram";
+  return (
+    <figure
+      className={`food-recipe-diagram${phone ? " is-phone" : ""}`}
+      data-ocid={ocidStem}
+    >
+      <figcaption data-ocid={`${ocidStem}.label`}>Diagram</figcaption>
+      <img
+        src={photo}
+        alt={`${title} diagram`}
+        loading="lazy"
+        data-ocid={`${ocidStem}.image`}
+      />
+    </figure>
+  );
+}
+
 /* --------------------------- menuBuild layout ----------------------------- */
 
 /**
@@ -452,6 +527,8 @@ function MenuBuildFoodRecipeCard({
         data-ocid="library.item.food_recipe.desktop.menu_build"
       >
         <RecipeTitleBand title={item.title} />
+
+        <RecipeNote notes={item.notes} />
 
         {item.photo ? (
           <RecipePhoto photo={item.photo} title={item.title} />
@@ -610,6 +687,8 @@ function MenuBuildFoodRecipeCard({
         data-ocid="library.item.food_recipe.phone.menu_build"
       >
         <RecipeTitleBand title={item.title} />
+
+        <RecipeNote notes={item.notes} phone />
 
         {item.photo ? (
           <RecipePhoto photo={item.photo} title={item.title} />
@@ -1091,6 +1170,8 @@ function BuildCardFoodRecipeCard({
           ) : null}
         </div>
 
+        <RecipeNote notes={item.notes} />
+
         {/* Caption — "Showing <size> amounts" under the title band.
             Updates with the selection. Rendered only when multi-size
             with more than one distinct size (single distinct size has
@@ -1272,6 +1353,8 @@ function BuildCardFoodRecipeCard({
             </span>
           ) : null}
         </div>
+
+        <RecipeNote notes={item.notes} phone />
 
         {/* Phone size picker — full-width segmented control pinned under
             the title band. Each button is a size label; the active
@@ -1603,7 +1686,9 @@ function PrepFoodRecipeCard({
   const { ungrouped, grouped } = groupComponents(food.components);
   const hasIngredients = ungrouped.length > 0 || grouped.length > 0;
   const hasSteps = food.steps.length > 0;
-  const hasQuality = food.qualityIdentifiers.length > 0;
+  const hasQualityGroups =
+    food.qualityGroups != null && food.qualityGroups.length > 0;
+  const hasQuality = hasQualityGroups || food.qualityIdentifiers.length > 0;
   const hasEquipment =
     food.equipment != null && food.equipment.trim().length > 0;
 
@@ -1717,6 +1802,8 @@ function PrepFoodRecipeCard({
             ))}
           </div>
         ) : null}
+
+        <RecipeNote notes={item.notes} />
 
         {/* Ingredient table + Procedure two-column body. */}
         {hasIngredients || hasSteps ? (
@@ -1864,6 +1951,11 @@ function PrepFoodRecipeCard({
                     ))}
                   </ol>
                 )}
+
+                {/* Diagram — the reference the Roadie checks while cutting.
+                    Rendered in the right/procedure column after the step
+                    sections; shows nothing when item.photo is null/empty. */}
+                <RecipeDiagram photo={item.photo} title={item.title} />
               </section>
             ) : null}
           </div>
@@ -1881,20 +1973,55 @@ function PrepFoodRecipeCard({
             >
               Quality Identifiers
             </h2>
-            <ul
-              className="food-recipe-quality"
-              data-ocid="library.item.food_recipe.quality.list"
-            >
-              {food.qualityIdentifiers.map((qi, i) => (
-                <li
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                  key={`qi-${i}`}
-                  data-ocid={`library.item.food_recipe.quality.item.${i + 1}`}
-                >
-                  {renderInlineMarkdown(qi)}
-                </li>
-              ))}
-            </ul>
+            {hasQualityGroups ? (
+              <div data-ocid="library.item.food_recipe.quality.groups">
+                {food.qualityGroups!.map((group, gi) => (
+                  <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate group/quality strings can collide, index is the stable key
+                    key={`qg-${gi}`}
+                    data-ocid={`library.item.food_recipe.quality.group.${gi + 1}`}
+                  >
+                    {group.title != null && group.title.trim().length > 0 ? (
+                      <div
+                        className="food-recipe-step-group-header"
+                        data-ocid={`library.item.food_recipe.quality.group.${gi + 1}.heading`}
+                      >
+                        {group.title}
+                      </div>
+                    ) : null}
+                    <ul
+                      className="food-recipe-quality"
+                      data-ocid={`library.item.food_recipe.quality.group.${gi + 1}.list`}
+                    >
+                      {group.items.map((qi, ii) => (
+                        <li
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate quality strings can collide, index is the stable key
+                          key={`qg-${gi}-item-${ii}`}
+                          data-ocid={`library.item.food_recipe.quality.group.${gi + 1}.item.${ii + 1}`}
+                        >
+                          {renderInlineMarkdown(qi)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ul
+                className="food-recipe-quality"
+                data-ocid="library.item.food_recipe.quality.list"
+              >
+                {food.qualityIdentifiers.map((qi, i) => (
+                  <li
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`qi-${i}`}
+                    data-ocid={`library.item.food_recipe.quality.item.${i + 1}`}
+                  >
+                    {renderInlineMarkdown(qi)}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         ) : null}
 
@@ -2008,6 +2135,8 @@ function PrepFoodRecipeCard({
             ))}
           </div>
         ) : null}
+
+        <RecipeNote notes={item.notes} phone />
 
         {/* Step-grouped Ingredient | Amount stacked list. */}
         {hasIngredients ? (
@@ -2139,6 +2268,11 @@ function PrepFoodRecipeCard({
                 ))}
               </ol>
             )}
+
+            {/* Diagram — the reference the Roadie checks while cutting.
+                Stacks full-width under the phone steps; shows nothing when
+                item.photo is null/empty. */}
+            <RecipeDiagram photo={item.photo} title={item.title} phone />
           </section>
         ) : null}
 
@@ -2154,20 +2288,55 @@ function PrepFoodRecipeCard({
             >
               Quality Identifiers
             </h2>
-            <ul
-              className="food-recipe-phone-quality-list"
-              data-ocid="library.item.food_recipe.phone.quality.list"
-            >
-              {food.qualityIdentifiers.map((qi, i) => (
-                <li
-                  // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
-                  key={`p-qi-${i}`}
-                  data-ocid={`library.item.food_recipe.phone.quality.item.${i + 1}`}
-                >
-                  {renderInlineMarkdown(qi)}
-                </li>
-              ))}
-            </ul>
+            {hasQualityGroups ? (
+              <div data-ocid="library.item.food_recipe.phone.quality.groups">
+                {food.qualityGroups!.map((group, gi) => (
+                  <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate group/quality strings can collide, index is the stable key
+                    key={`p-qg-${gi}`}
+                    data-ocid={`library.item.food_recipe.phone.quality.group.${gi + 1}`}
+                  >
+                    {group.title != null && group.title.trim().length > 0 ? (
+                      <div
+                        className="food-recipe-phone-step-group-header"
+                        data-ocid={`library.item.food_recipe.phone.quality.group.${gi + 1}.heading`}
+                      >
+                        {group.title}
+                      </div>
+                    ) : null}
+                    <ul
+                      className="food-recipe-phone-quality-list"
+                      data-ocid={`library.item.food_recipe.phone.quality.group.${gi + 1}.list`}
+                    >
+                      {group.items.map((qi, ii) => (
+                        <li
+                          // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate quality strings can collide, index is the stable key
+                          key={`p-qg-${gi}-item-${ii}`}
+                          data-ocid={`library.item.food_recipe.phone.quality.group.${gi + 1}.item.${ii + 1}`}
+                        >
+                          {renderInlineMarkdown(qi)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ul
+                className="food-recipe-phone-quality-list"
+                data-ocid="library.item.food_recipe.phone.quality.list"
+              >
+                {food.qualityIdentifiers.map((qi, i) => (
+                  <li
+                    // biome-ignore lint/suspicious/noArrayIndexKey: ordered recipe list with no stable id; duplicate step/component strings can collide, index is the stable key
+                    key={`p-qi-${i}`}
+                    data-ocid={`library.item.food_recipe.phone.quality.item.${i + 1}`}
+                  >
+                    {renderInlineMarkdown(qi)}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         ) : null}
 

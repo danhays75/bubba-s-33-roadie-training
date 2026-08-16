@@ -37,6 +37,10 @@ export const FoodServiceware = IDL.Record({
   'item' : IDL.Text,
   'amount' : IDL.Text,
 });
+export const FoodQualityGroup = IDL.Record({
+  'title' : IDL.Opt(IDL.Text),
+  'items' : IDL.Vec(IDL.Text),
+});
 export const FoodRecipeKind = IDL.Variant({
   'prep' : IDL.Null,
   'menuBuild' : IDL.Null,
@@ -62,6 +66,7 @@ export const FoodRecipe = IDL.Record({
   'lineUtensil' : IDL.Opt(IDL.Text),
   'yields' : IDL.Vec(FoodSizeAmount),
   'serviceware' : IDL.Vec(FoodServiceware),
+  'qualityGroups' : IDL.Vec(FoodQualityGroup),
   'station' : IDL.Text,
   'equipment' : IDL.Opt(IDL.Text),
   'holdTemp' : IDL.Opt(IDL.Text),
@@ -654,6 +659,10 @@ export const idlFactory = ({ IDL }) => {
     'item' : IDL.Text,
     'amount' : IDL.Text,
   });
+  const FoodQualityGroup = IDL.Record({
+    'title' : IDL.Opt(IDL.Text),
+    'items' : IDL.Vec(IDL.Text),
+  });
   const FoodRecipeKind = IDL.Variant({
     'prep' : IDL.Null,
     'menuBuild' : IDL.Null,
@@ -676,6 +685,7 @@ export const idlFactory = ({ IDL }) => {
     'lineUtensil' : IDL.Opt(IDL.Text),
     'yields' : IDL.Vec(FoodSizeAmount),
     'serviceware' : IDL.Vec(FoodServiceware),
+    'qualityGroups' : IDL.Vec(FoodQualityGroup),
     'station' : IDL.Text,
     'equipment' : IDL.Opt(IDL.Text),
     'holdTemp' : IDL.Opt(IDL.Text),

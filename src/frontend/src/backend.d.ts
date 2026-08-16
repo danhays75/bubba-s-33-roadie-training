@@ -106,6 +106,10 @@ export interface FoodStepGroup {
     title?: string;
     steps: Array<string>;
 }
+export interface FoodQualityGroup {
+    title?: string;
+    items: Array<string>;
+}
 export interface LibraryItem {
     id: bigint;
     categoryId: bigint;
@@ -223,6 +227,7 @@ export interface FoodRecipe {
     lineUtensil?: string;
     yields: Array<FoodSizeAmount>;
     serviceware: Array<FoodServiceware>;
+    qualityGroups: Array<FoodQualityGroup>;
     station: string;
     equipment?: string;
     holdTemp?: string;

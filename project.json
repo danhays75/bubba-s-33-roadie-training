@@ -1,16 +1,17 @@
 {
-  "overview": "Roadie training reference app with a prep card batch-size selector that switches ingredient amounts and yield together.",
+  "overview": "Lake Charles Quik Reference is Bubba's 33 Roadie training app with prep recipe cards that now show Quality Identifiers in separate labeled sets when a recipe has multiple quality groups.",
   "features": [
-    "Prep card batch-size selector (1x / ½x / 2x) that switches ingredient amounts and yield together",
-    "Per-size yields on recipes with single-batch fallback",
-    "Single-batch prep recipes remain unchanged"
+    "Show prep recipe cards with step sections, quality identifiers, and batch sizes",
+    "Render multi-set Quality Identifiers as separate labeled sets each with its own shelf life, storage, and temp",
+    "Keep single-set recipes unchanged with a flat quality list and single badges",
+    "Import recipe files including the new qualityGroups data"
   ],
-  "category": "productivity",
+  "category": "training-reference",
   "tags": [
-    "productivity",
     "training",
+    "restaurant",
     "reference",
     "recipes"
   ],
-  "last_updated": "2026-08-11T15:48:35.342Z"
+  "last_updated": "2026-08-15T14:40:32.289Z"
 }

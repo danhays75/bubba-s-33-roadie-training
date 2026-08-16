@@ -5582,6 +5582,32 @@ video {
     color: oklch(var(--food-recipe-purple));
     margin-bottom: 0.15rem;
   }
+/* Recipe note callout — compact highlighted box surfacing item.notes.
+     Lightly tinted purple surface, purple left edge, uppercase NOTE label.
+     Sits near the top of the card (after the meta stack, before the
+     ingredients) and is clearly set apart from the steps. Flat, no glow.
+     The note text runs through renderInlineMarkdown so **bold** / *italic*
+     emphasize consistently with the steps. */
+.food-recipe-note {
+    margin: 0.7rem 1rem 0;
+    padding: 0.55rem 0.7rem;
+    background-color: oklch(var(--food-recipe-purple-wash));
+    border-left: 3px solid oklch(var(--food-recipe-purple));
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: oklch(var(--food-recipe-paper-fg));
+  }
+.food-recipe-note .label {
+    display: block;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 0.68rem;
+    color: oklch(var(--food-recipe-purple));
+    margin-bottom: 0.15rem;
+  }
 /* Prep intro line — muted Barlow line under the title band. */
 .food-recipe-intro {
     font-family: var(--font-body);
@@ -5680,6 +5706,45 @@ video {
     font-size: 0.82rem;
     color: oklch(var(--food-recipe-purple));
     margin-bottom: 0.35rem;
+  }
+/* ── Prep Diagram figure — labeled 'Diagram' reference the Roadie
+     checks while cutting. Rendered in the right/procedure column after
+     the step sections. A small uppercase brand-colored 'Diagram' label
+     (same styling family as the other section headers) above the item's
+     photo on a white/very-light card background with a thin border and
+     small rounded corners. The image is capped at ~380px wide, centered,
+     and object-fit: contain so line-art never crops and never causes
+     horizontal scroll. Shows nothing when item.photo is null/empty. ── */
+.food-recipe-diagram {
+    margin: 1rem 0 0;
+    padding: 0.6rem 0.6rem 0.7rem;
+    background-color: oklch(var(--food-recipe-paper));
+    border: 1px solid oklch(var(--food-recipe-paper-border));
+    border-radius: calc(var(--radius) + 0.125rem);
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+  }
+.food-recipe-diagram figcaption {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: oklch(var(--food-recipe-purple));
+    text-align: center;
+    margin-bottom: 0.45rem;
+  }
+.food-recipe-diagram img {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    margin: 0 auto;
+    -o-object-fit: contain;
+       object-fit: contain;
+    border-radius: calc(var(--radius) + 0.0625rem);
   }
 /* Quality identifiers checklist — ✓ bullets in deep purple. */
 .food-recipe-quality {
@@ -5993,6 +6058,19 @@ video {
       color: oklch(var(--food-recipe-purple));
       margin-bottom: 0.45rem;
     }
+    /* ── Phone Diagram — stacks full-width under the phone steps, still
+       max-width-capped and centered so it never causes horizontal scroll.
+       Same white/very-light card, thin border, small rounded corners,
+       object-fit contain as the desktop variant. ── */
+    .food-recipe-diagram.is-phone {
+      margin: 1rem 0 0;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .food-recipe-diagram.is-phone img {
+      max-width: 380px;
+    }
     .food-recipe-phone-steps {
       list-style: decimal;
       padding-left: 1.4rem;
@@ -6111,6 +6189,12 @@ video {
     }
     .food-recipe-phone-meta-badge.is-yield .value {
       font-weight: 700;
+    }
+
+    /* Recipe note callout (phone) — same compact highlighted box as the
+       desktop variant, aligned to the phone content's 1rem padding. */
+    .food-recipe-note.is-phone {
+      margin: 0.7rem 1rem 0;
     }
 
     /* ── prep phone ingredients — step-grouped stacked list. ── */
@@ -6310,6 +6394,10 @@ video {
 
     /* ── Phone procedure — numbered vertical list with comfortable
        line-height. ── */
+    /* ── Phone Diagram — stacks full-width under the phone steps, still
+       max-width-capped and centered so it never causes horizontal scroll.
+       Same white/very-light card, thin border, small rounded corners,
+       object-fit contain as the desktop variant. ── */
 
     /* Hand-wash note on phone — one compact muted line (reuses the
        existing .food-recipe-handwash block; here we just bump the font
@@ -6324,6 +6412,9 @@ video {
 
     /* ── prep phone meta — Yield / Shelf life / Holding as stacked
        badges (full-width rows, label left + value right). ── */
+
+    /* Recipe note callout (phone) — same compact highlighted box as the
+       desktop variant, aligned to the phone content's 1rem padding. */
 
     /* ── prep phone ingredients — step-grouped stacked list. ── */
 
@@ -6378,6 +6469,10 @@ video {
 
     /* ── Phone procedure — numbered vertical list with comfortable
        line-height. ── */
+    /* ── Phone Diagram — stacks full-width under the phone steps, still
+       max-width-capped and centered so it never causes horizontal scroll.
+       Same white/very-light card, thin border, small rounded corners,
+       object-fit contain as the desktop variant. ── */
 
     /* Hand-wash note on phone — one compact muted line (reuses the
        existing .food-recipe-handwash block; here we just bump the font
@@ -6402,86 +6497,8 @@ video {
       font-weight: 700 !important;
     }
 
-    /* ── prep phone ingredients — step-grouped stacked list. ── */
-
-    /* ── prep phone quality-ID checklist — ✓ bullets in deep purple,
-       bumped for phone reading. ── */
-
-    /* ── prep phone badges — Line utensil / Storage / Hold temp pills,
-       bumped for phone reading. ── */
-    .food-recipe-phone-badge .\!value {
-      font-family: var(--font-body) !important;
-      font-weight: 600 !important;
-    }
-
-    /* ── prep phone stepGroups section header — brand-red, uppercase,
-        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
-        reading. Renders above each stepGroup's numbered <ol> when
-        foodRecipe.stepGroups is non-empty. ── */
-
-    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
-        panel sitting after the phone quality identifiers, before the
-        phone footer. Each entry is a bold purple question followed by
-        its answer beneath. Phone-tuned sizing (~0.95rem) with
-        comfortable line-heights and full-width padding. Omitted when
-        whys is empty. ── */
-
-    /* Phone footer — bump the confidential/station text slightly for
-       arm's-length reading. */
-
-    /* Phone title band — bump Anton title for arm's-length reading. The
-       .food-recipe-title-band / .food-recipe-title rules above already
-       render the purple band + Anton uppercase; here we just enlarge the
-       title within the phone container. */
-
-    /* Multi-batch prep on phone — hide the inline desktop picker that
-       sits on the right of the title band; the full-width
-       .build-card-phone-size-picker sibling (already styled full-width
-       by the existing build-card phone CSS) renders instead. Additive:
-       only hides the inline picker on phone for multi-batch prep. */
-
-    /* Phone photo — full width, edge to edge. Cap height a touch lower
-       for phone so it does not dominate the small screen. The tap target
-       (the <button>) already opens the photo in a new tab via the
-       existing window.open behavior. */
-
-    /* ── Shared phone section label — small Oswald uppercase divider
-       used by Plating / Build / Ingredients headings. ── */
-
-    /* ── Phone amount row — item name left, amount as a bold chip/pill
-       on the right. The pill wraps to its own line if long (flex-wrap),
-       so amounts stay scannable and never truncate. Tap target >=44px. ── */
-
-    /* ── menuBuild phone build section — Plating serviceware group on
-       top, then the components stacked list. ── */
-
-    /* Allergen callout (menuBuild phone) — compact muted line. */
-
-    /* ── Phone procedure — numbered vertical list with comfortable
-       line-height. ── */
-
-    /* Hand-wash note on phone — one compact muted line (reuses the
-       existing .food-recipe-handwash block; here we just bump the font
-       and tighten the spacing for the phone stack). */
-
-    /* ── Phone EXPO callout — keeps its highlight; the rotated vertical
-        'EXPO' label becomes a small accent tag at the top of the box
-        (not the vertical-rl rotated label). Body uses the per-category
-        accent tint; tag uses the accent as its background. ── */
-
-    /* ── prep phone intro / equipment — bumped for phone reading. ── */
-
-    /* ── prep phone meta — Yield / Shelf life / Holding as stacked
-       badges (full-width rows, label left + value right). ── */
-    .food-recipe-phone-meta-badge .\!value {
-      font-weight: 600 !important;
-      font-size: 0.95rem !important;
-      text-align: right !important;
-      word-break: break-word !important;
-    }
-    .food-recipe-phone-meta-badge.is-yield .\!value {
-      font-weight: 700 !important;
-    }
+    /* Recipe note callout (phone) — same compact highlighted box as the
+       desktop variant, aligned to the phone content's 1rem padding. */
 
     /* ── prep phone ingredients — step-grouped stacked list. ── */
 
@@ -6540,6 +6557,10 @@ video {
 
     /* ── Phone procedure — numbered vertical list with comfortable
        line-height. ── */
+    /* ── Phone Diagram — stacks full-width under the phone steps, still
+       max-width-capped and centered so it never causes horizontal scroll.
+       Same white/very-light card, thin border, small rounded corners,
+       object-fit contain as the desktop variant. ── */
 
     /* Hand-wash note on phone — one compact muted line (reuses the
        existing .food-recipe-handwash block; here we just bump the font
@@ -6563,6 +6584,97 @@ video {
     .food-recipe-phone-meta-badge.is-yield .\!value {
       font-weight: 700 !important;
     }
+
+    /* Recipe note callout (phone) — same compact highlighted box as the
+       desktop variant, aligned to the phone content's 1rem padding. */
+
+    /* ── prep phone ingredients — step-grouped stacked list. ── */
+
+    /* ── prep phone quality-ID checklist — ✓ bullets in deep purple,
+       bumped for phone reading. ── */
+
+    /* ── prep phone badges — Line utensil / Storage / Hold temp pills,
+       bumped for phone reading. ── */
+    .food-recipe-phone-badge .\!value {
+      font-family: var(--font-body) !important;
+      font-weight: 600 !important;
+    }
+
+    /* ── prep phone stepGroups section header — brand-red, uppercase,
+        small left rule. Phone-tuned sizing (~0.95rem) for arm's-length
+        reading. Renders above each stepGroup's numbered <ol> when
+        foodRecipe.stepGroups is non-empty. ── */
+
+    /* ── prep phone Bubba's Why's Q&A panel — lightly tinted purple
+        panel sitting after the phone quality identifiers, before the
+        phone footer. Each entry is a bold purple question followed by
+        its answer beneath. Phone-tuned sizing (~0.95rem) with
+        comfortable line-heights and full-width padding. Omitted when
+        whys is empty. ── */
+
+    /* Phone footer — bump the confidential/station text slightly for
+       arm's-length reading. */
+
+    /* Phone title band — bump Anton title for arm's-length reading. The
+       .food-recipe-title-band / .food-recipe-title rules above already
+       render the purple band + Anton uppercase; here we just enlarge the
+       title within the phone container. */
+
+    /* Multi-batch prep on phone — hide the inline desktop picker that
+       sits on the right of the title band; the full-width
+       .build-card-phone-size-picker sibling (already styled full-width
+       by the existing build-card phone CSS) renders instead. Additive:
+       only hides the inline picker on phone for multi-batch prep. */
+
+    /* Phone photo — full width, edge to edge. Cap height a touch lower
+       for phone so it does not dominate the small screen. The tap target
+       (the <button>) already opens the photo in a new tab via the
+       existing window.open behavior. */
+
+    /* ── Shared phone section label — small Oswald uppercase divider
+       used by Plating / Build / Ingredients headings. ── */
+
+    /* ── Phone amount row — item name left, amount as a bold chip/pill
+       on the right. The pill wraps to its own line if long (flex-wrap),
+       so amounts stay scannable and never truncate. Tap target >=44px. ── */
+
+    /* ── menuBuild phone build section — Plating serviceware group on
+       top, then the components stacked list. ── */
+
+    /* Allergen callout (menuBuild phone) — compact muted line. */
+
+    /* ── Phone procedure — numbered vertical list with comfortable
+       line-height. ── */
+    /* ── Phone Diagram — stacks full-width under the phone steps, still
+       max-width-capped and centered so it never causes horizontal scroll.
+       Same white/very-light card, thin border, small rounded corners,
+       object-fit contain as the desktop variant. ── */
+
+    /* Hand-wash note on phone — one compact muted line (reuses the
+       existing .food-recipe-handwash block; here we just bump the font
+       and tighten the spacing for the phone stack). */
+
+    /* ── Phone EXPO callout — keeps its highlight; the rotated vertical
+        'EXPO' label becomes a small accent tag at the top of the box
+        (not the vertical-rl rotated label). Body uses the per-category
+        accent tint; tag uses the accent as its background. ── */
+
+    /* ── prep phone intro / equipment — bumped for phone reading. ── */
+
+    /* ── prep phone meta — Yield / Shelf life / Holding as stacked
+       badges (full-width rows, label left + value right). ── */
+    .food-recipe-phone-meta-badge .\!value {
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+      text-align: right !important;
+      word-break: break-word !important;
+    }
+    .food-recipe-phone-meta-badge.is-yield .\!value {
+      font-weight: 700 !important;
+    }
+
+    /* Recipe note callout (phone) — same compact highlighted box as the
+       desktop variant, aligned to the phone content's 1rem padding. */
 
     /* ── prep phone ingredients — step-grouped stacked list. ── */
 

@@ -290,6 +290,20 @@ export interface FoodStepGroup {
   title?: string;
   steps: string[];
 }
+
+/**
+ * A grouped set of quality identifiers on a food recipe (e.g. "Visual",
+ * "Temperature", or a shared/general block). Mirrors the backend Candid
+ * FoodQualityGroup shape exactly (title, items).
+ *
+ * `title` is null for the shared/general block — the frontend renders that
+ * group's items first with no subheading. `items` is the group's checklist
+ * of quality checks (rendered through renderInlineMarkdown).
+ */
+export interface FoodQualityGroup {
+  title: string | null;
+  items: string[];
+}
 export interface FoodWhy {
   question: string;
   answer: string;
@@ -313,6 +327,17 @@ export interface FoodRecipe {
   qualityIdentifiers: string[];
   stepGroups?: FoodStepGroup[];
   whys?: FoodWhy[];
+  /**
+   * Optional grouped quality identifiers. Each entry is { title: string |
+   * null, items: string[] }. When non-empty, the prep card renders the
+   * Quality Identifiers section as grouped sets (each under its own
+   * subheading, with the null-title shared/general block first and
+   * unlabeled) instead of the flat qualityIdentifiers list. When empty, the
+   * flat qualityIdentifiers list renders exactly as before. Mirrors the
+   * backend Candid `qualityGroups : [FoodQualityGroup]` field; the hook
+   * layer defaults it to [] when absent.
+   */
+  qualityGroups?: FoodQualityGroup[];
   /**
    * Per-size yield entries for a prep recipe (e.g. { size: "1x", value: "2 qt" },
    * { size: "Half", value: "1 qt" }). Mirrors the backend Candid

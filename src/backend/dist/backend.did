@@ -237,6 +237,7 @@ type FoodRecipe =
    kind: FoodRecipeKind;
    lineUtensil: opt text;
    menuSection: opt text;
+   qualityGroups: vec FoodQualityGroup;
    qualityIdentifiers: vec text;
    serviceware: vec FoodServiceware;
    shelfLife: opt text;
@@ -247,6 +248,11 @@ type FoodRecipe =
    whys: vec FoodWhy;
    yieldText: opt text;
    yields: vec FoodSizeAmount;
+ };
+type FoodQualityGroup = 
+ record {
+   items: vec text;
+   title: opt text;
  };
 type FoodComponentSize = 
  record {

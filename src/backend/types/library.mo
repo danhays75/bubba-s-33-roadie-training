@@ -188,6 +188,19 @@ module {
     steps : [Text];
   };
 
+  // A single grouped set of Quality Identifiers on a food recipe. Mirrors
+  // FoodStepGroup: `title` is the set name (e.g. "Blocked Parmesan Cheese"),
+  // or null for a shared/general block that precedes the named sets; `items`
+  // is that set's full identifier lines verbatim (including its own
+  // "Shelf Life:" / "Storage:" / "Storage Temperature:" / "Line Holding:"
+  // lines). Defaults to an empty list on FoodRecipe — recipes without
+  // `qualityGroups` fall back to the flat `qualityIdentifiers` array exactly
+  // as today (back-compat).
+  public type FoodQualityGroup = {
+    title : ?Text;
+    items : [Text];
+  };
+
   // A single "Bubba's Why's" training Q&A entry on a food recipe. Detailed
   // recipes carry a Q&A that explains the why behind a step or standard.
   // `question` is the bolded question (rendered in brand purple); `answer`
@@ -273,6 +286,7 @@ module {
     lineUtensil : ?Text;
     equipment : ?Text;
     qualityIdentifiers : [Text];
+    qualityGroups : [FoodQualityGroup];
     stepGroups : [FoodStepGroup];
     whys : [FoodWhy];
     yields : [FoodSizeAmount];
